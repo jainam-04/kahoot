@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, User, Mail, Lock, UserPlus, ArrowRight, ShieldCheck, 
+import {
+  X, User, Mail, Lock, UserPlus, ArrowRight, ShieldCheck,
   AlertCircle, Check, Briefcase, Sparkles, GraduationCap, Play, Award, Eye, EyeOff
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -86,9 +86,9 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
       if (response.success) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
-        
+
         toast.success(`Welcome to Quiz Hub, ${response.user.name || 'User'}!`);
-        
+
         if (onClose) onClose();
         if (onSuccess) {
           onSuccess(response.user);
@@ -119,11 +119,10 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className={`relative w-full max-w-2xl rounded-3xl border overflow-hidden shadow-2xl my-auto ${
-            isLight 
-              ? 'bg-white border-purple-100 text-gray-900' 
+          className={`relative w-full max-w-2xl rounded-3xl border overflow-hidden shadow-2xl my-auto ${isLight
+              ? 'bg-white border-purple-100 text-gray-900'
               : 'bg-[#0e0e14] border-white/10 text-white'
-          }`}
+            }`}
         >
           {/* Top Gradient Ribbon */}
           <div className="h-1.5 w-full bg-gradient-to-r from-secondary via-primary to-accent" />
@@ -138,7 +137,7 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
           </button>
 
           <div className="p-5 sm:p-8 space-y-6">
-            
+
             {/* Header */}
             <div className="text-center space-y-2">
               <div className="flex items-center justify-center gap-2">
@@ -172,11 +171,10 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
                       key={r.id}
                       type="button"
                       onClick={() => handleRoleSelect(r.id, r.defaultDesig)}
-                      className={`p-3 rounded-2xl border text-center flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
-                        isSelected
+                      className={`p-3 rounded-2xl border text-center flex flex-col items-center gap-1.5 transition-all cursor-pointer ${isSelected
                           ? 'border-secondary bg-secondary/15 text-white shadow-lg ring-1 ring-secondary/50'
                           : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:text-white'
-                      }`}
+                        }`}
                     >
                       <Icon className={`h-5 w-5 ${isSelected ? 'text-secondary' : 'text-gray-400'}`} />
                       <span className="text-xs font-bold">{r.title}</span>
@@ -188,10 +186,10 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
 
             {/* Account Registration Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5 pt-2">
-              
+
               {/* Row 1: Name & Designation */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                
+
                 {/* Name */}
                 <div className="space-y-1">
                   <label className="text-[11px] font-extrabold uppercase tracking-wider block text-gray-400">
@@ -229,7 +227,7 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
 
               {/* Row 2: Email & Password */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                
+
                 {/* Email */}
                 <div className="space-y-1">
                   <label className="text-[11px] font-extrabold uppercase tracking-wider block text-gray-400">
@@ -240,7 +238,7 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
                     <input
                       type="email"
                       placeholder="name@company.com"
-                      {...register('email', { 
+                      {...register('email', {
                         required: 'Email is required',
                         pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Valid email required' }
                       })}
@@ -284,7 +282,7 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
 
               {/* Row 3: Security Question & Security Answer */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                
+
                 {/* Security Question */}
                 <div className="space-y-1">
                   <label className="text-[11px] font-extrabold uppercase tracking-wider block text-gray-400">

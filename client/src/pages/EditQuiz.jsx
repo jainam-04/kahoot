@@ -209,13 +209,16 @@ export default function EditQuiz() {
         <div className="absolute top-[-5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-40"></div>
         <div className="absolute bottom-[10%] right-[5%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
 
-        {/* MAIN FORM CONTENT */}
-        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left py-6 sm:py-8 px-4 sm:px-8">
-
-          {/* PAGE HEADER BOX (TITLE & SAVE ACTIONS) */}
-          <div className={`rounded-3xl p-5 sm:p-6 border shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all ${
-            isLight ? 'bg-white border-gray-200 shadow-sm' : 'glass-panel border-white/10'
-          }`}>
+        {/* ACTION TOOLBAR (PAGE TITLE & SAVE ACTIONS) */}
+        <div 
+          ref={pageHeaderRef}
+          className="fixed top-[var(--main-header-height,64px)] left-0 right-0 z-40 w-full border-b backdrop-blur-xl shadow-md transition-all duration-300 py-3 sm:py-3.5"
+          style={{
+            backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(10, 10, 15, 0.98)',
+            borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)'
+          }}
+        >
+          <div className="mx-auto max-w-5xl px-4 sm:px-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 sm:gap-4">
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -235,22 +238,26 @@ export default function EditQuiz() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
-              <button
-                type="button"
-                onClick={handleSubmit(onSubmit, onInvalid)}
-                disabled={updateMutation.isPending}
-                className="btn-premium w-full sm:w-auto justify-center px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer disabled:opacity-60"
-                style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
-              >
-                {updateMutation.isPending
-                  ? <Loader2 className="h-4 w-4 animate-spin shrink-0" />
-                  : <Save className="h-4 w-4 shrink-0" />
-                }
-                <span>{updateMutation.isPending ? 'Saving...' : 'Save Changes'}</span>
-              </button>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 mt-1 sm:mt-0 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={handleSubmit(onSubmit, onInvalid)}
+                  disabled={updateMutation.isPending}
+                  className="btn-premium w-full sm:w-auto justify-center px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer disabled:opacity-60"
+                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
+                >
+                  {updateMutation.isPending
+                    ? <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+                    : <Save className="h-4 w-4 shrink-0" />
+                  }
+                  <span>{updateMutation.isPending ? 'Saving...' : 'Save Changes'}</span>
+                </button>
+              </div>
             </div>
           </div>
+
+        {/* MAIN FORM CONTENT */}
+        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-[calc(var(--page-header-height,68px)+1.5rem)] pb-12 px-4 sm:px-8">
 
           {/* EDITOR FORM */}
           <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
