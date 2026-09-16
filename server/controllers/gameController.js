@@ -142,7 +142,7 @@ const createGame = async (req, res) => {
 
 const joinGame = async (req, res) => {
     try {
-        const { pin, playerName, avatar } = req.body;
+        const { pin, playerName, avatar, fullName, mobileNumber, nickname } = req.body;
 
         const cleanPin = pin ? pin.toString().trim() : '';
         const cleanName = playerName ? playerName.toString().trim() : '';
@@ -161,7 +161,7 @@ const joinGame = async (req, res) => {
                 status: 'waiting',
                 'players.name': { $not: new RegExp('^' + escName + '$', 'i') }
             },
-            { $push: { players: { name: cleanName, avatar: avatar || 'dog', totalScore: 0, answers: [] } } },
+            { $push: { players: { name: cleanName, avatar: avatar || 'dog', fullName, mobileNumber, nickname, totalScore: 0, answers: [] } } },
             { new: true }
         );
 

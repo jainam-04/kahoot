@@ -59,6 +59,9 @@ const saveResult = async (req, res) => {
             const unanswered = Math.max(0, game.quizId.questions.length - submittedAnswers.length);
             return {
                 name: player.name,
+                fullName: player.fullName,
+                nickname: player.nickname,
+                mobileNumber: player.mobileNumber,
                 totalScore: player.totalScore,
                 correctAnswers: correct,
                 wrongAnswers: wrong,

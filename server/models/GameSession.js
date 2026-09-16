@@ -29,6 +29,20 @@ const playerSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    fullName: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    nickname: {
+        type: String,
+        trim: true
+    },
+    mobileNumber: {
+        type: String,
+        required: true,
+        trim: true
+    },
     avatar: {
         type: String,
         default: '👤'

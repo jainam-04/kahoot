@@ -148,7 +148,7 @@ export default function ResultsAnalytics() {
       
       // Standings Header
       lines.push('=== PLAYER STANDINGS ===');
-      lines.push(['Rank', 'Player Nickname', 'Correct Answers', 'Wrong Answers', 'Not Answered', 'Accuracy (%)', 'Total Score'].map(escapeCSV).join(','));
+      lines.push(['Rank', 'Player Name', 'Mobile Number', 'Correct Answers', 'Wrong Answers', 'Not Answered', 'Accuracy (%)', 'Total Score'].map(escapeCSV).join(','));
       
       // Standings Rows
       if (playerSummaries.length > 0) {
@@ -157,6 +157,7 @@ export default function ResultsAnalytics() {
           lines.push([
             p.rank,
             p.name,
+            p.mobileNumber || 'N/A',
             p.correct,
             p.wrong,
             p.unanswered,
@@ -302,6 +303,7 @@ export default function ResultsAnalytics() {
             return [
               medal,
               p.name,
+              p.mobileNumber || 'N/A',
               String(p.correct || 0),
               String(p.wrong || 0),
               String(p.unanswered || 0),
@@ -312,7 +314,7 @@ export default function ResultsAnalytics() {
 
       runAutoTable(doc, {
         startY: cursorY,
-        head: [['Rank', 'Player Nickname', 'Correct', 'Wrong', 'Not Answered', 'Final Score']],
+        head: [['Rank', 'Player Name', 'Mobile', 'Correct', 'Wrong', 'Not Answered', 'Final Score']],
         body: tableRows,
         theme: 'grid',
         styles: {
@@ -329,11 +331,12 @@ export default function ResultsAnalytics() {
           fontStyle: 'bold',
         },
         columnStyles: {
-          0: { cellWidth: 20, halign: 'center' },
+          0: { cellWidth: 15, halign: 'center' },
           2: { halign: 'center' },
           3: { halign: 'center' },
           4: { halign: 'center' },
-          5: { halign: 'right', fontStyle: 'bold' },
+          5: { halign: 'center' },
+          6: { halign: 'right', fontStyle: 'bold' },
         },
         alternateRowStyles: { fillColor: [248, 250, 252] },
         rowPageBreak: 'auto',
@@ -547,7 +550,7 @@ export default function ResultsAnalytics() {
               width: { size: 100, type: WidthType.PERCENTAGE },
               rows: [
                 new TableRow({
-                  children: ['Rank', 'Player Nickname', 'Correct', 'Wrong', 'Not Answered', 'Final Score'].map((headerText, i) => 
+                  children: ['Rank', 'Player Name', 'Mobile Number', 'Correct', 'Wrong', 'Not Answered', 'Final Score'].map((headerText, i) => 
                     new TableCell({
                       children: [
                         new Paragraph({
@@ -569,6 +572,10 @@ export default function ResultsAnalytics() {
                           }),
                           new TableCell({
                             children: [new Paragraph({ children: [new TextRun({ text: p.name, bold: true, size: 18 })] })],
+                            shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
+                          }),
+                          new TableCell({
+                            children: [new Paragraph({ children: [new TextRun({ text: p.mobileNumber || 'N/A', size: 14 })] })],
                             shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
                           }),
                           new TableCell({

@@ -5,6 +5,15 @@ const playerResultSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    fullName: {
+        type: String
+    },
+    nickname: {
+        type: String
+    },
+    mobileNumber: {
+        type: String
+    },
     totalScore: {
         type: Number,
         default: 0

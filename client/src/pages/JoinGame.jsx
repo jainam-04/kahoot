@@ -33,7 +33,9 @@ export default function JoinGame() {
   } = useForm({
     defaultValues: {
       pin: urlPin,
-      playerName: '',
+      fullName: '',
+      mobileNumber: '',
+      nickname: '',
     }
   });
 
@@ -104,14 +106,15 @@ export default function JoinGame() {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await joinGame(data.pin, data.playerName, selectedAvatar);
+      const displayPlayerName = data.nickname || data.fullName;
+      const response = await joinGame(data.pin, displayPlayerName, selectedAvatar, data.fullName, data.mobileNumber, data.nickname);
       if (response.success) {
         // Update global game contexts
         setPin(data.pin);
-        setPlayerName(data.playerName);
+        setPlayerName(displayPlayerName);
         // Assuming we might want to store avatar in context later, for now we just pass it to backend
 
-        toast.success(`Welcome to the lobby, ${data.playerName}!`);
+        toast.success(`Welcome to the lobby, ${displayPlayerName}!`);
         
         // Navigate to the Waiting Room page
         setTimeout(() => {
@@ -241,10 +244,69 @@ export default function JoinGame() {
               )}
             </div>
 
-            {/* Nickname */}
+            {/* Full Name */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
-                Choose Nickname
+                Full Name
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. John Doe"
+                maxLength="50"
+                {...register('fullName', {
+                  required: 'Full Name is required',
+                  minLength: {
+                    value: 2,
+                    message: 'Full Name must be at least 2 characters',
+                  }
+                })}
+                className={`w-full rounded-xl bg-white/5 border px-4 py-3 text-center text-sm font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary/35 focus:border-primary ${
+                  errors.fullName ? 'border-accent/40' : 'border-white/10'
+                }`}
+              />
+              {errors.fullName && (
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  <span>{errors.fullName.message}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Number */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+                Mobile Number
+              </label>
+              <input
+                type="tel"
+                placeholder="e.g. 1234567890"
+                maxLength="15"
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                }}
+                {...register('mobileNumber', {
+                  required: 'Mobile Number is required',
+                  pattern: {
+                    value: /^[0-9]{10,15}$/,
+                    message: 'Please enter a valid mobile number (10-15 digits)',
+                  }
+                })}
+                className={`w-full rounded-xl bg-white/5 border px-4 py-3 text-center text-sm font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary/35 focus:border-primary ${
+                  errors.mobileNumber ? 'border-accent/40' : 'border-white/10'
+                }`}
+              />
+              {errors.mobileNumber && (
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  <span>{errors.mobileNumber.message}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Nickname (Optional) */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+                Choose Nickname (Optional)
               </label>
               <input
                 type="text"
@@ -253,29 +315,24 @@ export default function JoinGame() {
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
                 }}
-                {...register('playerName', {
-                  required: 'Nickname is required',
-                  minLength: {
-                    value: 2,
-                    message: 'Nickname must be at least 2 characters',
-                  },
+                {...register('nickname', {
                   maxLength: {
                     value: 10,
                     message: 'Nickname cannot exceed 10 characters',
                   },
                   pattern: {
-                    value: /^[a-zA-Z0-9]+$/,
+                    value: /^[a-zA-Z0-9]*$/,
                     message: 'Nickname can only contain letters and numbers',
                   }
                 })}
                 className={`w-full rounded-xl bg-white/5 border px-4 py-3 text-center text-sm font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary/35 focus:border-primary ${
-                  errors.playerName ? 'border-accent/40' : 'border-white/10'
+                  errors.nickname ? 'border-accent/40' : 'border-white/10'
                 }`}
               />
-              {errors.playerName && (
+              {errors.nickname && (
                 <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
                   <AlertCircle className="h-3.5 w-3.5" />
-                  <span>{errors.playerName.message}</span>
+                  <span>{errors.nickname.message}</span>
                 </div>
               )}
             </div>
