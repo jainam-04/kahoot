@@ -44,6 +44,11 @@ const quizSchema = new mongoose.Schema({
         trim: true,
         lowercase: true
     },
+    organizationName: {
+        type: String,
+        trim: true,
+        default: ''
+    },
     description: {
         type: String,
         trim: true,

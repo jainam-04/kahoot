@@ -3,7 +3,7 @@ const GameSession = require('../models/GameSession');
 
 const createQuiz = async (req, res) => {
     try {
-        const { title, category, description, questions, backgroundImage } = req.body;
+        const { title, category, description, organizationName, questions, backgroundImage } = req.body;
 
         if (!title) {
             return res.status(400).json({
@@ -32,6 +32,7 @@ const createQuiz = async (req, res) => {
             title,
             category,
             description,
+            organizationName,
             questions,
             backgroundImage: backgroundImage || '',
             createdBy: req.user.id
@@ -184,7 +185,7 @@ const updateQuiz = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Not authorized to edit this quiz' });
         }
 
-        const { title, category, description, questions, backgroundImage } = req.body;
+        const { title, category, description, organizationName, questions, backgroundImage } = req.body;
 
         if (!title) {
             return res.status(400).json({ success: false, message: 'Please provide quiz title' });
@@ -201,6 +202,7 @@ const updateQuiz = async (req, res) => {
         quiz.title          = title;
         quiz.category       = category || quiz.category;
         quiz.description    = description || '';
+        quiz.organizationName = organizationName || '';
         quiz.questions      = questions;
         quiz.backgroundImage = backgroundImage || '';
         await quiz.save();

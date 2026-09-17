@@ -63,6 +63,10 @@ const resultSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    organizationName: {
+        type: String,
+        default: ''
+    },
     players: {
         type: [playerResultSchema],
         default: []

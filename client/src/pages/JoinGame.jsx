@@ -280,15 +280,15 @@ export default function JoinGame() {
               <input
                 type="tel"
                 placeholder="e.g. 1234567890"
-                maxLength="15"
+                maxLength="10"
                 onInput={(e) => {
-                  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                  e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
                 }}
                 {...register('mobileNumber', {
                   required: 'Mobile Number is required',
                   pattern: {
-                    value: /^[0-9]{10,15}$/,
-                    message: 'Please enter a valid mobile number (10-15 digits)',
+                    value: /^[6-9][0-9]{9}$/,
+                    message: 'Mobile number must be 10 digits and start with 6, 7, 8, or 9',
                   }
                 })}
                 className={`w-full rounded-xl bg-white/5 border px-4 py-3 text-center text-sm font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary/35 focus:border-primary ${

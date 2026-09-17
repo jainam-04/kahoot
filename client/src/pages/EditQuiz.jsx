@@ -125,6 +125,7 @@ export default function EditQuiz() {
       reset({
         title: q.title || '',
         description: q.description || '',
+        organizationName: q.organizationName || '',
         category: q.category || 'general knowledge',
         backgroundImage: q.backgroundImage || '',
         questions: (q.questions || []).map(qst => ({
@@ -320,6 +321,19 @@ export default function EditQuiz() {
                     rows={3}
                     placeholder="Give users an overview of the battle topics..."
                     {...register('description')}
+                    className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"
+                  />
+                </div>
+
+                {/* Organization Name */}
+                <div className="sm:col-span-3 space-y-2">
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block">
+                    School / College / Organization Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Stanford University or TechCorp Inc."
+                    {...register('organizationName')}
                     className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"
                   />
                 </div>

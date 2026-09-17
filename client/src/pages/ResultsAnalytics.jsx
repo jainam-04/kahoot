@@ -134,8 +134,11 @@ export default function ResultsAnalytics() {
       const lines = [];
       
       // Metadata Header Block
-      lines.push('=== FOURISE QUIZ HUB REPORT ===');
-      lines.push(`Quiz Title,${escapeCSV(result.quizTitle || 'Fourise Quiz Hub Match')}`);
+      lines.push('=== Quizzy REPORT ===');
+      if (result.organizationName) {
+        lines.push(`Organization Name,${escapeCSV(result.organizationName)}`);
+      }
+      lines.push(`Quiz Title,${escapeCSV(result.quizTitle || 'Quizzy Match')}`);
       lines.push(`Category,${escapeCSV(result.quizCategory || result.quiz?.category || 'General')}`);
       lines.push(`Played At,${escapeCSV(result.playedAt ? new Date(result.playedAt).toLocaleString() : new Date().toLocaleString())}`);
       lines.push(`Session ID,${escapeCSV(id)}`);
@@ -189,7 +192,8 @@ export default function ResultsAnalytics() {
       const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvString], { type: 'text/csv;charset=utf-8;' });
       
       const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const fileName = `Fourise_Quiz_Hub_${cleanTitle}_${id ? id.slice(-6) : 'report'}.csv`;
+      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Quizzy';
+      const fileName = `${prefix}_${cleanTitle}_${id ? id.slice(-6) : 'report'}.csv`;
 
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
@@ -225,7 +229,7 @@ export default function ResultsAnalytics() {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(22);
       doc.setTextColor(30, 41, 59);
-      doc.text('Fourise Quiz Hub', margin, 20);
+      doc.text('Quizzy', margin, 20);
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
@@ -245,12 +249,23 @@ export default function ResultsAnalytics() {
       doc.setTextColor(100, 116, 139);
       doc.text(dateStr, pageW - margin, 35, { align: 'right' });
 
+      let currentY = 35;
+
+      if (result.organizationName) {
+        currentY += 7;
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139);
+        doc.text(result.organizationName, margin, currentY);
+      }
+
       // Add line separator
+      currentY += 5;
       doc.setDrawColor(226, 232, 240);
       doc.setLineWidth(0.5);
-      doc.line(margin, 40, pageW - margin, 40);
+      doc.line(margin, currentY, pageW - margin, currentY);
 
-      let cursorY = 50;
+      let cursorY = currentY + 10;
 
       // ── Summary Cards ───────────────────────────────────────────
       doc.setFont('helvetica', 'bold');
@@ -394,7 +409,7 @@ export default function ResultsAnalytics() {
         doc.line(margin, doc.internal.pageSize.getHeight() - 15, pageW - margin, doc.internal.pageSize.getHeight() - 15);
         
         doc.text(
-          `Fourise Quiz Hub  •  Generated ${new Date().toLocaleString()}  •  Page ${pg} of ${totalPages}`,
+          `Quizzy  •  Generated ${new Date().toLocaleString()}  •  Page ${pg} of ${totalPages}`,
           pageW / 2,
           doc.internal.pageSize.getHeight() - 8,
           { align: 'center' }
@@ -402,7 +417,8 @@ export default function ResultsAnalytics() {
       }
 
       const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const fileName = `Fourise_Quiz_Hub_${cleanTitle}_${id ? id.slice(-6) : 'report'}.pdf`;
+      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Quizzy';
+      const fileName = `${prefix}_${cleanTitle}_${id ? id.slice(-6) : 'report'}.pdf`;
 
       doc.save(fileName);
       toast.success('PDF report downloaded!');
@@ -422,7 +438,7 @@ export default function ResultsAnalytics() {
     try {
       toast.loading('Generating Word document...', { id: 'export-word' });
 
-      const title = result.quizTitle || 'Fourise Quiz Hub Match';
+      const title = result.quizTitle || 'Quizzy Match';
       const category = result.quizCategory || result.quiz?.category || 'General';
       const playedDate = result.playedAt ? new Date(result.playedAt).toLocaleString() : new Date().toLocaleString();
 
@@ -435,7 +451,7 @@ export default function ResultsAnalytics() {
               alignment: AlignmentType.LEFT,
               children: [
                 new TextRun({
-                  text: 'Fourise Quiz Hub',
+                  text: 'Quizzy',
                   bold: true,
                   size: 32,
                   color: '4F46E5',
@@ -464,6 +480,18 @@ export default function ResultsAnalytics() {
                 }),
               ],
             }),
+            ...(result.organizationName ? [
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: result.organizationName,
+                    italics: true,
+                    size: 20,
+                    color: '64748B',
+                  }),
+                ],
+              })
+            ] : []),
             new Paragraph({
               children: [
                 new TextRun({ text: `Category: `, bold: true, size: 20 }),
@@ -669,7 +697,7 @@ export default function ResultsAnalytics() {
               alignment: AlignmentType.CENTER,
               children: [
                 new TextRun({
-                  text: 'Fourise Quiz Hub • Official Multiplayer Battle Report',
+                  text: 'Quizzy • Official Multiplayer Battle Report',
                   size: 16,
                   color: '94A3B8',
                 }),
@@ -681,7 +709,8 @@ export default function ResultsAnalytics() {
 
       const buffer = await Packer.toBlob(wordDoc);
       const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const fileName = `Fourise_Quiz_Hub_${cleanTitle}_${id ? id.slice(-6) : 'report'}.docx`;
+      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Quizzy';
+      const fileName = `${prefix}_${cleanTitle}_${id ? id.slice(-6) : 'report'}.docx`;
 
       const link = document.createElement('a');
       const url = URL.createObjectURL(buffer);

@@ -108,8 +108,8 @@ export default function Navbar() {
         {/* Brand Logo - Leftmost */}
         <Link to="/" className="flex items-center gap-1.5 sm:gap-2.5 transition-transform active:scale-95 shrink-0 min-w-0" onClick={closeMobile}>
           <Logo className="h-7 w-7 sm:h-9 sm:w-9 shrink-0" />
-          <span className="font-outfit text-xs sm:text-xl font-extrabold tracking-tight whitespace-nowrap" style={{ color: 'var(--text-heading)' }}>
-            Fourise <span className="text-secondary">Quiz Hub</span>
+          <span className="font-outfit text-xs sm:text-xl font-extrabold tracking-tight whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
+            Quizzy
           </span>
         </Link>
 

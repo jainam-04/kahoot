@@ -76,6 +76,7 @@ const saveResult = async (req, res) => {
             quizId: game.quizId._id,
             hostId: game.hostId,
             quizTitle: game.quizId.title,
+            organizationName: game.quizId.organizationName || '',
             players: playerResults,
             winner: sortedPlayers[0]?.name || '',
             totalQuestions: game.quizId.questions.length

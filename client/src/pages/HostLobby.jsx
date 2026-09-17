@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -39,7 +39,7 @@ export default function HostLobby() {
   // Sync customUrl when game is loaded
   useEffect(() => {
     const hostname = window.location.hostname;
-    const isCustomDomain = hostname === 'fourisequiz.com' || hostname.endsWith('.fourisequiz.com');
+    const isCustomDomain = hostname === 'quizzy.com' || hostname.endsWith('.quizzy.com');
     const isLocal = hostname === 'localhost' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/) || hostname.endsWith('.local');
 
     if (isCustomDomain) {
@@ -89,7 +89,7 @@ export default function HostLobby() {
   // Direct WhatsApp share handler ensuring "Send message to" contact picker pops up every time
   const handleShareWhatsapp = (e) => {
     if (e) e.preventDefault();
-    const shareMessage = `🎮 *Join my Fourise Quiz Hub arena!*\n\n📌 *Game PIN:* ${pin}\n\n🔗 *Direct Join Link:*\n${customUrl}\n\n❓ *How to Join:*\n1️⃣ Click the link above OR visit Quiz Hub\n2️⃣ Enter PIN: *${pin}*\n3️⃣ Enter your Nickname & tap Join!\n4️⃣ Ready up for the live battle! 🚀`;
+    const shareMessage = `🎮 *Join my Quizzy arena!*\n\n📌 *Game PIN:* ${pin}\n\n🔗 *Direct Join Link:*\n${customUrl}\n\n❓ *How to Join:*\n1️⃣ Click the link above OR visit Quiz Hub\n2️⃣ Enter PIN: *${pin}*\n3️⃣ Enter your Nickname & tap Join!\n4️⃣ Ready up for the live battle! 🚀`;
     const shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage)}`;
     window.open(shareUrl, '_blank', 'noopener,noreferrer');
   };
@@ -317,7 +317,7 @@ export default function HostLobby() {
                   Host Lobby Room
                 </span>
                 <h2 className="font-outfit text-xl font-extrabold text-white mt-2">{game?.quiz?.title || 'Commencing Battle'}</h2>
-                <p className="text-xs text-gray-400 max-w-[280px]">Scan the QR or visit Fourise Quiz Hub and enter the PIN below.</p>
+                <p className="text-xs text-gray-400 max-w-[280px]">Scan the QR or visit Quizzy and enter the PIN below.</p>
               </div>
 
               <div className="space-y-1 text-center shrink-0">

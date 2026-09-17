@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Sparkles, Zap, Shield, ArrowRight, X } from 'lucide-react';
@@ -9,6 +9,7 @@ export default function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
   const [showPlanDetails, setShowPlanDetails] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const token = localStorage.getItem('token');
 
   return (
     <section id="pricing" className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 scroll-mt-20">
@@ -113,14 +114,24 @@ export default function PricingSection() {
           </div>
 
           <div className="pt-8">
-            <button
-              type="button"
-              onClick={() => setShowRegisterModal(true)}
-              className="btn-premium btn-primary-gradient w-full py-4 rounded-2xl flex items-center justify-center gap-2 text-sm font-extrabold text-white shadow-premium-glow hover:scale-105 transition-all cursor-pointer"
-            >
-              <span>Start Free</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
+            {token ? (
+              <Link
+                to="/dashboard"
+                className="btn-premium btn-primary-gradient w-full py-4 rounded-2xl flex items-center justify-center gap-2 text-sm font-extrabold text-white shadow-premium-glow hover:scale-105 transition-all"
+              >
+                <span>Go to Dashboard</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowRegisterModal(true)}
+                className="btn-premium btn-primary-gradient w-full py-4 rounded-2xl flex items-center justify-center gap-2 text-sm font-extrabold text-white shadow-premium-glow hover:scale-105 transition-all cursor-pointer"
+              >
+                <span>Start Free</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            )}
           </div>
         </motion.div>
 
@@ -196,10 +207,10 @@ export default function PricingSection() {
 
           <div className="pt-8">
             <Link
-              to="/register"
+              to={token ? "/dashboard" : "/register"}
               className="btn-premium btn-primary-gradient w-full py-4 rounded-2xl flex items-center justify-center gap-2 text-sm font-extrabold text-white shadow-premium-glow hover:scale-105 transition-all"
             >
-              <span>Upgrade to Pro</span>
+              <span>{token ? "Go to Dashboard" : "Upgrade to Pro"}</span>
               <Zap className="h-4 w-4 fill-current text-secondary" />
             </Link>
           </div>
@@ -264,7 +275,7 @@ export default function PricingSection() {
 
           <div className="pt-8">
             <a
-              href="mailto:sales@fourisequizhub.com?subject=Enterprise%20Plan%20Inquiry"
+              href="mailto:sales@quizzy.com?subject=Enterprise%20Plan%20Inquiry"
               className="btn-premium btn-secondary-gradient text-white w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 text-sm font-extrabold shadow-secondary-glow transition-all"
             >
               <span>Contact Sales</span>

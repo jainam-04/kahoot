@@ -34,25 +34,25 @@ export default function Footer() {
           <div className="space-y-3 text-left">
             <Link to="/" className="inline-flex items-center gap-2 transition-transform active:scale-95">
               <Logo className="h-6 w-6" />
-              <span className="font-outfit text-base font-extrabold tracking-tight text-primary">
-                Fourise <span className="text-secondary">Quiz Hub</span>
+              <span className="font-outfit text-base font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
+                Quizzy
               </span>
             </Link>
 
             <div className="space-y-1">
               <h5 className="text-xs font-bold uppercase tracking-wide flex items-center gap-1.5" style={{ color: 'var(--text-heading)' }}>
                 <Building2 className="h-3.5 w-3.5 text-secondary shrink-0" />
-                <span>Fourise Software Solutions Pvt Ltd</span>
+                <span>Quizzy Inc.</span>
               </h5>
               
               <a
-                href="https://fouriseindia.com"
+                href="https://quizzy.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-secondary hover:underline transition-colors"
               >
                 <Globe className="h-3.5 w-3.5 shrink-0" />
-                <span>fouriseindia.com</span>
+                <span>quizzy.com</span>
                 <ExternalLink className="h-3 w-3 shrink-0" />
               </a>
             </div>
@@ -80,7 +80,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="group block p-3 rounded-xl bg-sky-100/70 dark:bg-white/5 border border-sky-200 dark:border-white/10 hover:border-sky-400 dark:hover:border-primary/40 hover:bg-sky-100 dark:hover:bg-white/10 transition-all text-left cursor-pointer shadow-sm"
-              title="Fourise Software Solutions Pvt. Ltd Pune (Google Maps)"
+              title="Quizzy Inc. Pune (Google Maps)"
             >
               <div className="flex items-start gap-2.5">
                 <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
@@ -99,12 +99,12 @@ export default function Footer() {
             <ul className="space-y-2 text-xs px-1">
               <li>
                 <a
-                  href="mailto:support@fourisequizhub.com"
+                  href="mailto:support@quizzy.com"
                   className="inline-flex items-center gap-2.5 hover:text-primary transition-colors font-semibold"
                   style={{ color: 'var(--text-muted)' }}
                 >
                   <Mail className="h-4 w-4 text-primary shrink-0" />
-                  <span>support@fourisequizhub.com</span>
+                  <span>support@quizzy.com</span>
                 </a>
               </li>
               <li>
@@ -187,12 +187,12 @@ export default function Footer() {
 
         {/* Bottom Copyright & Legal Row */}
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-center sm:text-left" style={{ color: 'var(--text-muted)' }}>
-          <p>© {new Date().getFullYear()} Fourise Software Solutions Pvt Ltd · Fourise Quiz Hub. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Quizzy Inc. · Quizzy. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-4 text-xs font-medium">
             <span className="hover:text-primary cursor-pointer transition-colors">Privacy Policy</span>
             <span className="hover:text-primary cursor-pointer transition-colors">Terms of Service</span>
-            <a href="https://fouriseindia.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-              Fourise India
+            <a href="https://quizzy.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              Quizzy
             </a>
           </div>
         </div>
