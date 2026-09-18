@@ -1,4 +1,12 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+// Use Cloudflare & Google public DNS servers to resolve MongoDB Atlas querySrv (ECONNREFUSED / ETIMEOUT)
+try {
+    dns.setServers(['1.1.1.1', '8.8.8.8']);
+} catch (err) {
+    console.warn('⚠️ Could not configure DNS servers:', err.message);
+}
 
 let memoryServer = null;
 

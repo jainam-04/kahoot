@@ -1,6 +1,10 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Mail, Phone, MapPin, ExternalLink, Globe, Sparkles, Building2, ChevronRight } from 'lucide-react';
+import {
+  Mail, Phone, MapPin, ExternalLink, Globe, Sparkles,
+  Building2, ChevronRight, HelpCircle, Shield, FileText,
+  RotateCcw, Gamepad2, Trophy
+} from 'lucide-react';
 import Logo from './Logo';
 
 export default function Footer() {
@@ -25,13 +29,13 @@ export default function Footer() {
       style={{ background: 'var(--footer-bg)', borderTop: '1px solid var(--footer-border)' }}
       className="relative z-10 w-full backdrop-blur-xl transition-colors duration-300"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         
-        {/* 3-Column Compact Synchronized Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 pb-6 border-b border-black/10 dark:border-white/10 text-left">
+        {/* 4-Column Synchronized Layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-8 border-b border-black/10 dark:border-white/10 text-left">
           
-          {/* Column 1: Brand & Parent Company */}
-          <div className="space-y-3 text-left">
+          {/* Column 1: Brand & Identity */}
+          <div className="space-y-3.5 text-left">
             <Link to="/" className="inline-flex items-center gap-2 transition-transform active:scale-95">
               <Logo className="h-6 w-6" />
               <span className="font-outfit text-base font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
@@ -57,21 +61,132 @@ export default function Footer() {
               </a>
             </div>
 
-            <p className="text-xs leading-relaxed max-w-xs" style={{ color: 'var(--text-muted)' }}>
-              Interactive multiplayer battle platform for live quizzes, AI question generation, and instant participant analytics.
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+              Interactive multiplayer arena for live classroom trivia, Kahoot-style speed scoring, instant PIN join, and automated participant reports.
             </p>
 
-            {/* Second Branch Notice Badge */}
+            {/* Branch Notice Badge */}
             <div className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 border border-primary/25 px-2.5 py-1 text-xs font-semibold text-primary">
               <Sparkles className="h-3.5 w-3.5 text-yellow-400 animate-pulse shrink-0" />
               <span>We've Opened Our Second Branch</span>
             </div>
           </div>
 
-          {/* Column 2: Head Office & Navigable Map Address */}
+          {/* Column 2: Platform & Explore */}
           <div className="space-y-3 text-left">
-            <h4 className="font-outfit text-xs font-extrabold tracking-wide uppercase" style={{ color: 'var(--text-heading)' }}>
-              Head Office & Contact
+            <h4 className="font-outfit text-xs font-extrabold tracking-wide uppercase flex items-center gap-1.5" style={{ color: 'var(--text-heading)' }}>
+              <Gamepad2 className="h-3.5 w-3.5 text-primary" />
+              <span>Explore Platform</span>
+            </h4>
+            <ul className="space-y-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+              <li>
+                <Link
+                  to="/about"
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>About Kahoot & Quizzy</span>
+                </Link>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNavClick('#interactive-demo')}
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Play Interactive Demo</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNavClick('#how-it-works')}
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>How Quiz Hub Works</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNavClick('#pricing')}
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Pricing & Plans</span>
+                </button>
+              </li>
+              <li>
+                <Link
+                  to="/join"
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Join Game with PIN</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Help & Policies */}
+          <div className="space-y-3 text-left">
+            <h4 className="font-outfit text-xs font-extrabold tracking-wide uppercase flex items-center gap-1.5" style={{ color: 'var(--text-heading)' }}>
+              <Shield className="h-3.5 w-3.5 text-secondary" />
+              <span>Help & Policies</span>
+            </h4>
+            <ul className="space-y-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+              <li>
+                <Link
+                  to="/faq"
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>FAQ & Knowledge Base</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/privacy"
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Privacy Policy</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms"
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Terms and Conditions</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/refund"
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Refund Policy</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/login"
+                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  <span>Host Login / Register</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Head Office & Support */}
+          <div className="space-y-3 text-left">
+            <h4 className="font-outfit text-xs font-extrabold tracking-wide uppercase flex items-center gap-1.5" style={{ color: 'var(--text-heading)' }}>
+              <MapPin className="h-3.5 w-3.5 text-primary" />
+              <span>Head Office & Contact</span>
             </h4>
 
             {/* Clickable Navigable Address */}
@@ -120,77 +235,27 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Quick Links */}
-          <div className="space-y-3 text-left">
-            <h4 className="font-outfit text-xs font-extrabold tracking-wide uppercase" style={{ color: 'var(--text-heading)' }}>
-              Quick Links
-            </h4>
-            <ul className="space-y-2.5 text-xs" style={{ color: 'var(--text-muted)' }}>
-              <li>
-                <button
-                  onClick={() => handleNavClick('#interactive-demo')}
-                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span className="text-xs">Play Interactive Demo</span>
-                </button>
-              </li>
-              <li>
-                <Link
-                  to="/join"
-                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span className="text-xs">Join Game with PIN</span>
-                </Link>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavClick('#how-it-works')}
-                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span className="text-xs">How Quiz Hub Works</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavClick('#pricing')}
-                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span className="text-xs">Pricing & Plans</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavClick('#faq')}
-                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span className="text-xs">Help & FAQs</span>
-                </button>
-              </li>
-              <li>
-                <Link
-                  to="/login"
-                  className="group flex items-center gap-2 text-xs font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span className="text-xs">Host Login / Register</span>
-                </Link>
-              </li>
-            </ul>
-          </div>
-
         </div>
 
         {/* Bottom Copyright & Legal Row */}
-        <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-center sm:text-left" style={{ color: 'var(--text-muted)' }}>
+        <div className="pt-5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-center md:text-left" style={{ color: 'var(--text-muted)' }}>
           <p>© {new Date().getFullYear()} Quizy Inc. · Quizy. All rights reserved.</p>
-          <div className="flex flex-wrap justify-center gap-4 text-xs font-medium">
-            <span className="hover:text-primary cursor-pointer transition-colors">Privacy Policy</span>
-            <span className="hover:text-primary cursor-pointer transition-colors">Terms of Service</span>
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs font-medium">
+            <Link to="/about" className="hover:text-primary transition-colors">
+              About Kahoot
+            </Link>
+            <Link to="/faq" className="hover:text-primary transition-colors">
+              FAQ
+            </Link>
+            <Link to="/privacy" className="hover:text-primary transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="hover:text-primary transition-colors">
+              Terms & Conditions
+            </Link>
+            <Link to="/refund" className="hover:text-primary transition-colors">
+              Refund Policy
+            </Link>
             <a href="https://quizzy.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               Quizy
             </a>

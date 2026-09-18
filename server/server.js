@@ -10,7 +10,11 @@
  */
 
 const dns = require('dns');
-dns.setServers(['8.8.8.8', '1.1.1.1']);
+try {
+    dns.setServers(['1.1.1.1', '8.8.8.8']);
+} catch (err) {
+    console.warn('⚠️ Could not configure DNS servers:', err.message);
+}
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');

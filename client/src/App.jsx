@@ -25,6 +25,11 @@ import AnswerResult from './pages/AnswerResult';
 import Leaderboard from './pages/Leaderboard';
 import FinalResult from './pages/FinalResult';
 import ResultsAnalytics from './pages/ResultsAnalytics';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import AboutKahoot from './pages/AboutKahoot';
+import TermsAndConditions from './pages/TermsAndConditions';
+import RefundPolicy from './pages/RefundPolicy';
+import FAQPage from './pages/FAQPage';
 
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { GameProvider } from './context/GameContext';
@@ -96,6 +101,16 @@ function AnimatedRoutes() {
             <Route path="/leaderboard/:pin" element={<Leaderboard />} />
             <Route path="/final-result/:pin" element={<FinalResult />} />
             <Route path="/results/:sessionId" element={<ResultsAnalytics />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/about" element={<AboutKahoot />} />
+            <Route path="/about-kahoot" element={<AboutKahoot />} />
+            <Route path="/terms" element={<TermsAndConditions />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/refund" element={<RefundPolicy />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/faqs" element={<FAQPage />} />
             <Route path="/reviews" element={<Navigate to="/#testimonials" replace />} />
           </Routes>
         </AnimatePresence>

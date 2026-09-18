@@ -6,8 +6,12 @@ const dns = require('dns');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
 
-// Use public DNS servers to fix querySrv ECONNREFUSED errors with MongoDB Atlas
-dns.setServers(['8.8.8.8', '1.1.1.1']);
+// Use public DNS servers to fix querySrv ECONNREFUSED / ETIMEOUT errors with MongoDB Atlas
+try {
+    dns.setServers(['1.1.1.1', '8.8.8.8']);
+} catch (err) {
+    console.warn('⚠️ Could not configure DNS servers:', err.message);
+}
 
 dotenv.config();
 
