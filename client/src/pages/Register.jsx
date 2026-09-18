@@ -159,7 +159,7 @@ export default function Register() {
             <div className="flex items-center justify-center gap-2">
               <Logo className="h-10 w-10 shrink-0" />
               <span className="font-outfit text-2xl sm:text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
-                Quizzy
+                Quizy
               </span>
             </div>
             <h1 className="font-outfit text-3xl sm:text-5xl font-black text-white tracking-tight">

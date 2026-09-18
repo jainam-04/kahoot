@@ -106,12 +106,9 @@ export default function Navbar() {
       <div className="w-full flex h-16 items-center justify-between px-3 sm:px-5 lg:px-6">
         
         {/* Brand Logo - Leftmost */}
-        <Link to="/" className="flex items-center gap-1.5 sm:gap-2.5 transition-transform active:scale-95 shrink-0 min-w-0" onClick={closeMobile}>
-          <Logo className="h-7 w-7 sm:h-9 sm:w-9 shrink-0" />
-          <span className="font-outfit text-xs sm:text-xl font-extrabold tracking-tight whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
-            Quizzy
-          </span>
-        </Link>
+        <Link to="/" className="flex items-center transition-transform active:scale-95 shrink-0 min-w-0" onClick={closeMobile}>
+            <Logo className="h-[70px] w-[70px] shrink-0" />
+          </Link>
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-6">
