@@ -124,7 +124,7 @@ export default function Login() {
                 <Logo className="h-9 w-9 sm:h-12 sm:w-12 shrink-0" />
                 <div>
                   <h1 className="font-outfit text-xl sm:text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
-                    Quizzy
+                    Quizy
                   </h1>
                   <p className="text-[11px] sm:text-sm font-semibold text-primary">
                     Interactive Real-Time Quiz Platform

@@ -35,14 +35,14 @@ export default function Footer() {
             <Link to="/" className="inline-flex items-center gap-2 transition-transform active:scale-95">
               <Logo className="h-6 w-6" />
               <span className="font-outfit text-base font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
-                Quizzy
+                Quizy
               </span>
             </Link>
 
             <div className="space-y-1">
               <h5 className="text-xs font-bold uppercase tracking-wide flex items-center gap-1.5" style={{ color: 'var(--text-heading)' }}>
                 <Building2 className="h-3.5 w-3.5 text-secondary shrink-0" />
-                <span>Quizzy Inc.</span>
+                <span>Quizy Inc.</span>
               </h5>
               
               <a
@@ -80,7 +80,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="group block p-3 rounded-xl bg-sky-100/70 dark:bg-white/5 border border-sky-200 dark:border-white/10 hover:border-sky-400 dark:hover:border-primary/40 hover:bg-sky-100 dark:hover:bg-white/10 transition-all text-left cursor-pointer shadow-sm"
-              title="Quizzy Inc. Pune (Google Maps)"
+              title="Quizy Inc. Pune (Google Maps)"
             >
               <div className="flex items-start gap-2.5">
                 <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
@@ -187,12 +187,12 @@ export default function Footer() {
 
         {/* Bottom Copyright & Legal Row */}
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-center sm:text-left" style={{ color: 'var(--text-muted)' }}>
-          <p>© {new Date().getFullYear()} Quizzy Inc. · Quizzy. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Quizy Inc. · Quizy. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-4 text-xs font-medium">
             <span className="hover:text-primary cursor-pointer transition-colors">Privacy Policy</span>
             <span className="hover:text-primary cursor-pointer transition-colors">Terms of Service</span>
             <a href="https://quizzy.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-              Quizzy
+              Quizy
             </a>
           </div>
         </div>
