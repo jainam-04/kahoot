@@ -29,3 +29,8 @@ export const resetPassword = async (payload) => {
   const response = await API.post('/auth/reset-password', payload);
   return response.data;
 };
+
+export const deleteAccount = async (payload) => {
+  const response = await API.delete('/auth/delete-account', { data: payload });
+  return response.data;
+};

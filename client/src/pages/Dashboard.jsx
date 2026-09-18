@@ -4,11 +4,12 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, PlusCircle, Mail,
   Calendar, FileText, ArrowRight, Play, Users, HelpCircle,
-  X, Trophy, Clock, BarChart3, UserCheck, ChevronRight, User
+  X, Trophy, Clock, BarChart3, UserCheck, ChevronRight, User, Trash2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
+import DeleteAccountModal from '../components/DeleteAccountModal';
 import { getProfile } from '../services/authService';
 import { getMyQuizzes } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
@@ -23,6 +24,14 @@ export default function Dashboard() {
 
   const [activeTab, setActiveTab] = useState('overview');
   const [activeModal, setActiveModal] = useState(null); // 'sessions' | 'students' | null
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const handleDeleteAccountSuccess = () => {
+    setIsDeleteModalOpen(false);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   // Display Welcome Popup Toast when arriving directly from Sign In or Registration
   useEffect(() => {
@@ -331,6 +340,22 @@ export default function Dashboard() {
                     <span>Member since {new Date(user?.createdAt || Date.now()).toLocaleDateString(undefined, { year: 'numeric', month: 'long' })}</span>
                   </div>
                 </div>
+
+                {/* Danger Zone: Delete Account */}
+                <div className={`border-t pt-4 ${isLight ? 'border-gray-100' : 'border-white/5'}`}>
+                  <button
+                    type="button"
+                    onClick={() => setIsDeleteModalOpen(true)}
+                    className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                      isLight
+                        ? 'border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300'
+                        : 'border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50'
+                    }`}
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                    <span>Delete Account</span>
+                  </button>
+                </div>
               </div>
 
             </div>
@@ -510,6 +535,13 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        {/* DELETE ACCOUNT CONFIRMATION MODAL */}
+        <DeleteAccountModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onSuccess={handleDeleteAccountSuccess}
+        />
 
       </div>
     </AnimatedPage>

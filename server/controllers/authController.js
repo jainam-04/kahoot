@@ -1,4 +1,7 @@
 const User = require('../models/User');
+const Quiz = require('../models/Quiz');
+const GameSession = require('../models/GameSession');
+const Result = require('../models/Result');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
@@ -363,11 +366,60 @@ const resetPassword = async (req, res) => {
     }
 };
 
+const deleteAccount = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { password } = req.body;
+
+        if (!password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password is required to confirm account deletion'
+            });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: 'Incorrect password. Account deletion aborted.'
+            });
+        }
+
+        // Cascade delete user-owned data
+        await Promise.all([
+            Quiz.deleteMany({ createdBy: userId }),
+            GameSession.deleteMany({ hostId: userId }),
+            Result.deleteMany({ hostId: userId }),
+            User.findByIdAndDelete(userId)
+        ]);
+
+        res.status(200).json({
+            success: true,
+            message: 'Account and all associated quizzes and game sessions deleted successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to delete account'
+        });
+    }
+};
+
 module.exports = {
     register,
     login,
     getProfile,
     forgotPassword,
     verifySecurityAnswer,
-    resetPassword
+    resetPassword,
+    deleteAccount
 };
