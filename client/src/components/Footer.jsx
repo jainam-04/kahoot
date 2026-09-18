@@ -50,13 +50,13 @@ export default function Footer() {
               </h5>
               
               <a
-                href="https://quizzy.com"
+                href="https://quizy.gradezy.in"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-secondary hover:underline transition-colors"
               >
                 <Globe className="h-3.5 w-3.5 shrink-0" />
-                <span>quizzy.com</span>
+                <span>quizy.gradezy.in</span>
                 <ExternalLink className="h-3 w-3 shrink-0" />
               </a>
             </div>
