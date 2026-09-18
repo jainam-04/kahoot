@@ -31,16 +31,25 @@ const connectDB = async () => {
     // Fallback: spin up an in-memory MongoDB instance
     try {
         const { MongoMemoryServer } = require('mongodb-memory-server');
-        memoryServer = await MongoMemoryServer.create();
+        console.log('⏳ Starting in-memory MongoDB (downloading binary if first run, please wait)...');
+        memoryServer = await MongoMemoryServer.create({
+            instance: {
+                dbName: 'quizdb'
+            },
+            spawn: {
+                timeout: 300000 // 5 minutes to allow binary download on initial launch
+            }
+        });
         const uri = memoryServer.getUri();
         await mongoose.connect(uri);
         console.log('✅ MongoDB Connected: In-Memory (local dev fallback)');
         console.log('⚠️  NOTE: Data will NOT persist between restarts in this mode.');
-        console.log('   Fix your Atlas connection or run a local MongoDB for persistence.');
+        console.log('   To persist data, update server/.env with your real MongoDB Atlas URI:');
+        console.log('   MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>?retryWrites=true&w=majority');
     } catch (fallbackError) {
-        console.error(`❌ In-memory MongoDB also failed: ${fallbackError.message}`);
-        console.error('   Please install mongodb-memory-server: npm install --save-dev mongodb-memory-server');
-        process.exit(1);
+        console.error(`❌ In-memory MongoDB initialization error: ${fallbackError.message}`);
+        console.error('👉 Please configure your real MongoDB Atlas URI in server/.env:');
+        console.error('   MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>?retryWrites=true&w=majority');
     }
 };
 
