@@ -258,7 +258,9 @@ export default function ForgotPassword() {
           initial={{ opacity: 0, y: 30, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: 'spring', stiffness: 80, damping: 15 }}
-          className="w-full max-w-md glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 relative overflow-hidden"
+          className={`w-full max-w-md rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 relative overflow-hidden border ${
+            isLight ? 'bg-white border-gray-200/80 shadow-xl' : 'glass-panel border-white/15'
+          }`}
         >
           <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
@@ -303,19 +305,25 @@ export default function ForgotPassword() {
               {/* Progress Indicator */}
               <div className="flex items-center justify-between mb-8 px-4">
                 <div className={`flex items-center justify-center h-8 w-8 rounded-full text-xs font-bold transition-all ${
-                  step >= 1 ? 'bg-primary text-white shadow-[0_0_12px_rgba(109,40,217,0.5)]' : 'bg-white/10 text-gray-400'
+                  step >= 1 
+                    ? 'bg-primary text-white shadow-[0_0_12px_rgba(109,40,217,0.5)]' 
+                    : isLight ? 'bg-gray-100 text-gray-400' : 'bg-white/10 text-gray-400'
                 }`}>
                   1
                 </div>
-                <div className={`flex-1 h-0.5 mx-2 transition-all ${step >= 2 ? 'bg-primary' : 'bg-white/10'}`}></div>
+                <div className={`flex-1 h-0.5 mx-2 transition-all ${step >= 2 ? 'bg-primary' : isLight ? 'bg-gray-200' : 'bg-white/10'}`}></div>
                 <div className={`flex items-center justify-center h-8 w-8 rounded-full text-xs font-bold transition-all ${
-                  step >= 2 ? 'bg-primary text-white shadow-[0_0_12px_rgba(109,40,217,0.5)]' : 'bg-white/10 text-gray-400'
+                  step >= 2 
+                    ? 'bg-primary text-white shadow-[0_0_12px_rgba(109,40,217,0.5)]' 
+                    : isLight ? 'bg-gray-100 text-gray-400' : 'bg-white/10 text-gray-400'
                 }`}>
                   2
                 </div>
-                <div className={`flex-1 h-0.5 mx-2 transition-all ${step >= 3 ? 'bg-secondary' : 'bg-white/10'}`}></div>
+                <div className={`flex-1 h-0.5 mx-2 transition-all ${step >= 3 ? 'bg-secondary' : isLight ? 'bg-gray-200' : 'bg-white/10'}`}></div>
                 <div className={`flex items-center justify-center h-8 w-8 rounded-full text-xs font-bold transition-all ${
-                  step >= 3 ? 'bg-secondary text-white shadow-[0_0_12px_rgba(236,72,153,0.5)]' : 'bg-white/10 text-gray-400'
+                  step >= 3 
+                    ? 'bg-secondary text-white shadow-[0_0_12px_rgba(236,72,153,0.5)]' 
+                    : isLight ? 'bg-gray-100 text-gray-400' : 'bg-white/10 text-gray-400'
                 }`}>
                   3
                 </div>

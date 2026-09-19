@@ -59,45 +59,45 @@ export default function WhyChooseSection() {
           transition={{ duration: 0.6 }}
           className="lg:col-span-5 relative"
         >
-          <div className="glass-panel rounded-3xl p-8 border border-white/15 relative overflow-hidden bg-gradient-to-br from-primary/10 via-black/80 to-secondary/10 shadow-2xl">
+          <div className="glass-panel rounded-3xl p-8 border border-slate-200 dark:border-white/15 relative overflow-hidden bg-gradient-to-br from-purple-50/90 via-white to-sky-50/80 dark:from-primary/10 dark:via-black/80 dark:to-secondary/10 shadow-xl">
             <div className="absolute -top-10 -left-10 h-40 w-40 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
             <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-secondary/20 blur-3xl pointer-events-none" />
 
             <span className="text-xs font-black uppercase text-secondary tracking-widest block mb-2">
               Why Professionals Choose Us
             </span>
-            <h3 className="font-outfit text-2xl sm:text-3xl font-black text-white leading-tight mb-6">
+            <h3 className="font-outfit text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight mb-6">
               Built for Speed, Loved by Champion Hosts
             </h3>
 
             <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-black">
+              <div className="p-4 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center gap-3 shadow-sm">
+                <div className="h-10 w-10 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-black">
                   99%
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white">Student Engagement Rate</h4>
-                  <p className="text-[11px] text-gray-400">Interactive live battles prevent distraction</p>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Student Engagement Rate</h4>
+                  <p className="text-[11px] text-slate-600 dark:text-gray-400">Interactive live battles prevent distraction</p>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-secondary/20 border border-secondary/30 flex items-center justify-center text-secondary font-black">
+              <div className="p-4 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center gap-3 shadow-sm">
+                <div className="h-10 w-10 rounded-xl bg-secondary/15 border border-secondary/30 flex items-center justify-center text-secondary font-black">
                   &lt;1m
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white">Average Setup Time</h4>
-                  <p className="text-[11px] text-gray-400">Launch a live battle session effortlessly</p>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Average Setup Time</h4>
+                  <p className="text-[11px] text-slate-600 dark:text-gray-400">Launch a live battle session effortlessly</p>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-black">
+              <div className="p-4 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center gap-3 shadow-sm">
+                <div className="h-10 w-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black">
                   100%
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white">Web Browser Compatibility</h4>
-                  <p className="text-[11px] text-gray-400">No app installs needed for players</p>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Web Browser Compatibility</h4>
+                  <p className="text-[11px] text-slate-600 dark:text-gray-400">No app installs needed for players</p>
                 </div>
               </div>
             </div>
@@ -117,10 +117,10 @@ export default function WhyChooseSection() {
             <span className="rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-xs font-bold text-primary uppercase tracking-wider">
               Superior Architecture
             </span>
-            <h2 className="font-outfit text-3xl sm:text-4xl font-black text-white mt-3 tracking-tight">
+            <h2 className="font-outfit text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mt-3 tracking-tight">
               Why <span className="text-gradient-primary">QuizForge</span> Beats Traditional Quiz Apps
             </h2>
-            <p className="mt-3 text-sm text-gray-400 leading-relaxed">
+            <p className="mt-3 text-sm text-slate-600 dark:text-gray-400 leading-relaxed">
               Designed from the ground up for seamless real-time performance, modern aesthetic appeal, and zero setup friction.
             </p>
           </div>
@@ -129,16 +129,16 @@ export default function WhyChooseSection() {
             {benefits.map((benefit, idx) => (
               <div
                 key={idx}
-                className="glass-panel glass-panel-hover rounded-2xl p-4 border border-white/10 flex items-start gap-3.5"
+                className="glass-panel glass-panel-hover rounded-2xl p-4 border border-slate-200 dark:border-white/10 flex items-start gap-3.5 bg-white/90 dark:bg-transparent shadow-sm"
               >
-                <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center shrink-0">
                   {benefit.icon}
                 </div>
                 <div>
-                  <h4 className="font-outfit text-sm font-extrabold text-white">
+                  <h4 className="font-outfit text-sm font-extrabold text-slate-900 dark:text-white">
                     {benefit.title}
                   </h4>
-                  <p className="text-xs text-gray-400 leading-relaxed mt-1">
+                  <p className="text-xs text-slate-600 dark:text-gray-400 leading-relaxed mt-1">
                     {benefit.desc}
                   </p>
                 </div>

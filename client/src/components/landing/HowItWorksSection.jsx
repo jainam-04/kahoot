@@ -55,10 +55,10 @@ export default function HowItWorksSection() {
         <span className="rounded-full bg-secondary/10 border border-secondary/20 px-4 py-1.5 text-xs font-bold text-secondary uppercase tracking-wider">
           4-Step Process
         </span>
-        <h2 className="font-outfit text-3xl sm:text-5xl font-black text-white mt-4 tracking-tight">
+        <h2 className="font-outfit text-3xl sm:text-5xl font-black text-slate-900 dark:text-white mt-4 tracking-tight">
           How <span className="text-gradient-primary">Quiz Hub</span> Works
         </h2>
-        <p className="mt-3 text-xs sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
+        <p className="mt-3 text-xs sm:text-base text-slate-600 dark:text-gray-400 max-w-xl mx-auto leading-relaxed">
           From lobby countdown to live podium glory — join multiplayer quiz battles in seconds.
         </p>
       </motion.div>
@@ -72,15 +72,15 @@ export default function HowItWorksSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: idx * 0.1 }}
-            className="glass-panel glass-panel-hover rounded-2xl p-6 border border-white/10 flex flex-col justify-between relative group text-left h-full"
+            className="glass-panel glass-panel-hover rounded-2xl p-6 border border-slate-200 dark:border-white/10 flex flex-col justify-between relative group text-left h-full bg-white/90 dark:bg-transparent shadow-sm"
           >
             <div>
               {/* Step Badge & Number */}
               <div className="flex items-center justify-between mb-5">
-                <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/15 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="h-12 w-12 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/15 flex items-center justify-center group-hover:scale-110 transition-transform">
                   {item.icon}
                 </div>
-                <span className="font-outfit text-2xl font-black text-white/30 group-hover:text-primary transition-colors">
+                <span className="font-outfit text-2xl font-black text-slate-300 dark:text-white/30 group-hover:text-primary transition-colors">
                   {item.step}
                 </span>
               </div>
@@ -89,18 +89,18 @@ export default function HowItWorksSection() {
                 {item.badge}
               </span>
 
-              <h3 className="font-outfit text-lg font-extrabold text-white mb-2 leading-snug">
+              <h3 className="font-outfit text-lg font-extrabold text-slate-900 dark:text-white mb-2 leading-snug">
                 {item.title}
               </h3>
 
-              <p className="text-xs text-gray-400 leading-relaxed">
+              <p className="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
                 {item.desc}
               </p>
             </div>
 
             {/* Subtle arrow indicator for steps 1-3 on desktop */}
             {idx < steps.length - 1 && (
-              <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-20 text-white/20 group-hover:text-primary transition-colors">
+              <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-20 text-slate-300 dark:text-white/20 group-hover:text-primary transition-colors">
                 <ArrowRight className="h-5 w-5" />
               </div>
             )}

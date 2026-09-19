@@ -79,13 +79,13 @@ export default function TestimonialsSection() {
         transition={{ duration: 0.5 }}
         className="text-center mb-12"
       >
-        <span className="rounded-full bg-yellow-500/10 border border-yellow-500/20 px-4 py-1.5 text-xs font-bold text-yellow-400 uppercase tracking-wider">
+        <span className="rounded-full bg-yellow-500/10 border border-yellow-500/20 px-4 py-1.5 text-xs font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-wider">
           Community Feedback
         </span>
-        <h2 className="font-outfit text-3xl sm:text-5xl font-black text-white mt-3 tracking-tight">
+        <h2 className="font-outfit text-3xl sm:text-5xl font-black text-slate-900 dark:text-white mt-3 tracking-tight">
           Loved by <span className="text-gradient-primary">Teachers & Champion Players</span>
         </h2>
-        <p className="mt-3 text-sm sm:text-base text-gray-400 max-w-xl mx-auto">
+        <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-gray-400 max-w-xl mx-auto">
           See why thousands of educators, corporate squads, and trivia lovers choose QuizForge.
         </p>
       </motion.div>
@@ -99,11 +99,11 @@ export default function TestimonialsSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: idx * 0.08 }}
-            className={`glass-panel glass-panel-hover rounded-3xl p-6 flex flex-col justify-between border relative group text-left ${
-              idx === currentIndex ? 'border-primary/50 shadow-xl shadow-primary/10' : 'border-white/10'
+            className={`glass-panel glass-panel-hover rounded-3xl p-6 flex flex-col justify-between border relative group text-left bg-white/90 dark:bg-transparent shadow-sm ${
+              idx === currentIndex ? 'border-primary/50 shadow-xl shadow-primary/10' : 'border-slate-200 dark:border-white/10'
             }`}
           >
-            <Quote className="absolute top-6 right-6 h-8 w-8 text-white/5 group-hover:text-primary/20 transition-colors" />
+            <Quote className="absolute top-6 right-6 h-8 w-8 text-slate-300 dark:text-white/5 group-hover:text-primary/20 transition-colors" />
 
             <div>
               {/* Rating Stars */}
@@ -114,21 +114,21 @@ export default function TestimonialsSection() {
               </div>
 
               {/* Quote text */}
-              <p className="text-xs sm:text-sm text-gray-300 leading-relaxed italic mb-6">
+              <p className="text-xs sm:text-sm text-slate-700 dark:text-gray-300 leading-relaxed italic mb-6">
                 "{review.text}"
               </p>
             </div>
 
             {/* Author Profile */}
-            <div className="flex items-center gap-3 border-t border-white/10 pt-4">
+            <div className="flex items-center gap-3 border-t border-slate-200 dark:border-white/10 pt-4">
               <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-outfit font-black text-base text-white shadow-md">
                 {review.avatar}
               </div>
               <div>
-                <h4 className="font-outfit text-sm font-extrabold text-white">
+                <h4 className="font-outfit text-sm font-extrabold text-slate-900 dark:text-white">
                   {review.name}
                 </h4>
-                <p className="text-[11px] text-gray-400 font-semibold">
+                <p className="text-[11px] text-slate-500 dark:text-gray-400 font-semibold">
                   {review.role}
                 </p>
               </div>

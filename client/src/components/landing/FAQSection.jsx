@@ -53,10 +53,10 @@ export default function FAQSection() {
         <span className="rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-xs font-bold text-primary uppercase tracking-wider">
           Got Questions?
         </span>
-        <h2 className="font-outfit text-3xl sm:text-5xl font-black text-white mt-3 tracking-tight">
+        <h2 className="font-outfit text-3xl sm:text-5xl font-black text-slate-900 dark:text-white mt-3 tracking-tight">
           Frequently Asked <span className="text-gradient-primary">Questions</span>
         </h2>
-        <p className="mt-3 text-sm sm:text-base text-gray-400">
+        <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-gray-400">
           Everything you need to know about hosting and playing on QuizForge.
         </p>
       </motion.div>
@@ -73,18 +73,18 @@ export default function FAQSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.05 }}
-              className="glass-panel rounded-2xl border border-white/10 overflow-hidden text-left"
+              className="glass-panel rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden text-left bg-white/90 dark:bg-transparent shadow-sm"
             >
               <button
                 onClick={() => toggleAccordion(idx)}
-                className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left font-outfit text-base sm:text-lg font-extrabold text-white hover:text-primary transition-colors cursor-pointer"
+                className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left font-outfit text-base sm:text-lg font-extrabold text-slate-900 dark:text-white hover:text-primary transition-colors cursor-pointer"
               >
                 <span className="flex items-center gap-3">
                   <HelpCircle className="h-5 w-5 text-secondary shrink-0" />
                   <span>{faq.q}</span>
                 </span>
                 <ChevronDown
-                  className={`h-5 w-5 text-gray-400 shrink-0 transition-transform duration-300 ${
+                  className={`h-5 w-5 text-slate-400 dark:text-gray-400 shrink-0 transition-transform duration-300 ${
                     isOpen ? 'rotate-180 text-primary' : ''
                   }`}
                 />
@@ -99,7 +99,7 @@ export default function FAQSection() {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="p-5 sm:p-6 pt-0 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5">
+                    <div className="p-5 sm:p-6 pt-0 text-xs sm:text-sm text-slate-600 dark:text-gray-300 leading-relaxed border-t border-slate-200 dark:border-white/5">
                       {faq.a}
                     </div>
                   </motion.div>

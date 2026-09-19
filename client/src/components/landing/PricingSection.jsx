@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Sparkles, Zap, Shield, ArrowRight, X } from 'lucide-react';
@@ -28,19 +28,19 @@ export default function PricingSection() {
         <span className="rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-xs font-bold text-primary uppercase tracking-wider">
           Flexible Pricing
         </span>
-        <h2 className="font-outfit text-3xl sm:text-5xl font-black text-white mt-4 tracking-tight">
+        <h2 className="font-outfit text-3xl sm:text-5xl font-black text-slate-900 dark:text-white mt-4 tracking-tight">
           Simple, Transparent <span className="text-gradient-primary">Plans for Everyone</span>
         </h2>
-        <p className="mt-4 text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
+        <p className="mt-4 text-sm sm:text-base text-slate-600 dark:text-gray-400 max-w-xl mx-auto leading-relaxed">
           Start for free with basic features or upgrade to unlock unlimited live players, advanced analytics, and custom branding.
         </p>
 
         {/* Monthly / Yearly Toggle Switch */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 p-2 sm:p-1.5 rounded-2xl sm:rounded-full glass-panel border border-white/10 max-w-xs sm:max-w-none mx-auto">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 p-2 sm:p-1.5 rounded-2xl sm:rounded-full glass-panel border border-slate-200 dark:border-white/10 bg-slate-100/90 dark:bg-white/5 max-w-xs sm:max-w-none mx-auto shadow-sm">
           <button
             onClick={() => setIsYearly(false)}
             className={`w-full sm:w-auto px-5 py-2.5 rounded-xl sm:rounded-full text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
-              !isYearly ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'
+              !isYearly ? 'bg-primary text-white shadow-md' : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             Monthly Billing
@@ -48,7 +48,7 @@ export default function PricingSection() {
           <button
             onClick={() => setIsYearly(true)}
             className={`w-full sm:w-auto px-5 py-2.5 rounded-xl sm:rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
-              isYearly ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'
+              isYearly ? 'bg-primary text-white shadow-md' : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <span>Yearly Billing</span>
@@ -58,7 +58,7 @@ export default function PricingSection() {
           </button>
           <button
             onClick={() => setShowPlanDetails(true)}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl sm:rounded-full text-xs font-extrabold text-gray-300 hover:text-white border border-white/10 hover:border-white/20 transition-all cursor-pointer whitespace-nowrap"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl sm:rounded-full text-xs font-extrabold text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white border border-slate-300 dark:border-white/10 hover:border-slate-400 dark:hover:border-white/20 transition-all cursor-pointer whitespace-nowrap"
           >
             Plan Details
           </button>
@@ -74,40 +74,40 @@ export default function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
-          className="glass-panel glass-panel-hover rounded-3xl p-6 sm:p-8 border border-white/10 flex flex-col justify-between relative group text-left"
+          className="glass-panel glass-panel-hover rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 flex flex-col justify-between relative group text-left bg-white/90 dark:bg-transparent shadow-lg dark:shadow-none"
         >
           <div>
             <div className="flex justify-between items-center gap-2 mb-4">
-              <h3 className="font-outfit text-xl font-extrabold text-white whitespace-nowrap">FREE</h3>
-              <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-white/5 text-gray-300 border border-white/10 shrink-0">
+              <h3 className="font-outfit text-xl font-extrabold text-slate-900 dark:text-white whitespace-nowrap">FREE</h3>
+              <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-white/10 shrink-0">
                 Starter
               </span>
             </div>
 
             <div className="mb-6">
-              <span className="font-outfit text-4xl sm:text-5xl font-black text-white">₹0</span>
-              <span className="text-xs text-gray-400 font-semibold ml-2">/ forever free</span>
+              <span className="font-outfit text-4xl sm:text-5xl font-black text-slate-900 dark:text-white">₹0</span>
+              <span className="text-xs text-slate-500 dark:text-gray-400 font-semibold ml-2">/ forever free</span>
             </div>
 
-            <p className="text-xs text-gray-400 mb-6 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-gray-400 mb-6 leading-relaxed">
               Perfect for students and casual trivia hosts getting started with live quiz battles.
             </p>
 
-            <div className="space-y-3 border-t border-white/10 pt-6">
-              <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
-                <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+            <div className="space-y-3 border-t border-slate-200 dark:border-white/10 pt-6">
+              <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-gray-200">
+                <Check className="h-4 w-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
                 <span>Create up to 5 quizzes</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
-                <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+              <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-gray-200">
+                <Check className="h-4 w-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
                 <span>Up to 20 live participants</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
-                <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+              <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-gray-200">
+                <Check className="h-4 w-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
                 <span>Basic real-time leaderboard</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
-                <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+              <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-gray-200">
+                <Check className="h-4 w-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
                 <span>Basic score analytics</span>
               </div>
             </div>
@@ -141,7 +141,7 @@ export default function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="glass-panel glass-panel-hover rounded-3xl p-6 sm:p-8 border-2 border-primary/50 flex flex-col justify-between relative group text-left bg-gradient-to-b from-primary/20 via-black/80 to-black shadow-2xl shadow-primary/20 lg:scale-105 z-10"
+          className="glass-panel glass-panel-hover rounded-3xl p-6 sm:p-8 border-2 border-primary/60 flex flex-col justify-between relative group text-left bg-gradient-to-b from-purple-50/90 via-white to-sky-50/80 dark:from-primary/20 dark:via-black/80 dark:to-black shadow-2xl shadow-primary/20 lg:scale-105 z-10"
         >
           {/* Ribbon Badge */}
           <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white text-[10px] sm:text-[11px] font-black uppercase px-3.5 py-1 rounded-full shadow-lg flex items-center gap-1.5 whitespace-nowrap z-20">
@@ -151,54 +151,54 @@ export default function PricingSection() {
 
           <div>
             <div className="flex justify-between items-center gap-2 mb-4 mt-2">
-              <h3 className="font-outfit text-xl font-extrabold text-white whitespace-nowrap">PRO</h3>
+              <h3 className="font-outfit text-xl font-extrabold text-slate-900 dark:text-white whitespace-nowrap">PRO</h3>
               <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-primary/20 text-primary border border-primary/30 shrink-0">
                 Best Value
               </span>
             </div>
 
             <div className="mb-6">
-              <span className="font-outfit text-4xl sm:text-5xl font-black text-white">
+              <span className="font-outfit text-4xl sm:text-5xl font-black text-slate-900 dark:text-white">
                 {isYearly ? '₹239' : '₹299'}
               </span>
-              <span className="text-xs text-gray-300 font-semibold ml-2">/ month</span>
-              {isYearly && <span className="block text-[11px] text-emerald-400 font-bold mt-1">Billed annually (Save ₹720/yr)</span>}
+              <span className="text-xs text-slate-600 dark:text-gray-300 font-semibold ml-2">/ month</span>
+              {isYearly && <span className="block text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-1">Billed annually (Save ₹720/yr)</span>}
             </div>
 
-            <p className="text-xs text-gray-300 mb-6 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-gray-300 mb-6 leading-relaxed">
               Designed for teachers, schools, corporate trainers, and high-frequency quizmasters.
             </p>
 
-            <div className="space-y-3 border-t border-white/10 pt-6">
-              <div className="flex items-center gap-3 text-xs font-bold text-white">
+            <div className="space-y-3 border-t border-slate-200 dark:border-white/10 pt-6">
+              <div className="flex items-center gap-3 text-xs font-bold text-slate-800 dark:text-white">
                 <Check className="h-4 w-4 text-primary shrink-0" />
                 <span>Unlimited quizzes creation</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-bold text-white">
+              <div className="flex items-center gap-3 text-xs font-bold text-slate-800 dark:text-white">
                 <Check className="h-4 w-4 text-primary shrink-0" />
                 <span>Unlimited live participants</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-bold text-white">
+              <div className="flex items-center gap-3 text-xs font-bold text-slate-800 dark:text-white">
                 <Check className="h-4 w-4 text-primary shrink-0" />
                 <span>Advanced performance analytics</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-bold text-white">
+              <div className="flex items-center gap-3 text-xs font-bold text-slate-800 dark:text-white">
                 <Check className="h-4 w-4 text-primary shrink-0" />
                 <span>Question Bank storage</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-bold text-white">
+              <div className="flex items-center gap-3 text-xs font-bold text-slate-800 dark:text-white">
                 <Check className="h-4 w-4 text-primary shrink-0" />
                 <span>Dark & Light mode themes</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-bold text-white">
+              <div className="flex items-center gap-3 text-xs font-bold text-slate-800 dark:text-white">
                 <Check className="h-4 w-4 text-primary shrink-0" />
                 <span>Priority email & chat support</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-bold text-white">
+              <div className="flex items-center gap-3 text-xs font-bold text-slate-800 dark:text-white">
                 <Check className="h-4 w-4 text-primary shrink-0" />
                 <span>Custom logo & branding</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-bold text-white">
+              <div className="flex items-center gap-3 text-xs font-bold text-slate-800 dark:text-white">
                 <Check className="h-4 w-4 text-primary shrink-0" />
                 <span>Export detailed PDF & CSV reports</span>
               </div>
@@ -222,51 +222,51 @@ export default function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4, delay: 0.2 }}
-          className="glass-panel glass-panel-hover rounded-3xl p-6 sm:p-8 border border-white/10 flex flex-col justify-between relative group text-left"
+          className="glass-panel glass-panel-hover rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 flex flex-col justify-between relative group text-left bg-white/90 dark:bg-transparent shadow-lg dark:shadow-none"
         >
           <div>
             <div className="flex justify-between items-center gap-2 mb-4">
-              <h3 className="font-outfit text-xl font-extrabold text-white whitespace-nowrap">ENTERPRISE</h3>
+              <h3 className="font-outfit text-xl font-extrabold text-slate-900 dark:text-white whitespace-nowrap">ENTERPRISE</h3>
               <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-secondary/10 text-secondary border border-secondary/20 shrink-0">
                 Custom
               </span>
             </div>
 
             <div className="mb-6">
-              <span className="font-outfit text-3xl sm:text-4xl font-black text-white">Custom</span>
-              <span className="text-xs text-gray-400 font-semibold ml-2">/ tailored plan</span>
+              <span className="font-outfit text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">Custom</span>
+              <span className="text-xs text-slate-500 dark:text-gray-400 font-semibold ml-2">/ tailored plan</span>
             </div>
 
-            <p className="text-xs text-gray-400 mb-6 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-gray-400 mb-6 leading-relaxed">
               Custom solutions tailored for universities, large educational institutions, and global enterprises.
             </p>
 
-            <div className="space-y-3 border-t border-white/10 pt-6">
-              <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
+            <div className="space-y-3 border-t border-slate-200 dark:border-white/10 pt-6">
+              <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-gray-200">
                 <Check className="h-4 w-4 text-secondary shrink-0" />
                 <span>Everything in Pro Plan</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
+              <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-gray-200">
                 <Check className="h-4 w-4 text-secondary shrink-0" />
                 <span>Dedicated 24/7 Support manager</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
+              <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-gray-200">
                 <Check className="h-4 w-4 text-secondary shrink-0" />
                 <span>Institution Admin Dashboard</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
+              <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-gray-200">
                 <Check className="h-4 w-4 text-secondary shrink-0" />
                 <span>Multi-teacher account management</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
+              <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-gray-200">
                 <Check className="h-4 w-4 text-secondary shrink-0" />
                 <span>Unlimited team workspace</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
+              <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-gray-200">
                 <Check className="h-4 w-4 text-secondary shrink-0" />
                 <span>REST API Access & Webhooks</span>
               </div>
-              <div className="flex items-center gap-3 text-xs font-semibold text-gray-200">
+              <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-gray-200">
                 <Check className="h-4 w-4 text-secondary shrink-0" />
                 <span>Custom LMS Integrations</span>
               </div>

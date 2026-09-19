@@ -64,12 +64,6 @@ export default function Footer() {
             <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Interactive multiplayer arena for live classroom trivia, Kahoot-style speed scoring, instant PIN join, and automated participant reports.
             </p>
-
-            {/* Branch Notice Badge */}
-            <div className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 border border-primary/25 px-2.5 py-1 text-xs font-semibold text-primary">
-              <Sparkles className="h-3.5 w-3.5 text-yellow-400 animate-pulse shrink-0" />
-              <span>We've Opened Our Second Branch</span>
-            </div>
           </div>
 
           {/* Column 2: Platform & Explore */}
@@ -85,7 +79,7 @@ export default function Footer() {
                   className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
                 >
                   <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>About Kahoot & Quizzy</span>
+                  <span>About Quizy</span>
                 </Link>
               </li>
               <li>
@@ -214,22 +208,22 @@ export default function Footer() {
             <ul className="space-y-2 text-xs px-1">
               <li>
                 <a
-                  href="mailto:support@quizzy.com"
+                  href="mailto:info@fouriseindia.com"
                   className="inline-flex items-center gap-2.5 hover:text-primary transition-colors font-semibold"
                   style={{ color: 'var(--text-muted)' }}
                 >
                   <Mail className="h-4 w-4 text-primary shrink-0" />
-                  <span>support@quizzy.com</span>
+                  <span>info@fouriseindia.com</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="tel:+13866883295"
+                  href="tel:+919527605805"
                   className="inline-flex items-center gap-2.5 hover:text-primary transition-colors font-semibold"
                   style={{ color: 'var(--text-muted)' }}
                 >
                   <Phone className="h-4 w-4 text-primary shrink-0" />
-                  <span>+1 386-688-3295</span>
+                  <span>+91 95276 05805</span>
                 </a>
               </li>
             </ul>
@@ -242,7 +236,7 @@ export default function Footer() {
           <p>© {new Date().getFullYear()} Quizy Inc. · Quizy. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs font-medium">
             <Link to="/about" className="hover:text-primary transition-colors">
-              About Kahoot
+              About Quizy
             </Link>
             <Link to="/faq" className="hover:text-primary transition-colors">
               FAQ

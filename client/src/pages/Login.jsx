@@ -133,26 +133,34 @@ export default function Login() {
               </div>
 
               {/* Desktop Visual Preview Card */}
-              <div className="hidden lg:block glass-panel rounded-3xl p-6 border border-white/15 relative overflow-hidden bg-gradient-to-b from-slate-900/80 to-black/90 shadow-2xl space-y-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className={`hidden lg:block rounded-3xl p-6 border relative overflow-hidden space-y-4 ${
+                isLight 
+                  ? 'bg-white border-purple-100/80 shadow-xl' 
+                  : 'glass-panel border-white/15 bg-gradient-to-b from-slate-900/80 to-black/90 shadow-2xl'
+              }`}>
+                <div className={`flex items-center justify-between border-b pb-3 ${isLight ? 'border-gray-100' : 'border-white/10'}`}>
                   <div className="flex items-center gap-2">
                     <span className="h-3 w-3 rounded-full bg-red-500 inline-block" />
                     <span className="h-3 w-3 rounded-full bg-yellow-500 inline-block" />
                     <span className="h-3 w-3 rounded-full bg-green-500 inline-block" />
-                    <span className="text-xs font-mono font-bold text-gray-400 ml-2">LIVE ARENA PREVIEW</span>
+                    <span className={`text-xs font-mono font-bold ml-2 ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+                      LIVE ARENA PREVIEW
+                    </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-black">
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-500 dark:text-amber-300 text-xs font-black">
                     <Trophy className="h-3.5 w-3.5" />
                     <span>{mockScore.toLocaleString()} pts</span>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                <div className={`p-4 rounded-2xl border space-y-2 ${
+                  isLight ? 'bg-purple-50/60 border-purple-100' : 'bg-white/5 border-white/10'
+                }`}>
                   <span className="text-[10px] font-black uppercase text-secondary tracking-widest bg-secondary/10 px-2 py-0.5 rounded">
                     Live Question
                   </span>
-                  <p className="font-outfit text-sm font-extrabold text-white">
+                  <p className={`font-outfit text-sm font-extrabold ${isLight ? 'text-gray-900' : 'text-white'}`}>
                     What primary colors mix together to make Green?
                   </p>
                 </div>
@@ -161,7 +169,11 @@ export default function Login() {
                   <div
                     onClick={() => setActiveTabOption(0)}
                     className={`p-3 rounded-xl border text-xs font-extrabold flex items-center justify-between cursor-pointer transition-all ${
-                      activeTabOption === 0 ? 'bg-red-600 border-red-400 text-white' : 'bg-red-500/20 border-red-500/30 text-gray-300'
+                      activeTabOption === 0 
+                        ? 'bg-red-600 border-red-400 text-white' 
+                        : isLight 
+                          ? 'bg-red-50 border-red-200 text-red-800' 
+                          : 'bg-red-500/20 border-red-500/30 text-gray-300'
                     }`}
                   >
                     <span>▲ Red & Blue</span>
@@ -170,7 +182,11 @@ export default function Login() {
                   <div
                     onClick={() => setActiveTabOption(1)}
                     className={`p-3 rounded-xl border text-xs font-extrabold flex items-center justify-between cursor-pointer transition-all ${
-                      activeTabOption === 1 ? 'bg-emerald-600 border-emerald-300 text-white shadow-lg' : 'bg-blue-500/20 border-blue-500/30 text-gray-300'
+                      activeTabOption === 1 
+                        ? 'bg-emerald-600 border-emerald-300 text-white shadow-lg' 
+                        : isLight 
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+                          : 'bg-blue-500/20 border-blue-500/30 text-gray-300'
                     }`}
                   >
                     <span>◆ Yellow & Blue</span>
@@ -178,26 +194,30 @@ export default function Login() {
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs font-bold text-gray-400">
+                <div className={`pt-2 border-t flex items-center justify-between text-xs font-bold ${
+                  isLight ? 'border-gray-100 text-gray-600' : 'border-white/10 text-gray-400'
+                }`}>
                   <div className="flex items-center gap-2">
-                    <Flame className="h-4 w-4 text-orange-400 animate-pulse" />
+                    <Flame className="h-4 w-4 text-orange-500 animate-pulse" />
                     <span>1,420 Players Online Now</span>
                   </div>
-                  <span className="text-emerald-400 font-extrabold">98.4% Uptime</span>
+                  <span className="text-emerald-500 dark:text-emerald-400 font-extrabold">98.4% Uptime</span>
                 </div>
               </div>
 
               {/* Try Demo Compact Callout Card */}
-              <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl glass-panel border border-primary/30 bg-primary/10 flex items-center justify-between gap-3">
+              <div className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border flex items-center justify-between gap-3 ${
+                isLight ? 'bg-purple-50/70 border-purple-200/80 shadow-sm' : 'glass-panel border-primary/30 bg-primary/10'
+              }`}>
                 <div className="flex items-center gap-2.5 overflow-hidden">
                   <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0">
-                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse text-yellow-400" />
+                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse text-yellow-500" />
                   </div>
                   <div className="overflow-hidden">
-                    <h4 className="font-outfit text-xs sm:text-sm font-extrabold text-white truncate">
+                    <h4 className={`font-outfit text-xs sm:text-sm font-extrabold truncate ${isLight ? 'text-gray-900' : 'text-white'}`}>
                       Want to test Quiz Hub first?
                     </h4>
-                    <p className="text-[10px] sm:text-xs text-gray-400 truncate">
+                    <p className={`text-[10px] sm:text-xs truncate ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                       Try our interactive 30s mini quiz demo!
                     </p>
                   </div>
@@ -224,7 +244,9 @@ export default function Login() {
               transition={{ duration: 0.5 }}
               className="lg:col-span-6 w-full max-w-md mx-auto"
             >
-              <div className="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-9 relative overflow-hidden shadow-2xl border border-white/15">
+              <div className={`rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-9 relative overflow-hidden shadow-2xl border ${
+                isLight ? 'bg-white border-gray-200/80 shadow-lg' : 'glass-panel border-white/15'
+              }`}>
                 
                 {/* Gradient bar top */}
                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent" />
@@ -252,10 +274,10 @@ export default function Login() {
                     <div className="mx-auto h-14 w-14 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-400">
                       <CheckCircle2 className="h-8 w-8 animate-bounce" />
                     </div>
-                    <h3 className="font-outfit text-lg font-black text-white">
+                    <h3 className={`font-outfit text-lg font-black ${isLight ? 'text-gray-900' : 'text-white'}`}>
                       Authentication Successful!
                     </h3>
-                    <p className="text-xs text-emerald-400 font-bold">
+                    <p className="text-xs text-emerald-500 font-bold">
                       Redirecting to dashboard...
                     </p>
                   </motion.div>
@@ -344,7 +366,9 @@ export default function Login() {
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                          className={`absolute inset-y-0 right-0 flex items-center pr-3.5 transition-colors cursor-pointer ${
+                            isLight ? 'text-gray-400 hover:text-gray-700' : 'text-gray-400 hover:text-white'
+                          }`}
                           aria-label="Toggle password visibility"
                         >
                           {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -365,7 +389,9 @@ export default function Login() {
                         id="rememberMe"
                         type="checkbox"
                         {...hostForm.register('rememberMe')}
-                        className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/30 cursor-pointer"
+                        className={`h-3.5 w-3.5 sm:h-4 sm:w-4 rounded text-primary focus:ring-primary/30 cursor-pointer ${
+                          isLight ? 'border-gray-300 bg-white' : 'border-white/10 bg-white/5'
+                        }`}
                       />
                       <label
                         htmlFor="rememberMe"
@@ -401,7 +427,7 @@ export default function Login() {
                 )}
 
                 {/* Footer link */}
-                <div className="mt-5 text-center border-t border-white/10 pt-4">
+                <div className={`mt-5 text-center border-t pt-4 ${isLight ? 'border-gray-100' : 'border-white/10'}`}>
                   <p className={`text-xs font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                     New to Quiz Hub?{' '}
                     <Link to="/register" className="font-extrabold text-secondary hover:underline">

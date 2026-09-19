@@ -6,8 +6,11 @@ import { ArrowLeft, ArrowRight, ShieldCheck, AlertCircle, Lock, Check } from 'lu
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import { resetPassword } from '../services/authService';
+import { useTheme } from '../context/ThemeContext';
 
 export default function ResetPassword() {
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
   const navigate = useNavigate();
   const { token } = useParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +97,9 @@ export default function ResetPassword() {
           initial={{ opacity: 0, y: 30, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: 'spring', stiffness: 80, damping: 15 }}
-          className="w-full max-w-md glass-panel rounded-3xl p-8 sm:p-10 relative overflow-hidden"
+          className={`w-full max-w-md rounded-3xl p-8 sm:p-10 relative overflow-hidden border ${
+            isLight ? 'bg-white border-gray-200/80 shadow-xl' : 'glass-panel border-white/15'
+          }`}
         >
           {/* Subtle light border decoration at the top */}
           <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
@@ -104,7 +109,9 @@ export default function ResetPassword() {
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="absolute inset-0 bg-[#09090b]/95 z-20 flex flex-col items-center justify-center p-6 text-center"
+              className={`absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center ${
+                isLight ? 'bg-white/95' : 'bg-[#09090b]/95'
+              }`}
             >
               <motion.div
                 initial={{ scale: 0 }}
@@ -114,8 +121,10 @@ export default function ResetPassword() {
               >
                 <Check className="h-8 w-8 stroke-[3]" />
               </motion.div>
-              <h3 className="font-outfit text-2xl font-bold text-white mb-2">Password Reset Completed!</h3>
-              <p className="text-sm text-gray-400 max-w-[260px] leading-relaxed">
+              <h3 className={`font-outfit text-2xl font-bold mb-2 ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                Password Reset Completed!
+              </h3>
+              <p className={`text-sm max-w-[260px] leading-relaxed ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                 Your credentials have been updated. Redirecting to the entry portal...
               </p>
             </motion.div>
@@ -126,10 +135,10 @@ export default function ResetPassword() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/15 border border-secondary/20 text-secondary mb-4">
               <ShieldCheck className="h-6 w-6" />
             </div>
-            <h2 className="font-outfit text-3xl font-extrabold tracking-tight text-white">
+            <h2 className={`font-outfit text-3xl font-extrabold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>
               Reset Password
             </h2>
-            <p className="mt-2 text-sm text-gray-400 font-medium">
+            <p className={`mt-2 text-sm font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
               Create a strong new password for your account
             </p>
           </div>
@@ -139,7 +148,7 @@ export default function ResetPassword() {
             
             {/* New Password Field */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+              <label className={`text-xs font-semibold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>
                 New Password
               </label>
               <div className="relative">
@@ -156,10 +165,14 @@ export default function ResetPassword() {
                       message: 'Password must be at least 6 characters',
                     },
                   })}
-                  className={`w-full rounded-xl bg-white/5 border px-4 py-3 pl-11 text-sm text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-1 ${
+                  className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${
+                    isLight 
+                      ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
+                      : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                  } ${
                     errors.password 
                       ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
-                      : 'border-white/10 focus:border-primary focus:ring-primary/30'
+                      : 'focus:border-primary focus:ring-primary/30'
                   }`}
                 />
               </div>
@@ -171,12 +184,12 @@ export default function ResetPassword() {
                     <span className="text-gray-500">Security Index:</span>
                     <span className={strength.text}>{strength.label}</span>
                   </div>
-                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden flex gap-0.5">
+                  <div className={`h-1.5 w-full rounded-full overflow-hidden flex gap-0.5 ${isLight ? 'bg-gray-200' : 'bg-white/5'}`}>
                     {[1, 2, 3, 4].map((i) => (
                       <div 
                         key={i} 
                         className={`h-full flex-1 rounded-full transition-colors duration-300 ${
-                          strength.score >= i ? strength.color : 'bg-white/5'
+                          strength.score >= i ? strength.color : isLight ? 'bg-gray-200' : 'bg-white/5'
                         }`}
                       />
                     ))}
@@ -194,7 +207,7 @@ export default function ResetPassword() {
 
             {/* Confirm Password Field */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+              <label className={`text-xs font-semibold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>
                 Confirm Password
               </label>
               <div className="relative">
@@ -208,10 +221,14 @@ export default function ResetPassword() {
                     required: 'Please confirm your password',
                     validate: (val) => val === watchPassword || 'Passwords do not match',
                   })}
-                  className={`w-full rounded-xl bg-white/5 border px-4 py-3 pl-11 text-sm text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-1 ${
+                  className={`w-full rounded-xl border px-4 py-3 pl-11 text-sm transition-all focus:outline-none focus:ring-1 ${
+                    isLight 
+                      ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
+                      : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                  } ${
                     errors.confirmPassword 
                       ? 'border-accent/40 focus:border-accent focus:ring-accent/30' 
-                      : 'border-white/10 focus:border-primary focus:ring-primary/30'
+                      : 'focus:border-primary focus:ring-primary/30'
                   }`}
                 />
               </div>
@@ -246,10 +263,12 @@ export default function ResetPassword() {
           </form>
 
           {/* Footer link */}
-          <div className="mt-8 text-center border-t border-white/5 pt-6">
+          <div className={`mt-8 text-center border-t pt-6 ${isLight ? 'border-gray-100' : 'border-white/5'}`}>
             <Link
               to="/login"
-              className="inline-flex items-center gap-2 text-xs font-semibold text-gray-400 hover:text-white transition-colors"
+              className={`inline-flex items-center gap-2 text-xs font-semibold transition-colors ${
+                isLight ? 'text-gray-600 hover:text-gray-900' : 'text-gray-400 hover:text-white'
+              }`}
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Back to Sign In</span>

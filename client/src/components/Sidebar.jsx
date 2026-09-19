@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, BookOpen, PlusCircle, LogOut, User, 
-  Sun, Moon, Menu, X, Sparkles 
+  Sun, Moon, Menu, X, Sparkles, Trash2 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Logo from './Logo';
+import DeleteAccountModal from './DeleteAccountModal';
 import { useTheme } from '../context/ThemeContext';
 
 export default function Sidebar() {
@@ -14,6 +15,7 @@ export default function Sidebar() {
   const { themeMode, toggleThemeMode } = useTheme();
   const isLight = themeMode === 'light';
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const user = JSON.parse(localStorage.getItem('user') || 'null');
 
@@ -197,18 +199,41 @@ export default function Sidebar() {
             </span>
           </div>
 
-          {/* LOGOUT BUTTON */}
-          <button
-            onClick={handleLogout}
-            className="w-full btn-premium flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-black text-white rounded-xl cursor-pointer shadow-md transition-all hover:scale-[1.02]"
-            style={{ backgroundColor: '#dc2626', border: '1px solid #b91c1c' }}
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Logout</span>
-          </button>
+          {/* DELETE ACCOUNT & LOGOUT BUTTONS */}
+          <div className="space-y-2">
+            <button
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-red-500 bg-red-500/10 border border-red-500/20 rounded-xl cursor-pointer hover:bg-red-500/20 transition-all"
+            >
+              <Trash2 className="h-3.5 w-3.5 text-red-500" />
+              <span>Delete Host Account</span>
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="w-full btn-premium flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-black text-white rounded-xl cursor-pointer shadow-md transition-all hover:scale-[1.02]"
+              style={{ backgroundColor: '#dc2626', border: '1px solid #b91c1c' }}
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
 
       </aside>
+
+      {/* DELETE ACCOUNT MODAL */}
+      <DeleteAccountModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onSuccess={() => {
+          setIsDeleteModalOpen(false);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          toast.success('Account deleted successfully.');
+          navigate('/login');
+        }}
+      />
     </>
   );
 }

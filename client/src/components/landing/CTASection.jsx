@@ -14,7 +14,7 @@ export default function CTASection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="relative rounded-3xl overflow-hidden glass-panel border border-primary/30 p-8 sm:p-14 text-center bg-gradient-to-b from-primary/20 via-slate-950 to-black shadow-2xl"
+        className="relative rounded-3xl overflow-hidden glass-panel border border-primary/30 p-8 sm:p-14 text-center bg-gradient-to-b from-purple-100/90 via-white to-sky-100/80 dark:from-primary/20 dark:via-slate-950 dark:to-black shadow-2xl"
       >
         <div className="absolute top-0 right-0 h-64 w-64 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 h-64 w-64 bg-secondary/20 rounded-full blur-3xl pointer-events-none" />
@@ -25,12 +25,12 @@ export default function CTASection() {
             <span>Ready to Transform Your Quizzes?</span>
           </div>
 
-          <h2 className="font-outfit text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+          <h2 className="font-outfit text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
             Start Hosting Live Quizzes <br className="hidden sm:inline" />
             <span className="text-gradient-primary">in Under 60 Seconds</span>
           </h2>
 
-          <p className="text-xs sm:text-base text-gray-300 font-medium leading-relaxed">
+          <p className="text-xs sm:text-base text-slate-700 dark:text-gray-300 font-medium leading-relaxed">
             Join thousands of educators, hosts, and teams building interactive real-time multiplayer quizzes on Quiz Hub today.
           </p>
 

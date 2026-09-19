@@ -1,9 +1,51 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Play, Sparkles, ArrowRight } from 'lucide-react';
+import { Play, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { getPlatformStats } from '../../services/infoService';
 
 export default function HeroSection() {
+  const { data: statsData, isLoading } = useQuery({
+    queryKey: ['platform-stats'],
+    queryFn: getPlatformStats,
+    staleTime: 60 * 1000, // cache for 1 minute
+    refetchOnWindowFocus: false,
+  });
+
+  const stats = statsData || {
+    totalQuizzes: 0,
+    totalGames: 0,
+    totalPlayers: 0,
+    totalClassrooms: 0,
+    accuracy: 95
+  };
+
+  const formatStatValue = (val, isPercentage = false, defaultText = '0') => {
+    if (isLoading) {
+      return (
+        <span className="inline-block animate-pulse opacity-70">...</span>
+      );
+    }
+    if (val === null || val === undefined) return defaultText;
+
+    if (isPercentage) {
+      const num = Number(val);
+      return `${isNaN(num) ? val : num}%`;
+    }
+
+    const num = Number(val);
+    if (isNaN(num)) return val;
+
+    if (num >= 1000000) {
+      return `${(num / 1000000).toFixed(1).replace(/\.0$/, '')}M+`;
+    }
+    if (num >= 1000) {
+      return `${(num / 1000).toFixed(1).replace(/\.0$/, '')}k+`;
+    }
+    return num > 0 ? `${num.toLocaleString()}+` : '0';
+  };
+
   return (
     <section id="hero" className="relative flex items-center justify-center pt-6 pb-8 sm:pt-12 sm:pb-12 overflow-hidden px-3 sm:px-6">
       {/* Background glow & particles */}
@@ -80,35 +122,46 @@ export default function HeroSection() {
                 el.scrollIntoView({ behavior: 'smooth' });
               }
             }}
-            className="px-6 sm:px-8 py-3.5 sm:py-4 flex items-center justify-center gap-2.5 text-sm sm:text-base font-extrabold text-white bg-white/10 hover:bg-white/15 border border-white/20 hover:border-primary/50 transition-all cursor-pointer w-full sm:w-auto rounded-xl sm:rounded-2xl shadow-sm hover:scale-105 active:scale-95"
+            className="px-6 sm:px-8 py-3.5 sm:py-4 flex items-center justify-center gap-2.5 text-sm sm:text-base font-extrabold text-slate-800 dark:text-white bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 border border-slate-300 dark:border-white/20 hover:border-primary/50 transition-all cursor-pointer w-full sm:w-auto rounded-xl sm:rounded-2xl shadow-sm hover:scale-105 active:scale-95"
           >
-            <Sparkles className="h-4.5 w-4.5 text-yellow-400 animate-pulse" />
+            <Sparkles className="h-4.5 w-4.5 text-amber-500 dark:text-yellow-400 animate-pulse" />
             <span>Try Demo</span>
           </button>
         </motion.div>
 
-        {/* Stats Bar */}
+        {/* Dynamic Real Stats Bar from MongoDB */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-8 sm:mt-14 pt-6 sm:pt-8 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto"
+          className="mt-8 sm:mt-14 pt-6 sm:pt-8 border-t border-slate-200 dark:border-white/10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto"
         >
           <div className="flex flex-col items-center">
-            <span className="font-outfit text-xl sm:text-3xl font-black" style={{ color: 'var(--text-heading)' }}>250+</span>
-            <span className="text-[11px] sm:text-xs font-semibold mt-1" style={{ color: 'var(--text-muted)' }}>Total Quizzes Hosted</span>
+            <span className="font-outfit text-xl sm:text-3xl font-black text-slate-900 dark:text-white min-h-[32px] flex items-center">
+              {formatStatValue(stats.totalQuizzes || stats.totalGames)}
+            </span>
+            <span className="text-[11px] sm:text-xs font-semibold mt-1 text-slate-600 dark:text-gray-400">Total Quizzes Hosted</span>
           </div>
+
           <div className="flex flex-col items-center">
-            <span className="font-outfit text-xl sm:text-3xl font-black text-primary">1M+</span>
-            <span className="text-[11px] sm:text-xs font-semibold mt-1" style={{ color: 'var(--text-muted)' }}>Active Battle Players</span>
+            <span className="font-outfit text-xl sm:text-3xl font-black text-primary min-h-[32px] flex items-center">
+              {formatStatValue(stats.totalPlayers)}
+            </span>
+            <span className="text-[11px] sm:text-xs font-semibold mt-1 text-slate-600 dark:text-gray-400">Active Battle Players</span>
           </div>
+
           <div className="flex flex-col items-center">
-            <span className="font-outfit text-xl sm:text-3xl font-black text-secondary">12,500+</span>
-            <span className="text-[11px] sm:text-xs font-semibold mt-1" style={{ color: 'var(--text-muted)' }}>Classrooms Connected</span>
+            <span className="font-outfit text-xl sm:text-3xl font-black text-secondary min-h-[32px] flex items-center">
+              {formatStatValue(stats.totalClassrooms || stats.totalUsers)}
+            </span>
+            <span className="text-[11px] sm:text-xs font-semibold mt-1 text-slate-600 dark:text-gray-400">Classrooms Connected</span>
           </div>
+
           <div className="flex flex-col items-center">
-            <span className="font-outfit text-xl sm:text-3xl font-black text-accent">94.2%</span>
-            <span className="text-[11px] sm:text-xs font-semibold mt-1" style={{ color: 'var(--text-muted)' }}>Response Accuracy</span>
+            <span className="font-outfit text-xl sm:text-3xl font-black text-accent min-h-[32px] flex items-center">
+              {formatStatValue(stats.accuracy, true)}
+            </span>
+            <span className="text-[11px] sm:text-xs font-semibold mt-1 text-slate-600 dark:text-gray-400">Response Accuracy</span>
           </div>
         </motion.div>
 

@@ -366,8 +366,8 @@ export default function Dashboard() {
 
         {/* SESSIONS HOSTED MODAL */}
         {activeModal === 'sessions' && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-            <div className={`rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border transition-all ${
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/75 backdrop-blur-md animate-fade-in">
+            <div className={`relative my-auto rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border transition-all ${
               isLight ? 'bg-white border-gray-200 text-gray-900 shadow-2xl' : 'bg-[#121216] border-white/10 text-white'
             }`}>
               <div className={`flex justify-between items-center px-6 py-4 border-b ${
@@ -453,8 +453,8 @@ export default function Dashboard() {
 
         {/* TOTAL STUDENTS MODAL */}
         {activeModal === 'students' && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-            <div className={`rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border transition-all ${
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/75 backdrop-blur-md animate-fade-in">
+            <div className={`relative my-auto rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border transition-all ${
               isLight ? 'bg-white border-gray-200 text-gray-900 shadow-2xl' : 'bg-[#121216] border-white/10 text-white'
             }`}>
               <div className={`flex justify-between items-center px-6 py-4 border-b ${

@@ -775,8 +775,39 @@
 .light .text-gray-500 {
   color: var(--text-muted) !important;
 }
-.light .text-white {
+
+/* ── Typography and Text Utilities ── */
+.text-muted {
+  color: var(--text-muted) !important;
+}
+.text-heading {
   color: var(--text-heading) !important;
+}
+.text-main {
+  color: var(--text-main) !important;
+}
+
+/* ── Light Mode High Contrast Gradients ── */
+.light .text-gradient-primary {
+  background-image: linear-gradient(135deg, #6d28d9 0%, #4338ca 50%, #0284c7 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+.light .text-gradient-accent {
+  background-image: linear-gradient(135deg, #e11d48 0%, #db2777 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+/* ── Prevent logo wash-out on light background ── */
+.light img.mix-blend-screen,
+.light .mix-blend-screen {
+  mix-blend-mode: normal !important;
 }
 
 /* ── Background Utility Overrides ── */
@@ -785,6 +816,9 @@
 }
 .light .bg-white\/10 {
   background-color: rgba(109, 40, 217, 0.07) !important;
+}
+.light .bg-white\/15 {
+  background-color: rgba(109, 40, 217, 0.09) !important;
 }
 .light .bg-white\/20 {
   background-color: rgba(109, 40, 217, 0.10) !important;
@@ -801,13 +835,19 @@
 
 /* ── Border Utility Overrides ── */
 .light .border-white\/5 {
-  border-color: rgba(139, 92, 246, 0.08) !important;
+  border-color: rgba(139, 92, 246, 0.10) !important;
 }
 .light .border-white\/10 {
-  border-color: rgba(139, 92, 246, 0.13) !important;
+  border-color: rgba(139, 92, 246, 0.14) !important;
+}
+.light .border-white\/15 {
+  border-color: rgba(139, 92, 246, 0.18) !important;
 }
 .light .border-white\/20 {
-  border-color: rgba(139, 92, 246, 0.20) !important;
+  border-color: rgba(139, 92, 246, 0.22) !important;
+}
+.light .border-black\/10 {
+  border-color: rgba(139, 92, 246, 0.15) !important;
 }
 
 /* ── Glass Panel ── */

@@ -115,3 +115,14 @@ export const getFaqs = async () => {
     ];
   }
 };
+
+export const getPlatformStats = async () => {
+  try {
+    const response = await API.get('/stats');
+    return response.data?.stats || response.data || null;
+  } catch (error) {
+    console.warn('API error fetching platform stats, using fallback:', error.message);
+    return null;
+  }
+};
+

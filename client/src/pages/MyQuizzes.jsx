@@ -14,8 +14,12 @@ import { getMyQuizzes, deleteQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
 
+import { useTheme } from '../context/ThemeContext';
+
 export default function MyQuizzes() {
   const navigate = useNavigate();
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [openReportMenuId, setOpenReportMenuId] = useState(null);
@@ -101,7 +105,9 @@ export default function MyQuizzes() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen bg-background text-gray-200 p-4 sm:p-6 md:p-8 overflow-x-hidden">
+      <div className={`relative min-h-screen p-4 sm:p-6 md:p-8 overflow-x-hidden ${
+        isLight ? 'bg-slate-50 text-gray-800' : 'bg-background text-gray-200'
+      }`}>
         
         {/* Glow Spheres */}
         <div className="absolute top-[-5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-40"></div>
@@ -110,24 +116,32 @@ export default function MyQuizzes() {
         <div className="mx-auto max-w-7xl relative z-10 space-y-6 text-left">
           
           {/* Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-5">
+          <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-5 ${
+            isLight ? 'border-gray-200' : 'border-white/5'
+          }`}>
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => navigate('/dashboard')}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors"
+                className={`p-2 rounded-xl border transition-colors cursor-pointer ${
+                  isLight ? 'bg-white border-gray-200 text-gray-700 hover:bg-gray-100 shadow-sm' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                }`}
                 aria-label="Back"
               >
                 <ArrowLeft className="h-4.5 w-4.5" />
               </button>
               <div>
-                <h1 className="font-outfit text-3xl font-extrabold text-white">My Quizzes</h1>
-                <p className="text-xs text-gray-400 mt-1">Manage and launch your multiplayer rooms.</p>
+                <h1 className={`font-outfit text-3xl font-extrabold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  My Quizzes
+                </h1>
+                <p className={`text-xs mt-1 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                  Manage and launch your multiplayer rooms.
+                </p>
               </div>
             </div>
 
             <Link
               to="/quiz/create"
-              className="btn-premium btn-primary-gradient px-5 py-2.5 flex items-center gap-1.5 text-xs font-bold shadow-premium-glow"
+              className="btn-premium btn-primary-gradient px-5 py-2.5 flex items-center gap-1.5 text-xs font-bold shadow-premium-glow text-white"
             >
               <Plus className="h-4 w-4" />
               <span>Create a Quiz</span>
@@ -138,7 +152,7 @@ export default function MyQuizzes() {
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
             {/* Search Box */}
             <div className="relative w-full sm:max-w-md">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-500">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
                 <Search className="h-4.5 w-4.5" />
               </div>
               <input
@@ -146,18 +160,26 @@ export default function MyQuizzes() {
                 placeholder="Search quizzes by title or keyword..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 pl-11 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary"
+                className={`w-full rounded-xl border px-4 py-2.5 pl-11 text-sm transition-all focus:outline-none focus:border-primary ${
+                  isLight 
+                    ? 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 shadow-sm' 
+                    : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                }`}
               />
             </div>
 
             {/* Category Dropdown */}
             {categories.length > 1 && (
               <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                <Filter className="h-4 w-4 text-gray-500" />
+                <Filter className="h-4 w-4 text-gray-400" />
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="rounded-xl bg-[#111115] border border-white/10 px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-primary uppercase font-semibold tracking-wider cursor-pointer"
+                  className={`rounded-xl border px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary uppercase font-semibold tracking-wider cursor-pointer ${
+                    isLight 
+                      ? 'bg-white border-gray-200 text-gray-900 shadow-sm' 
+                      : 'bg-[#111115] border-white/10 text-white'
+                  }`}
                 >
                   {categories.map((cat) => (
                     <option key={cat} value={cat}>
@@ -177,10 +199,14 @@ export default function MyQuizzes() {
               ))}
             </div>
           ) : filteredQuizzes.length === 0 ? (
-            <div className="glass-panel rounded-3xl p-16 text-center space-y-4 max-w-lg mx-auto">
-              <HelpCircle className="h-12 w-12 text-gray-600 mx-auto" />
-              <h3 className="font-outfit text-xl font-bold text-white">No Quizzes Found</h3>
-              <p className="text-xs text-gray-400 max-w-[280px] mx-auto leading-relaxed">
+            <div className={`rounded-3xl p-16 text-center space-y-4 max-w-lg mx-auto border ${
+              isLight ? 'bg-white border-gray-200 shadow-sm' : 'glass-panel border-white/5'
+            }`}>
+              <HelpCircle className="h-12 w-12 text-gray-400 mx-auto" />
+              <h3 className={`font-outfit text-xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                No Quizzes Found
+              </h3>
+              <p className={`text-xs max-w-[280px] mx-auto leading-relaxed ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                 {searchQuery || selectedCategory !== 'all' 
                   ? "We couldn't find any quizzes matching your search keyword or selected category filter."
                   : "You haven't created any quizzes yet. Click 'Create a Quiz' to start creating your first multiplayer room."}
@@ -188,7 +214,9 @@ export default function MyQuizzes() {
               {(searchQuery || selectedCategory !== 'all') && (
                 <button
                   onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
-                  className="btn-premium btn-glass px-4 py-2 text-xs font-semibold"
+                  className={`px-4 py-2 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                    isLight ? 'bg-gray-100 hover:bg-gray-200 border-gray-200 text-gray-700' : 'btn-premium btn-glass'
+                  }`}
                 >
                   Reset Filters
                 </button>
@@ -205,7 +233,11 @@ export default function MyQuizzes() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.3 }}
-                    className="glass-panel rounded-2xl p-5 sm:p-6 flex flex-col justify-between min-h-[220px] border border-white/5 hover:border-primary/25 transition-all group relative"
+                    className={`rounded-2xl p-5 sm:p-6 flex flex-col justify-between min-h-[220px] border transition-all group relative ${
+                      isLight 
+                        ? 'bg-white border-gray-200/80 shadow-sm hover:shadow-md hover:border-primary/40' 
+                        : 'glass-panel border-white/5 hover:border-primary/25'
+                    }`}
                   >
                     <div className="flex flex-col gap-2">
                       {/* Badge / Header bar */}
@@ -214,12 +246,16 @@ export default function MyQuizzes() {
                           {quiz.category || 'General'}
                         </span>
                         <div className="flex items-center gap-3">
-                          <span className="text-[10px] text-gray-500 font-semibold">{quiz.questions?.length || 0} Questions</span>
+                          <span className={`text-[10px] font-semibold ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+                            {quiz.questions?.length || 0} Questions
+                          </span>
                           
                           {/* Edit Button */}
                           <button
                             onClick={() => navigate(`/quiz/edit/${quiz._id}`)}
-                            className="p-1 rounded-lg border border-primary/20 text-primary/50 hover:text-primary hover:bg-primary/10 hover:border-primary/40 transition-colors"
+                            className={`p-1 rounded-lg border transition-colors cursor-pointer ${
+                              isLight ? 'border-primary/30 text-primary hover:bg-primary/10' : 'border-primary/20 text-primary/70 hover:text-primary hover:bg-primary/10'
+                            }`}
                             title="Edit Quiz"
                           >
                             <Pencil className="h-3.5 w-3.5" />
@@ -228,7 +264,9 @@ export default function MyQuizzes() {
                           {/* Delete Button */}
                           <button
                             onClick={() => handleDeleteQuiz(quiz._id)}
-                            className="p-1 rounded-lg border border-red-500/10 text-red-500/50 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-colors"
+                            className={`p-1 rounded-lg border transition-colors cursor-pointer ${
+                              isLight ? 'border-red-500/30 text-red-500 hover:bg-red-500/10' : 'border-red-500/10 text-red-500/70 hover:text-red-400 hover:bg-red-500/10'
+                            }`}
                             title="Delete Quiz"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -239,22 +277,28 @@ export default function MyQuizzes() {
                       {/* Title & Description */}
                       <div className="px-1 pt-3">
                         <h3
-                          className="font-outfit text-white text-base group-hover:text-primary transition-colors line-clamp-2 leading-snug"
-                          style={{ fontWeight: 900, letterSpacing: '-0.02em' }}
+                          className={`font-outfit text-base group-hover:text-primary transition-colors line-clamp-2 leading-snug font-black ${
+                            isLight ? 'text-gray-900' : 'text-white'
+                          }`}
+                          style={{ letterSpacing: '-0.02em' }}
                         >
                           {quiz.title}
                         </h3>
-                        <p className="text-xs font-semibold text-gray-400 mt-1.5 line-clamp-2 leading-relaxed">
+                        <p className={`text-xs font-semibold mt-1.5 line-clamp-2 leading-relaxed ${
+                          isLight ? 'text-gray-600' : 'text-gray-400'
+                        }`}>
                           {quiz.description || 'No description provided.'}
                         </p>
                       </div>
                     </div>
 
                     {/* Launch + Reports buttons */}
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-5 pt-4 border-t border-white/5">
+                    <div className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-5 pt-4 border-t ${
+                      isLight ? 'border-gray-100' : 'border-white/5'
+                    }`}>
                       <button
                         onClick={() => handleHostGame(quiz._id)}
-                        className="flex-1 w-full sm:w-auto btn-premium btn-primary-gradient py-2 px-4 flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider shadow-premium-glow"
+                        className="flex-1 w-full sm:w-auto btn-premium btn-primary-gradient py-2 px-4 flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider shadow-premium-glow text-white"
                       >
                         <Play className="h-3 w-3 fill-current" />
                         <span>Launch Lobby</span>

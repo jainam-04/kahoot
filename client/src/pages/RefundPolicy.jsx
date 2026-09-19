@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   RotateCcw, ShieldCheck, CheckCircle2, Clock,
-  CreditCard, ArrowLeft, Mail, AlertTriangle, HelpCircle
+  CreditCard, ArrowLeft, Mail, Phone, MapPin,
+  AlertTriangle, HelpCircle, FileText, Ban, XCircle
 } from 'lucide-react';
 import AnimatedPage from '../components/AnimatedPage';
 import ThemeBackground from '../components/ThemeBackground';
@@ -13,94 +14,126 @@ export default function RefundPolicy() {
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
 
-  const lastUpdated = 'September 18, 2026';
+  const lastUpdated = 'July 3, 2026';
 
-  const refundPillars = [
+  const policyPillars = [
     {
-      icon: <ShieldCheck className="h-6 w-6 text-emerald-400" />,
-      title: '14-Day Money-Back Guarantee',
-      desc: 'First-time upgrades to Pro or School plans are eligible for a 100% full refund within 14 days of purchase—no complicated hoops.'
+      icon: <ZapIcon className="h-6 w-6 text-primary" />,
+      title: 'Immediate Digital Activation',
+      desc: 'Access to premium quiz creation, host limits, and live room features is provisioned immediately upon purchase or plan activation.'
     },
     {
-      icon: <Clock className="h-6 w-6 text-primary" />,
-      title: 'Fast 5-7 Day Processing',
-      desc: 'Approved refunds are issued back to your original payment method (Credit Card, UPI, or PayPal) within 5 to 7 business days.'
+      icon: <Ban className="h-6 w-6 text-rose-500" />,
+      title: 'Final & Non-Refundable',
+      desc: 'All subscription payments and service fees are final and non-refundable once digital access has been granted.'
     },
     {
-      icon: <RotateCcw className="h-6 w-6 text-yellow-400" />,
-      title: 'Hassle-Free Cancellation',
-      desc: 'Cancel your auto-renew anytime with 1 click in your billing settings. You keep full access until your current billing period ends.'
+      icon: <Clock className="h-6 w-6 text-yellow-500" />,
+      title: 'End-of-Cycle Cancellation',
+      desc: 'Cancellations take effect at the end of your current billing period, retaining full access to paid features until expiration.'
     }
   ];
 
   const sections = [
     {
-      title: '1. Overview & Free Forever Tier',
+      title: '1. Overview',
       content: (
-        <p>
-          At <strong>Quizzy (QuizForge)</strong>, we want educators, hosts, and trainers to love their interactive live quiz experience. Our platform offers a robust <strong>Free Forever Plan</strong> allowing you to create quizzes and host live rooms without ever entering a credit card.
-        </p>
-      )
-    },
-    {
-      title: '2. 14-Day Money-Back Guarantee',
-      content: (
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           <p>
-            If you upgrade to a paid <strong>Pro</strong> or <strong>Enterprise</strong> plan and find that Quizzy does not meet your classroom or organization's needs:
+            Thank you for using <strong>Quizy (QuizForge)</strong>. Quizy provides online live interactive quizzes, multiplayer game arenas, assessment tools, host lobbies, institute trivia management, and related digital services to educational institutions, enterprises, organizations, administrators, faculty members, event hosts, students, candidates, and other authorized users.
           </p>
-          <ul className="list-disc list-inside space-y-1 pl-1 text-xs opacity-90">
-            <li>You may request a <strong>100% full refund</strong> within <strong>14 calendar days</strong> of your initial upgrade date.</li>
-            <li>No long justification required. Simply contact our support team from your registered account email.</li>
-          </ul>
+          <p>
+            As our services are primarily digital and access to subscribed features or services may be provided immediately upon purchase or activation, our refund and cancellation policy is set forth below.
+          </p>
         </div>
       )
     },
     {
-      title: '3. Annual Subscription Renewals',
+      title: '2. No Refund Policy',
       content: (
-        <p>
-          For annual subscriptions, we send a renewal reminder notification 7 days prior to billing. If your annual plan automatically renews and you forgot to cancel, you may request a refund within <strong>7 calendar days</strong> of the renewal charge.
-        </p>
-      )
-    },
-    {
-      title: '4. Service Downtime & Event Disruptions',
-      content: (
-        <p>
-          In the rare event that a major verified server outage on our side interrupts a scheduled live competition or institutional examination, we will issue service credits or a pro-rated refund for the affected billing period upon review by our engineering team.
-        </p>
-      )
-    },
-    {
-      title: '5. Non-Refundable Circumstances',
-      content: (
-        <div className="space-y-2">
+        <div className="space-y-3">
           <p>
-            Refunds will not be granted in the following scenarios:
+            Unless otherwise required by applicable law or expressly agreed in writing, all subscription payments, service fees, and purchases made through Quizy are final and non-refundable.
           </p>
-          <ul className="list-disc list-inside space-y-1 pl-1 text-xs opacity-90">
-            <li>Refund requests submitted after the 14-day initial guarantee period has expired.</li>
-            <li>Accounts terminated due to violations of our Acceptable Use Policy (e.g. offensive or illegal quiz content).</li>
-            <li>Local connectivity issues, student Wi-Fi disruptions, or client-side hardware malfunctions outside our servers.</li>
+          <p>
+            Once a subscription or service has been activated, or access to a purchased service has been provided, Quizy does not generally provide refunds or credits for:
+          </p>
+          <ul className="list-disc list-inside space-y-1.5 pl-1 text-xs opacity-95">
+            <li>Partial use of a subscription.</li>
+            <li>Unused subscription periods.</li>
+            <li>Cancellation after activation.</li>
+            <li>Failure to use purchased features or services.</li>
+            <li>Change of requirements or circumstances.</li>
+            <li>Dissatisfaction with the service.</li>
           </ul>
+          <p className="text-xs pt-1">
+            The availability of a refund, where legally required or specifically agreed under a separate written agreement, will be determined in accordance with the applicable terms.
+          </p>
         </div>
       )
     },
     {
-      title: '6. How to Request a Refund',
+      title: '3. Cancellation',
       content: (
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           <p>
-            To initiate a refund request, simply email our billing desk:
+            Users or organizations may cancel their subscription in accordance with the applicable subscription terms.
           </p>
-          <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/20 text-xs space-y-1">
-            <p><strong>Email:</strong> <a href="mailto:billing@quizzy.com" className="text-secondary hover:underline font-bold">billing@quizzy.com</a> or <a href="mailto:support@quizzy.com" className="text-secondary hover:underline font-bold">support@quizzy.com</a></p>
-            <p><strong>Subject line:</strong> Refund Request - [Your Registered Email]</p>
-            <p><strong>Include:</strong> Your Account Name, Invoice/Receipt ID, and date of purchase.</p>
-          </div>
+          <p>
+            Cancellation of a subscription does not automatically entitle the user to a refund for the current billing period.
+          </p>
+          <p>
+            Unless otherwise specified in the applicable subscription agreement, cancellation will take effect at the end of the current billing period, and the user may continue to access the applicable paid services until the end of that period.
+          </p>
+          <p>
+            For customized enterprise or institute agreements, cancellation and refund terms may be governed by the applicable quotation, order form, invoice, service agreement, or other written agreement.
+          </p>
           <p className="text-xs">
-            Our billing team will review and respond within 24–48 hours. Once processed, your bank will typically reflect the credited amount within 5 to 7 business days.
+            In the event of any conflict between this general Refund & Cancellation Policy and a separately signed agreement, the terms of the specific agreement will prevail.
+          </p>
+        </div>
+      )
+    },
+    {
+      title: '4. Contact Us',
+      content: (
+        <div className="space-y-3">
+          <p>
+            If you have any questions regarding this Refund & Cancellation Policy, subscription cancellation, or applicable refund terms, please contact <strong>Quizy / Fourise Software Solutions Pvt. Ltd.</strong> through the official support or contact channels provided on the Platform:
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div className={`p-3.5 rounded-xl border text-xs ${
+              isLight ? 'bg-slate-50 border-gray-200 text-gray-800' : 'bg-white/5 border-white/10 text-gray-300'
+            }`}>
+              <div className="font-bold text-primary mb-1 flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5" />
+                <span>Phone</span>
+              </div>
+              <a href="tel:+919527605805" className="hover:underline font-semibold">+91 95276 05805</a>
+            </div>
+
+            <div className={`p-3.5 rounded-xl border text-xs ${
+              isLight ? 'bg-slate-50 border-gray-200 text-gray-800' : 'bg-white/5 border-white/10 text-gray-300'
+            }`}>
+              <div className="font-bold text-secondary mb-1 flex items-center gap-1.5">
+                <Mail className="h-3.5 w-3.5" />
+                <span>Email</span>
+              </div>
+              <a href="mailto:info@fouriseindia.com" className="hover:underline font-semibold">info@fouriseindia.com</a>
+            </div>
+
+            <div className={`p-3.5 rounded-xl border text-xs ${
+              isLight ? 'bg-slate-50 border-gray-200 text-gray-800' : 'bg-white/5 border-white/10 text-gray-300'
+            }`}>
+              <div className="font-bold text-primary mb-1 flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5" />
+                <span>Location</span>
+              </div>
+              <p className="leading-snug">305, City Vista, Kharadi, Pune 411014</p>
+            </div>
+          </div>
+          <p className="text-xs pt-1">
+            We will be happy to clarify the applicable terms before you purchase or subscribe to any Quizy service.
           </p>
         </div>
       )
@@ -129,31 +162,31 @@ export default function RefundPolicy() {
 
           {/* Header */}
           <div className="space-y-3 mb-10 pb-8 border-b border-black/10 dark:border-white/10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-xs font-bold text-emerald-400">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-xs font-bold text-primary">
               <RotateCcw className="h-3.5 w-3.5" />
-              <span>Fair & Transparent Billing</span>
+              <span>Billing & Subscriptions</span>
             </div>
             
             <h1 className={`font-outfit text-3xl sm:text-5xl font-extrabold tracking-tight ${
               isLight ? 'text-gray-900' : 'text-white'
             }`}>
-              Refund Policy
+              Refund & Cancellation <span className="text-gradient-primary">Policy</span>
             </h1>
 
             <p className={`text-sm leading-relaxed max-w-2xl ${
               isLight ? 'text-gray-600' : 'text-gray-400'
             }`}>
-              Our promise to you: clear refund rules, money-back guarantees, and simple cancellation procedures.
+              Standard terms governing digital service activations, plan renewals, cancellations, and refund eligibility for Quizy.
             </p>
 
             <div className="text-xs text-muted font-medium pt-1">
-              Last updated: {lastUpdated}
+              Last Updated: {lastUpdated}
             </div>
           </div>
 
-          {/* Guarantee Cards */}
+          {/* Policy Pillars */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-            {refundPillars.map((pill, i) => (
+            {policyPillars.map((pill, i) => (
               <div
                 key={i}
                 className={`p-5 rounded-2xl border ${
@@ -197,27 +230,47 @@ export default function RefundPolicy() {
             ))}
           </div>
 
-          {/* Need Assistance Callout */}
-          <div className={`mt-10 p-6 rounded-2xl border text-center space-y-3 ${
-            isLight ? 'bg-gray-50 border-gray-200 text-gray-700' : 'glass-panel border-white/5 text-gray-300'
+          {/* Contact Box */}
+          <div className={`mt-10 p-6 sm:p-8 rounded-2xl border text-center space-y-3 ${
+            isLight ? 'bg-slate-50 border-gray-200 text-gray-700' : 'glass-panel border-white/5 text-gray-300'
           }`}>
-            <h3 className={`font-outfit font-bold text-base ${isLight ? 'text-gray-900' : 'text-white'}`}>
-              Have a Billing Question?
+            <h3 className={`font-outfit font-bold text-base sm:text-lg ${isLight ? 'text-gray-900' : 'text-white'}`}>
+              Questions Prior to Subscribing?
             </h3>
             <p className="text-xs text-muted max-w-md mx-auto">
-              Our support team is here to help with any invoice or plan queries.
+              We are available to clarify applicable terms or customize institute agreements before you upgrade.
             </p>
-            <a
-              href="mailto:billing@quizzy.com"
-              className="btn-premium btn-primary-gradient inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white rounded-xl shadow-md cursor-pointer"
-            >
-              <Mail className="h-4 w-4" />
-              <span>Contact Billing Support</span>
-            </a>
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href="mailto:info@fouriseindia.com"
+                className="btn-premium btn-primary-gradient inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white rounded-xl shadow-md cursor-pointer"
+              >
+                <Mail className="h-4 w-4" />
+                <span>Email Support Desk</span>
+              </a>
+              <a
+                href="tel:+919527605805"
+                className={`inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
+                  isLight ? 'border-gray-300 bg-white text-gray-800 hover:bg-gray-100' : 'border-white/10 bg-white/5 text-white hover:bg-white/10'
+                }`}
+              >
+                <Phone className="h-4 w-4" />
+                <span>Call +91 95276 05805</span>
+              </a>
+            </div>
           </div>
 
         </div>
       </ThemeBackground>
     </AnimatedPage>
+  );
+}
+
+// Icon helper
+function ZapIcon(props) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
   );
 }

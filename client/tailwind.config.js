@@ -25,6 +25,9 @@ export default {
         success: "#22C55E",     // Success (Green)
         warning: "#FACC15",     // Warning (Yellow)
         background: "var(--background)",   // Background (Dark/Light Mode)
+        heading: "var(--text-heading, #0f172a)",
+        muted: "var(--text-muted, #64748b)",
+        main: "var(--text-main, #1e293b)",
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],

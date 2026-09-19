@@ -67,7 +67,7 @@ function AnimatedRoutes() {
   const location = useLocation();
   useScrollToHash();
 
-  // Hide Navbar & Footer during gameplay for full immersion
+  // Hide Navbar during gameplay for full immersion
   const isGameplayView = [
     '/live', 
     '/waiting', 
@@ -75,6 +75,11 @@ function AnimatedRoutes() {
     '/leaderboard', 
     '/final-result'
   ].some(path => location.pathname.startsWith(path));
+
+  // Footer is ONLY displayed on the homepage ('/') and hidden when logged in to an account
+  const token = localStorage.getItem('token');
+  const isHomePage = location.pathname === '/';
+  const shouldShowFooter = !isGameplayView && isHomePage && !token;
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-200">
@@ -116,8 +121,8 @@ function AnimatedRoutes() {
         </AnimatePresence>
       </main>
 
-      {/* Footer for non-gameplay pages */}
-      {!isGameplayView && <Footer />}
+      {/* Footer rendered strictly on the Homepage when not logged in */}
+      {shouldShowFooter && <Footer />}
     </div>
   );
 }

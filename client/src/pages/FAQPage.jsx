@@ -237,7 +237,7 @@ export default function FAQPage() {
             </p>
             <div className="pt-2 flex items-center justify-center gap-3">
               <a
-                href="mailto:support@quizzy.com"
+                href="mailto:info@fouriseindia.com"
                 className="btn-premium btn-primary-gradient px-4 py-2 text-xs font-bold text-white rounded-xl shadow-md cursor-pointer"
               >
                 Email Support Team

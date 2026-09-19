@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Gamepad2, Trophy, Users, Zap, Sparkles, ArrowLeft,
-  CheckCircle2, Globe, Shield, Heart, HelpCircle, Play
+  CheckCircle2, Globe, Shield, Heart, HelpCircle, Play,
+  FileSpreadsheet, Camera, BarChart3, Layers, Clock, Award
 } from 'lucide-react';
 import AnimatedPage from '../components/AnimatedPage';
 import ThemeBackground from '../components/ThemeBackground';
@@ -16,33 +17,51 @@ export default function AboutKahoot() {
   const pillars = [
     {
       icon: <Zap className="h-6 w-6 text-yellow-400" />,
-      title: 'Game-Based Learning',
-      desc: 'Transforms traditional multiple-choice questions into heart-racing competitions where speed, accuracy, and streak multipliers turn learning into play.'
+      title: 'Real-Time Interactive Gameplay',
+      desc: 'Transforms standard multiple-choice questions into heart-racing live competitions where accuracy, speed, and streak multipliers ignite energy in any room.'
     },
     {
       icon: <Users className="h-6 w-6 text-primary" />,
-      title: 'Frictionless Joining',
+      title: 'Frictionless 6-Digit PIN Join',
       desc: 'Participants join in seconds by entering a 6-digit room PIN or scanning an on-screen QR code from any smartphone, tablet, or browser—no login or app install needed.'
     },
     {
       icon: <Trophy className="h-6 w-6 text-amber-500" />,
-      title: 'Live Dynamic Leaderboards',
-      desc: 'Instant post-question standings with velocity bonuses, tie-breakers, fastest solver highlights, and an electric final podium finish.'
+      title: 'Live Velocity Scoring & Podium',
+      desc: 'Dynamic post-question standings with speed bonuses, tie-breakers, fastest answer highlights, and an electric final 3-tier podium celebration.'
     },
     {
       icon: <Globe className="h-6 w-6 text-emerald-400" />,
-      title: 'Local & Remote Flexibility',
-      desc: 'Runs effortlessly in classroom projector setups, auditorium seminars, corporate all-hands, or remote video conferences with LAN auto-detection and tunneling.'
+      title: 'Classroom LAN & Remote Hosting',
+      desc: 'Operates smoothly in school projector setups, corporate seminars, auditoriums, or remote video meetings with local IPv4 auto-detection and cloud support.'
     }
   ];
 
-  const comparisons = [
-    { feature: 'Multiplayer Participation', detail: 'Real-time WebSocket room synchronization using 6-digit Game PINs.' },
-    { feature: 'Kahoot-Style Scoring', detail: 'Base points for correct answers plus velocity-weighted time bonuses.' },
-    { feature: 'Host Control Suite', detail: 'Host controls question progression, displays answer distributions, and reviews leaderboards.' },
-    { feature: 'Instant Reports & Exports', detail: 'Detailed student analytics downloadable in PDF, Excel, and Word documents.' },
-    { feature: 'Built-in QR Scanner', detail: 'Camera scanner decodes game PINs instantly without manual typing.' },
-    { feature: 'Theme Customization', detail: 'Custom category styling, wallpaper presets, blur, brightness, and ambient lighting.' }
+  const features = [
+    { 
+      feature: 'Real-Time Multiplayer Sync', 
+      detail: 'Ultra low-latency WebSocket communication ensures all participants receive questions and submit answers in perfect synchronization.' 
+    },
+    { 
+      feature: 'Speed-Weighted Scoring', 
+      detail: '1,000 base points for correctness plus up to 1,000 velocity bonus points based on millisecond-level response times.' 
+    },
+    { 
+      feature: 'Comprehensive Host Controls', 
+      detail: 'Hosts control countdown timers, reveal answer distributions, inspect question analytics, and manage live lobbies.' 
+    },
+    { 
+      feature: 'Multi-Format Report Exports', 
+      detail: 'Download complete session results, student scores, and accuracy breakdowns instantly in PDF, Excel (.xlsx), and Word (.docx).' 
+    },
+    { 
+      feature: 'Client-Side QR Scanner', 
+      detail: 'Built-in camera scanner decodes room PINs directly in the browser with 100% privacy and zero video streaming to servers.' 
+    },
+    { 
+      feature: 'Custom Backgrounds & Themes', 
+      detail: 'Choose from curated high-definition photography presets, custom gradient overlays, and adjustable ambient lighting.' 
+    }
   ];
 
   return (
@@ -65,27 +84,27 @@ export default function AboutKahoot() {
             </Link>
           </div>
 
-          {/* Header */}
+          {/* Hero Header */}
           <div className="space-y-3 mb-12 pb-8 border-b border-black/10 dark:border-white/10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-xs font-bold text-primary">
               <Gamepad2 className="h-3.5 w-3.5" />
-              <span>The Kahoot Phenomenon & QuizForge</span>
+              <span>Interactive Multiplayer Arena</span>
             </div>
             
             <h1 className={`font-outfit text-3xl sm:text-5xl font-extrabold tracking-tight ${
               isLight ? 'text-gray-900' : 'text-white'
             }`}>
-              About Kahoot & <span className="text-gradient-primary">QuizForge</span>
+              About <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-400 to-secondary">Quizy</span>
             </h1>
 
             <p className={`text-sm sm:text-base leading-relaxed max-w-2xl ${
               isLight ? 'text-gray-600' : 'text-gray-400'
             }`}>
-              How the revolutionary concept of gamified classroom trivia inspired our full-stack real-time multiplayer arena.
+              The modern real-time live trivia platform designed to make learning, testing, and team competition thrilling, intuitive, and accessible on any device.
             </p>
           </div>
 
-          {/* Story & Philosophy */}
+          {/* Story & What is Quizy */}
           <div className="space-y-8 text-sm leading-relaxed">
             <section className={`p-6 sm:p-8 rounded-2xl border ${
               isLight ? 'bg-white border-gray-200 shadow-sm text-gray-700' : 'glass-panel border-white/5 text-gray-300'
@@ -94,14 +113,14 @@ export default function AboutKahoot() {
                 isLight ? 'text-gray-900' : 'text-white'
               }`}>
                 <Sparkles className="h-5 w-5 text-primary shrink-0" />
-                What Makes Kahoot-Style Trivia Legendary?
+                What is Quizy?
               </h2>
               <div className="space-y-4 text-xs sm:text-sm">
                 <p>
-                  <strong>Kahoot!</strong> pioneered an educational revolution in 2013 by reimagining the quiz not as an anxious evaluation tool, but as a celebratory, shared game show. It replaced silent paper quizzes with high-energy music, colorful geometric shapes, rapid countdown timers, and an arena where every student actively participates at the exact same moment.
+                  <strong>Quizy</strong> is a full-stack, real-time multiplayer quiz application designed for educators, corporate trainers, event organizers, and trivia enthusiasts. It replaces static paper tests and monotonous presentations with dynamic, synchronized live game sessions where every participant actively competes.
                 </p>
                 <p>
-                  Research consistently shows that gamified learning stimulates dopamine release, enhances cognitive retention, and prompts <em>active recall</em>—transforming passive listeners into eager participants who lean forward to beat the buzzer.
+                  With Quizy, hosts can create rich custom quizzes, set configurable countdown timers, choose gorgeous visual wallpaper themes, and launch games instantly using simple 6-digit PINs. Participants join seamlessly from any smartphone, tablet, or laptop browser without needing to download apps or create accounts.
                 </p>
               </div>
             </section>
@@ -132,19 +151,19 @@ export default function AboutKahoot() {
               ))}
             </div>
 
-            {/* How QuizForge Implements It */}
+            {/* What Makes Quizy Powerful */}
             <section className={`p-6 sm:p-8 rounded-2xl border space-y-5 ${
               isLight ? 'bg-white border-gray-200 shadow-sm' : 'glass-panel border-white/5'
             }`}>
               <h2 className={`font-outfit text-xl sm:text-2xl font-black ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                How QuizForge Brings Kahoot to Life
+                What Makes Quizy Powerful
               </h2>
               <p className={`text-xs sm:text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                Built with the modern MERN stack (MongoDB, Express, React 19, Node.js) and Socket.IO, QuizForge delivers sub-second response times, LAN classroom auto-discovery, and comprehensive post-match analytics:
+                Engineered with React 19, Node.js, Express, MongoDB, and Socket.IO, Quizy provides high responsiveness, classroom LAN adaptability, and enterprise-grade security:
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                {comparisons.map((c, i) => (
+                {features.map((c, i) => (
                   <div key={i} className={`p-3.5 rounded-xl border text-xs ${
                     isLight ? 'bg-gray-50 border-gray-200 text-gray-800' : 'bg-white/5 border-white/10 text-gray-300'
                   }`}>
@@ -158,7 +177,7 @@ export default function AboutKahoot() {
               </div>
             </section>
 
-            {/* CTA */}
+            {/* Call to Action Banner */}
             <div className={`p-6 rounded-2xl border text-center space-y-4 ${
               isLight
                 ? 'bg-gradient-to-r from-sky-50 to-indigo-50 border-sky-200'
@@ -173,13 +192,13 @@ export default function AboutKahoot() {
               <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
                 <Link
                   to="/register"
-                  className="btn-premium btn-primary-gradient px-5 py-2.5 text-xs font-black text-white rounded-xl shadow-md"
+                  className="btn-premium btn-primary-gradient px-5 py-2.5 text-xs font-black text-white rounded-xl shadow-md cursor-pointer hover:scale-105 transition-all"
                 >
                   Get Started for Free
                 </Link>
                 <Link
                   to="/join"
-                  className={`px-5 py-2.5 text-xs font-bold rounded-xl border transition-all ${
+                  className={`px-5 py-2.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
                     isLight ? 'border-gray-300 bg-white text-gray-800 hover:bg-gray-100' : 'border-white/15 bg-white/5 text-white hover:bg-white/10'
                   }`}
                 >
