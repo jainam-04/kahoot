@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
-  User, Mail, Lock, UserPlus, ArrowRight, ShieldCheck, AlertCircle, 
-  Check, Briefcase, Eye, EyeOff, GraduationCap, Play, Award, Sparkles, 
-  PlusCircle, LayoutDashboard, CheckCircle2, Zap
+  User, Mail, Lock, UserPlus, ArrowRight, ShieldCheck, 
+  Check, Eye, EyeOff, Sparkles, PlusCircle, LayoutDashboard, CheckCircle2, Zap
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -15,63 +14,23 @@ import { useTheme } from '../context/ThemeContext';
 
 export default function Register() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
 
-  const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [registeredUser, setRegisteredUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState('Teacher');
-
-  const roles = [
-    {
-      id: 'Teacher',
-      title: 'Educator / Teacher',
-      desc: 'Create interactive classroom quizzes, track student scores & export reports.',
-      icon: GraduationCap,
-      defaultDesig: 'Professor',
-      badge: 'Popular for Education'
-    },
-    {
-      id: 'Quiz Host',
-      title: 'Quiz Host / Trivia Master',
-      desc: 'Host live streaming trivia battles, custom background themes & live leaderboards.',
-      icon: Play,
-      defaultDesig: 'Quiz Host',
-      badge: 'Live Gaming'
-    },
-    {
-      id: 'Manager',
-      title: 'Corporate / Team Lead',
-      desc: 'Engage employees, run interactive training sessions & monitor team metrics.',
-      icon: Briefcase,
-      defaultDesig: 'Manager',
-      badge: 'Enterprise'
-    },
-    {
-      id: 'Student',
-      title: 'Student / Player',
-      desc: 'Join live matches, create revision flashcards & track personal high scores.',
-      icon: Award,
-      defaultDesig: 'Student',
-      badge: 'Casual & Learning'
-    },
-  ];
 
   const {
     register,
     handleSubmit,
     watch,
-    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
       name: '',
-      designation: 'Professor',
       email: '',
       password: '',
       confirmPassword: '',
@@ -106,17 +65,11 @@ export default function Register() {
 
   const strength = getPasswordStrength(watchPassword);
 
-  const handleRoleSelect = (roleObj) => {
-    setSelectedRole(roleObj.id);
-    setValue('designation', roleObj.defaultDesig);
-  };
-
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
       const response = await registerUser({
         name: data.name ? data.name.trim() : '',
-        designation: data.designation || selectedRole,
         email: data.email ? data.email.trim() : '',
         password: data.password,
         securityQuestion: data.securityQuestion,
@@ -154,7 +107,7 @@ export default function Register() {
 
         <div className="relative z-10 w-full max-w-5xl mx-auto space-y-6">
           
-          {/* Header Branding & Step Indicator */}
+          {/* Header Branding */}
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center gap-2">
               <Logo className="h-10 w-10 shrink-0" />
@@ -165,49 +118,17 @@ export default function Register() {
             <h1 className={`font-outfit text-3xl sm:text-5xl font-black tracking-tight ${
               isLight ? 'text-gray-900' : 'text-white'
             }`}>
-              Create Your <span className="text-gradient-primary">Free Account</span>
+              Create Your <span className="text-gradient-primary">Host Account</span>
             </h1>
             <p className={`text-xs sm:text-base max-w-xl mx-auto ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-              Get instant access to host live multiplayer trivia, build custom quizzes & track participant insights.
+              Get instant access to create quizzes, host live multiplayer trivia & track live leaderboards.
             </p>
-
-            {/* Stepper Tabs */}
-            {!isRegistered && (
-              <div className={`inline-flex items-center gap-2 p-1.5 rounded-full mt-2 border ${
-                isLight ? 'bg-white border-gray-200 shadow-sm' : 'bg-white/5 border-white/10'
-              }`}>
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-extrabold transition-all flex items-center gap-1.5 cursor-pointer ${
-                    step === 1 
-                      ? 'bg-primary text-white shadow-md' 
-                      : isLight ? 'text-gray-600 hover:text-gray-900' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <span className="h-4 w-4 rounded-full bg-white/20 flex items-center justify-center text-[10px]">1</span>
-                  <span>Select Role</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStep(2)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-extrabold transition-all flex items-center gap-1.5 cursor-pointer ${
-                    step === 2 
-                      ? 'bg-primary text-white shadow-md' 
-                      : isLight ? 'text-gray-600 hover:text-gray-900' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <span className="h-4 w-4 rounded-full bg-white/20 flex items-center justify-center text-[10px]">2</span>
-                  <span>Account Setup</span>
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Main Card Container */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             
-            {/* Left Column: Form & Step Content */}
+            {/* Left Column: Form Content */}
             <div className="lg:col-span-8">
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
@@ -219,94 +140,19 @@ export default function Register() {
                 {/* Top Accent Line */}
                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-secondary via-primary to-accent" />
 
-                {/* STEP 1: ROLE SELECTION */}
-                {step === 1 && !isRegistered && (
-                  <div className="space-y-6">
+                {/* ACCOUNT FORM */}
+                {!isRegistered && (
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div className={`border-b pb-4 ${isLight ? 'border-gray-100' : 'border-white/10'}`}>
                       <h2 className={`font-outfit text-xl sm:text-2xl font-black ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                        How do you plan to use Quiz Hub?
+                        Host Information
                       </h2>
-                      <p className={`text-xs mt-1 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                        Select a primary role to customize your experience (you can change this anytime).
+                      <p className={`text-xs mt-0.5 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                        Enter your details to create quizzes and manage live game sessions.
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {roles.map((r) => {
-                        const Icon = r.icon;
-                        const isSelected = selectedRole === r.id;
-                        return (
-                          <div
-                            key={r.id}
-                            onClick={() => handleRoleSelect(r)}
-                            className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-3 ${
-                              isSelected
-                                ? 'border-secondary bg-secondary/15 text-white shadow-xl ring-2 ring-secondary/50 scale-[1.02]'
-                                : isLight
-                                  ? 'border-gray-200 bg-gray-50/70 text-gray-700 hover:border-gray-300 hover:bg-white'
-                                  : 'border-white/10 bg-white/5 text-gray-300 hover:border-white/20 hover:bg-white/10'
-                            }`}
-                          >
-                            <div className="flex justify-between items-start">
-                              <div className={`p-2.5 rounded-xl ${
-                                isSelected ? 'bg-secondary text-white' : isLight ? 'bg-gray-200/70 text-gray-600' : 'bg-white/10 text-gray-400'
-                              }`}>
-                                <Icon className="h-5 w-5" />
-                              </div>
-                              <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${
-                                isLight ? 'bg-white border-gray-200 text-gray-600' : 'bg-white/10 border-white/10 text-gray-300'
-                              }`}>
-                                {r.badge}
-                              </span>
-                            </div>
-                            <div>
-                              <h3 className={`font-outfit text-sm font-extrabold ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                                {r.title}
-                              </h3>
-                              <p className={`text-xs mt-1 leading-relaxed ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                                {r.desc}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    <div className="pt-4 flex justify-end">
-                      <button
-                        type="button"
-                        onClick={() => setStep(2)}
-                        className="btn-premium btn-primary-gradient px-6 py-3.5 rounded-xl flex items-center gap-2 text-xs sm:text-sm font-extrabold text-white shadow-premium-glow cursor-pointer hover:scale-105 transition-all"
-                      >
-                        <span>Continue to Account Info</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* STEP 2: ACCOUNT FORM */}
-                {step === 2 && !isRegistered && (
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div className={`flex justify-between items-center border-b pb-4 ${isLight ? 'border-gray-100' : 'border-white/10'}`}>
-                      <div>
-                        <h2 className={`font-outfit text-xl sm:text-2xl font-black ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                          Fill Your Details
-                        </h2>
-                        <p className={`text-xs mt-0.5 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                          Creating account as: <span className="font-bold text-secondary">{selectedRole}</span>
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setStep(1)}
-                        className="text-xs text-primary font-bold hover:underline cursor-pointer"
-                      >
-                        Change Role
-                      </button>
-                    </div>
-
-                    {/* Row 1: Name & Designation */}
+                    {/* Row 1: Name & Email */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       <div className="space-y-1 text-left">
                         <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
@@ -316,7 +162,7 @@ export default function Register() {
                           <User className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
                           <input
                             type="text"
-                            placeholder="e.g. Prof. Alex"
+                            placeholder="e.g. Alex Smith"
                             {...register('name', { required: 'Name is required' })}
                             className={`w-full rounded-xl border px-3 py-2.5 pl-9 text-xs transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
                               isLight 
@@ -328,28 +174,6 @@ export default function Register() {
                         {errors.name && <span className="text-[10px] text-accent font-bold">{errors.name.message}</span>}
                       </div>
 
-                      <div className="space-y-1 text-left">
-                        <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
-                          Designation / Role
-                        </label>
-                        <div className="relative">
-                          <Briefcase className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
-                          <input
-                            type="text"
-                            placeholder="e.g. Professor / Host"
-                            {...register('designation', { required: 'Designation is required' })}
-                            className={`w-full rounded-xl border px-3 py-2.5 pl-9 text-xs transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
-                              isLight 
-                                ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
-                                : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
-                            }`}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Row 2: Email & Password */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       <div className="space-y-1 text-left">
                         <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
                           Email Address
@@ -372,7 +196,10 @@ export default function Register() {
                         </div>
                         {errors.email && <span className="text-[10px] text-accent font-bold">{errors.email.message}</span>}
                       </div>
+                    </div>
 
+                    {/* Row 2: Password & Confirm Password */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       <div className="space-y-1 text-left">
                         <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
                           Password
@@ -405,10 +232,7 @@ export default function Register() {
                         )}
                         {errors.password && <span className="text-[10px] text-accent font-bold">{errors.password.message}</span>}
                       </div>
-                    </div>
 
-                    {/* Row 3: Confirm Password & Security Question */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       <div className="space-y-1 text-left">
                         <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
                           Confirm Password
@@ -438,7 +262,10 @@ export default function Register() {
                         </div>
                         {errors.confirmPassword && <span className="text-[10px] text-accent font-bold">{errors.confirmPassword.message}</span>}
                       </div>
+                    </div>
 
+                    {/* Row 3: Security Question & Security Answer */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       <div className="space-y-1 text-left">
                         <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
                           Security Question
@@ -458,54 +285,43 @@ export default function Register() {
                           </select>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Security Answer */}
-                    <div className="space-y-1 text-left">
-                      <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
-                        Security Answer
-                      </label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
-                        <input
-                          type="text"
-                          placeholder="Your answer"
-                          {...register('securityAnswer', { required: 'Answer required' })}
-                          className={`w-full rounded-xl border px-3 py-2.5 pl-9 text-xs transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
-                            isLight 
-                              ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
-                              : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
-                          }`}
-                        />
+                      <div className="space-y-1 text-left">
+                        <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                          Security Answer
+                        </label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                          <input
+                            type="text"
+                            placeholder="Your answer"
+                            {...register('securityAnswer', { required: 'Answer required' })}
+                            className={`w-full rounded-xl border px-3 py-2.5 pl-9 text-xs transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
+                              isLight 
+                                ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
+                                : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                            }`}
+                          />
+                        </div>
+                        {errors.securityAnswer && <span className="text-[10px] text-accent font-bold">{errors.securityAnswer.message}</span>}
                       </div>
-                      {errors.securityAnswer && <span className="text-[10px] text-accent font-bold">{errors.securityAnswer.message}</span>}
                     </div>
 
-                    <div className="pt-2 flex justify-between items-center">
-                      <button
-                        type="button"
-                        onClick={() => setStep(1)}
-                        className={`text-xs font-bold cursor-pointer transition-colors ${
-                          isLight ? 'text-gray-600 hover:text-gray-900' : 'text-gray-400 hover:text-white'
-                        }`}
-                      >
-                        ← Back to Roles
-                      </button>
-
+                    <div className="pt-3">
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="btn-premium btn-secondary-gradient py-3.5 px-6 flex items-center gap-2 text-xs sm:text-sm font-extrabold text-white rounded-xl shadow-secondary-glow cursor-pointer hover:scale-105 transition-all"
+                        className="w-full btn-premium btn-secondary-gradient py-3.5 px-6 flex items-center justify-center gap-2 text-xs sm:text-sm font-extrabold text-white rounded-xl shadow-secondary-glow cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all"
                       >
                         {isLoading ? (
                           <div className="flex items-center gap-2">
                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                            <span>Creating...</span>
+                            <span>Creating Host Account...</span>
                           </div>
                         ) : (
                           <>
                             <UserPlus className="h-4 w-4" />
-                            <span>Complete Account Registration</span>
+                            <span>Create Free Host Account</span>
                             <ArrowRight className="h-4 w-4 ml-1" />
                           </>
                         )}
@@ -522,7 +338,7 @@ export default function Register() {
                   </form>
                 )}
 
-                {/* STEP 3: SUCCESS CELEBRATION */}
+                {/* SUCCESS CELEBRATION */}
                 {isRegistered && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -537,7 +353,7 @@ export default function Register() {
                         Welcome Aboard, {registeredUser?.name || 'User'}!
                       </h2>
                       <p className="text-xs sm:text-sm text-emerald-500 font-bold mt-1">
-                        Your free Quiz Hub account has been initialized successfully.
+                        Your free Quiz Hub host account has been created successfully.
                       </p>
                     </div>
 
@@ -576,7 +392,7 @@ export default function Register() {
                 <div className={`flex items-center gap-2 border-b pb-3 ${isLight ? 'border-gray-100' : 'border-white/10'}`}>
                   <Sparkles className="h-5 w-5 text-secondary animate-pulse" />
                   <h3 className={`font-outfit text-base font-extrabold ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                    Free Account Includes
+                    Host Account Includes
                   </h3>
                 </div>
 
@@ -650,9 +466,9 @@ export default function Register() {
                 isLight ? 'bg-white border-gray-200/80 shadow-sm' : 'glass-panel border-white/10'
               }`}>
                 <p className={`text-xs font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                  Already registered?{' '}
+                  Already have a host account?{' '}
                   <Link to="/login" className="font-extrabold text-secondary hover:underline">
-                    Sign In to Quiz Hub
+                    Sign In
                   </Link>
                 </p>
               </div>
@@ -666,3 +482,4 @@ export default function Register() {
     </AnimatedPage>
   );
 }
+

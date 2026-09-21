@@ -2,15 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, PlusCircle, Mail,
-  Calendar, FileText, ArrowRight, Play, Users, HelpCircle,
-  X, Trophy, Clock, BarChart3, UserCheck, ChevronRight, User, Trash2
+  LayoutDashboard, PlusCircle, FileText, ArrowRight, Play, Users, HelpCircle,
+  X, Trophy, Clock, BarChart3, UserCheck, Pencil, ChevronRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import Logo from '../components/Logo';
-import DeleteAccountModal from '../components/DeleteAccountModal';
-import { getProfile } from '../services/authService';
 import { getMyQuizzes } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
@@ -22,16 +18,7 @@ export default function Dashboard() {
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
 
-  const [activeTab, setActiveTab] = useState('overview');
   const [activeModal, setActiveModal] = useState(null); // 'sessions' | 'students' | null
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  const handleDeleteAccountSuccess = () => {
-    setIsDeleteModalOpen(false);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
 
   // Display Welcome Popup Toast when arriving directly from Sign In or Registration
   useEffect(() => {
@@ -46,16 +33,6 @@ export default function Dashboard() {
     localStorage.removeItem('guest_playerName');
     localStorage.removeItem('guest_pin');
   }, []);
-
-  // React Queries
-  const {
-    data: profileData,
-    isLoading: isProfileLoading,
-    error: profileError
-  } = useQuery({
-    queryKey: ['profile'],
-    queryFn: getProfile,
-  });
 
   const { 
     data: quizzesData,
@@ -115,17 +92,6 @@ export default function Dashboard() {
       onSettled: () => toast.dismiss('host-game')
     });
   };
-
-  // Immediate cached user fallback so Dashboard renders instantly without black/blank loading screen
-  const cachedUser = React.useMemo(() => {
-    try {
-      return JSON.parse(localStorage.getItem('user'));
-    } catch {
-      return null;
-    }
-  }, []);
-
-  const user = profileData?.user || cachedUser;
 
   return (
     <AnimatedPage>
@@ -244,122 +210,97 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* TWO PANEL CONTENT */}
-          <div className="grid gap-8 lg:grid-cols-3">
+          {/* RECENT QUIZZES SECTION */}
+          <div className="space-y-6 text-left">
+            <div className="flex justify-between items-center">
+              <h3 className={`font-outfit text-lg font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                Recent Quizzes
+              </h3>
+              <Link to="/quiz/my" className="text-xs font-semibold text-secondary hover:underline flex items-center gap-1">
+                <span>View All</span>
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
 
-            {/* Left/Center: Recent Quizzes */}
-            <div className="lg:col-span-2 space-y-6 text-left">
-              <div className="flex justify-between items-center">
-                <h3 className={`font-outfit text-lg font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                  Recent Quizzes
-                </h3>
-                <Link to="/quiz/my" className="text-xs font-semibold text-secondary hover:underline flex items-center gap-1">
-                  <span>View All</span>
-                  <ArrowRight className="h-3 w-3" />
+            {quizzesData?.quizzes?.length === 0 ? (
+              <div className={`rounded-2xl p-10 text-center space-y-4 border ${isLight ? 'bg-white border-gray-200' : 'glass-panel border-white/5'}`}>
+                <HelpCircle className="h-10 w-10 text-gray-400 mx-auto" />
+                <h4 className={`font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>No Quizzes Found</h4>
+                <p className={`text-xs max-w-[280px] mx-auto ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                  You haven't created any quizzes yet. Create your first multiplayer challenge!
+                </p>
+                <Link to="/quiz/create" className="inline-flex btn-premium btn-primary-gradient px-4 py-2.5 text-xs font-bold">
+                  Create Quiz
                 </Link>
               </div>
-
-              {quizzesData?.quizzes?.length === 0 ? (
-                <div className={`rounded-2xl p-10 text-center space-y-4 border ${isLight ? 'bg-white border-gray-200' : 'glass-panel border-white/5'}`}>
-                  <HelpCircle className="h-10 w-10 text-gray-400 mx-auto" />
-                  <h4 className={`font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>No Quizzes Found</h4>
-                  <p className={`text-xs max-w-[280px] mx-auto ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                    You haven't created any quizzes yet. Create your first multiplayer challenge!
-                  </p>
-                  <Link to="/quiz/create" className="inline-flex btn-premium btn-primary-gradient px-4 py-2.5 text-xs font-bold">
-                    Create Quiz
-                  </Link>
-                </div>
-              ) : (
-                <div className="grid gap-5 sm:grid-cols-2">
-                  {quizzesData?.quizzes?.slice(0, 4).map((quiz) => (
-                    <div 
-                      key={quiz._id} 
-                      className={`rounded-2xl p-5 sm:p-6 flex flex-col justify-between min-h-[220px] group border transition-all relative ${
-                        isLight 
-                          ? 'bg-white border-gray-200 hover:border-primary/40 shadow-sm hover:shadow-md' 
-                          : 'glass-panel border-white/5 hover:border-primary/30'
-                      }`}
-                    >
-                      <div>
-                        <div className="flex justify-between items-start gap-2 mb-2">
-                          <span className="text-[9px] font-bold text-secondary bg-secondary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                            {quiz.category || 'General'}
-                          </span>
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {quizzesData?.quizzes?.slice(0, 6).map((quiz) => (
+                  <div 
+                    key={quiz._id}
+                    onClick={() => navigate(`/quiz/edit/${quiz._id}`)}
+                    className={`rounded-2xl p-5 sm:p-6 flex flex-col justify-between min-h-[220px] group border transition-all relative cursor-pointer hover:scale-[1.02] shadow-sm hover:shadow-xl select-none ${
+                      isLight 
+                        ? 'bg-white border-gray-200 hover:border-primary/50 text-gray-900' 
+                        : 'glass-panel border-white/5 hover:border-primary/40 text-white'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex justify-between items-start gap-2 mb-2">
+                        <span className="text-[9px] font-bold text-secondary bg-secondary/10 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                          {quiz.category || 'General'}
+                        </span>
+                        <div className="flex items-center gap-2">
                           <span className={`text-[10px] font-semibold ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
                             {quiz.questions?.length || 0} Questions
                           </span>
+                          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold text-primary flex items-center gap-0.5">
+                            <Pencil className="h-3 w-3" /> Edit
+                          </span>
                         </div>
-                        <h4 className={`font-bold mt-4 text-sm sm:text-base group-hover:text-primary transition-colors line-clamp-1 ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                          {quiz.title}
-                        </h4>
-                        <p className={`text-xs mt-1.5 line-clamp-2 leading-relaxed ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                          {quiz.description || 'No description provided.'}
-                        </p>
                       </div>
-
-                      <div className={`flex flex-col gap-2.5 mt-5 pt-4 border-t ${isLight ? 'border-gray-100' : 'border-white/5'}`}>
-                        <button
-                          onClick={() => handleHostGame(quiz._id)}
-                          className="flex-1 btn-premium btn-primary-gradient py-2.5 px-3 flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-premium-glow"
-                        >
-                          <Play className="h-3.5 w-3.5 fill-current" />
-                          <span>Launch Lobby</span>
-                        </button>
-                      </div>
+                      <h4 className={`font-bold mt-3 text-base sm:text-lg group-hover:text-primary transition-colors line-clamp-1 flex items-center justify-between gap-2 ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                        <span className="truncate">{quiz.title}</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
+                      </h4>
+                      <p className={`text-xs mt-1.5 line-clamp-2 leading-relaxed ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                        {quiz.description || 'Click to view & edit quiz questions.'}
+                      </p>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            {/* Right Side: Profile Summary & Stats */}
-            <div className="space-y-6 text-left">
-              <h3 className={`font-outfit text-lg font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                Host Profile
-              </h3>
+                    <div className={`flex items-center gap-2 mt-5 pt-4 border-t ${isLight ? 'border-gray-100' : 'border-white/5'}`}>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleHostGame(quiz._id);
+                        }}
+                        className="flex-1 btn-premium btn-primary-gradient py-2.5 px-3 flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-premium-glow cursor-pointer hover:scale-105 active:scale-95 transition-all"
+                      >
+                        <Play className="h-3.5 w-3.5 fill-current" />
+                        <span>Launch Lobby</span>
+                      </button>
 
-              <div className={`rounded-2xl p-6 space-y-5 border ${isLight ? 'bg-white border-gray-200 shadow-sm' : 'glass-panel border-white/5'}`}>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-extrabold text-base text-white">
-                    {user?.name?.charAt(0).toUpperCase()}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/quiz/edit/${quiz._id}`);
+                        }}
+                        className={`p-2.5 rounded-xl border transition-all cursor-pointer hover:scale-105 active:scale-95 ${
+                          isLight 
+                            ? 'bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200 hover:text-primary' 
+                            : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/15 hover:text-white'
+                        }`}
+                        title="Edit Quiz Details & Questions"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className={`font-bold text-sm ${isLight ? 'text-gray-900' : 'text-white'}`}>{user?.name}</h4>
-                    <span className="text-[10px] font-semibold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded-full">Quiz Moderator</span>
-                  </div>
-                </div>
-
-                <div className={`space-y-3.5 border-t pt-5 text-xs ${isLight ? 'border-gray-100 text-gray-600' : 'border-white/5 text-gray-400'}`}>
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-gray-400" />
-                    <span className="truncate">{user?.email}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span>Member since {new Date(user?.createdAt || Date.now()).toLocaleDateString(undefined, { year: 'numeric', month: 'long' })}</span>
-                  </div>
-                </div>
-
-                {/* Danger Zone: Delete Account */}
-                <div className={`border-t pt-4 ${isLight ? 'border-gray-100' : 'border-white/5'}`}>
-                  <button
-                    type="button"
-                    onClick={() => setIsDeleteModalOpen(true)}
-                    className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-                      isLight
-                        ? 'border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300'
-                        : 'border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50'
-                    }`}
-                  >
-                    <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                    <span>Delete Account</span>
-                  </button>
-                </div>
+                ))}
               </div>
-
-            </div>
-
+            )}
           </div>
 
         </div>
@@ -535,13 +476,6 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-
-        {/* DELETE ACCOUNT CONFIRMATION MODAL */}
-        <DeleteAccountModal
-          isOpen={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
-          onSuccess={handleDeleteAccountSuccess}
-        />
 
       </div>
     </AnimatedPage>

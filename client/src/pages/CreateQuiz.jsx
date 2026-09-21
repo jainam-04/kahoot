@@ -6,7 +6,7 @@ import {
   Plus, Trash2, Save, HelpCircle, Layout, ArrowLeft, 
   Settings, CheckCircle, Clock, Eye, AlertCircle, FileSpreadsheet, Play,
   Image, Upload, X, ChevronDown, ChevronUp, Palette, Copy,
-  LayoutDashboard, LogOut, User, Sun, Moon
+  LayoutDashboard, LogOut, User, Sun, Moon, Sparkles, Bot
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx';
@@ -16,6 +16,7 @@ import { createQuiz } from '../services/quizService';
 import { createGame } from '../services/gameService';
 
 import BackgroundPicker from '../components/BackgroundPicker';
+import AIQuizAssistantModal from '../components/AIQuizAssistantModal';
 import { useTheme } from '../context/ThemeContext';
 
 export default function CreateQuiz() {
@@ -35,6 +36,7 @@ export default function CreateQuiz() {
   // Advanced customization states
   const [useSameBgForAll, setUseSameBgForAll] = useState(true);
   const [bgModalTarget, setBgModalTarget] = useState(null);
+  const [showAIModal, setShowAIModal] = useState(false);
 
   const pageHeaderRef = useRef(null);
 
@@ -123,6 +125,31 @@ export default function CreateQuiz() {
   });
 
   const watchAllFields = watch();
+
+  const handleAddAIQuestions = (aiQuestions) => {
+    const currentQuestions = watch('questions') || [];
+    const isFirstQuestionEmpty = currentQuestions.length === 1 && 
+      !currentQuestions[0].questionText?.trim() && 
+      currentQuestions[0].options.every(opt => !opt?.trim());
+
+    if (isFirstQuestionEmpty) {
+      setValue('questions', aiQuestions);
+    } else {
+      aiQuestions.forEach(q => append(q));
+    }
+  };
+
+  const handleReplaceWithAIQuiz = (result) => {
+    if (result.title) {
+      setValue('title', result.title);
+    }
+    if (result.category) {
+      setValue('category', result.category);
+    }
+    if (result.questions && result.questions.length > 0) {
+      setValue('questions', result.questions);
+    }
+  };
 
   const handleExcelUpload = (e) => {
     const file = e.target.files[0];
@@ -318,6 +345,17 @@ export default function CreateQuiz() {
             </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 mt-1 sm:mt-0 w-full sm:w-auto">
+                {/* AI Quiz Assistant Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowAIModal(true)}
+                  className="btn-premium w-full sm:w-auto justify-center px-3.5 sm:px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-white shadow-md cursor-pointer hover:scale-105 active:scale-95 transition-all"
+                  style={{ background: 'linear-gradient(135deg, #7c3aed, #ec4899)', border: 'none' }}
+                >
+                  <Sparkles className="h-4 w-4 text-yellow-300 animate-pulse" />
+                  <span>AI Quiz Assistant</span>
+                </button>
+
                 {/* Hidden File Input for Excel/CSV */}
                 <input
                   type="file"
@@ -550,7 +588,17 @@ export default function CreateQuiz() {
                     Questions List ({fields.length})
                   </h3>
                   
-                  <div className="flex flex-wrap items-center gap-3 mt-3 sm:mt-0">
+                  <div className="flex flex-wrap items-center gap-2.5 mt-3 sm:mt-0">
+                    <button
+                      type="button"
+                      onClick={() => setShowAIModal(true)}
+                      className="btn-premium px-3.5 py-2 flex items-center gap-1.5 text-xs font-extrabold text-white shadow-md cursor-pointer hover:scale-105 active:scale-95 transition-all"
+                      style={{ background: 'linear-gradient(135deg, #7c3aed, #ec4899)', border: 'none' }}
+                    >
+                      <Sparkles className="h-3.5 w-3.5 text-yellow-300 animate-pulse" />
+                      <span>Generate with AI</span>
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => append({ questionText: '', options: ['', '', '', ''], correctAnswer: 0, timeLimit: 20, backgroundImage: '' })}
@@ -813,7 +861,16 @@ export default function CreateQuiz() {
         </div>
       )}
 
+      {/* AI QUIZ ASSISTANT MODAL */}
+      <AIQuizAssistantModal
+        isOpen={showAIModal}
+        onClose={() => setShowAIModal(false)}
+        onAddQuestions={handleAddAIQuestions}
+        onReplaceQuiz={handleReplaceWithAIQuiz}
+      />
+
       </div>
     </AnimatedPage>
   );
 }
+

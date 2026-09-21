@@ -30,3 +30,7 @@ export const deleteQuiz = async (id) => {
   return response.data;
 };
 
+export const generateAIQuiz = async (promptData) => {
+  const response = await API.post('/quiz/generate-ai', promptData);
+  return response.data;
+};

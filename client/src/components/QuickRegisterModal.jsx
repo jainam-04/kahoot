@@ -4,39 +4,29 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, User, Mail, Lock, UserPlus, ArrowRight, ShieldCheck,
-  AlertCircle, Check, Briefcase, Sparkles, GraduationCap, Play, Award, Eye, EyeOff
+  Check, Sparkles, Eye, EyeOff
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Logo from './Logo';
 import { register as registerUser } from '../services/authService';
 import { useTheme } from '../context/ThemeContext';
 
-export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initialRole = 'Teacher' }) {
+export default function QuickRegisterModal({ isOpen, onClose, onSuccess }) {
   const navigate = useNavigate();
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
 
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(initialRole);
   const [showPassword, setShowPassword] = useState(false);
-
-  const roles = [
-    { id: 'Teacher', title: 'Educator', icon: GraduationCap, defaultDesig: 'Professor' },
-    { id: 'Quiz Host', title: 'Quiz Host', icon: Play, defaultDesig: 'Quiz Host' },
-    { id: 'Manager', title: 'Corporate / Lead', icon: Briefcase, defaultDesig: 'Manager' },
-    { id: 'Student', title: 'Student / Player', icon: Award, defaultDesig: 'Student' },
-  ];
 
   const {
     register,
     handleSubmit,
     watch,
-    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
       name: '',
-      designation: 'Professor',
       email: '',
       password: '',
       confirmPassword: '',
@@ -66,17 +56,11 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
 
   const strength = getPasswordStrength(watchPassword);
 
-  const handleRoleSelect = (roleId, defaultDesig) => {
-    setSelectedRole(roleId);
-    setValue('designation', defaultDesig);
-  };
-
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
       const response = await registerUser({
         name: data.name ? data.name.trim() : '',
-        designation: data.designation || selectedRole,
         email: data.email ? data.email.trim() : '',
         password: data.password,
         securityQuestion: data.securityQuestion,
@@ -119,7 +103,7 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className={`relative w-full max-w-2xl rounded-3xl border overflow-hidden shadow-2xl my-auto ${isLight
+          className={`relative w-full max-w-lg rounded-3xl border overflow-hidden shadow-2xl my-auto ${isLight
               ? 'bg-white border-purple-100 text-gray-900'
               : 'bg-[#0e0e14] border-white/10 text-white'
             }`}
@@ -146,48 +130,21 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
                   Quiz<span className="text-secondary">Forge</span>
                 </span>
                 <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" /> Free Account
+                  <Sparkles className="h-3 w-3" /> Host Account
                 </span>
               </div>
               <h2 className="font-outfit text-2xl sm:text-3xl font-black tracking-tight">
-                Start For Free Today
+                Create Host Account
               </h2>
               <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto">
-                Join Quiz Hub to create quizzes, host live multiplayer battles & track performance instantly.
+                Sign up to create quizzes, host live multiplayer battles & track performance instantly.
               </p>
-            </div>
-
-            {/* Quick Role Selection Pills */}
-            <div className="space-y-2">
-              <label className="text-[11px] font-extrabold uppercase tracking-wider block text-gray-400 text-center">
-                Select Your Role / Purpose
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {roles.map((r) => {
-                  const Icon = r.icon;
-                  const isSelected = selectedRole === r.id;
-                  return (
-                    <button
-                      key={r.id}
-                      type="button"
-                      onClick={() => handleRoleSelect(r.id, r.defaultDesig)}
-                      className={`p-3 rounded-2xl border text-center flex flex-col items-center gap-1.5 transition-all cursor-pointer ${isSelected
-                          ? 'border-secondary bg-secondary/15 text-white shadow-lg ring-1 ring-secondary/50'
-                          : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:text-white'
-                        }`}
-                    >
-                      <Icon className={`h-5 w-5 ${isSelected ? 'text-secondary' : 'text-gray-400'}`} />
-                      <span className="text-xs font-bold">{r.title}</span>
-                    </button>
-                  );
-                })}
-              </div>
             </div>
 
             {/* Account Registration Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5 pt-2">
 
-              {/* Row 1: Name & Designation */}
+              {/* Row 1: Name & Email */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
                 {/* Name */}
@@ -207,27 +164,6 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
                   {errors.name && <span className="text-[10px] text-accent font-bold">{errors.name.message}</span>}
                 </div>
 
-                {/* Designation */}
-                <div className="space-y-1">
-                  <label className="text-[11px] font-extrabold uppercase tracking-wider block text-gray-400">
-                    Designation
-                  </label>
-                  <div className="relative">
-                    <Briefcase className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
-                    <input
-                      type="text"
-                      placeholder="e.g. Professor"
-                      {...register('designation', { required: 'Designation is required' })}
-                      className="w-full rounded-xl border bg-white/5 border-white/10 px-3 py-2.5 pl-9 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
-                    />
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Row 2: Email & Password */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-
                 {/* Email */}
                 <div className="space-y-1">
                   <label className="text-[11px] font-extrabold uppercase tracking-wider block text-gray-400">
@@ -237,10 +173,10 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
                     <input
                       type="email"
-                      placeholder="name@company.com"
+                      placeholder="host@quiz.com"
                       {...register('email', {
                         required: 'Email is required',
-                        pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Valid email required' }
+                        pattern: { value: /^[^\s@]+@[^\s@]+$/, message: 'Valid email required' }
                       })}
                       className="w-full rounded-xl border bg-white/5 border-white/10 px-3 py-2.5 pl-9 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
                     />
@@ -248,36 +184,36 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
                   {errors.email && <span className="text-[10px] text-accent font-bold">{errors.email.message}</span>}
                 </div>
 
-                {/* Password */}
-                <div className="space-y-1">
-                  <label className="text-[11px] font-extrabold uppercase tracking-wider block text-gray-400">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
-                      {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Min 6 characters' } })}
-                      className="w-full rounded-xl border bg-white/5 border-white/10 px-3 py-2.5 pl-9 pr-8 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-2.5 top-3 text-gray-400 hover:text-white"
-                    >
-                      {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                    </button>
-                  </div>
-                  {watchPassword && (
-                    <div className="flex justify-between items-center text-[9px] font-bold mt-1">
-                      <span className="text-gray-500 uppercase">Strength:</span>
-                      <span className={strength.text}>{strength.label}</span>
-                    </div>
-                  )}
-                  {errors.password && <span className="text-[10px] text-accent font-bold">{errors.password.message}</span>}
-                </div>
+              </div>
 
+              {/* Row 2: Password */}
+              <div className="space-y-1">
+                <label className="text-[11px] font-extrabold uppercase tracking-wider block text-gray-400">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Min 6 characters' } })}
+                    className="w-full rounded-xl border bg-white/5 border-white/10 px-3 py-2.5 pl-9 pr-8 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/30"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-3 text-gray-400 hover:text-white"
+                  >
+                    {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+                {watchPassword && (
+                  <div className="flex justify-between items-center text-[9px] font-bold mt-1">
+                    <span className="text-gray-500 uppercase">Strength:</span>
+                    <span className={strength.text}>{strength.label}</span>
+                  </div>
+                )}
+                {errors.password && <span className="text-[10px] text-accent font-bold">{errors.password.message}</span>}
               </div>
 
               {/* Row 3: Security Question & Security Answer */}
@@ -346,12 +282,12 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
                 {isLoading ? (
                   <div className="flex items-center gap-2">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    <span>Creating Free Account...</span>
+                    <span>Creating Free Host Account...</span>
                   </div>
                 ) : (
                   <>
                     <UserPlus className="h-4 w-4" />
-                    <span>Create Free Account & Continue</span>
+                    <span>Create Host Account</span>
                     <ArrowRight className="h-4 w-4 ml-1" />
                   </>
                 )}
@@ -382,3 +318,4 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, initial
     </AnimatePresence>
   );
 }
+

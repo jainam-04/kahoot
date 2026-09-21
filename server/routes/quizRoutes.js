@@ -6,12 +6,14 @@ const {
     getQuiz,
     deleteQuiz,
     getMyQuizzes,
-    updateQuiz
+    updateQuiz,
+    generateAIQuestions
 } = require('../controllers/quizController');
 const { protect } = require('../middleware/authMiddleware');
 
 router.get('/list', listQuizzes);
 router.get('/user/myquizzes', protect, getMyQuizzes);
+router.post('/generate-ai', protect, generateAIQuestions);
 router.get('/:id', getQuiz);
 router.post('/create', protect, createQuiz);
 router.put('/:id', protect, updateQuiz);
