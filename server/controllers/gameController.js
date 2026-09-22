@@ -146,6 +146,10 @@ const joinGame = async (req, res) => {
 
         const cleanPin = pin ? pin.toString().trim() : '';
         const cleanName = playerName ? playerName.toString().trim() : '';
+        const cleanFullName = (fullName && fullName.toString().trim()) || cleanName;
+        const cleanMobile = (mobileNumber && mobileNumber.toString().trim()) || '';
+        const cleanNickname = (nickname && nickname.toString().trim()) || cleanName;
+        const cleanAvatar = avatar || 'dog';
 
         if (!cleanPin || !cleanName) {
             return res.status(400).json({
@@ -161,7 +165,7 @@ const joinGame = async (req, res) => {
                 status: 'waiting',
                 'players.name': { $not: new RegExp('^' + escName + '$', 'i') }
             },
-            { $push: { players: { name: cleanName, avatar: avatar || 'dog', fullName, mobileNumber, nickname, totalScore: 0, answers: [] } } },
+            { $push: { players: { name: cleanName, avatar: cleanAvatar, fullName: cleanFullName, mobileNumber: cleanMobile, nickname: cleanNickname, totalScore: 0, answers: [] } } },
             { new: true }
         );
 
@@ -258,6 +262,16 @@ const startQuestion = async (req, res) => {
 
         const nextQuestion = quiz.questions[nextIndex];
         const questionStartTime = Date.now();
+
+        // Sanitize any existing player records to guarantee valid schema before save
+        if (Array.isArray(game.players)) {
+            game.players.forEach(p => {
+                if (!p.fullName) p.fullName = p.name || 'Player';
+                if (!p.mobileNumber) p.mobileNumber = '';
+                if (!p.nickname) p.nickname = p.name || 'Player';
+                if (!p.avatar) p.avatar = '👤';
+            });
+        }
 
         game.currentQuestionIndex = nextIndex;
         game.questionStartTime = questionStartTime;
@@ -509,6 +523,15 @@ const endGame = async (req, res) => {
             );
             game.players[playerIndex].rank = player.rank;
         });
+
+        if (Array.isArray(game.players)) {
+            game.players.forEach(p => {
+                if (!p.fullName) p.fullName = p.name || 'Player';
+                if (!p.mobileNumber) p.mobileNumber = '';
+                if (!p.nickname) p.nickname = p.name || 'Player';
+                if (!p.avatar) p.avatar = '👤';
+            });
+        }
 
         game.status = 'finished';
         game.winner = winner;

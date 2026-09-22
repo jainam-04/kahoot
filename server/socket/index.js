@@ -59,7 +59,7 @@ module.exports = (io) => {
                         if (!hasPlayer) {
                             const updatedGame = await GameSession.findOneAndUpdate(
                                 { pin: roomPin, status: 'waiting' },
-                                { $push: { players: { name: playerName, avatar: '👤', totalScore: 0, answers: [] } } },
+                                { $push: { players: { name: playerName, fullName: playerName, nickname: playerName, mobileNumber: '', avatar: '👤', totalScore: 0, answers: [] } } },
                                 { new: true }
                             );
                             if (updatedGame) {

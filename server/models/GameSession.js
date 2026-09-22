@@ -31,16 +31,17 @@ const playerSchema = new mongoose.Schema({
     },
     fullName: {
         type: String,
-        required: true,
+        default: '',
         trim: true
     },
     nickname: {
         type: String,
+        default: '',
         trim: true
     },
     mobileNumber: {
         type: String,
-        required: true,
+        default: '',
         trim: true
     },
     avatar: {
