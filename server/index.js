@@ -67,6 +67,7 @@ const gameRoutes = require('./routes/gameRoutes');
 const resultRoutes = require('./routes/resultRoutes');
 const imageRoutes = require('./routes/imageRoutes');
 const infoRoutes = require('./routes/infoRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 app.use('/auth', authRoutes);
 app.use('/quiz', quizRoutes);
@@ -74,6 +75,7 @@ app.use('/game', gameRoutes);
 app.use('/result', resultRoutes);
 app.use('/images', imageRoutes);
 app.use('/info', infoRoutes);
+app.use('/admin', adminRoutes);
 
 // Dual-mount /api/* paths for universal API compatibility
 app.use('/api/auth', authRoutes);
@@ -83,6 +85,7 @@ app.use('/api/result', resultRoutes);
 app.use('/api/results', resultRoutes);
 app.use('/api/images', imageRoutes);
 app.use('/api/info', infoRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api', infoRoutes);
 
 app.get('/', (req, res) => {

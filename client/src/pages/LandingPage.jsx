@@ -3,6 +3,7 @@ import AnimatedPage from '../components/AnimatedPage';
 import ThemeBackground from '../components/ThemeBackground';
 import HeroSection from '../components/landing/HeroSection';
 import LiveDemoSection from '../components/landing/LiveDemoSection';
+import ReadyQuizzesSection from '../components/landing/ReadyQuizzesSection';
 import FeaturesSection from '../components/landing/FeaturesSection';
 import HowItWorksSection from '../components/landing/HowItWorksSection';
 import PricingSection from '../components/landing/PricingSection';
@@ -19,6 +20,9 @@ export default function LandingPage() {
 
           {/* Interactive Mini Quiz Product Demo */}
           <LiveDemoSection />
+
+          {/* Ready to Use Quizzes Section */}
+          <ReadyQuizzesSection />
 
           {/* How It Works (4-Step Process) */}
           <HowItWorksSection />

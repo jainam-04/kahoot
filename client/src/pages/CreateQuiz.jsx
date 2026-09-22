@@ -17,6 +17,7 @@ import { createGame } from '../services/gameService';
 
 import BackgroundPicker from '../components/BackgroundPicker';
 import AIQuizAssistantModal from '../components/AIQuizAssistantModal';
+import UploadBaseTemplate from '../components/UploadBaseTemplate';
 import { useTheme } from '../context/ThemeContext';
 
 export default function CreateQuiz() {
@@ -314,7 +315,9 @@ export default function CreateQuiz() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen bg-background text-gray-200">
+      <div className={`relative min-h-screen bg-background transition-colors duration-300 ${
+        isLight ? 'text-slate-800' : 'text-gray-200'
+      }`}>
         
         {/* Glow Spheres */}
         <div className="absolute top-[-5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-40"></div>
@@ -610,16 +613,8 @@ export default function CreateQuiz() {
                   </div>
                 </div>
 
-                {/* Spreadsheet Formatting Tip Info Box */}
-                <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-xs text-gray-400 space-y-1.5">
-                  <span className="font-bold text-gray-300 uppercase tracking-wider text-[10px] block">Excel/CSV Format Guidelines:</span>
-                  <p>
-                    Columns must follow: <code className="text-secondary bg-white/5 px-1.5 py-0.5 rounded font-mono">Question Text, Option 1, Option 2, Option 3, Option 4, Correct Option Index (1-4), Time Limit in Seconds</code>.
-                  </p>
-                  <p className="text-[10px] text-gray-500">
-                    *Tip: Row headers (e.g. "Question Text", "Option 1") will be skipped automatically if present in the first row.
-                  </p>
-                </div>
+                {/* Visual Spreadsheet Base Template Component */}
+                <UploadBaseTemplate onTriggerUpload={() => document.getElementById('excel-file-upload')?.click()} />
 
                 <div className="space-y-6">
                   <AnimatePresence initial={false}>

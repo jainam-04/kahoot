@@ -289,6 +289,16 @@ export default function Navbar() {
                           <span>Dashboard Overview</span>
                         </Link>
                         <Link
+                          to="/admin"
+                          onClick={() => setProfileDropdownOpen(false)}
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors ${
+                            isLight ? 'hover:bg-purple-100/70 text-purple-900' : 'hover:bg-violet-950/40 text-violet-300'
+                          }`}
+                        >
+                          <User className="h-3.5 w-3.5 text-violet-500" />
+                          <span>Super Admin Panel</span>
+                        </Link>
+                        <Link
                           to="/quiz/my"
                           onClick={() => setProfileDropdownOpen(false)}
                           className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${

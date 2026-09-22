@@ -30,6 +30,7 @@ import AboutKahoot from './pages/AboutKahoot';
 import TermsAndConditions from './pages/TermsAndConditions';
 import RefundPolicy from './pages/RefundPolicy';
 import FAQPage from './pages/FAQPage';
+import AdminPanel from './pages/AdminPanel';
 
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { GameProvider } from './context/GameContext';
@@ -73,7 +74,8 @@ function AnimatedRoutes() {
     '/waiting', 
     '/result/answer', 
     '/leaderboard', 
-    '/final-result'
+    '/final-result',
+    '/admin'
   ].some(path => location.pathname.startsWith(path));
 
   // Footer is ONLY displayed on the homepage ('/') and hidden when logged in to an account
@@ -95,6 +97,7 @@ function AnimatedRoutes() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/admin" element={<AdminPanel />} />
             <Route path="/quiz/create" element={<CreateQuiz />} />
             <Route path="/quiz/edit/:id" element={<EditQuiz />} />
             <Route path="/quiz/my" element={<MyQuizzes />} />
