@@ -43,7 +43,7 @@ const io = new Server(server, {
 // ─── CORS Configuration ───────────────────────
 // Allowed dynamically from any origin to make the API universally accessible
 app.use(cors({
-    origin: function(origin, callback) {
+    origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps or curl requests)
         // and allow all other origins dynamically.
         callback(null, true);

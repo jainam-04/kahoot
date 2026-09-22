@@ -48,12 +48,12 @@ export default function AIQuizAssistantModal({
   }, [messages, isLoading]);
 
   const promptSuggestions = [
-    { label: '🪐 Solar System & Planets', prompt: 'I want an easy quiz on the Solar System and planets with 5 questions', count: 5, diff: 'easy' },
-    { label: '💻 React & JavaScript', prompt: 'Create 5 medium difficulty questions on modern React and JavaScript fundamentals', count: 5, diff: 'medium' },
-    { label: '🌍 World Geography', prompt: 'Give me 5 easy quiz questions about world capitals and geography', count: 5, diff: 'easy' },
-    { label: '🧪 General Science', prompt: 'Create 5 medium questions on physics, chemistry and human biology', count: 5, diff: 'medium' },
-    { label: '🏛️ World History Trivia', prompt: '5 medium questions about major historical events and civilizations', count: 5, diff: 'medium' },
-    { label: '🎬 Movies & Pop Culture', prompt: '5 fun pop culture and blockbuster movie trivia questions', count: 5, diff: 'easy' },
+    { label: '🪐 Solar System & Planets', prompt: 'Quiz on the Solar System and planets' },
+    { label: '💻 React & JavaScript', prompt: 'Quiz on modern React and JavaScript fundamentals' },
+    { label: '🌍 World Geography', prompt: 'Quiz about world capitals and geography' },
+    { label: '🧪 General Science', prompt: 'Quiz on physics, chemistry and human biology' },
+    { label: '🏛️ World History Trivia', prompt: 'Quiz about major historical events and civilizations' },
+    { label: '🎬 Movies & Pop Culture', prompt: 'Fun pop culture and blockbuster movie trivia quiz' },
   ];
 
   const handleSendPrompt = async (customPrompt = null, customCount = null, customDiff = null) => {
@@ -384,7 +384,7 @@ export default function AIQuizAssistantModal({
               <button
                 key={i}
                 type="button"
-                onClick={() => handleSendPrompt(sug.prompt, sug.count, sug.diff)}
+                onClick={() => handleSendPrompt(sug.prompt, null, null)}
                 className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-all border cursor-pointer ${
                   isLight
                     ? 'bg-white border-gray-200 hover:border-secondary hover:text-secondary text-gray-700 shadow-sm'

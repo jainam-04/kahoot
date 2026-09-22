@@ -199,11 +199,11 @@ const updateQuiz = async (req, res) => {
             }
         }
 
-        quiz.title          = title;
-        quiz.category       = category || quiz.category;
-        quiz.description    = description || '';
+        quiz.title = title;
+        quiz.category = category || quiz.category;
+        quiz.description = description || '';
         quiz.organizationName = organizationName || '';
-        quiz.questions      = questions;
+        quiz.questions = questions;
         quiz.backgroundImage = backgroundImage || '';
         await quiz.save();
 
@@ -284,62 +284,86 @@ Rules:
 5. Ensure options are realistic and only ONE option is correct.
 6. Return valid JSON only.`;
 
+        // Dynamically reload .env to immediately catch any newly saved keys without server restart
+        try {
+            require('dotenv').config({ override: true });
+        } catch (_) {}
+
         let generatedData = null;
+        const hasGemini = !!(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim());
+        const hasOpenAI = !!(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.trim() && !process.env.OPENAI_API_KEY.includes('your_openai_key_here'));
+        console.log(`[AI GENERATOR] Active Providers -> Gemini: ${hasGemini ? 'YES' : 'NO'}, OpenAI: ${hasOpenAI ? 'YES' : 'NO'}`);
 
         // =========================================================================
-        // TIER 1A: Official Google Gemini API (Ultra-Fast & Free Tier 15 RPM)
+        // TIER 1A: Official Google Gemini API — Primary Engine
         // =========================================================================
-        if (!generatedData && process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim() !== '') {
-            try {
-                const geminiKey = process.env.GEMINI_API_KEY.trim();
-                const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-                
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+        if (!generatedData && hasGemini) {
+            const geminiKey = process.env.GEMINI_API_KEY.trim();
+            console.log('[AI GENERATOR] Gemini key detected, prefix:', geminiKey.substring(0, 6));
 
-                const geminiRes = await fetch(geminiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    signal: controller.signal,
-                    body: JSON.stringify({
-                        contents: [
-                            {
-                                parts: [
-                                    { text: `${systemPrompt}\n\nTask: ${queryText}` }
-                                ]
+            // Models in priority order
+            const geminiCandidates = [
+                { model: 'gemini-3.5-flash-lite', apiVer: 'v1' },
+                { model: 'gemini-3.5-flash-lite', apiVer: 'v1beta' },
+            ];
+
+            for (const { model, apiVer } of geminiCandidates) {
+                if (generatedData?.questions?.length > 0) break;
+                try {
+                    const geminiUrl = `https://generativelanguage.googleapis.com/${apiVer}/models/${model}:generateContent?key=${geminiKey}`;
+                    console.log(`[AI GENERATOR] Trying Gemini ${model} (${apiVer})...`);
+
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+                    const geminiRes = await fetch(geminiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        signal: controller.signal,
+                        body: JSON.stringify({
+                            contents: [
+                                {
+                                    parts: [
+                                        { text: `${systemPrompt}\n\nTask: ${queryText}` }
+                                    ]
+                                }
+                            ],
+                            generationConfig: {
+                                responseMimeType: "application/json",
+                                temperature: 0.7
                             }
-                        ],
-                        generationConfig: {
-                            responseMimeType: "application/json",
-                            temperature: 0.7
-                        }
-                    })
-                });
-                clearTimeout(timeoutId);
+                        })
+                    });
+                    clearTimeout(timeoutId);
 
-                if (geminiRes.ok) {
-                    const geminiJson = await geminiRes.json();
-                    const textContent = geminiJson.candidates?.[0]?.content?.parts?.[0]?.text;
-                    generatedData = parseAIJsonOutput(textContent);
-                    if (generatedData?.questions?.length > 0) {
-                        console.log('[AI GENERATOR] Generated successfully via Google Gemini API');
+                    if (geminiRes.ok) {
+                        const geminiJson = await geminiRes.json();
+                        const textContent = geminiJson.candidates?.[0]?.content?.parts?.[0]?.text;
+                        generatedData = parseAIJsonOutput(textContent);
+                        if (generatedData?.questions?.length > 0) {
+                            console.log(`[AI GENERATOR] ✅ Generated via Gemini ${model} (${apiVer})`);
+                        }
+                    } else {
+                        const errBody = await geminiRes.text().catch(() => '');
+                        console.warn(`[AI GENERATOR] Gemini ${model} (${apiVer}) → ${geminiRes.status}: ${errBody.substring(0, 150)}`);
                     }
-                } else {
-                    console.warn('[AI GENERATOR] Gemini API responded with status:', geminiRes.status);
+                } catch (geminiErr) {
+                    console.warn(`[AI GENERATOR] Gemini ${model} (${apiVer}) error:`, geminiErr.message);
                 }
-            } catch (geminiErr) {
-                console.warn('[AI GENERATOR] Gemini API error, advancing to next tier:', geminiErr.message);
             }
         }
 
         // =========================================================================
-        // TIER 1B: Official OpenAI API (gpt-4o-mini / gpt-3.5-turbo)
+        // TIER 1B: Official OpenAI API (gpt-4o-mini) — Secondary Fallback
         // =========================================================================
-        if (!generatedData && process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.trim() !== '') {
+        if (!generatedData && hasOpenAI) {
+            const openAiKey = process.env.OPENAI_API_KEY.trim();
+            console.log('[AI GENERATOR] OpenAI key detected, prefix:', openAiKey.substring(0, 7));
+            console.log('[AI GENERATOR] Trying OpenAI API (gpt-4o-mini)...');
+
             try {
-                const openAiKey = process.env.OPENAI_API_KEY.trim();
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
 
                 const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
@@ -365,8 +389,11 @@ Rules:
                     const textContent = openAiJson.choices?.[0]?.message?.content;
                     generatedData = parseAIJsonOutput(textContent);
                     if (generatedData?.questions?.length > 0) {
-                        console.log('[AI GENERATOR] Generated successfully via OpenAI API');
+                        console.log('[AI GENERATOR] ✅ Generated successfully via OpenAI API (gpt-4o-mini)');
                     }
+                } else {
+                    const errBody = await openaiRes.text().catch(() => '');
+                    console.warn(`[AI GENERATOR] OpenAI API → ${openaiRes.status}: ${errBody}`);
                 }
             } catch (openaiErr) {
                 console.warn('[AI GENERATOR] OpenAI API error, advancing to next tier:', openaiErr.message);
@@ -380,9 +407,9 @@ Rules:
             try {
                 const encodedPrompt = encodeURIComponent(systemPrompt);
                 const aiUrl = `https://text.pollinations.ai/${encodedPrompt}?json=true&model=openai`;
-                
+
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
 
                 const aiResponse = await fetch(aiUrl, {
                     method: 'GET',
