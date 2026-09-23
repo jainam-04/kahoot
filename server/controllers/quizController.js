@@ -303,8 +303,11 @@ Rules:
 
             // Models in priority order
             const geminiCandidates = [
-                { model: 'gemini-3.5-flash-lite', apiVer: 'v1' },
+                { model: 'gemini-3.6-flash', apiVer: 'v1beta' },
+                { model: 'gemini-3.5-flash', apiVer: 'v1beta' },
                 { model: 'gemini-3.5-flash-lite', apiVer: 'v1beta' },
+                { model: 'gemini-flash-latest', apiVer: 'v1beta' },
+                { model: 'gemini-3.1-flash-lite', apiVer: 'v1beta' },
             ];
 
             for (const { model, apiVer } of geminiCandidates) {
@@ -338,7 +341,8 @@ Rules:
 
                     if (geminiRes.ok) {
                         const geminiJson = await geminiRes.json();
-                        const textContent = geminiJson.candidates?.[0]?.content?.parts?.[0]?.text;
+                        const parts = geminiJson.candidates?.[0]?.content?.parts || [];
+                        const textContent = parts.map(p => p.text || '').filter(Boolean).join('\n');
                         generatedData = parseAIJsonOutput(textContent);
                         if (generatedData?.questions?.length > 0) {
                             console.log(`[AI GENERATOR] ✅ Generated via Gemini ${model} (${apiVer})`);

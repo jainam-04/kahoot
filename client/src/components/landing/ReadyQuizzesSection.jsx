@@ -197,7 +197,7 @@ export default function ReadyQuizzesSection() {
           <h2 className={`font-outfit text-3xl sm:text-4xl md:text-5xl font-black tracking-tight ${
             isLight ? 'text-gray-900' : 'text-white'
           }`}>
-            Ready-to-Use <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-indigo-500 to-pink-500">Quizzes</span>
+            Ready-to-Use <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600">Quizzes</span>
           </h2>
 
           <p className={`text-sm sm:text-base leading-relaxed ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>

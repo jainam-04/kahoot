@@ -890,23 +890,29 @@
 .light .btn-primary-gradient *,
 .light .btn-secondary-gradient,
 .light .btn-secondary-gradient *,
-.light .bg-gradient-to-r,
-.light .bg-gradient-to-r *,
-.light .bg-gradient-to-br,
-.light .bg-gradient-to-br *,
-.light .bg-primary,
-.light .bg-primary *,
-.light .bg-secondary,
-.light .bg-secondary *,
-.light .bg-indigo-600,
-.light .bg-indigo-600 *,
-.light .bg-purple-600,
-.light .bg-purple-600 *,
-.light .bg-emerald-600,
-.light .bg-emerald-600 *,
-.light .bg-fuchsia-600,
-.light .bg-fuchsia-600 * {
+.light button.bg-primary,
+.light button.bg-primary *,
+.light button.bg-secondary,
+.light button.bg-secondary *,
+.light button.bg-indigo-600,
+.light button.bg-indigo-600 *,
+.light button.bg-purple-600,
+.light button.bg-purple-600 *,
+.light button.bg-emerald-600,
+.light button.bg-emerald-600 *,
+.light button.bg-fuchsia-600,
+.light button.bg-fuchsia-600 * {
   color: #ffffff !important;
+}
+
+/* ── Prevent white override on gradient text ── */
+.light .bg-clip-text,
+.light [class*="bg-clip-text"],
+.light .text-transparent {
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
 }
 
 /* ── Inputs / Forms ── */
