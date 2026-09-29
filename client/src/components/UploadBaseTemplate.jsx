@@ -1,7 +1,6 @@
 import React from 'react';
 import { Download, Copy, FileSpreadsheet, Info, UploadCloud } from 'lucide-react';
 import toast from 'react-hot-toast';
-import * as XLSX from 'xlsx';
 import { useTheme } from '../context/ThemeContext';
 
 export default function UploadBaseTemplate({ onTriggerUpload }) {
@@ -40,8 +39,9 @@ export default function UploadBaseTemplate({ onTriggerUpload }) {
   ];
 
   // Download real .xlsx template file
-  const handleDownloadExcelTemplate = () => {
+  const handleDownloadExcelTemplate = async () => {
     try {
+      const XLSX = await import('xlsx');
       const templateRows = sampleData.map(row => ({
         "Question Text": row.question,
         "Option 1": row.opt1,

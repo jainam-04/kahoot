@@ -1,17 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useQuery } from '@tanstack/react-query';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { 
   BarChart3, ArrowLeft, Loader2, Download, Trophy, 
   CheckCircle, XCircle, AlertCircle, FileSpreadsheet, FileText, Crown, Medal
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { 
-  Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, 
-  WidthType, AlignmentType, HeadingLevel, ShadingType 
-} from 'docx';
 import AnimatedPage from '../components/AnimatedPage';
 import { getResultBySession } from '../services/resultService';
 
@@ -214,13 +208,19 @@ export default function ResultsAnalytics() {
   };
 
   // ── PDF Export ────────────────────────────────────────────────────────────
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     if (!result) {
       toast.error('No result data loaded yet');
       return;
     }
 
     try {
+      toast.loading('Preparing PDF report...', { id: 'export-pdf' });
+      const [{ jsPDF }, { default: autoTable }] = await Promise.all([
+        import('jspdf'),
+        import('jspdf-autotable')
+      ]);
+
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pageW = doc.internal.pageSize.getWidth();
       const margin = 14;
@@ -437,6 +437,11 @@ export default function ResultsAnalytics() {
 
     try {
       toast.loading('Generating Word document...', { id: 'export-word' });
+
+      const { 
+        Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, 
+        WidthType, AlignmentType, HeadingLevel, ShadingType 
+      } = await import('docx');
 
       const title = result.quizTitle || 'Quizy Match';
       const category = result.quizCategory || result.quiz?.category || 'General';

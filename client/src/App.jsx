@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -7,35 +7,47 @@ import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
-// Pages
-import LandingPage from './pages/LandingPage';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Dashboard from './pages/Dashboard';
-import CreateQuiz from './pages/CreateQuiz';
-import EditQuiz from './pages/EditQuiz';
-import MyQuizzes from './pages/MyQuizzes';
-import HostLobby from './pages/HostLobby';
-import JoinGame from './pages/JoinGame';
-import WaitingRoom from './pages/WaitingRoom';
-import LiveQuiz from './pages/LiveQuiz';
-import AnswerResult from './pages/AnswerResult';
-import Leaderboard from './pages/Leaderboard';
-import FinalResult from './pages/FinalResult';
-import ResultsAnalytics from './pages/ResultsAnalytics';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import AboutKahoot from './pages/AboutKahoot';
-import TermsAndConditions from './pages/TermsAndConditions';
-import RefundPolicy from './pages/RefundPolicy';
-import FAQPage from './pages/FAQPage';
-import AdminPanel from './pages/AdminPanel';
+// Code-Split Pages via React.lazy for ultra-light initial bundle
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const CreateQuiz = lazy(() => import('./pages/CreateQuiz'));
+const EditQuiz = lazy(() => import('./pages/EditQuiz'));
+const MyQuizzes = lazy(() => import('./pages/MyQuizzes'));
+const HostLobby = lazy(() => import('./pages/HostLobby'));
+const JoinGame = lazy(() => import('./pages/JoinGame'));
+const WaitingRoom = lazy(() => import('./pages/WaitingRoom'));
+const LiveQuiz = lazy(() => import('./pages/LiveQuiz'));
+const AnswerResult = lazy(() => import('./pages/AnswerResult'));
+const Leaderboard = lazy(() => import('./pages/Leaderboard'));
+const FinalResult = lazy(() => import('./pages/FinalResult'));
+const ResultsAnalytics = lazy(() => import('./pages/ResultsAnalytics'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const AboutKahoot = lazy(() => import('./pages/AboutKahoot'));
+const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions'));
+const RefundPolicy = lazy(() => import('./pages/RefundPolicy'));
+const FAQPage = lazy(() => import('./pages/FAQPage'));
+const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { GameProvider } from './context/GameContext';
 
 const queryClient = new QueryClient();
+
+// Sleek minimal fallback loader during route transitions
+function PageLoader() {
+  return (
+    <div className="flex-1 flex items-center justify-center min-h-[60vh]">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-9 h-9 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+        <span className="text-xs font-medium text-gray-400 tracking-wider uppercase">Loading...</span>
+      </div>
+    </div>
+  );
+}
 
 // Scrolls to the element matching the URL hash (e.g. #features) on the landing page.
 function useScrollToHash() {
@@ -89,39 +101,41 @@ function AnimatedRoutes() {
       {!isGameplayView && <Navbar />}
 
       <main className={`flex-1 flex flex-col ${!isGameplayView ? 'pt-[var(--main-header-height,64px)]' : ''}`}>
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/admin" element={<AdminPanel />} />
-            <Route path="/quiz/create" element={<CreateQuiz />} />
-            <Route path="/quiz/edit/:id" element={<EditQuiz />} />
-            <Route path="/quiz/my" element={<MyQuizzes />} />
-            <Route path="/host/lobby/:pin" element={<HostLobby />} />
-            <Route path="/join" element={<JoinGame />} />
-            <Route path="/waiting/:pin" element={<WaitingRoom />} />
-            <Route path="/live/:pin" element={<LiveQuiz />} />
-            <Route path="/result/answer/:pin" element={<AnswerResult />} />
-            <Route path="/leaderboard/:pin" element={<Leaderboard />} />
-            <Route path="/final-result/:pin" element={<FinalResult />} />
-            <Route path="/results/:sessionId" element={<ResultsAnalytics />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/about" element={<AboutKahoot />} />
-            <Route path="/about-kahoot" element={<AboutKahoot />} />
-            <Route path="/terms" element={<TermsAndConditions />} />
-            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-            <Route path="/refund" element={<RefundPolicy />} />
-            <Route path="/refund-policy" element={<RefundPolicy />} />
-            <Route path="/faq" element={<FAQPage />} />
-            <Route path="/faqs" element={<FAQPage />} />
-            <Route path="/reviews" element={<Navigate to="/#testimonials" replace />} />
-          </Routes>
-        </AnimatePresence>
+        <Suspense fallback={<PageLoader />}>
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/quiz/create" element={<CreateQuiz />} />
+              <Route path="/quiz/edit/:id" element={<EditQuiz />} />
+              <Route path="/quiz/my" element={<MyQuizzes />} />
+              <Route path="/host/lobby/:pin" element={<HostLobby />} />
+              <Route path="/join" element={<JoinGame />} />
+              <Route path="/waiting/:pin" element={<WaitingRoom />} />
+              <Route path="/live/:pin" element={<LiveQuiz />} />
+              <Route path="/result/answer/:pin" element={<AnswerResult />} />
+              <Route path="/leaderboard/:pin" element={<Leaderboard />} />
+              <Route path="/final-result/:pin" element={<FinalResult />} />
+              <Route path="/results/:sessionId" element={<ResultsAnalytics />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/about" element={<AboutKahoot />} />
+              <Route path="/about-kahoot" element={<AboutKahoot />} />
+              <Route path="/terms" element={<TermsAndConditions />} />
+              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+              <Route path="/refund" element={<RefundPolicy />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="/faq" element={<FAQPage />} />
+              <Route path="/faqs" element={<FAQPage />} />
+              <Route path="/reviews" element={<Navigate to="/#testimonials" replace />} />
+            </Routes>
+          </AnimatePresence>
+        </Suspense>
       </main>
 
       {/* Footer rendered strictly on the Homepage when not logged in */}

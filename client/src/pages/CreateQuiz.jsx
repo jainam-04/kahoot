@@ -9,7 +9,6 @@ import {
   LayoutDashboard, LogOut, User, Sun, Moon, Sparkles, Bot
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import * as XLSX from 'xlsx';
 import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
 import { createQuiz } from '../services/quizService';
@@ -176,8 +175,9 @@ export default function CreateQuiz() {
       };
       reader.readAsText(file);
     } else if (fileExtension === 'xlsx' || fileExtension === 'xls') {
-      reader.onload = (evt) => {
+      reader.onload = async (evt) => {
         try {
+          const XLSX = await import('xlsx');
           const data = new Uint8Array(evt.target.result);
           const workbook = XLSX.read(data, { type: 'array' });
           const firstSheetName = workbook.SheetNames[0];
