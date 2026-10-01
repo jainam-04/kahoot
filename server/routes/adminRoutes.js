@@ -15,6 +15,10 @@ const {
     updateFaq,
     deleteFaq
 } = require('../controllers/adminController');
+const { protect, superAdminOnly } = require('../middleware/authMiddleware');
+
+// Super Admin endpoints require valid authentication and superadmin role
+router.use(protect, superAdminOnly);
 
 // Super Admin Overview
 router.get('/stats', getAdminOverviewStats);

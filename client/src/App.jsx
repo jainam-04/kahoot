@@ -32,6 +32,8 @@ const RefundPolicy = lazy(() => import('./pages/RefundPolicy'));
 const FAQPage = lazy(() => import('./pages/FAQPage'));
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 
+import AdminRoute from './components/AdminRoute';
+
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { GameProvider } from './context/GameContext';
 
@@ -110,7 +112,7 @@ function AnimatedRoutes() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
               <Route path="/quiz/create" element={<CreateQuiz />} />
               <Route path="/quiz/edit/:id" element={<EditQuiz />} />
               <Route path="/quiz/my" element={<MyQuizzes />} />

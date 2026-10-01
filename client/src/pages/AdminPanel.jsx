@@ -32,6 +32,15 @@ import { useTheme } from '../context/ThemeContext';
 
 const API_BASE = '/api/admin';
 
+const authFetch = (url, options = {}) => {
+  const token = localStorage.getItem('token');
+  const headers = {
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    ...(options.headers || {})
+  };
+  return fetch(url, { ...options, headers });
+};
+
 export default function AdminPanel() {
   const { themeMode, toggleThemeMode } = useTheme();
   const isLight = themeMode === 'light';
@@ -74,7 +83,7 @@ export default function AdminPanel() {
   const fetchOverview = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/stats`);
+      const res = await authFetch(`${API_BASE}/stats`);
       const json = await res.json();
       if (json.success) {
         setOverviewStats(json.data);
@@ -92,7 +101,7 @@ export default function AdminPanel() {
   // Fetch Hosts
   const fetchHosts = async (page = 1, search = '') => {
     try {
-      const res = await fetch(`${API_BASE}/hosts?page=${page}&limit=15&search=${encodeURIComponent(search)}`);
+      const res = await authFetch(`${API_BASE}/hosts?page=${page}&limit=15&search=${encodeURIComponent(search)}`);
       const json = await res.json();
       if (json.success) {
         setHostsData(json);
@@ -105,7 +114,7 @@ export default function AdminPanel() {
   // Fetch Quizzes
   const fetchQuizzes = async (page = 1, search = '') => {
     try {
-      const res = await fetch(`${API_BASE}/quizzes?page=${page}&limit=15&search=${encodeURIComponent(search)}`);
+      const res = await authFetch(`${API_BASE}/quizzes?page=${page}&limit=15&search=${encodeURIComponent(search)}`);
       const json = await res.json();
       if (json.success) {
         setQuizzesData(json);
@@ -118,7 +127,7 @@ export default function AdminPanel() {
   // Fetch Sessions
   const fetchSessions = async (page = 1, status = '') => {
     try {
-      const res = await fetch(`${API_BASE}/sessions?page=${page}&limit=15&status=${encodeURIComponent(status)}`);
+      const res = await authFetch(`${API_BASE}/sessions?page=${page}&limit=15&status=${encodeURIComponent(status)}`);
       const json = await res.json();
       if (json.success) {
         setSessionsData(json);
@@ -131,7 +140,7 @@ export default function AdminPanel() {
   // Fetch Results
   const fetchResults = async (page = 1) => {
     try {
-      const res = await fetch(`${API_BASE}/results?page=${page}&limit=15`);
+      const res = await authFetch(`${API_BASE}/results?page=${page}&limit=15`);
       const json = await res.json();
       if (json.success) {
         setResultsData(json);
@@ -144,7 +153,7 @@ export default function AdminPanel() {
   // Fetch Plans
   const fetchPlans = async () => {
     try {
-      const res = await fetch(`${API_BASE}/plans`);
+      const res = await authFetch(`${API_BASE}/plans`);
       const json = await res.json();
       if (json.success) {
         setPlans(json.data);
@@ -157,7 +166,7 @@ export default function AdminPanel() {
   // Fetch FAQs
   const fetchFaqs = async () => {
     try {
-      const res = await fetch(`${API_BASE}/faqs`);
+      const res = await authFetch(`${API_BASE}/faqs`);
       const json = await res.json();
       if (json.success) {
         setFaqs(json.data);
@@ -195,7 +204,7 @@ export default function AdminPanel() {
       const url = editingPlan ? `${API_BASE}/plans/${editingPlan._id}` : `${API_BASE}/plans`;
       const method = editingPlan ? 'PUT' : 'POST';
 
-      const res = await fetch(url, {
+      const res = await authFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -216,7 +225,7 @@ export default function AdminPanel() {
   const handleDeletePlan = async (id) => {
     if (!window.confirm('Are you sure you want to delete this plan?')) return;
     try {
-      const res = await fetch(`${API_BASE}/plans/${id}`, { method: 'DELETE' });
+      const res = await authFetch(`${API_BASE}/plans/${id}`, { method: 'DELETE' });
       const json = await res.json();
       if (json.success) {
         toast.success('Plan deleted');
@@ -234,7 +243,7 @@ export default function AdminPanel() {
       const url = editingFaq ? `${API_BASE}/faqs/${editingFaq._id}` : `${API_BASE}/faqs`;
       const method = editingFaq ? 'PUT' : 'POST';
 
-      const res = await fetch(url, {
+      const res = await authFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(faqForm)
@@ -255,7 +264,7 @@ export default function AdminPanel() {
   const handleDeleteFaq = async (id) => {
     if (!window.confirm('Delete this FAQ?')) return;
     try {
-      const res = await fetch(`${API_BASE}/faqs/${id}`, { method: 'DELETE' });
+      const res = await authFetch(`${API_BASE}/faqs/${id}`, { method: 'DELETE' });
       const json = await res.json();
       if (json.success) {
         toast.success('FAQ deleted');
@@ -395,7 +404,7 @@ export default function AdminPanel() {
         </aside>
 
         {/* Main Content Area */}
-        <main className={`flex-1 border rounded-2xl p-6 shadow-xl transition-colors duration-300 ${
+        <main className={`flex-1 min-w-0 border rounded-2xl p-6 shadow-xl transition-colors duration-300 ${
           isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900/60 border-slate-800 text-slate-100'
         }`}>
           {loading && !overviewStats ? (
@@ -489,12 +498,12 @@ export default function AdminPanel() {
                       </h3>
                       <div className={`divide-y ${isLight ? 'divide-slate-200' : 'divide-slate-800'}`}>
                         {overviewStats.recentHosts.map((h) => (
-                          <div key={h._id} className="py-2.5 flex items-center justify-between">
-                            <div>
-                              <p className={`text-sm font-medium ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>{h.name}</p>
-                              <p className={`text-xs ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{h.email}</p>
+                          <div key={h._id} className="py-2.5 flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className={`text-sm font-medium truncate ${isLight ? 'text-slate-800' : 'text-slate-200'}`} title={h.name}>{h.name}</p>
+                              <p className={`text-xs truncate ${isLight ? 'text-slate-500' : 'text-slate-400'}`} title={h.email}>{h.email}</p>
                             </div>
-                            <span className={`text-xs font-mono ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                            <span className={`text-xs font-mono shrink-0 ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
                               {new Date(h.createdAt).toLocaleDateString()}
                             </span>
                           </div>
@@ -514,17 +523,17 @@ export default function AdminPanel() {
                       </h3>
                       <div className={`divide-y ${isLight ? 'divide-slate-200' : 'divide-slate-800'}`}>
                         {overviewStats.recentSessions.map((s) => (
-                          <div key={s._id} className="py-2.5 flex items-center justify-between">
-                            <div>
+                          <div key={s._id} className="py-2.5 flex items-center justify-between gap-3">
+                            <div className="min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className={`font-mono text-xs font-bold px-1.5 py-0.5 rounded border ${
+                                <span className={`font-mono text-xs font-bold px-1.5 py-0.5 rounded border shrink-0 ${
                                   isLight ? 'bg-violet-100 text-violet-700 border-violet-200' : 'bg-violet-950/60 text-violet-400 border-violet-800/40'
                                 }`}>PIN: {s.pin}</span>
-                                <span className={`text-sm font-medium ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>{s.quizId?.title || 'Quiz'}</span>
+                                <span className={`text-sm font-medium truncate ${isLight ? 'text-slate-800' : 'text-slate-200'}`} title={s.quizId?.title || 'Quiz'}>{s.quizId?.title || 'Quiz'}</span>
                               </div>
-                              <p className={`text-xs mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Host: {s.hostId?.name || 'Unknown'}</p>
+                              <p className={`text-xs mt-0.5 truncate ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Host: {s.hostId?.name || 'Unknown'}</p>
                             </div>
-                            <span className={`text-xs px-2 py-0.5 rounded-full capitalize font-medium ${
+                            <span className={`text-xs px-2 py-0.5 rounded-full capitalize font-medium shrink-0 ${
                               s.status === 'finished'
                                 ? isLight ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/40'
                                 : isLight ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-amber-950/80 text-amber-300 border border-amber-800/40'
@@ -572,38 +581,42 @@ export default function AdminPanel() {
                         isLight ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-slate-800/80 text-slate-400 border-slate-800'
                       }`}>
                         <tr>
-                          <th className="px-4 py-3">Host Name</th>
-                          <th className="px-4 py-3">Email Address</th>
-                          <th className="px-4 py-3">Quizzes Created</th>
-                          <th className="px-4 py-3">Sessions Hosted</th>
-                          <th className="px-4 py-3">Registered Date</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Host Name</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Email Address</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Quizzes Created</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Sessions Hosted</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Registered Date</th>
                         </tr>
                       </thead>
                       <tbody className={`divide-y ${isLight ? 'divide-slate-200' : 'divide-slate-800/60'}`}>
                         {hostsData.data.map((user) => (
                           <tr key={user._id} className={`transition ${isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-800/40'}`}>
-                            <td className={`px-4 py-3 font-medium flex items-center gap-2 ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                              <div className="w-7 h-7 rounded-full bg-violet-600/20 border border-violet-500/40 flex items-center justify-center text-xs text-violet-600 dark:text-violet-300 font-bold">
-                                {user.name?.charAt(0).toUpperCase() || 'U'}
+                            <td className={`px-4 py-3 font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                              <div className="flex items-center gap-2 max-w-[260px]">
+                                <div className="w-7 h-7 rounded-full bg-violet-600/20 border border-violet-500/40 flex items-center justify-center text-xs text-violet-600 dark:text-violet-300 font-bold shrink-0">
+                                  {user.name?.charAt(0).toUpperCase() || 'U'}
+                                </div>
+                                <span className="truncate" title={user.name}>{user.name}</span>
                               </div>
-                              {user.name}
                             </td>
-                            <td className={`px-4 py-3 font-mono text-xs ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>{user.email}</td>
-                            <td className="px-4 py-3">
+                            <td className={`px-4 py-3 font-mono text-xs ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                              <span className="truncate max-w-[220px] block" title={user.email}>{user.email}</span>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap">
                               <span className={`px-2 py-0.5 rounded text-xs font-semibold border ${
                                 isLight ? 'bg-violet-50 text-violet-700 border-violet-200' : 'bg-violet-950/60 text-violet-300 border-violet-800/40'
                               }`}>
                                 {user.quizCount} quizzes
                               </span>
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-4 py-3 whitespace-nowrap">
                               <span className={`px-2 py-0.5 rounded text-xs font-semibold border ${
                                 isLight ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-indigo-950/60 text-indigo-300 border-indigo-800/40'
                               }`}>
                                 {user.sessionCount} sessions
                               </span>
                             </td>
-                            <td className={`px-4 py-3 text-xs font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                            <td className={`px-4 py-3 text-xs font-mono whitespace-nowrap ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
                               {new Date(user.createdAt).toLocaleDateString()}
                             </td>
                           </tr>
@@ -652,34 +665,36 @@ export default function AdminPanel() {
                         isLight ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-slate-800/80 text-slate-400 border-slate-800'
                       }`}>
                         <tr>
-                          <th className="px-4 py-3">Quiz Title</th>
-                          <th className="px-4 py-3">Category</th>
-                          <th className="px-4 py-3">Questions Count</th>
-                          <th className="px-4 py-3">Created By (Host)</th>
-                          <th className="px-4 py-3">Created Date</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Quiz Title</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Category</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Questions Count</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Created By (Host)</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Created Date</th>
                         </tr>
                       </thead>
                       <tbody className={`divide-y ${isLight ? 'divide-slate-200' : 'divide-slate-800/60'}`}>
                         {quizzesData.data.map((quiz) => (
                           <tr key={quiz._id} className={`transition ${isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-800/40'}`}>
-                            <td className={`px-4 py-3 font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>{quiz.title}</td>
-                            <td className="px-4 py-3">
+                            <td className={`px-4 py-3 font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                              <span className="truncate max-w-xs block" title={quiz.title}>{quiz.title}</span>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap">
                               <span className={`capitalize text-xs border px-2 py-0.5 rounded ${
                                 isLight ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-slate-800 text-slate-300 border-slate-700'
                               }`}>
                                 {quiz.category || 'general'}
                               </span>
                             </td>
-                            <td className={`px-4 py-3 font-mono text-xs ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+                            <td className="px-4 py-3 font-mono text-xs whitespace-nowrap text-slate-700 dark:text-slate-300">
                               {quiz.questionsCount} questions
                             </td>
                             <td className="px-4 py-3">
-                              <div className="text-xs">
-                                <p className={`font-medium ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>{quiz.createdBy?.name || 'Unknown'}</p>
-                                <p className={`font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{quiz.createdBy?.email}</p>
+                              <div className="text-xs min-w-0">
+                                <p className={`font-medium truncate max-w-[180px] ${isLight ? 'text-slate-800' : 'text-slate-200'}`} title={quiz.createdBy?.name || 'Unknown'}>{quiz.createdBy?.name || 'Unknown'}</p>
+                                <p className={`font-mono truncate max-w-[180px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`} title={quiz.createdBy?.email}>{quiz.createdBy?.email}</p>
                               </div>
                             </td>
-                            <td className={`px-4 py-3 text-xs font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                            <td className={`px-4 py-3 text-xs font-mono whitespace-nowrap ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
                               {new Date(quiz.createdAt).toLocaleDateString()}
                             </td>
                           </tr>
@@ -725,25 +740,27 @@ export default function AdminPanel() {
                         isLight ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-slate-800/80 text-slate-400 border-slate-800'
                       }`}>
                         <tr>
-                          <th className="px-4 py-3">PIN Code</th>
-                          <th className="px-4 py-3">Quiz Title</th>
-                          <th className="px-4 py-3">Host</th>
-                          <th className="px-4 py-3">Players Count</th>
-                          <th className="px-4 py-3">Status</th>
-                          <th className="px-4 py-3">Hosted At</th>
+                          <th className="px-4 py-3 whitespace-nowrap">PIN Code</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Quiz Title</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Host</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Players Count</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Status</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Hosted At</th>
                         </tr>
                       </thead>
                       <tbody className={`divide-y ${isLight ? 'divide-slate-200' : 'divide-slate-800/60'}`}>
                         {sessionsData.data.map((sess) => (
                           <tr key={sess._id} className={`transition ${isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-800/40'}`}>
-                            <td className="px-4 py-3 font-mono font-bold text-violet-600 dark:text-violet-400">{sess.pin}</td>
-                            <td className={`px-4 py-3 font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>{sess.quizTitle}</td>
-                            <td className="px-4 py-3 text-xs">
-                              <p className={`font-medium ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>{sess.hostName}</p>
-                              <p className={`font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{sess.hostEmail}</p>
+                            <td className="px-4 py-3 font-mono font-bold whitespace-nowrap text-violet-600 dark:text-violet-400">{sess.pin}</td>
+                            <td className={`px-4 py-3 font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                              <span className="truncate max-w-xs block" title={sess.quizTitle}>{sess.quizTitle}</span>
                             </td>
-                            <td className={`px-4 py-3 font-mono text-xs ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>{sess.playersCount} players</td>
-                            <td className="px-4 py-3">
+                            <td className="px-4 py-3 text-xs min-w-0">
+                              <p className={`font-medium truncate max-w-[180px] ${isLight ? 'text-slate-800' : 'text-slate-200'}`} title={sess.hostName}>{sess.hostName}</p>
+                              <p className={`font-mono truncate max-w-[180px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`} title={sess.hostEmail}>{sess.hostEmail}</p>
+                            </td>
+                            <td className={`px-4 py-3 font-mono text-xs whitespace-nowrap ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>{sess.playersCount} players</td>
+                            <td className="px-4 py-3 whitespace-nowrap">
                               <span className={`text-xs px-2 py-0.5 rounded-full capitalize font-medium ${
                                 sess.status === 'finished'
                                   ? isLight ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/40'
@@ -754,7 +771,7 @@ export default function AdminPanel() {
                                 {sess.status}
                               </span>
                             </td>
-                            <td className={`px-4 py-3 text-xs font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                            <td className={`px-4 py-3 text-xs font-mono whitespace-nowrap ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
                               {new Date(sess.createdAt).toLocaleString()}
                             </td>
                           </tr>
@@ -785,26 +802,32 @@ export default function AdminPanel() {
                         isLight ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-slate-800/80 text-slate-400 border-slate-800'
                       }`}>
                         <tr>
-                          <th className="px-4 py-3">Quiz Title</th>
-                          <th className="px-4 py-3">Host</th>
-                          <th className="px-4 py-3">Winner</th>
-                          <th className="px-4 py-3">Participants</th>
-                          <th className="px-4 py-3">Questions</th>
-                          <th className="px-4 py-3">Played Date</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Quiz Title</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Host</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Winner</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Participants</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Questions</th>
+                          <th className="px-4 py-3 whitespace-nowrap">Played Date</th>
                         </tr>
                       </thead>
                       <tbody className={`divide-y ${isLight ? 'divide-slate-200' : 'divide-slate-800/60'}`}>
                         {resultsData.data.map((res) => (
                           <tr key={res._id} className={`transition ${isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-800/40'}`}>
-                            <td className={`px-4 py-3 font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>{res.quizTitle}</td>
-                            <td className={`px-4 py-3 text-xs ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>{res.hostName}</td>
-                            <td className="px-4 py-3 font-semibold text-amber-500 flex items-center gap-1.5">
-                              <FiAward className="w-4 h-4 text-amber-500" />
-                              {res.winner}
+                            <td className={`px-4 py-3 font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                              <span className="truncate max-w-xs block" title={res.quizTitle}>{res.quizTitle}</span>
                             </td>
-                            <td className={`px-4 py-3 font-mono text-xs ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>{res.playersCount} players</td>
-                            <td className={`px-4 py-3 text-xs font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{res.totalQuestions} Qs</td>
-                            <td className={`px-4 py-3 text-xs font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                            <td className={`px-4 py-3 text-xs ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+                              <span className="truncate max-w-[180px] block" title={res.hostName}>{res.hostName}</span>
+                            </td>
+                            <td className="px-4 py-3 font-semibold text-amber-500">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <FiAward className="w-4 h-4 text-amber-500 shrink-0" />
+                                <span className="truncate max-w-[180px]" title={res.winner}>{res.winner}</span>
+                              </div>
+                            </td>
+                            <td className={`px-4 py-3 font-mono text-xs whitespace-nowrap ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>{res.playersCount} players</td>
+                            <td className={`px-4 py-3 text-xs font-mono whitespace-nowrap ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{res.totalQuestions} Qs</td>
+                            <td className={`px-4 py-3 text-xs font-mono whitespace-nowrap ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
                               {new Date(res.playedAt).toLocaleDateString()}
                             </td>
                           </tr>
@@ -1159,13 +1182,15 @@ function StatCard({ isLight, title, value, subtitle, icon: Icon, color }) {
 function Pagination({ isLight, current, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
   return (
-    <div className={`flex items-center justify-between pt-4 text-xs ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-      <span>Page {current} of {totalPages}</span>
+    <div className={`flex flex-wrap items-center justify-between gap-3 pt-4 text-xs ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+      <span className="font-medium">
+        Page <span className="font-bold text-violet-600 dark:text-violet-400">{current}</span> of <span className="font-bold">{totalPages}</span>
+      </span>
       <div className="flex items-center gap-2">
         <button
           disabled={current === 1}
           onClick={() => onPageChange(current - 1)}
-          className={`px-3 py-1.5 rounded-lg border font-medium disabled:opacity-40 disabled:cursor-not-allowed ${
+          className={`px-3 py-1.5 rounded-lg border font-medium transition disabled:opacity-40 disabled:cursor-not-allowed ${
             isLight
               ? 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
               : 'bg-slate-800 border-slate-700 text-white hover:bg-slate-700'
@@ -1176,7 +1201,7 @@ function Pagination({ isLight, current, totalPages, onPageChange }) {
         <button
           disabled={current === totalPages}
           onClick={() => onPageChange(current + 1)}
-          className={`px-3 py-1.5 rounded-lg border font-medium disabled:opacity-40 disabled:cursor-not-allowed ${
+          className={`px-3 py-1.5 rounded-lg border font-medium transition disabled:opacity-40 disabled:cursor-not-allowed ${
             isLight
               ? 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
               : 'bg-slate-800 border-slate-700 text-white hover:bg-slate-700'

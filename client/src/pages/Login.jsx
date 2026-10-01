@@ -27,7 +27,12 @@ export default function Login() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      navigate('/dashboard');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user?.role === 'superadmin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
     }
     const params = new URLSearchParams(window.location.search);
     if (params.get('expired')) {
@@ -73,10 +78,14 @@ export default function Login() {
         toast.success(`Welcome back, ${response.user.name || 'Host'}!`);
 
         setTimeout(() => {
-          navigate('/dashboard', {
-            state: { welcomeMsg: `Welcome back, ${response.user.name || 'Host'}!` },
-            replace: true,
-          });
+          if (response.user?.role === 'superadmin') {
+            navigate('/admin', { replace: true });
+          } else {
+            navigate('/dashboard', {
+              state: { welcomeMsg: `Welcome back, ${response.user.name || 'Host'}!` },
+              replace: true,
+            });
+          }
         }, 800);
       } else {
         triggerShake();
@@ -278,7 +287,7 @@ export default function Login() {
                       Authentication Successful!
                     </h3>
                     <p className="text-xs text-emerald-500 font-bold">
-                      Redirecting to dashboard...
+                      Redirecting...
                     </p>
                   </motion.div>
                 ) : (

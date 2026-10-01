@@ -762,15 +762,15 @@ export default function FinalResult() {
 
                           {/* Extra Info (Score & Time) */}
                           {hasAnswered && (
-                            <div className="flex gap-4 text-[10xs] pt-2 text-gray-400">
-                              <span className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                Time taken: {(userAnswer.timeTaken / 1000).toFixed(2)}s
+                            <div className="flex flex-wrap items-center justify-between gap-3 text-xs pt-2.5 mt-1 border-t border-white/5 text-gray-400">
+                              <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                                <Clock className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+                                <span>Time taken: <span className="text-gray-300 font-medium">{(userAnswer.timeTaken / 1000).toFixed(2)}s</span></span>
                               </span>
                               {isUserCorrect && (
-                                <span className="flex items-center gap-1 text-yellow-400 font-bold">
-                                  <Award className="h-3 w-3" />
-                                  +{userAnswer.score} pts
+                                <span className="inline-flex items-center gap-1.5 text-yellow-400 font-bold whitespace-nowrap">
+                                  <Award className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
+                                  <span>+{userAnswer.score} pts</span>
                                 </span>
                               )}
                             </div>
