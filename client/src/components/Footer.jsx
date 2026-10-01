@@ -36,11 +36,8 @@ export default function Footer() {
           
           {/* Column 1: Brand & Identity */}
           <div className="space-y-3.5 text-left">
-            <Link to="/" className="inline-flex items-center gap-2 transition-transform active:scale-95">
-              <Logo className="h-6 w-6" />
-              <span className="font-outfit text-base font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
-                Quizy
-              </span>
+            <Link to="/" className="inline-flex items-center transition-transform active:scale-95">
+              <Logo className="shrink-0" />
             </Link>
 
             <div className="space-y-1">

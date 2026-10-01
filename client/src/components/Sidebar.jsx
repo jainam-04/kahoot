@@ -55,13 +55,9 @@ export default function Sidebar() {
           borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)'
         }}
       >
-        <Link to="/" className="flex items-center gap-2.5">
-          <Logo className="h-8 w-8" />
-          <span className="font-outfit text-base font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
-            Quizy
-          </span>
+        <Link to="/" className="flex items-center">
+          <Logo className="shrink-0" />
         </Link>
-
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className="p-2 rounded-xl border transition-all active:scale-95 cursor-pointer flex items-center justify-center"
@@ -97,11 +93,8 @@ export default function Sidebar() {
         {/* TOP: LOGO HEADER */}
         <div>
           <div className="p-5 border-b flex items-center justify-between" style={{ borderColor: isLight ? 'rgba(139,92,246,0.12)' : 'rgba(255,255,255,0.08)' }}>
-            <Link to="/" className="flex items-center gap-3 transition-transform active:scale-95" onClick={() => setMobileOpen(false)}>
-              <Logo className="h-9 w-9 shrink-0" />
-              <span className="font-outfit text-lg font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
-                Quizy
-              </span>
+            <Link to="/" className="flex items-center transition-transform active:scale-95" onClick={() => setMobileOpen(false)}>
+              <Logo className="shrink-0" />
             </Link>
 
             <button 

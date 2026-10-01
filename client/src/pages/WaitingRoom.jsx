@@ -63,6 +63,27 @@ const parseBgConfig = (bgStr) => {
   };
 };
 
+// Helper to deduplicate player list case-insensitively
+const deduplicatePlayers = (list) => {
+  if (!Array.isArray(list)) return [];
+  const seen = new Set();
+  const result = [];
+  for (const p of list) {
+    const name = (p?.username || p?.name || '').toString().trim();
+    if (!name || name.startsWith('__LEAVE__:')) continue;
+    const lower = name.toLowerCase();
+    if (!seen.has(lower)) {
+      seen.add(lower);
+      result.push({
+        username: name,
+        avatar: p.avatar || '👤',
+        score: p.score ?? p.totalScore ?? 0
+      });
+    }
+  }
+  return result;
+};
+
 export default function WaitingRoom() {
   const { pin } = useParams();
   const navigate = useNavigate();
@@ -82,12 +103,7 @@ export default function WaitingRoom() {
         localStorage.setItem('last_bg_image', bg);
 
         if (res.game?.players) {
-          const activePlayers = res.game.players.map((p) => ({
-            username: p.name || p.username,
-            avatar: p.avatar || '👤',
-            score: p.totalScore || 0
-          }));
-          setPlayers(activePlayers);
+          setPlayers(deduplicatePlayers(res.game.players));
         }
       }
     }).catch(() => {});
@@ -126,10 +142,8 @@ export default function WaitingRoom() {
     // 3. Listen to state updates
     socket.on('player_list', (data) => {
       console.log('[SOCKET CLIENT] Received player list:', data.players);
-      const activePlayers = (data.players || []).filter(
-        (p) => p.username && !p.username.startsWith('__LEAVE__:')
-      );
-      activePlayers.forEach((p) => knownPlayersRef.current.add(p.username));
+      const activePlayers = deduplicatePlayers(data.players);
+      activePlayers.forEach((p) => knownPlayersRef.current.add(p.username.toLowerCase()));
       setPlayers(activePlayers);
     });
 
@@ -137,20 +151,18 @@ export default function WaitingRoom() {
     socket.on('player-joined', ({ playerName }) => {
       if (playerName) {
         if (playerName.startsWith('__LEAVE__:')) {
-          const username = playerName.replace('__LEAVE__:', '');
-          knownPlayersRef.current.delete(username);
-          setPlayers((prev) => prev.filter((p) => p.username !== username));
-          if (username !== localPlayerName) {
+          const username = playerName.replace('__LEAVE__:', '').trim();
+          knownPlayersRef.current.delete(username.toLowerCase());
+          setPlayers((prev) => prev.filter((p) => p.username.toLowerCase() !== username.toLowerCase()));
+          if (username.toLowerCase() !== localPlayerName.toLowerCase()) {
             toast.error(`${username} left the lobby`, { id: `leave-${username}`, duration: 2500 });
           }
         } else {
-          setPlayers((prev) => {
-            if (prev.some((p) => p.username === playerName)) return prev;
-            return [...prev, { username: playerName, avatar: '👤', score: 0 }];
-          });
-          if (playerName !== localPlayerName && !knownPlayersRef.current.has(playerName)) {
-            knownPlayersRef.current.add(playerName);
-            toast(`${playerName} entered the quiz`, { id: `join-${playerName}`, icon: '👋', duration: 2500 });
+          const trimmed = playerName.toString().trim();
+          setPlayers((prev) => deduplicatePlayers([...prev, { username: trimmed, avatar: '👤', score: 0 }]));
+          if (trimmed.toLowerCase() !== localPlayerName.toLowerCase() && !knownPlayersRef.current.has(trimmed.toLowerCase())) {
+            knownPlayersRef.current.add(trimmed.toLowerCase());
+            toast(`${trimmed} entered the quiz`, { id: `join-${trimmed}`, icon: '👋', duration: 2500 });
           }
         }
       }
@@ -187,19 +199,8 @@ export default function WaitingRoom() {
     socket.on('room_closed', handleHostEnded);
     socket.on('host_left', handleHostEnded);
 
-    // NOTE: player_connected is intentionally not shown — player-joined already handles this.
-
-    const handleLeave = () => {
-      if (socket && socket.connected && localPlayerName) {
-        socket.emit('player-join', { pin, playerName: `__LEAVE__:${localPlayerName}` });
-      }
-    };
-
-    window.addEventListener('beforeunload', handleLeave);
-
+    // Clean up socket listeners on unmount (do NOT emit leave so player is never deleted during game start)
     return () => {
-      handleLeave();
-      window.removeEventListener('beforeunload', handleLeave);
       socket.off('connect', joinRoom);
       socket.off('player_list');
       socket.off('player-joined');

@@ -10,10 +10,59 @@ import AnimatedPage from '../components/AnimatedPage';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { submitAnswer, getGame, endQuestion } from '../services/gameService';
 import { useGame } from '../context/GameContext';
+import { useTheme } from '../context/ThemeContext';
 import confetti from 'canvas-confetti';
 
-const getTheme = (category) => {
+const getTheme = (category, isLight = false) => {
   const cat = String(category || 'general').toLowerCase();
+
+  if (isLight) {
+    if (cat.includes('science') || cat.includes('biology') || cat.includes('physics') || cat.includes('chemistry') || cat.includes('lab')) {
+      return {
+        bg: 'bg-gradient-to-br from-purple-50 via-fuchsia-50 to-pink-50',
+        glow1: 'bg-purple-300/20',
+        glow2: 'bg-fuchsia-300/15',
+        accentText: 'text-purple-700',
+        badgeBg: 'bg-purple-100 text-purple-700 border border-purple-200',
+        cardBorder: 'border-purple-200',
+        ambientElements: null
+      };
+    }
+
+    if (cat.includes('programming') || cat.includes('coding') || cat.includes('tech') || cat.includes('computer') || cat.includes('software') || cat.includes('hardware')) {
+      return {
+        bg: 'bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50',
+        glow1: 'bg-emerald-300/20',
+        glow2: 'bg-teal-300/15',
+        accentText: 'text-emerald-700 font-mono',
+        badgeBg: 'bg-emerald-100 text-emerald-800 border border-emerald-200 font-mono',
+        cardBorder: 'border-emerald-200',
+        ambientElements: null
+      };
+    }
+
+    if (cat.includes('geography') || cat.includes('history') || cat.includes('social') || cat.includes('civics') || cat.includes('world')) {
+      return {
+        bg: 'bg-gradient-to-br from-sky-50 via-blue-50 to-amber-50',
+        glow1: 'bg-blue-300/20',
+        glow2: 'bg-amber-300/15',
+        accentText: 'text-amber-800',
+        badgeBg: 'bg-amber-100 text-amber-800 border border-amber-200',
+        cardBorder: 'border-amber-200',
+        ambientElements: null
+      };
+    }
+
+    return {
+      bg: 'bg-gradient-to-br from-slate-50 via-indigo-50/60 to-purple-50/60',
+      glow1: 'bg-indigo-300/20',
+      glow2: 'bg-violet-300/15',
+      accentText: 'text-primary',
+      badgeBg: 'bg-primary/10 text-primary border border-primary/20',
+      cardBorder: 'border-slate-200',
+      ambientElements: null
+    };
+  }
 
   if (cat.includes('science') || cat.includes('biology') || cat.includes('physics') || cat.includes('chemistry') || cat.includes('lab')) {
     return {
@@ -128,6 +177,8 @@ export default function LiveQuiz() {
   const navigate = useNavigate();
   const location = useLocation();
   const { playerName, setPin, setPlayerName, setCurrentQuestion, setLeaderboard } = useGame();
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
 
   const localPlayer = playerName || localStorage.getItem('guest_playerName');
   const hostToken = localStorage.getItem('token');
@@ -488,7 +539,7 @@ export default function LiveQuiz() {
     <div className="h-5 w-5 sm:h-6 sm:w-6 rounded bg-white shrink-0 shadow-sm" key="square" />
   ];
 
-  const theme = getTheme(category);
+  const theme = getTheme(category, isLight);
   const bgConfig = parseBgConfig(bgImage);
 
 
@@ -550,7 +601,11 @@ export default function LiveQuiz() {
             {isHost && (
               <button
                 onClick={handleHostExit}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-gray-200 hover:text-white hover:bg-white/10 transition-all text-[10px] font-black uppercase tracking-wider mr-1 cursor-pointer"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-[10px] font-black uppercase tracking-wider mr-1 cursor-pointer ${
+                  isLight
+                    ? 'bg-white/90 border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-white shadow-sm'
+                    : 'bg-white/5 border-white/10 text-gray-200 hover:text-white hover:bg-white/10'
+                }`}
               >
                 <ArrowLeft className="h-3 w-3" />
                 <span>Return to Dashboard</span>
@@ -559,26 +614,42 @@ export default function LiveQuiz() {
             <span className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl uppercase tracking-wider ${theme.badgeBg}`}>
               Question {questionNumber} of {totalQuestions}
             </span>
-            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest hidden sm:inline">{category}</span>
+            <span className={`text-[9px] font-bold uppercase tracking-widest hidden sm:inline ${isLight ? 'text-slate-500' : 'text-gray-500'}`}>{category}</span>
           </div>
         </div>
 
         {/* Centered Timer Display */}
         <div className="w-full flex justify-center items-center relative z-10 shrink-0 my-1.5">
-          <div className={`flex items-center gap-2.5 px-6 py-2 sm:px-8 sm:py-2.5 rounded-full glass-panel border transition-all duration-300 shadow-xl ${
+          <div className={`flex items-center gap-2.5 px-6 py-2 sm:px-8 sm:py-2.5 rounded-full border transition-all duration-300 shadow-xl ${
             timeLeft <= 5 
-              ? 'bg-red-500/20 border-red-500/50 text-red-400 scale-105 shadow-[0_0_25px_rgba(239,68,68,0.5)] animate-pulse' 
-              : 'bg-white/10 border-white/20 text-white shadow-[0_0_20px_rgba(6,182,212,0.25)]'
+              ? isLight
+                ? 'bg-red-50 border-red-300 text-red-600 scale-105 shadow-[0_0_20px_rgba(239,68,68,0.3)] animate-pulse'
+                : 'bg-red-500/20 border-red-500/50 text-red-400 scale-105 shadow-[0_0_25px_rgba(239,68,68,0.5)] animate-pulse' 
+              : isLight
+                ? 'bg-white border-slate-200 text-slate-900 shadow-lg shadow-slate-200/60 ring-1 ring-slate-900/5'
+                : 'bg-white/10 border-white/20 text-white shadow-[0_0_20px_rgba(6,182,212,0.25)]'
           }`}>
-            <Clock className={`h-5 w-5 sm:h-6 sm:w-6 ${timeLeft <= 5 ? 'text-red-400 animate-pulse' : 'text-secondary'}`} />
-            <span className="text-xl sm:text-2xl md:text-3xl font-black font-mono tracking-widest">
+            <Clock className={`h-5 w-5 sm:h-6 sm:w-6 ${
+              timeLeft <= 5 
+                ? isLight ? 'text-red-600 animate-pulse' : 'text-red-400 animate-pulse' 
+                : isLight ? 'text-primary' : 'text-secondary'
+            }`} />
+            <span className={`text-xl sm:text-2xl md:text-3xl font-black font-mono tracking-widest ${
+              timeLeft <= 5 
+                ? isLight ? 'text-red-600' : 'text-red-400' 
+                : isLight ? 'text-slate-900' : 'text-white'
+            }`}>
               {formatTime(timeLeft)}
             </span>
           </div>
         </div>
 
         {/* QUESTION TEXT PANEL */}
-        <div className="my-1 sm:my-2 max-w-4xl mx-auto text-center relative z-10 bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 border border-gray-200 shadow-xl shrink-0 w-full">
+        <div className={`my-1 sm:my-2 max-w-4xl mx-auto text-center relative z-10 rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 border shadow-xl shrink-0 w-full ${
+          isLight
+            ? 'bg-white border-slate-200 text-slate-900 shadow-lg shadow-slate-200/50'
+            : 'bg-white border-gray-200 text-gray-900 shadow-xl'
+        }`}>
           <h2 className="font-outfit text-base sm:text-xl md:text-2xl lg:text-3xl text-gray-900 font-black leading-tight break-words">
             {question.questionText}
           </h2>
@@ -588,12 +659,16 @@ export default function LiveQuiz() {
         <div className="flex items-center justify-center max-w-xl mx-auto w-full my-1 sm:my-4 relative z-10 shrink-0">
           {isHost ? (
             /* HOST PANEL */
-            <div className={`w-full glass-panel rounded-2xl p-4 border ${theme.cardBorder} text-center space-y-2`}>
-              <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block">Lobby Statistics</span>
-              <div className="font-outfit text-2xl font-extrabold text-white">
-                {answeredCount} <span className="text-xs font-medium text-gray-400">/ {totalPlayers} Answered</span>
+            <div className={`w-full rounded-2xl p-4 border text-center space-y-2 ${
+              isLight
+                ? 'bg-white/95 border-slate-200 text-slate-900 shadow-md'
+                : `glass-panel border ${theme.cardBorder} text-white`
+            }`}>
+              <span className={`text-[9px] font-bold uppercase tracking-widest block ${isLight ? 'text-slate-500' : 'text-gray-400'}`}>Lobby Statistics</span>
+              <div className={`font-outfit text-2xl font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                {answeredCount} <span className={`text-xs font-medium ${isLight ? 'text-slate-500' : 'text-gray-400'}`}>/ {totalPlayers} Answered</span>
               </div>
-              <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden border border-white/10">
+              <div className={`w-full rounded-full h-1.5 overflow-hidden border ${isLight ? 'bg-slate-100 border-slate-200' : 'bg-white/5 border-white/10'}`}>
                 <div
                   className="bg-primary h-full transition-all duration-500"
                   style={{ width: `${totalPlayers ? (answeredCount / totalPlayers) * 100 : 0}%` }}
@@ -610,21 +685,29 @@ export default function LiveQuiz() {
             </div>
           ) : hasAnswered ? (
             /* PLAYER WAITING PANEL */
-            <div className={`text-center space-y-2 glass-panel rounded-2xl p-5 w-full border ${theme.cardBorder}`}>
+            <div className={`text-center space-y-2 rounded-2xl p-5 w-full border ${
+              isLight
+                ? 'bg-white/95 border-slate-200 shadow-md'
+                : `glass-panel border ${theme.cardBorder}`
+            }`}>
               <div className="h-8 w-8 rounded-full bg-secondary/15 border border-secondary/20 flex items-center justify-center mx-auto text-secondary">
                 <Loader2 className="h-5 w-5 animate-spin" />
               </div>
-              <h3 className="font-outfit text-sm font-bold text-white">Answer Locked!</h3>
-              <p className="text-[10px] text-gray-400">Waiting for other challengers to submit their choices...</p>
+              <h3 className={`font-outfit text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Answer Locked!</h3>
+              <p className={`text-[10px] ${isLight ? 'text-slate-600' : 'text-gray-400'}`}>Waiting for other challengers to submit their choices...</p>
             </div>
           ) : timeLeft <= 0 ? (
             /* PLAYER TIME'S UP PANEL */
-            <div className={`text-center space-y-2 glass-panel rounded-2xl p-5 w-full border ${theme.cardBorder}`}>
+            <div className={`text-center space-y-2 rounded-2xl p-5 w-full border ${
+              isLight
+                ? 'bg-white/95 border-slate-200 shadow-md'
+                : `glass-panel border ${theme.cardBorder}`
+            }`}>
               <div className="h-8 w-8 rounded-full bg-red-500/15 border border-red-500/20 flex items-center justify-center mx-auto text-red-500">
                 <XCircle className="h-5 w-5" />
               </div>
-              <h3 className="font-outfit text-sm font-bold text-white">Time's Up!</h3>
-              <p className="text-[10px] text-gray-400">Waiting for the teacher to end the question...</p>
+              <h3 className={`font-outfit text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Time's Up!</h3>
+              <p className={`text-[10px] ${isLight ? 'text-slate-600' : 'text-gray-400'}`}>Waiting for the teacher to end the question...</p>
             </div>
           ) : null}
         </div>

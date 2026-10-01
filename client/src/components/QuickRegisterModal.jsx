@@ -125,10 +125,7 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess }) {
             {/* Header */}
             <div className="text-center space-y-2">
               <div className="flex items-center justify-center gap-2">
-                <Logo className="h-8 w-8 shrink-0" />
-                <span className="font-outfit text-xl font-extrabold tracking-tight">
-                  Quiz<span className="text-secondary">Forge</span>
-                </span>
+                <Logo className="shrink-0" />
                 <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase px-2 py-0.5 rounded-full flex items-center gap-1">
                   <Sparkles className="h-3 w-3" /> Host Account
                 </span>

@@ -9,10 +9,13 @@ import AnimatedPage from '../components/AnimatedPage';
 import { joinGame } from '../services/gameService';
 import Avatar from '../components/Avatar';
 import { useGame } from '../context/GameContext';
+import { useTheme } from '../context/ThemeContext';
 
 export default function JoinGame() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
   const [searchParams] = useSearchParams();
   const urlPin = searchParams.get('pin') || '';
   const endedMessage = location.state?.endedMessage;
@@ -145,36 +148,38 @@ export default function JoinGame() {
           initial={{ opacity: 0, y: 30, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: 'spring', stiffness: 80, damping: 15 }}
-          className="w-full max-w-md glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 relative overflow-hidden"
+          className={`w-full max-w-md rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 relative overflow-hidden shadow-2xl border ${
+            isLight ? 'bg-white border-gray-200/90 text-gray-900 shadow-xl' : 'glass-panel border-white/10 text-white'
+          }`}
         >
-          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-secondary/40 to-transparent"></div>
+          <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-secondary/70 to-transparent"></div>
 
           {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6 sm:mb-8">
             {endedMessage && (
-              <div className="mb-6 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs font-bold flex items-center justify-center gap-2.5 shadow-lg">
+              <div className="mb-5 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-500 dark:text-red-300 text-xs font-bold flex items-center justify-center gap-2.5 shadow-lg">
                 <AlertCircle className="h-5 w-5 text-red-400 shrink-0" />
                 <span>{endedMessage}</span>
               </div>
             )}
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/15 border border-secondary/20 text-secondary mb-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/15 border border-secondary/20 text-secondary mb-3.5 shadow-sm">
               <Play className="h-6 w-6 fill-current" />
             </div>
-            <h2 className="font-outfit text-3xl font-extrabold tracking-tight text-white">
+            <h2 className={`font-outfit text-2xl sm:text-3xl font-extrabold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>
               Join the Battle
             </h2>
-            <p className="mt-2 text-sm text-gray-400">
+            <p className={`mt-1.5 text-xs sm:text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
               Enter the Game PIN or scan QR code to enter the arena.
             </p>
           </div>
 
           {/* Input Fields */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
             
             {/* PIN WITH SCANNER TOGGLE */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+                <label className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
                   Lobby Game PIN
                 </label>
                 <button
@@ -192,14 +197,16 @@ export default function JoinGame() {
 
               {/* QR Camera Reader Display */}
               {isScanning && (
-                <div className="space-y-2 mt-2 border border-white/10 rounded-2xl overflow-hidden p-2 bg-black/40 relative">
+                <div className={`space-y-2 mt-2 border rounded-2xl overflow-hidden p-2 relative ${
+                  isLight ? 'bg-gray-100 border-gray-300' : 'bg-black/40 border-white/10'
+                }`}>
                   {scanError ? (
                     <div className="p-4 text-center space-y-3">
                       <AlertCircle className="h-8 w-8 text-accent mx-auto" />
-                      <p className="text-xs text-gray-300 font-bold">
+                      <p className={`text-xs font-bold ${isLight ? 'text-gray-800' : 'text-gray-300'}`}>
                         Camera Access Error
                       </p>
-                      <p className="text-[10px] text-gray-400 leading-relaxed max-w-[240px] mx-auto">
+                      <p className={`text-[10px] leading-relaxed max-w-[240px] mx-auto ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                         In-app camera scanning requires a secure connection (HTTPS) or localhost.
                       </p>
                       <div className="text-[10px] text-primary bg-primary/10 border border-primary/20 rounded-xl p-2.5 max-w-[240px] mx-auto font-medium flex items-center gap-1.5">
@@ -222,6 +229,7 @@ export default function JoinGame() {
                 type="text"
                 placeholder="e.g. 589231"
                 maxLength="6"
+                inputMode="numeric"
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
                 }}
@@ -232,12 +240,14 @@ export default function JoinGame() {
                     message: 'Lobby PIN must be a 6-digit number',
                   },
                 })}
-                className={`w-full rounded-xl bg-white/5 border px-4 py-3 text-center text-lg font-black tracking-widest text-secondary placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-secondary/35 focus:border-secondary ${
-                  errors.pin ? 'border-accent/40' : 'border-white/10'
-                }`}
+                className={`w-full rounded-xl border px-4 py-3 text-center text-lg sm:text-xl font-black tracking-widest text-secondary focus:outline-none focus:ring-2 focus:ring-secondary/35 focus:border-secondary transition-all ${
+                  isLight 
+                    ? 'bg-gray-50 border-gray-300 placeholder-gray-400' 
+                    : 'bg-white/5 border-white/10 placeholder-gray-500'
+                } ${errors.pin ? 'border-accent/60' : ''}`}
               />
               {errors.pin && (
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left font-bold">
                   <AlertCircle className="h-3.5 w-3.5" />
                   <span>{errors.pin.message}</span>
                 </div>
@@ -245,8 +255,8 @@ export default function JoinGame() {
             </div>
 
             {/* Full Name */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+            <div className="space-y-1.5">
+              <label className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
                 Full Name
               </label>
               <input
@@ -260,12 +270,14 @@ export default function JoinGame() {
                     message: 'Full Name must be at least 2 characters',
                   }
                 })}
-                className={`w-full rounded-xl bg-white/5 border px-4 py-3 text-center text-sm font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary/35 focus:border-primary ${
-                  errors.fullName ? 'border-accent/40' : 'border-white/10'
-                }`}
+                className={`w-full rounded-xl border px-4 py-2.5 sm:py-3 text-center text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/35 focus:border-primary transition-all ${
+                  isLight 
+                    ? 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400' 
+                    : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                } ${errors.fullName ? 'border-accent/60' : ''}`}
               />
               {errors.fullName && (
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left font-bold">
                   <AlertCircle className="h-3.5 w-3.5" />
                   <span>{errors.fullName.message}</span>
                 </div>
@@ -273,14 +285,15 @@ export default function JoinGame() {
             </div>
 
             {/* Mobile Number */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+            <div className="space-y-1.5">
+              <label className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
                 Mobile Number
               </label>
               <input
                 type="tel"
-                placeholder="e.g. 1234567890"
+                placeholder="e.g. 9876543210"
                 maxLength="10"
+                inputMode="numeric"
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
                 }}
@@ -291,12 +304,14 @@ export default function JoinGame() {
                     message: 'Mobile number must be 10 digits and start with 6, 7, 8, or 9',
                   }
                 })}
-                className={`w-full rounded-xl bg-white/5 border px-4 py-3 text-center text-sm font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary/35 focus:border-primary ${
-                  errors.mobileNumber ? 'border-accent/40' : 'border-white/10'
-                }`}
+                className={`w-full rounded-xl border px-4 py-2.5 sm:py-3 text-center text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/35 focus:border-primary transition-all ${
+                  isLight 
+                    ? 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400' 
+                    : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                } ${errors.mobileNumber ? 'border-accent/60' : ''}`}
               />
               {errors.mobileNumber && (
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left font-bold">
                   <AlertCircle className="h-3.5 w-3.5" />
                   <span>{errors.mobileNumber.message}</span>
                 </div>
@@ -304,8 +319,8 @@ export default function JoinGame() {
             </div>
 
             {/* Nickname (Optional) */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+            <div className="space-y-1.5">
+              <label className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
                 Choose Nickname (Optional)
               </label>
               <input
@@ -325,12 +340,14 @@ export default function JoinGame() {
                     message: 'Nickname can only contain letters and numbers',
                   }
                 })}
-                className={`w-full rounded-xl bg-white/5 border px-4 py-3 text-center text-sm font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary/35 focus:border-primary ${
-                  errors.nickname ? 'border-accent/40' : 'border-white/10'
-                }`}
+                className={`w-full rounded-xl border px-4 py-2.5 sm:py-3 text-center text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/35 focus:border-primary transition-all ${
+                  isLight 
+                    ? 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400' 
+                    : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                } ${errors.nickname ? 'border-accent/60' : ''}`}
               />
               {errors.nickname && (
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left">
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-accent text-left font-bold">
                   <AlertCircle className="h-3.5 w-3.5" />
                   <span>{errors.nickname.message}</span>
                 </div>
@@ -338,26 +355,28 @@ export default function JoinGame() {
             </div>
 
             {/* Avatar Selection */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider block text-left">
+            <div className="space-y-1.5">
+              <label className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider block text-left ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
                 Choose Avatar
               </label>
-              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-3">
+              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
                 {avatars.map((avatar) => (
                   <button
                     key={avatar}
                     type="button"
                     onClick={() => setSelectedAvatar(avatar)}
-                    className={`relative text-3xl h-14 w-full rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                    className={`relative text-3xl h-12 sm:h-14 w-full rounded-2xl flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 ${
                       selectedAvatar === avatar
-                        ? 'bg-gradient-to-br from-[#864CBF] to-[#46178F] border-2 border-white scale-110 shadow-[0_0_20px_rgba(134,76,191,0.6)] z-10'
-                        : 'bg-white/5 border border-white/10 hover:bg-white/20 hover:scale-105 hover:shadow-lg'
+                        ? 'bg-gradient-to-br from-[#864CBF] to-[#46178F] border-2 border-white scale-105 shadow-[0_0_20px_rgba(134,76,191,0.6)] z-10'
+                        : isLight 
+                        ? 'bg-gray-100 border border-gray-200 hover:bg-gray-200' 
+                        : 'bg-white/5 border border-white/10 hover:bg-white/20'
                     }`}
                   >
-                    <Avatar emoji={avatar} className="w-10 h-10 object-contain drop-shadow-md" />
+                    <Avatar emoji={avatar} className="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-md" />
                     {selectedAvatar === avatar && (
-                      <div className="absolute -top-2 -right-2 bg-primary text-white rounded-full p-1 shadow-lg ring-2 ring-white dark:ring-gray-900 flex items-center justify-center">
-                        <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <div className="absolute -top-1.5 -right-1.5 bg-primary text-white rounded-full p-0.5 shadow-lg ring-2 ring-white dark:ring-gray-900 flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
@@ -368,22 +387,24 @@ export default function JoinGame() {
             </div>
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`w-full btn-premium btn-secondary-gradient py-3.5 flex items-center justify-center gap-2 text-sm font-bold shadow-secondary-glow ${
-                isLoading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-            >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  <span>Join Lobby Room</span>
-                </>
-              )}
-            </button>
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`w-full btn-premium btn-secondary-gradient py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs sm:text-sm font-extrabold text-white shadow-secondary-glow cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all ${
+                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    <span>Join Lobby Room</span>
+                  </>
+                )}
+              </button>
+            </div>
           </form>
 
         </motion.div>

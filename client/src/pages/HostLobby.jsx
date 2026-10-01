@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,6 +8,27 @@ import AnimatedPage from '../components/AnimatedPage';
 import { getGame as fetchGameDetails, startQuestion } from '../services/gameService';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import tunnelData from '../tunnel.json';
+
+// Helper to deduplicate player list case-insensitively
+const deduplicatePlayers = (list) => {
+  if (!Array.isArray(list)) return [];
+  const seen = new Set();
+  const result = [];
+  for (const p of list) {
+    const name = (p?.username || p?.name || '').toString().trim();
+    if (!name || name.startsWith('__LEAVE__:')) continue;
+    const lower = name.toLowerCase();
+    if (!seen.has(lower)) {
+      seen.add(lower);
+      result.push({
+        username: name,
+        avatar: p.avatar || '👤',
+        score: p.score ?? p.totalScore ?? 0
+      });
+    }
+  }
+  return result;
+};
 
 export default function HostLobby() {
   const { pin } = useParams();
@@ -77,12 +98,7 @@ export default function HostLobby() {
   // Sync players list when initial game data is loaded
   useEffect(() => {
     if (game?.players) {
-      const activePlayers = game.players.map((p) => ({
-        username: p.name || p.username,
-        avatar: p.avatar || '👤',
-        score: p.totalScore || 0
-      }));
-      setPlayers(activePlayers);
+      setPlayers(deduplicatePlayers(game.players));
     }
   }, [game]);
 
@@ -114,24 +130,19 @@ export default function HostLobby() {
     // 3. Listen to player updates
     socket.on('player_list', (data) => {
       console.log('[SOCKET] Received player list:', data.players);
-      const activePlayers = (data.players || []).filter(
-        (p) => p.username && !p.username.startsWith('__LEAVE__:')
-      );
-      setPlayers(activePlayers);
+      setPlayers(deduplicatePlayers(data.players));
     });
 
     socket.on('player-joined', ({ playerName }) => {
       if (playerName) {
         if (playerName.startsWith('__LEAVE__:')) {
-          const username = playerName.replace('__LEAVE__:', '');
-          setPlayers((prev) => prev.filter((p) => p.username !== username));
+          const username = playerName.replace('__LEAVE__:', '').trim();
+          setPlayers((prev) => prev.filter((p) => p.username.toLowerCase() !== username.toLowerCase()));
           toast.error(`${username} left the lobby`);
         } else {
-          setPlayers((prev) => {
-            if (prev.some((p) => p.username === playerName)) return prev;
-            return [...prev, { username: playerName, avatar: '👤', score: 0 }];
-          });
-          toast.success(`${playerName} joined the battle! ⚔️`);
+          const trimmed = playerName.toString().trim();
+          setPlayers((prev) => deduplicatePlayers([...prev, { username: trimmed, avatar: '👤', score: 0 }]));
+          toast.success(`${trimmed} joined the battle! ⚔️`);
         }
       }
     });

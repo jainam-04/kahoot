@@ -53,23 +53,34 @@ module.exports = (io) => {
             } else if (playerName) {
                 // Ensure player is in MongoDB if they rejoined (e.g. on reconnect)
                 try {
-                    const game = await GameSession.findOne({ pin: roomPin });
-                    if (game && game.status === 'waiting') {
-                        const hasPlayer = game.players.some(p => p.name.toLowerCase() === playerName.toLowerCase());
-                        if (!hasPlayer) {
-                            const updatedGame = await GameSession.findOneAndUpdate(
-                                { pin: roomPin, status: 'waiting' },
-                                { $push: { players: { name: playerName, fullName: playerName, nickname: playerName, mobileNumber: '', avatar: '👤', totalScore: 0, answers: [] } } },
-                                { new: true }
-                            );
-                            if (updatedGame) {
-                                io.to(`room_${roomPin}`).emit('player_list', {
-                                    pin: updatedGame.pin,
-                                    players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
-                                    roomStatus: updatedGame.status
-                                });
+                    const escName = playerName.toString().trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                    const updatedGame = await GameSession.findOneAndUpdate(
+                        {
+                            pin: roomPin,
+                            status: 'waiting',
+                            'players.name': { $not: new RegExp('^' + escName + '$', 'i') }
+                        },
+                        {
+                            $push: {
+                                players: {
+                                    name: playerName.toString().trim(),
+                                    fullName: playerName.toString().trim(),
+                                    nickname: playerName.toString().trim(),
+                                    mobileNumber: '',
+                                    avatar: '👤',
+                                    totalScore: 0,
+                                    answers: []
+                                }
                             }
-                        }
+                        },
+                        { new: true }
+                    );
+                    if (updatedGame) {
+                        io.to(`room_${roomPin}`).emit('player_list', {
+                            pin: updatedGame.pin,
+                            players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
+                            roomStatus: updatedGame.status
+                        });
                     }
                 } catch (err) {
                     console.error('Error ensuring player in DB on join:', err.message);
@@ -268,30 +279,8 @@ module.exports = (io) => {
                     }
                 } else if (username) {
                     io.to(roomName).emit('player_disconnected', { username });
-                    io.to(pin).emit('player-joined', {
-                        playerName: `__LEAVE__:${username}`,
-                        message: `${username} left the game!`
-                    });
-
-                    try {
-                        const game = await GameSession.findOne({ pin });
-                        if (game && game.status === 'waiting') {
-                            const updatedGame = await GameSession.findOneAndUpdate(
-                                { pin, status: 'waiting' },
-                                { $pull: { players: { name: username } } },
-                                { new: true }
-                            );
-                            if (updatedGame) {
-                                io.to(roomName).emit('player_list', {
-                                    pin: updatedGame.pin,
-                                    players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
-                                    roomStatus: updatedGame.status
-                                });
-                            }
-                        }
-                    } catch (err) {
-                        console.error('Error removing player on disconnect:', err.message);
-                    }
+                    // Do NOT pull player from MongoDB on temporary socket disconnects
+                    // Players on mobile networks or switching tabs need their session preserved
                 }
             }
         });

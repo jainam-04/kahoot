@@ -43,11 +43,17 @@ export default function ResultsAnalytics() {
     const wrong = submittedAnswers.filter((answer) => !answer.isCorrect).length;
     const unanswered = Math.max(0, (result?.totalQuestions || 0) - submittedAnswers.length);
     const percentage = result?.totalQuestions ? Math.round((correct / result.totalQuestions) * 100) : 0;
+    const fullName = player.fullName || player.name || player.username || `Player ${index + 1}`;
+    const nickname = player.nickname || player.name || fullName;
+    const mobileNumber = player.mobileNumber || '';
 
     return {
       ...player,
       rank: player.rank || index + 1,
-      name: player.name || player.username || `Player ${index + 1}`,
+      name: fullName,
+      fullName: fullName,
+      nickname: nickname,
+      mobileNumber: mobileNumber,
       correct,
       wrong,
       unanswered,
@@ -95,19 +101,6 @@ export default function ResultsAnalytics() {
     });
   }
 
-  // Safe autoTable Invocation Helper
-  const runAutoTable = (docObj, tableOptions) => {
-    if (typeof autoTable === 'function') {
-      autoTable(docObj, tableOptions);
-    } else if (autoTable && typeof autoTable.default === 'function') {
-      autoTable.default(docObj, tableOptions);
-    } else if (typeof docObj.autoTable === 'function') {
-      docObj.autoTable(tableOptions);
-    } else {
-      console.warn('autoTable plugin method not found directly, attempting fallback');
-    }
-  };
-
   // Export Standings to CSV file
   const handleExportCSV = () => {
     if (!result) {
@@ -145,7 +138,7 @@ export default function ResultsAnalytics() {
       
       // Standings Header
       lines.push('=== PLAYER STANDINGS ===');
-      lines.push(['Rank', 'Player Name', 'Mobile Number', 'Correct Answers', 'Wrong Answers', 'Not Answered', 'Accuracy (%)', 'Total Score'].map(escapeCSV).join(','));
+      lines.push(['Rank', 'Full Name', 'Phone / Mobile Number', 'Nickname', 'Correct Answers', 'Wrong Answers', 'Not Answered', 'Accuracy (%)', 'Total Score'].map(escapeCSV).join(','));
       
       // Standings Rows
       if (playerSummaries.length > 0) {
@@ -153,8 +146,9 @@ export default function ResultsAnalytics() {
           const playerAccuracy = totalQuestions ? Math.round((p.correct / totalQuestions) * 100) + '%' : '0%';
           lines.push([
             p.rank,
-            p.name,
+            p.fullName,
             p.mobileNumber || 'N/A',
+            p.nickname,
             p.correct,
             p.wrong,
             p.unanswered,
@@ -163,7 +157,7 @@ export default function ResultsAnalytics() {
           ].map(escapeCSV).join(','));
         });
       } else {
-        lines.push(['-', 'No player data recorded', '0', '0', '0', '0%', '0'].map(escapeCSV).join(','));
+        lines.push(['-', 'No player data recorded', 'N/A', '-', '0', '0', '0', '0%', '0'].map(escapeCSV).join(','));
       }
       
       lines.push(''); // blank line divider
@@ -207,6 +201,92 @@ export default function ResultsAnalytics() {
     }
   };
 
+  // ── Excel (.xlsx) Export ──────────────────────────────────────────────────
+  const handleExportExcel = async () => {
+    if (!result) {
+      toast.error('No result data loaded yet');
+      return;
+    }
+
+    try {
+      toast.loading('Preparing Excel spreadsheet...', { id: 'export-excel' });
+      const XLSX = await import('xlsx');
+
+      const title = result.quizTitle || 'Quiz Match';
+      const category = result.quizCategory || result.quiz?.category || 'General';
+      const playedDate = result.playedAt ? new Date(result.playedAt).toLocaleString() : new Date().toLocaleString();
+
+      // 1. Standings Data
+      const standingsData = playerSummaries.map((p) => {
+        const playerAccuracy = totalQuestions ? Math.round((p.correct / totalQuestions) * 100) + '%' : '0%';
+        return {
+          'Rank': p.rank,
+          'Full Name': p.fullName,
+          'Phone / Mobile Number': p.mobileNumber || 'Not provided',
+          'Nickname': p.nickname || p.fullName,
+          'Correct Answers': p.correct,
+          'Wrong Answers': p.wrong,
+          'Not Answered': p.unanswered,
+          'Accuracy': playerAccuracy,
+          'Final Score (pts)': p.totalScore,
+        };
+      });
+
+      // 2. Summary Overview Data
+      const overviewData = [
+        { 'Metric': 'Quiz Title', 'Value': title },
+        { 'Metric': 'Category', 'Value': category },
+        { 'Metric': 'Organization', 'Value': result.organizationName || 'N/A' },
+        { 'Metric': 'Winner', 'Value': winnerName },
+        { 'Metric': 'Played Date', 'Value': playedDate },
+        { 'Metric': 'Total Questions', 'Value': totalQuestions },
+        { 'Metric': 'Total Players', 'Value': totalPlayers },
+        { 'Metric': 'Average Correct', 'Value': `${avgCorrect} / ${totalQuestions}` },
+        { 'Metric': 'Lobby Accuracy', 'Value': `${accuracy}%` },
+      ];
+
+      // 3. Highlights Data
+      const highlightsData = questionHighlights.map((hl) => ({
+        'Question': `Question ${hl.questionNumber}`,
+        'Fastest Solver': hl.fastestPlayer ? hl.fastestPlayer.name : 'No correct answers',
+        'Time Taken': hl.fastestPlayer ? `${hl.fastestPlayer.timeTaken}s` : 'N/A'
+      }));
+
+      const wb = XLSX.utils.book_new();
+
+      const wsStandings = XLSX.utils.json_to_sheet(standingsData);
+      const wsOverview = XLSX.utils.json_to_sheet(overviewData);
+      const wsHighlights = XLSX.utils.json_to_sheet(highlightsData);
+
+      // Auto-fit column widths
+      wsStandings['!cols'] = [
+        { wch: 8 },  // Rank
+        { wch: 26 }, // Full Name
+        { wch: 22 }, // Mobile Number
+        { wch: 18 }, // Nickname
+        { wch: 16 }, // Correct
+        { wch: 16 }, // Wrong
+        { wch: 16 }, // Unanswered
+        { wch: 12 }, // Accuracy
+        { wch: 18 }, // Final Score
+      ];
+
+      XLSX.utils.book_append_sheet(wb, wsStandings, 'Player Standings');
+      XLSX.utils.book_append_sheet(wb, wsOverview, 'Match Overview');
+      XLSX.utils.book_append_sheet(wb, wsHighlights, 'Question Highlights');
+
+      const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Quizy';
+      const fileName = `${prefix}_${cleanTitle}_${id ? id.slice(-6) : 'report'}.xlsx`;
+
+      XLSX.writeFile(wb, fileName);
+      toast.success('Excel (.xlsx) report exported successfully!', { id: 'export-excel' });
+    } catch (err) {
+      console.error('Excel Export error:', err);
+      toast.error('Error generating Excel document', { id: 'export-excel' });
+    }
+  };
+
   // ── PDF Export ────────────────────────────────────────────────────────────
   const handleExportPDF = async () => {
     if (!result) {
@@ -216,14 +296,28 @@ export default function ResultsAnalytics() {
 
     try {
       toast.loading('Preparing PDF report...', { id: 'export-pdf' });
-      const [{ jsPDF }, { default: autoTable }] = await Promise.all([
-        import('jspdf'),
-        import('jspdf-autotable')
-      ]);
+      
+      const jsPDFModule = await import('jspdf');
+      const jsPDF = jsPDFModule.jsPDF || jsPDFModule.default || jsPDFModule;
+
+      const autoTableModule = await import('jspdf-autotable');
+      const autoTable = autoTableModule.default || autoTableModule.autoTable || autoTableModule;
 
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pageW = doc.internal.pageSize.getWidth();
       const margin = 14;
+
+      const runTable = (tableOptions) => {
+        if (typeof autoTable === 'function') {
+          autoTable(doc, tableOptions);
+        } else if (typeof doc.autoTable === 'function') {
+          doc.autoTable(tableOptions);
+        } else if (autoTableModule && typeof autoTableModule.default === 'function') {
+          autoTableModule.default(doc, tableOptions);
+        } else {
+          console.error('autoTable plugin method not found');
+        }
+      };
 
       // ── Brand Header ────────────────────────────────────────────
       doc.setFont('helvetica', 'bold');
@@ -294,7 +388,7 @@ export default function ResultsAnalytics() {
         doc.setFontSize(10);
         doc.setTextColor(15, 23, 42);
         const maxValWidth = cardW - 3;
-        const valLines = doc.splitTextToSize(val, maxValWidth);
+        const valLines = doc.splitTextToSize(String(val || ''), maxValWidth);
         doc.text(valLines[0] || '', x + cardW / 2, cursorY + 7.5, { align: 'center' });
 
         doc.setFont('helvetica', 'bold');
@@ -317,7 +411,7 @@ export default function ResultsAnalytics() {
             const medal = p.rank <= 3 ? rankMedals[p.rank - 1] : `#${p.rank}`;
             return [
               medal,
-              p.name,
+              p.fullName,
               p.mobileNumber || 'N/A',
               String(p.correct || 0),
               String(p.wrong || 0),
@@ -325,11 +419,11 @@ export default function ResultsAnalytics() {
               `${p.totalScore || 0} pts`,
             ];
           })
-        : [['-', 'No players recorded', '0', '0', '0', '0 pts']];
+        : [['-', 'No players recorded', 'N/A', '0', '0', '0', '0 pts']];
 
-      runAutoTable(doc, {
+      runTable({
         startY: cursorY,
-        head: [['Rank', 'Player Name', 'Mobile', 'Correct', 'Wrong', 'Not Answered', 'Final Score']],
+        head: [['Rank', 'Full Name', 'Phone / Mobile', 'Correct', 'Wrong', 'Not Answered', 'Final Score']],
         body: tableRows,
         theme: 'grid',
         styles: {
@@ -363,13 +457,18 @@ export default function ResultsAnalytics() {
 
       // ── Fastest Solvers ─────────────────────────────────────────
       if (questionHighlights.length > 0) {
+        if (cursorY > doc.internal.pageSize.getHeight() - 40) {
+          doc.addPage();
+          cursorY = 20;
+        }
+
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(11);
         doc.setTextColor(30, 41, 59);
         doc.text('FASTEST CORRECT SOLVERS', margin, cursorY);
         cursorY += 4;
 
-        runAutoTable(doc, {
+        runTable({
           startY: cursorY,
           head: [['Question', 'Fastest Solver', 'Time Taken']],
           body: questionHighlights.map((hl) => [
@@ -397,7 +496,10 @@ export default function ResultsAnalytics() {
       }
 
       // ── Footer ──────────────────────────────────────────────────
-      const totalPages = doc.internal.getNumberOfPages();
+      const totalPages = typeof doc.getNumberOfPages === 'function' 
+        ? doc.getNumberOfPages() 
+        : (doc.internal ? doc.internal.getNumberOfPages() : 1);
+
       for (let pg = 1; pg <= totalPages; pg++) {
         doc.setPage(pg);
         doc.setFont('helvetica', 'normal');
@@ -421,10 +523,10 @@ export default function ResultsAnalytics() {
       const fileName = `${prefix}_${cleanTitle}_${id ? id.slice(-6) : 'report'}.pdf`;
 
       doc.save(fileName);
-      toast.success('PDF report downloaded!');
+      toast.success('PDF report downloaded!', { id: 'export-pdf' });
     } catch (err) {
       console.error('PDF Export error:', err);
-      toast.error('Error generating PDF report');
+      toast.error('Error generating PDF report', { id: 'export-pdf' });
     }
   };
 
@@ -583,11 +685,11 @@ export default function ResultsAnalytics() {
               width: { size: 100, type: WidthType.PERCENTAGE },
               rows: [
                 new TableRow({
-                  children: ['Rank', 'Player Name', 'Mobile Number', 'Correct', 'Wrong', 'Not Answered', 'Final Score'].map((headerText, i) => 
+                  children: ['Rank', 'Full Name', 'Phone / Mobile Number', 'Correct', 'Wrong', 'Not Answered', 'Final Score'].map((headerText, i) => 
                     new TableCell({
                       children: [
                         new Paragraph({
-                          alignment: i === 1 ? AlignmentType.LEFT : i === 5 ? AlignmentType.RIGHT : AlignmentType.CENTER,
+                          alignment: i === 1 ? AlignmentType.LEFT : i === 6 ? AlignmentType.RIGHT : AlignmentType.CENTER,
                           children: [new TextRun({ text: headerText, bold: true, color: 'FFFFFF', size: 18 })],
                         }),
                       ],
@@ -604,11 +706,11 @@ export default function ResultsAnalytics() {
                             shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
                           }),
                           new TableCell({
-                            children: [new Paragraph({ children: [new TextRun({ text: p.name, bold: true, size: 18 })] })],
+                            children: [new Paragraph({ children: [new TextRun({ text: p.fullName, bold: true, size: 18 })] })],
                             shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
                           }),
                           new TableCell({
-                            children: [new Paragraph({ children: [new TextRun({ text: p.mobileNumber || 'N/A', size: 14 })] })],
+                            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: p.mobileNumber || 'N/A', size: 16 })] })],
                             shading: { fill: idx % 2 === 0 ? 'FFFFFF' : 'F8FAFC', type: ShadingType.CLEAR, color: 'auto' },
                           }),
                           new TableCell({
@@ -635,7 +737,7 @@ export default function ResultsAnalytics() {
                         children: [
                           new TableCell({
                             children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'No player data recorded', size: 18 })] })],
-                            columnSpan: 6,
+                            columnSpan: 7,
                           }),
                         ],
                       }),
@@ -794,15 +896,19 @@ export default function ResultsAnalytics() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <button onClick={handleExportCSV} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
+                <button onClick={handleExportExcel} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition cursor-pointer hover:scale-105 active:scale-95 ${isDark ? 'bg-emerald-950/60 text-emerald-300 hover:bg-emerald-900/60 border border-emerald-700/50' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}`}>
+                  <FileSpreadsheet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  Export Excel (.xlsx)
+                </button>
+                <button onClick={handleExportCSV} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition cursor-pointer hover:scale-105 active:scale-95 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
                   <FileSpreadsheet className="h-4 w-4" />
                   Export CSV
                 </button>
-                <button onClick={handleExportWord} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${isDark ? 'bg-blue-900/40 text-blue-200 hover:bg-blue-900/60 border border-blue-700/50' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
+                <button onClick={handleExportWord} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition cursor-pointer hover:scale-105 active:scale-95 ${isDark ? 'bg-blue-900/40 text-blue-200 hover:bg-blue-900/60 border border-blue-700/50' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
                   <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  Export Word
+                  Export Word (.docx)
                 </button>
-                <button onClick={handleExportPDF} className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 shadow-md">
+                <button onClick={handleExportPDF} className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 shadow-md cursor-pointer hover:scale-105 active:scale-95">
                   <Download className="h-4 w-4" />
                   Export PDF
                 </button>
@@ -900,7 +1006,8 @@ export default function ResultsAnalytics() {
                 <thead>
                   <tr className={`border-b text-xs uppercase tracking-[0.24em] ${isDark ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-500'}`}>
                     <th className="px-3 py-3">Rank</th>
-                    <th className="px-3 py-3">Player</th>
+                    <th className="px-3 py-3">Full Name</th>
+                    <th className="px-3 py-3">Phone / Mobile</th>
                     <th className="px-3 py-3 text-center">Correct</th>
                     <th className="px-3 py-3 text-center">Incorrect</th>
                     <th className="px-3 py-3 text-center">Not Submitted</th>
@@ -912,7 +1019,23 @@ export default function ResultsAnalytics() {
                   {playerSummaries.map((player) => (
                     <tr key={player.rank} className={`border-b transition hover:opacity-90 ${isDark ? 'border-slate-800 hover:bg-slate-800/60' : 'border-slate-200 hover:bg-slate-50'}`}>
                       <td className={`px-3 py-3 font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{player.rank === 1 ? <Crown className="inline h-4 w-4 text-yellow-500" /> : player.rank === 2 ? <Medal className="inline h-4 w-4 text-slate-400" /> : player.rank === 3 ? <Medal className="inline h-4 w-4 text-amber-600" /> : `#${player.rank}`}</td>
-                      <td className={`px-3 py-3 font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{player.name}</td>
+                      <td className={`px-3 py-3 font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        <div>
+                          <span>{player.fullName}</span>
+                          {player.nickname && player.nickname !== player.fullName && (
+                            <span className={`block text-xs font-normal ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                              aka {player.nickname}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className={`px-3 py-3 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                        {player.mobileNumber ? (
+                          <span className="font-mono text-xs font-medium tracking-wide">{player.mobileNumber}</span>
+                        ) : (
+                          <span className={`text-xs italic ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>Not provided</span>
+                        )}
+                      </td>
                       <td className={`px-3 py-3 text-center ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{player.correct}</td>
                       <td className={`px-3 py-3 text-center ${isDark ? 'text-rose-400' : 'text-rose-600'}`}>{player.wrong}</td>
                       <td className={`px-3 py-3 text-center ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{player.unanswered}</td>

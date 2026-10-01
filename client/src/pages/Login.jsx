@@ -129,16 +129,11 @@ export default function Login() {
               className="lg:col-span-6 space-y-4 sm:space-y-6 flex flex-col justify-center text-left"
             >
               {/* Brand Header */}
-              <div className="flex items-center gap-2.5 sm:gap-3">
-                <Logo className="h-9 w-9 sm:h-12 sm:w-12 shrink-0" />
-                <div>
-                  <h1 className="font-outfit text-xl sm:text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
-                    Quizy
-                  </h1>
-                  <p className="text-[11px] sm:text-sm font-semibold text-primary">
-                    Interactive Real-Time Quiz Platform
-                  </p>
-                </div>
+              <div className="flex flex-col items-start gap-1">
+                <Logo className="shrink-0" />
+                <p className="text-[11px] sm:text-sm font-semibold text-primary">
+                  Interactive Real-Time Quiz Platform
+                </p>
               </div>
 
               {/* Desktop Visual Preview Card */}

@@ -109,11 +109,8 @@ export default function Register() {
           
           {/* Header Branding */}
           <div className="text-center space-y-3">
-            <div className="flex items-center justify-center gap-2">
-              <Logo className="h-10 w-10 shrink-0" />
-              <span className="font-outfit text-2xl sm:text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00D9FF] via-[#386BFF] to-[#7B2CFF]">
-                Quizy
-              </span>
+            <div className="flex items-center justify-center">
+              <Logo className="shrink-0" />
             </div>
             <h1 className={`font-outfit text-3xl sm:text-5xl font-black tracking-tight ${
               isLight ? 'text-gray-900' : 'text-white'
@@ -159,12 +156,14 @@ export default function Register() {
                           Your Name / Nickname
                         </label>
                         <div className="relative">
-                          <User className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                            <User className="h-4 w-4" />
+                          </div>
                           <input
                             type="text"
                             placeholder="e.g. Alex Smith"
                             {...register('name', { required: 'Name is required' })}
-                            className={`w-full rounded-xl border px-3 py-2.5 pl-9 text-xs transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
+                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 text-xs sm:text-sm font-medium transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
                               isLight 
                                 ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
                                 : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
@@ -179,7 +178,9 @@ export default function Register() {
                           Email Address
                         </label>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                            <Mail className="h-4 w-4" />
+                          </div>
                           <input
                             type="email"
                             placeholder="host@quiz.com"
@@ -187,7 +188,7 @@ export default function Register() {
                               required: 'Email is required',
                               pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Valid email required' }
                             })}
-                            className={`w-full rounded-xl border px-3 py-2.5 pl-9 text-xs transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
+                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 text-xs sm:text-sm font-medium transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
                               isLight 
                                 ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
                                 : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
@@ -205,12 +206,14 @@ export default function Register() {
                           Password
                         </label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                            <Lock className="h-4 w-4" />
+                          </div>
                           <input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="••••••••"
                             {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Min 6 characters' } })}
-                            className={`w-full rounded-xl border px-3 py-2.5 pl-9 pr-8 text-xs transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
+                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 pr-10 text-xs sm:text-sm font-medium transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
                               isLight 
                                 ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
                                 : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
@@ -219,9 +222,12 @@ export default function Register() {
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className={`absolute right-2.5 top-3 ${isLight ? 'text-gray-400 hover:text-gray-700' : 'text-gray-400 hover:text-white'}`}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            className={`absolute inset-y-0 right-0 flex items-center pr-3.5 cursor-pointer transition-colors ${
+                              isLight ? 'text-gray-400 hover:text-gray-700' : 'text-gray-400 hover:text-white'
+                            }`}
                           >
-                            {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </button>
                         </div>
                         {watchPassword && (
@@ -238,7 +244,9 @@ export default function Register() {
                           Confirm Password
                         </label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                            <Lock className="h-4 w-4" />
+                          </div>
                           <input
                             type={showConfirmPassword ? 'text' : 'password'}
                             placeholder="••••••••"
@@ -246,7 +254,7 @@ export default function Register() {
                               required: 'Confirm password required',
                               validate: (val) => val === watchPassword || 'Passwords do not match',
                             })}
-                            className={`w-full rounded-xl border px-3 py-2.5 pl-9 pr-8 text-xs transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
+                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 pr-10 text-xs sm:text-sm font-medium transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
                               isLight 
                                 ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
                                 : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
@@ -255,9 +263,12 @@ export default function Register() {
                           <button
                             type="button"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className={`absolute right-2.5 top-3 ${isLight ? 'text-gray-400 hover:text-gray-700' : 'text-gray-400 hover:text-white'}`}
+                            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                            className={`absolute inset-y-0 right-0 flex items-center pr-3.5 cursor-pointer transition-colors ${
+                              isLight ? 'text-gray-400 hover:text-gray-700' : 'text-gray-400 hover:text-white'
+                            }`}
                           >
-                            {showConfirmPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </button>
                         </div>
                         {errors.confirmPassword && <span className="text-[10px] text-accent font-bold">{errors.confirmPassword.message}</span>}
@@ -271,10 +282,12 @@ export default function Register() {
                           Security Question
                         </label>
                         <div className="relative">
-                          <ShieldCheck className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                            <ShieldCheck className="h-4 w-4" />
+                          </div>
                           <select
                             {...register('securityQuestion', { required: 'Question required' })}
-                            className={`w-full rounded-xl border px-3 py-2.5 pl-9 text-xs focus:outline-none focus:border-secondary ${
+                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 text-xs sm:text-sm font-medium focus:outline-none focus:border-secondary ${
                               isLight ? 'bg-gray-50 border-gray-200 text-gray-900' : 'bg-[#151520] border-white/10 text-white'
                             }`}
                           >
@@ -291,12 +304,14 @@ export default function Register() {
                           Security Answer
                         </label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                            <Lock className="h-4 w-4" />
+                          </div>
                           <input
                             type="text"
                             placeholder="Your answer"
                             {...register('securityAnswer', { required: 'Answer required' })}
-                            className={`w-full rounded-xl border px-3 py-2.5 pl-9 text-xs transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
+                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 text-xs sm:text-sm font-medium transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
                               isLight 
                                 ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
                                 : 'bg-white/5 border-white/10 text-white placeholder-gray-500'

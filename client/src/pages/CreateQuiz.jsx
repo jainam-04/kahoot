@@ -347,16 +347,16 @@ export default function CreateQuiz() {
               </div>
             </div>
 
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 mt-1 sm:mt-0 w-full sm:w-auto">
+              <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-3 mt-2 sm:mt-0 w-full sm:w-auto">
                 {/* AI Quiz Assistant Button */}
                 <button
                   type="button"
                   onClick={() => setShowAIModal(true)}
-                  className="btn-premium w-full sm:w-auto justify-center px-3.5 sm:px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-white shadow-md cursor-pointer hover:scale-105 active:scale-95 transition-all"
+                  className="btn-premium w-full sm:w-auto justify-center px-3 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-white shadow-md cursor-pointer hover:scale-105 active:scale-95 transition-all rounded-xl"
                   style={{ background: 'linear-gradient(135deg, #7c3aed, #ec4899)', border: 'none' }}
                 >
-                  <Sparkles className="h-4 w-4 text-yellow-300 animate-pulse" />
-                  <span>AI Quiz Assistant</span>
+                  <Sparkles className="h-3.5 w-3.5 text-yellow-300 animate-pulse shrink-0" />
+                  <span className="truncate">AI Assistant</span>
                 </button>
 
                 {/* Hidden File Input for Excel/CSV */}
@@ -369,11 +369,11 @@ export default function CreateQuiz() {
                 />
                 <label
                   htmlFor="excel-file-upload"
-                  className="btn-premium w-full sm:w-auto justify-center px-3.5 sm:px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  className="btn-premium w-full sm:w-auto justify-center px-3 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer rounded-xl"
                   style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', border: 'none' }}
                 >
-                  <FileSpreadsheet className="h-4 w-4 shrink-0" />
-                  <span>Upload Excel/CSV</span>
+                  <FileSpreadsheet className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">Import CSV</span>
                 </label>
                 
                 <button
@@ -405,21 +405,21 @@ export default function CreateQuiz() {
                       toast.error(response.message || 'Failed to save quiz', { id: 'forge-host' });
                     }
                   }, onInvalid)}
-                  className="btn-premium w-full sm:w-auto justify-center px-3.5 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  className="btn-premium w-full sm:w-auto justify-center px-3 sm:px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer rounded-xl"
                   style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', border: 'none' }}
                 >
-                  <Play className="h-4 w-4 fill-current shrink-0" />
-                  <span>Launch Quiz</span>
+                  <Play className="h-3.5 w-3.5 fill-current shrink-0" />
+                  <span className="truncate">Launch</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleSubmit(onSubmit, onInvalid)}
-                  className="btn-premium w-full sm:w-auto justify-center px-3.5 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer"
+                  className="btn-premium w-full sm:w-auto justify-center px-3 sm:px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer rounded-xl"
                   style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
                 >
-                  <Save className="h-4 w-4 shrink-0" />
-                  <span>Save Quiz</span>
+                  <Save className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">Save Quiz</span>
                 </button>
               </div>
             </div>

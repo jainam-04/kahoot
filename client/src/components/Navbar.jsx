@@ -125,9 +125,9 @@ export default function Navbar() {
       <div className="w-full flex h-16 items-center justify-between px-3 sm:px-5 lg:px-6">
         
         {/* Brand Logo - Leftmost */}
-        <Link to="/" className="flex items-center transition-transform active:scale-95 shrink-0 min-w-0" onClick={closeMobile}>
-            <Logo className="h-[70px] w-[70px] shrink-0" />
-          </Link>
+        <Link to="/" className="flex items-center transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
+          <Logo className="shrink-0" />
+        </Link>
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-6">

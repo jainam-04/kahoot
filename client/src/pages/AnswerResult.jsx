@@ -14,14 +14,63 @@ import AnimatedPage from '../components/AnimatedPage';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
 import { startQuestion, endGame, getGame, showLeaderboard } from '../services/gameService';
 import { useGame } from '../context/GameContext';
+import { useTheme } from '../context/ThemeContext';
 
 const isUnansweredAnswer = (answer) => {
   return answer.answerIndex === -1 || answer.answerIndex === undefined || answer.answerIndex === null;
 }
 
-const getTheme = (category) => {
+const getTheme = (category, isLight = false) => {
   const cat = String(category || 'general').toLowerCase();
   
+  if (isLight) {
+    if (cat.includes('science') || cat.includes('biology') || cat.includes('physics') || cat.includes('chemistry') || cat.includes('lab')) {
+      return {
+        bg: 'bg-gradient-to-br from-purple-50 via-fuchsia-50 to-pink-50',
+        glow1: 'bg-purple-300/20',
+        glow2: 'bg-fuchsia-300/15',
+        accentText: 'text-purple-700',
+        badgeBg: 'bg-purple-100 text-purple-700 border border-purple-200',
+        cardBorder: 'border-purple-200',
+        ambientElements: null
+      };
+    }
+
+    if (cat.includes('programming') || cat.includes('coding') || cat.includes('tech') || cat.includes('computer') || cat.includes('software') || cat.includes('hardware')) {
+      return {
+        bg: 'bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50',
+        glow1: 'bg-emerald-300/20',
+        glow2: 'bg-teal-300/15',
+        accentText: 'text-emerald-700 font-mono',
+        badgeBg: 'bg-emerald-100 text-emerald-800 border border-emerald-200 font-mono',
+        cardBorder: 'border-emerald-200',
+        ambientElements: null
+      };
+    }
+
+    if (cat.includes('geography') || cat.includes('history') || cat.includes('social') || cat.includes('civics') || cat.includes('world')) {
+      return {
+        bg: 'bg-gradient-to-br from-sky-50 via-blue-50 to-amber-50',
+        glow1: 'bg-blue-300/20',
+        glow2: 'bg-amber-300/15',
+        accentText: 'text-amber-800',
+        badgeBg: 'bg-amber-100 text-amber-800 border border-amber-200',
+        cardBorder: 'border-amber-200',
+        ambientElements: null
+      };
+    }
+
+    return {
+      bg: 'bg-gradient-to-br from-slate-50 via-indigo-50/60 to-purple-50/60',
+      glow1: 'bg-indigo-300/20',
+      glow2: 'bg-violet-300/15',
+      accentText: 'text-primary',
+      badgeBg: 'bg-primary/10 text-primary border border-primary/20',
+      cardBorder: 'border-slate-200',
+      ambientElements: null
+    };
+  }
+
   if (cat.includes('science') || cat.includes('biology') || cat.includes('physics') || cat.includes('chemistry') || cat.includes('lab')) {
     return {
       bg: 'bg-[#0b0716] bg-gradient-to-br from-[#120b24] via-[#1b1036] to-[#0d071b]',
@@ -141,6 +190,8 @@ export default function AnswerResult() {
   const { pin } = useParams();
   const navigate = useNavigate();
   const { playerName } = useGame();
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
   const localPlayer = playerName || localStorage.getItem('guest_playerName');
   const optionLetters = ['A', 'B', 'C', 'D'];
 
@@ -435,7 +486,7 @@ export default function AnswerResult() {
     'bg-gradient-to-r from-emerald-500 to-green-600 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.35)]'
   ];
 
-  const theme = getTheme(category);
+  const theme = getTheme(category, isLight);
   const bgConfig = parseBgConfig(bgImage);
   const isUnanswered = !hasSubmittedAnswer;
 

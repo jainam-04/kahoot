@@ -3,14 +3,15 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, PlusCircle, FileText, ArrowRight, Play, Users, HelpCircle,
-  X, Trophy, Clock, BarChart3, UserCheck, Pencil, ChevronRight
+  X, Trophy, Clock, BarChart3, UserCheck, Pencil, ChevronRight, Sparkles, BookOpen, Copy
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import { getMyQuizzes } from '../services/quizService';
+import { getMyQuizzes, createQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
 import { useTheme } from '../context/ThemeContext';
+import { ALL_CURATED_QUIZZES, FEATURED_PRESET_QUIZZES } from '../data/curatedQuizzes';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -19,6 +20,8 @@ export default function Dashboard() {
   const isLight = themeMode === 'light';
 
   const [activeModal, setActiveModal] = useState(null); // 'sessions' | 'students' | null
+  const [activePresetCategory, setActivePresetCategory] = useState('All');
+  const [hostingPresetId, setHostingPresetId] = useState(null);
 
   // Display Welcome Popup Toast when arriving directly from Sign In or Registration
   useEffect(() => {
@@ -37,6 +40,7 @@ export default function Dashboard() {
   const { 
     data: quizzesData,
     isLoading: isQuizzesLoading,
+    refetch: refetchQuizzes
   } = useQuery({
     queryKey: ['my-quizzes'],
     queryFn: getMyQuizzes,
@@ -93,12 +97,71 @@ export default function Dashboard() {
     });
   };
 
+  // Launch Predefined Ready Quiz directly from Dashboard
+  const handleHostPreset = async (quiz) => {
+    setHostingPresetId(quiz._id);
+    toast.loading('Initializing live quiz lobby...', { id: 'host-preset' });
+    try {
+      const createRes = await createQuiz({
+        title: quiz.title,
+        category: quiz.category,
+        description: quiz.description,
+        questions: quiz.questions
+      });
+
+      if (createRes.success && createRes.quiz) {
+        refetchQuizzes();
+        const gameRes = await createGame(createRes.quiz._id);
+        if (gameRes.success && gameRes.game) {
+          toast.success(`Quiz Lobby Active! PIN: ${gameRes.game.pin}`, { id: 'host-preset' });
+          navigate(`/host/lobby/${gameRes.game.pin}`);
+        } else {
+          toast.error(gameRes.message || 'Failed to initialize lobby', { id: 'host-preset' });
+        }
+      } else {
+        toast.error('Failed to clone ready quiz', { id: 'host-preset' });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Error starting game session', { id: 'host-preset' });
+    } finally {
+      setHostingPresetId(null);
+    }
+  };
+
+  // Clone preset to customize questions
+  const handleCloneAndEditPreset = async (quiz) => {
+    toast.loading('Cloning quiz for editing...', { id: 'clone-preset' });
+    try {
+      const createRes = await createQuiz({
+        title: `${quiz.title} (Copy)`,
+        category: quiz.category,
+        description: quiz.description,
+        questions: quiz.questions
+      });
+      if (createRes.success && createRes.quiz) {
+        toast.success('Quiz ready for customization!', { id: 'clone-preset' });
+        navigate(`/quiz/edit/${createRes.quiz._id}`);
+      } else {
+        toast.error('Failed to duplicate quiz', { id: 'clone-preset' });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Error duplicating quiz', { id: 'clone-preset' });
+    }
+  };
+
+  const presetCategories = ['All', 'Science', 'General Knowledge', 'Programming', 'Mathematics'];
+  const displayPresets = activePresetCategory === 'All'
+    ? FEATURED_PRESET_QUIZZES
+    : ALL_CURATED_QUIZZES.filter(q => q.category.toLowerCase() === activePresetCategory.toLowerCase());
+
   return (
     <AnimatedPage>
       <div className="flex flex-1 flex-col min-h-screen bg-background overflow-x-hidden">
 
         {/* MAIN DASHBOARD */}
-        <div className="flex-1 p-4 sm:p-6 lg:p-10 space-y-6 sm:space-y-8 overflow-y-auto overflow-x-hidden">
+        <div className="flex-1 p-4 sm:p-6 lg:p-10 space-y-8 sm:space-y-10 overflow-y-auto overflow-x-hidden">
 
           {/* Header */}
           <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6 ${isLight ? 'border-gray-200' : 'border-white/5'}`}>
@@ -107,7 +170,7 @@ export default function Dashboard() {
                 Dashboard Overview
               </h1>
               <p className={`text-sm mt-1 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                Manage your active quizzes and view participant logs.
+                Host instant ready quizzes, create custom trivia, and view participant analytics.
               </p>
             </div>
 
@@ -121,7 +184,7 @@ export default function Dashboard() {
             </Link>
           </div>
 
-          {/* METRIC CARDS GRID WITH SEPARATE DISTINCT ACTIONS */}
+          {/* METRIC CARDS GRID */}
           <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-3">
             {/* Total Quizzes Card */}
             <div 
@@ -210,36 +273,179 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* RECENT QUIZZES SECTION */}
-          <div className="space-y-6 text-left">
+          {/* ========================================================================= */}
+          {/* PREDEFINED READY-TO-USE QUIZZES (INSTANT HOST LIBRARY ON DASHBOARD) */}
+          {/* ========================================================================= */}
+          <div className="space-y-4 text-left">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-[10px] font-black uppercase tracking-wider mb-1.5">
+                  <Sparkles className="h-3 w-3 text-yellow-400" />
+                  <span>Instant Play Library (10 Questions Each)</span>
+                </div>
+                <h3 className={`font-outfit text-xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  Ready-to-Use Predefined Quizzes
+                </h3>
+                <p className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                  Host instant 10-question trivia games live, or clone them directly to customize.
+                </p>
+              </div>
+
+              {/* Category Filter Pills */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                {presetCategories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActivePresetCategory(cat)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      activePresetCategory === cat
+                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md'
+                        : isLight
+                        ? 'bg-white border border-gray-200 text-gray-700 hover:bg-purple-50'
+                        : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Presets Cards Grid */}
+            <div className="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+              {displayPresets.map((quiz, index) => {
+                const IconComponent = quiz.icon || Sparkles;
+                const isHosting = hostingPresetId === quiz._id;
+
+                return (
+                  <div
+                    key={quiz._id || index}
+                    className={`rounded-2xl border p-5 flex flex-col justify-between relative group transition-all duration-200 hover:-translate-y-1 ${
+                      isLight
+                        ? 'bg-white border-gray-200/90 hover:border-purple-300 hover:shadow-lg'
+                        : 'bg-gradient-to-b from-[#161424] to-[#0f0e1a] border-white/10 hover:border-purple-500/40 hover:shadow-xl'
+                    }`}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${quiz.gradient} flex items-center justify-center text-white shadow-md`}>
+                          <IconComponent className="w-5 h-5" />
+                        </div>
+
+                        <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full border ${
+                          quiz.difficulty === 'Easy'
+                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                            : quiz.difficulty === 'Hard'
+                            ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
+                            : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                        }`}>
+                          {quiz.difficulty || 'Medium'}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-[9px] font-extrabold uppercase tracking-wider text-purple-500 block">
+                          {quiz.category}
+                        </span>
+                        <h4 className={`font-outfit text-sm font-bold line-clamp-1 mt-0.5 ${
+                          isLight ? 'text-gray-900 group-hover:text-purple-700' : 'text-white group-hover:text-purple-300'
+                        }`}>
+                          {quiz.title}
+                        </h4>
+                        <p className={`text-[11px] mt-1 line-clamp-2 leading-relaxed ${
+                          isLight ? 'text-gray-600' : 'text-gray-400'
+                        }`}>
+                          {quiz.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 mt-3 border-t space-y-2.5" style={{ borderColor: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)' }}>
+                      <div className="flex items-center justify-between text-[11px] font-bold text-muted">
+                        <span className="flex items-center gap-1">
+                          <BookOpen className="w-3 h-3 text-purple-500" />
+                          <span>{quiz.questionsCount} Qs</span>
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-indigo-500" />
+                          <span>~5 mins</span>
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleHostPreset(quiz)}
+                          disabled={isHosting}
+                          className="flex-1 btn-premium py-2 px-3 rounded-xl text-[11px] font-black text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:brightness-110 shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-50"
+                        >
+                          {isHosting ? (
+                            <span>Lobby...</span>
+                          ) : (
+                            <>
+                              <Play className="w-3 h-3 fill-current" />
+                              <span>Host Live</span>
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleCloneAndEditPreset(quiz)}
+                          className={`p-2 rounded-xl border transition-all cursor-pointer hover:scale-105 active:scale-95 ${
+                            isLight
+                              ? 'bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200'
+                              : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/15'
+                          }`}
+                          title="Clone & Customize Questions"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ========================================================================= */}
+          {/* MY CUSTOM QUIZZES / RECENT QUIZZES */}
+          {/* ========================================================================= */}
+          <div className="space-y-4 text-left">
             <div className="flex justify-between items-center">
-              <h3 className={`font-outfit text-lg font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                Recent Quizzes
-              </h3>
-              <Link to="/quiz/my" className="text-xs font-semibold text-secondary hover:underline flex items-center gap-1">
-                <span>View All</span>
+              <div>
+                <h3 className={`font-outfit text-xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  My Custom Quizzes
+                </h3>
+                <p className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                  Quizzes you created, customized, or generated with AI.
+                </p>
+              </div>
+              <Link to="/quiz/my" className="text-xs font-bold text-secondary hover:underline flex items-center gap-1">
+                <span>View All ({totalQuizzes})</span>
                 <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
 
             {quizzesData?.quizzes?.length === 0 ? (
-              <div className={`rounded-2xl p-10 text-center space-y-4 border ${isLight ? 'bg-white border-gray-200' : 'glass-panel border-white/5'}`}>
-                <HelpCircle className="h-10 w-10 text-gray-400 mx-auto" />
-                <h4 className={`font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>No Quizzes Found</h4>
-                <p className={`text-xs max-w-[280px] mx-auto ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                  You haven't created any quizzes yet. Create your first multiplayer challenge!
+              <div className={`rounded-2xl p-8 text-center space-y-3 border ${isLight ? 'bg-white border-gray-200' : 'glass-panel border-white/5'}`}>
+                <HelpCircle className="h-9 w-9 text-gray-400 mx-auto" />
+                <h4 className={`font-semibold text-sm ${isLight ? 'text-gray-900' : 'text-white'}`}>No Custom Quizzes Yet</h4>
+                <p className={`text-xs max-w-[320px] mx-auto ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                  Create a brand new quiz from scratch or pick any ready-to-use quiz above to customize.
                 </p>
-                <Link to="/quiz/create" className="inline-flex btn-premium btn-primary-gradient px-4 py-2.5 text-xs font-bold">
+                <Link to="/quiz/create" className="inline-flex btn-premium btn-primary-gradient px-4 py-2 text-xs font-bold rounded-xl">
                   Create Quiz
                 </Link>
               </div>
             ) : (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {quizzesData?.quizzes?.slice(0, 6).map((quiz) => (
                   <div 
                     key={quiz._id}
                     onClick={() => navigate(`/quiz/edit/${quiz._id}`)}
-                    className={`rounded-2xl p-5 sm:p-6 flex flex-col justify-between min-h-[220px] group border transition-all relative cursor-pointer hover:scale-[1.02] shadow-sm hover:shadow-xl select-none ${
+                    className={`rounded-2xl p-5 flex flex-col justify-between min-h-[200px] group border transition-all relative cursor-pointer hover:scale-[1.01] shadow-sm hover:shadow-xl select-none ${
                       isLight 
                         ? 'bg-white border-gray-200 hover:border-primary/50 text-gray-900' 
                         : 'glass-panel border-white/5 hover:border-primary/40 text-white'
@@ -259,23 +465,23 @@ export default function Dashboard() {
                           </span>
                         </div>
                       </div>
-                      <h4 className={`font-bold mt-3 text-base sm:text-lg group-hover:text-primary transition-colors line-clamp-1 flex items-center justify-between gap-2 ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                      <h4 className={`font-bold mt-2 text-base group-hover:text-primary transition-colors line-clamp-1 flex items-center justify-between gap-2 ${isLight ? 'text-gray-900' : 'text-white'}`}>
                         <span className="truncate">{quiz.title}</span>
                         <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
                       </h4>
-                      <p className={`text-xs mt-1.5 line-clamp-2 leading-relaxed ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                      <p className={`text-xs mt-1 line-clamp-2 leading-relaxed ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                         {quiz.description || 'Click to view & edit quiz questions.'}
                       </p>
                     </div>
 
-                    <div className={`flex items-center gap-2 mt-5 pt-4 border-t ${isLight ? 'border-gray-100' : 'border-white/5'}`}>
+                    <div className={`flex items-center gap-2 mt-4 pt-3.5 border-t ${isLight ? 'border-gray-100' : 'border-white/5'}`}>
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleHostGame(quiz._id);
                         }}
-                        className="flex-1 btn-premium btn-primary-gradient py-2.5 px-3 flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-premium-glow cursor-pointer hover:scale-105 active:scale-95 transition-all"
+                        className="flex-1 btn-premium btn-primary-gradient py-2.5 px-3 flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider shadow-premium-glow cursor-pointer hover:scale-105 active:scale-95 transition-all"
                       >
                         <Play className="h-3.5 w-3.5 fill-current" />
                         <span>Launch Lobby</span>
