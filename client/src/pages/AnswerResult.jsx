@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -215,6 +215,7 @@ export default function AnswerResult() {
   const [category, setCategory] = useState('general');
   const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
   const [mobileTab, setMobileTab] = useState('feedback'); // 'feedback' or 'standings'
+  const confettiFiredRef = useRef(false);
 
   const myLeaderboardEntry = leaderboard.find(p => p.username?.toLowerCase() === localPlayer?.toLowerCase());
 
@@ -306,7 +307,8 @@ export default function AnswerResult() {
                 setCurrentScore(myPlayerRecord.totalScore || Number(localStorage.getItem('last_score') || 0));
                 setTimeTaken(submittedAnswer ? (myAnswer.timeTaken / 1000).toFixed(2) : localStorage.getItem('last_timeTaken') || '0.00');
                 
-                if (correct) {
+                if (correct && !confettiFiredRef.current) {
+                  confettiFiredRef.current = true;
                   confetti({
                     particleCount: 150,
                     spread: 80,
@@ -353,8 +355,9 @@ export default function AnswerResult() {
     };
     fetchLiveState();
 
-    // 1. Play Confetti on Correct answer
-    if (!isUserHost && localStorage.getItem('last_isCorrect') === 'true') {
+    // Fallback: Play Confetti on Correct answer if not already fired
+    if (!isUserHost && localStorage.getItem('last_isCorrect') === 'true' && !confettiFiredRef.current) {
+      confettiFiredRef.current = true;
       confetti({
         particleCount: 150,
         spread: 80,
