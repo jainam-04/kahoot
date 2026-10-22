@@ -173,13 +173,14 @@ function ThemedToaster() {
 
 export default function App() {
   useEffect(() => {
-    const savedAppMode = localStorage.getItem('gubbi_mode') || localStorage.getItem('quizforge_mode') || 'dark';
-    if (savedAppMode === 'light') {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-    } else {
+    const savedAppMode = localStorage.getItem('gubbi_theme_preference') || localStorage.getItem('gubbi_mode');
+    const effectiveMode = savedAppMode === 'dark' ? 'dark' : 'light';
+    if (effectiveMode === 'dark') {
       document.documentElement.classList.add('dark');
       document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 

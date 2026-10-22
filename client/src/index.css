@@ -5,7 +5,40 @@
 @tailwind utilities;
 
 :root {
+  /* Default: Clean Off-White Canvas with Shades of Light Blue Accents */
+  --background: #f8fafc;
+  --theme-bg: #f8fafc;
+  --text-main: #1e293b;
+  --text-muted: #475569;
+  --text-heading: #0f172a;
+  --card-bg: rgba(255, 255, 255, 0.96);
+  --card-border: rgba(186, 230, 253, 0.7);
+  --header-bg: rgba(240, 249, 255, 0.94);
+  --header-border: rgba(186, 230, 253, 0.8);
+  --glass-panel-bg: rgba(255, 255, 255, 0.95);
+  --glass-panel-border: rgba(186, 230, 253, 0.75);
+  --glass-panel-shadow: 0 10px 30px 0 rgba(2, 132, 199, 0.08), 0 2px 8px 0 rgba(2, 132, 199, 0.04);
+  --glass-panel-bg-hover: rgba(255, 255, 255, 0.99);
+  --glass-panel-border-hover: rgba(56, 189, 248, 0.6);
+  --glass-panel-shadow-hover: 0 14px 40px 0 rgba(2, 132, 199, 0.14);
+  --ambient-grid-color: rgba(2, 132, 199, 0.05);
+  --footer-bg: #e0f2fe;
+  --footer-border: rgba(186, 230, 253, 0.9);
+
+  /* Theme Defaults */
+  --theme-primary: #7C3AED;
+  --theme-secondary: #06B6D4;
+  --theme-accent: #F43F5E;
+  --theme-card-bg: rgba(255, 255, 255, 0.96);
+  --theme-text: #1e293b;
+  /* Header Height Tokens */
+  --main-header-height: 64px;
+  --page-header-height: 68px;
+}
+
+.dark {
   --background: #000000;
+  --theme-bg: #000000;
   --text-main: #e2e8f0;
   --text-muted: #94a3b8;
   --text-heading: #ffffff;
@@ -22,17 +55,8 @@
   --ambient-grid-color: rgba(255, 255, 255, 0.02);
   --footer-bg: #0f0f1a;
   --footer-border: rgba(124, 58, 237, 0.20);
-
-  /* Theme Defaults */
-  --theme-primary: #7C3AED;
-  --theme-secondary: #06B6D4;
-  --theme-accent: #F43F5E;
-  --theme-bg: #000000;
   --theme-card-bg: rgba(255, 255, 255, 0.05);
   --theme-text: #e2e8f0;
-  /* Header Height Tokens */
-  --main-header-height: 64px;
-  --page-header-height: 68px;
 }
 
 .light {
