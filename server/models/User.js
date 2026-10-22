@@ -33,11 +33,11 @@ const userSchema = new mongoose.Schema({
     },
     securityQuestion: {
         type: String,
-        required: [true, 'Please select a security question']
+        default: 'What is your favourite colour?'
     },
     securityAnswer: {
         type: String,
-        required: [true, 'Please provide an answer to the security question']
+        default: ''
     },
     securityAnswerAttempts: {
         type: Number,
@@ -55,7 +55,7 @@ userSchema.pre('save', async function() {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
     }
-    if (this.isModified('securityAnswer')) {
+    if (this.isModified('securityAnswer') && this.securityAnswer) {
         const salt = await bcrypt.genSalt(10);
         this.securityAnswer = await bcrypt.hash(this.securityAnswer, salt);
     }

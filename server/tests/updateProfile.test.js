@@ -139,9 +139,44 @@ test('Host Profile Update Controller Tests', async (t) => {
         assert.match(res.body.message, /at least 2 characters/i);
     });
 
+    await t.test('Successfully updates legacy user without security questions set', async () => {
+        // Create user directly bypassing Mongoose validation or missing fields
+        const legacyUser = await User.create({
+            name: 'Legacy User',
+            email: 'legacy_user_test@test.com',
+            password: 'password123',
+            role: 'user'
+        });
+        // Clear security fields to simulate old accounts
+        await User.updateOne({ _id: legacyUser._id }, { $unset: { securityQuestion: 1, securityAnswer: 1 } });
+
+        const req = {
+            user: { id: legacyUser._id.toString() },
+            body: {
+                name: 'Updated Legacy User',
+                email: 'legacy_user_updated@test.com'
+            }
+        };
+
+        const res = {
+            statusCode: 200,
+            status(code) { this.statusCode = code; return this; },
+            json(data) { this.body = data; return this; }
+        };
+
+        await updateProfile(req, res);
+
+        assert.equal(res.statusCode, 200);
+        assert.equal(res.body.success, true);
+        assert.equal(res.body.user.name, 'Updated Legacy User');
+        assert.equal(res.body.user.email, 'legacy_user_updated@test.com');
+
+        await User.deleteOne({ _id: legacyUser._id });
+    });
+
     // Cleanup
     if (mongoose.connection.readyState === 1) {
-        await User.deleteMany({ email: { $in: [testUser1Email, testUser2Email, 'new_unique_email@test.com'] } });
+        await User.deleteMany({ email: { $in: [testUser1Email, testUser2Email, 'new_unique_email@test.com', 'legacy_user_test@test.com', 'legacy_user_updated@test.com'] } });
         await mongoose.disconnect();
     }
 });

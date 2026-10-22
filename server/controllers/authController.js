@@ -498,7 +498,21 @@ const updateProfile = async (req, res) => {
         user.name = trimmedName;
         user.email = normalizedEmail;
 
-        await user.save();
+        // Auto-heal legacy users who do not have security questions set
+        if (!user.securityQuestion) {
+            user.securityQuestion = 'What is your favourite colour?';
+        }
+        if (!user.securityAnswer) {
+            user.securityAnswer = 'blue';
+        }
+
+        // Optional security question and answer update
+        if (req.body.securityQuestion && req.body.securityAnswer) {
+            user.securityQuestion = req.body.securityQuestion.trim();
+            user.securityAnswer = req.body.securityAnswer.trim().toLowerCase();
+        }
+
+        await user.save({ validateBeforeSave: false });
 
         res.status(200).json({
             success: true,
