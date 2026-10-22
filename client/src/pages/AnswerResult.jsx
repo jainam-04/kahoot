@@ -519,7 +519,9 @@ export default function AnswerResult() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen text-gray-200 p-4 sm:p-6 flex flex-col items-center justify-center transition-all duration-700 overflow-x-hidden overflow-y-auto">
+      <div className={`relative min-h-screen p-4 sm:p-6 flex flex-col items-center justify-center transition-all duration-700 overflow-x-hidden overflow-y-auto ${
+        isLight ? 'text-slate-900' : 'text-gray-200'
+      }`}>
         
         {/* Customized Background Layer */}
         {bgConfig.url ? (
@@ -571,27 +573,37 @@ export default function AnswerResult() {
 
         {/* Top Header Bar for Host */}
         {isHost && (
-          <div className="w-full max-w-4xl flex justify-between items-center mb-6 relative z-10 border-b border-white/5 pb-4">
+          <div className={`w-full max-w-4xl flex justify-between items-center mb-6 relative z-10 border-b pb-4 ${
+            isLight ? 'border-slate-200' : 'border-white/5'
+          }`}>
             <button 
               onClick={handleHostExit}
-              className="btn-premium btn-glass flex items-center gap-1.5 px-3.5 py-2 text-xs font-black uppercase tracking-wider"
+              className={`btn-premium flex items-center gap-1.5 px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+                isLight 
+                  ? 'bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 shadow-sm' 
+                  : 'btn-glass'
+              }`}
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Return to Dashboard</span>
             </button>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Presenter Screen</span>
+            <span className={`text-[10px] font-bold uppercase tracking-widest ${
+              isLight ? 'text-slate-600' : 'text-gray-500'
+            }`}>Presenter Screen</span>
           </div>
         )}
 
         {/* Mobile Tab Switcher */}
-        <div className="w-full max-w-4xl relative z-10 flex md:hidden gap-1 bg-white/5 border border-white/10 rounded-2xl p-1 mb-4">
+        <div className={`w-full max-w-4xl relative z-10 flex md:hidden gap-1 rounded-2xl p-1 mb-4 border ${
+          isLight ? 'bg-white/90 border-slate-200 shadow-sm' : 'bg-white/5 border-white/10'
+        }`}>
           <button
             type="button"
             onClick={() => setMobileTab('feedback')}
             className={`flex-1 min-w-0 px-2 py-2.5 text-[11px] leading-tight font-black uppercase tracking-wider rounded-xl transition-all ${
               mobileTab === 'feedback'
                 ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-premium-glow'
-                : 'text-gray-200 hover:text-white bg-transparent'
+                : isLight ? 'text-slate-600 hover:text-slate-900 bg-transparent' : 'text-gray-200 hover:text-white bg-transparent'
             }`}
           >
             {isHost ? 'Answer Breakdown' : 'My Result'}
@@ -602,7 +614,7 @@ export default function AnswerResult() {
             className={`flex-1 min-w-0 px-2 py-2.5 text-[11px] leading-tight font-black uppercase tracking-wider rounded-xl transition-all ${
               mobileTab === 'standings'
                 ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-premium-glow'
-                : 'text-gray-200 hover:text-white bg-transparent'
+                : isLight ? 'text-slate-600 hover:text-slate-900 bg-transparent' : 'text-gray-200 hover:text-white bg-transparent'
             }`}
           >
             Lobby Standings
@@ -615,12 +627,20 @@ export default function AnswerResult() {
           <div className={`md:col-span-3 min-w-0 space-y-6 md:block ${mobileTab === 'feedback' ? 'block' : 'hidden'}`}>
             {isHost ? (
               /* HOST SCREEN: ANSWER STATS CHART */
-              <div className={`glass-panel rounded-3xl p-5 sm:p-8 border ${theme.cardBorder} space-y-6`}>
-                <div className="border-b border-white/5 pb-4">
+              <div className={`rounded-3xl p-5 sm:p-8 border space-y-6 ${
+                isLight 
+                  ? 'bg-white/95 border-slate-200 shadow-xl text-slate-900' 
+                  : `glass-panel border ${theme.cardBorder}`
+              }`}>
+                <div className={`border-b pb-4 ${isLight ? 'border-slate-100' : 'border-white/5'}`}>
                   <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${theme.badgeBg}`}>
                     Question Standings
                   </span>
-                  <h2 className="font-outfit text-xl font-extrabold text-white mt-2">Answer Breakdown</h2>
+                  <h2 className={`font-outfit text-xl font-extrabold mt-2 ${
+                    isLight ? 'text-slate-900' : 'text-white'
+                  }`}>
+                    Answer Breakdown
+                  </h2>
                 </div>
 
                 {/* Vertical Bar Chart */}
@@ -633,17 +653,29 @@ export default function AnswerResult() {
                     return (
                       <div key={idx} className="space-y-1.5">
                         <div className="flex justify-between items-center text-xs font-semibold">
-                          <span className={`${isCorrectOption ? 'text-green-400 font-bold' : 'text-gray-300'}`}>
-                            {optionLabels[idx]} {isCorrectOption && <CheckCircle className="inline h-3.5 w-3.5 text-green-400 ml-1" />}
+                          <span className={`${
+                            isCorrectOption 
+                              ? (isLight ? 'text-emerald-700 font-extrabold' : 'text-green-400 font-bold') 
+                              : (isLight ? 'text-slate-700 font-bold' : 'text-gray-300')
+                          }`}>
+                            {optionLabels[idx]} {isCorrectOption && <CheckCircle className={`inline h-3.5 w-3.5 ml-1 ${isLight ? 'text-emerald-600' : 'text-green-400'}`} />}
                           </span>
-                          <span className="text-white font-bold">{count} Responses</span>
+                          <span className={`font-black ${
+                            isLight ? 'text-slate-900 font-extrabold text-xs sm:text-sm' : 'text-white font-bold'
+                          }`}>
+                            {count} {count === 1 ? 'Response' : 'Responses'}
+                          </span>
                         </div>
-                        <div className="w-full bg-white/5 rounded-full h-3 overflow-hidden border border-white/10 flex">
+                        <div className={`w-full rounded-full h-3 overflow-hidden border flex ${
+                          isLight ? 'bg-slate-100 border-slate-200' : 'bg-white/5 border-white/10'
+                        }`}>
                           <div 
                             className={`h-full transition-all duration-1000 ${
                               isCorrectOption 
-                                ? 'bg-gradient-to-r from-green-500 to-emerald-600 ring-1 ring-white/50 shadow-[0_0_10px_rgba(34,197,94,0.5)]' 
-                                : 'bg-gradient-to-r from-white/10 to-white/20'
+                                ? 'bg-gradient-to-r from-green-500 to-emerald-600 ring-1 ring-emerald-400/50 shadow-[0_0_10px_rgba(34,197,94,0.4)]' 
+                                : isLight 
+                                  ? 'bg-gradient-to-r from-slate-200 to-slate-300' 
+                                  : 'bg-gradient-to-r from-white/10 to-white/20'
                             }`} 
                             style={{ width: `${percentage}%` }}
                           />
@@ -658,14 +690,14 @@ export default function AnswerResult() {
                   <button
                     onClick={handleShowLeaderboard}
                     disabled={isShowingLeaderboard || isLoading}
-                    className="flex-1 btn-premium btn-primary-gradient py-3 flex items-center justify-center gap-2 text-xs font-bold shadow-premium-glow cursor-pointer"
+                    className="flex-1 btn-premium btn-primary-gradient py-3 flex items-center justify-center gap-2 text-xs font-bold shadow-premium-glow cursor-pointer text-white"
                   >
                     {isShowingLeaderboard ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin text-white" />
                     ) : (
                       <>
-                        <Trophy className="h-3.5 w-3.5" />
-                        <span>Show Leaderboard Arena</span>
+                        <Trophy className="h-3.5 w-3.5 text-white" />
+                        <span className="text-white">Show Leaderboard Arena</span>
                       </>
                     )}
                   </button>
@@ -691,12 +723,16 @@ export default function AnswerResult() {
                 initial={{ x: 0 }}
                 animate={!isCorrect ? { x: [-10, 10, -10, 10, 0] } : { x: 0 }}
                 transition={{ duration: 0.4 }}
-                className={`glass-panel rounded-3xl p-5 sm:p-8 border text-center space-y-5 sm:space-y-6 relative overflow-hidden w-full ${
+                className={`rounded-3xl p-5 sm:p-8 border text-center space-y-5 sm:space-y-6 relative overflow-hidden w-full ${
+                  isLight 
+                    ? 'bg-white/95 shadow-xl border-slate-200 text-slate-900' 
+                    : 'glass-panel text-white'
+                } ${
                   isUnanswered
-                    ? 'border-orange-500/20 shadow-[0_8px_32px_0_rgba(249,115,22,0.15)] bg-orange-500/5'
+                    ? (isLight ? 'border-orange-300 bg-orange-50/50' : 'border-orange-500/20 bg-orange-500/5')
                     : isCorrect
-                      ? 'border-green-500/20 shadow-[0_8px_32px_0_rgba(34,197,94,0.15)] bg-green-500/5'
-                      : 'border-red-500/20 shadow-[0_8px_32px_0_rgba(244,63,94,0.15)] bg-red-500/5'
+                      ? (isLight ? 'border-emerald-300 bg-emerald-50/50' : 'border-green-500/20 bg-green-500/5')
+                      : (isLight ? 'border-rose-300 bg-rose-50/50' : 'border-red-500/20 bg-red-500/5')
                 }`}
               >
                 {/* Header Icon */}
@@ -718,24 +754,30 @@ export default function AnswerResult() {
 
                 {/* Title */}
                 <div className="space-y-1.5 max-w-lg mx-auto">
-                  <h3 className={`font-outfit text-2xl sm:text-3xl font-black break-words ${isUnanswered ? 'text-orange-400' : isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                  <h3 className={`font-outfit text-2xl sm:text-3xl font-black break-words ${
+                    isUnanswered 
+                      ? (isLight ? 'text-orange-600' : 'text-orange-400') 
+                      : isCorrect 
+                        ? (isLight ? 'text-emerald-700' : 'text-green-400') 
+                        : (isLight ? 'text-rose-600' : 'text-red-400')
+                  }`}>
                     {isUnanswered ? 'Answer Not Submitted' : isCorrect ? 'Correct Answer!' : 'Wrong Answer'}
                   </h3>
-                  <div className="text-xs sm:text-sm text-gray-200">
+                  <div className={`text-xs sm:text-sm ${isLight ? 'text-slate-700' : 'text-gray-200'}`}>
                     {isUnanswered ? (
                       <div className="space-y-1">
-                        <p className="font-semibold text-gray-300">No answer was recorded before the timer ended.</p>
-                        <p className="text-orange-200 font-semibold">
-                          The correct answer is <span className="font-extrabold text-white">Option {optionLetters[correctAnswerIdx] || 'A'}</span>
-                          {correctAnswerText ? <>: <span className="font-extrabold text-white">{correctAnswerText}</span></> : ''}
+                        <p className={`font-semibold ${isLight ? 'text-slate-700' : 'text-gray-300'}`}>No answer was recorded before the timer ended.</p>
+                        <p className={`font-semibold ${isLight ? 'text-orange-700' : 'text-orange-200'}`}>
+                          The correct answer is <span className={`font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>Option {optionLetters[correctAnswerIdx] || 'A'}</span>
+                          {correctAnswerText ? <>: <span className={`font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>{correctAnswerText}</span></> : ''}
                         </p>
                       </div>
                     ) : isCorrect ? (
-                      <p className="font-bold text-emerald-200">Superb speed! Claim your points.</p>
+                      <p className={`font-bold ${isLight ? 'text-emerald-800' : 'text-emerald-200'}`}>Superb speed! Claim your points.</p>
                     ) : (
-                      <p className="font-semibold text-red-100">
-                        The correct answer is <span className="font-extrabold text-white">Option {optionLetters[correctAnswerIdx] || 'A'}</span>
-                        {correctAnswerText ? <>: <span className="font-extrabold text-white">{correctAnswerText}</span></> : ''}
+                      <p className={`font-semibold ${isLight ? 'text-rose-800' : 'text-red-100'}`}>
+                        The correct answer is <span className={`font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>Option {optionLetters[correctAnswerIdx] || 'A'}</span>
+                        {correctAnswerText ? <>: <span className={`font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>{correctAnswerText}</span></> : ''}
                       </p>
                     )}
                   </div>
@@ -744,35 +786,57 @@ export default function AnswerResult() {
                 {/* Stats Grid */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 w-full">
                   {/* Time taken */}
-                  <div className="bg-white/5 border border-white/10 p-3 rounded-2xl flex flex-col items-center justify-center">
-                    <span className="text-[9px] text-gray-300 uppercase tracking-widest font-extrabold">SOLVE TIME</span>
+                  <div className={`p-3 rounded-2xl flex flex-col items-center justify-center border ${
+                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-white/5 border-white/10'
+                  }`}>
+                    <span className={`text-[9px] uppercase tracking-widest font-extrabold ${
+                      isLight ? 'text-slate-500' : 'text-gray-300'
+                    }`}>SOLVE TIME</span>
                     <span className="font-outfit text-sm font-black text-secondary mt-1">{timeTaken}s</span>
                   </div>
 
                   {/* Points gained */}
-                  <div className="bg-white/5 border border-white/10 p-3 rounded-2xl flex flex-col items-center justify-center">
-                    <span className="text-[9px] text-gray-300 uppercase tracking-widest font-extrabold">POINTS RECEIVED</span>
-                    <span className={`font-outfit text-sm font-black mt-1 ${isUnanswered ? 'text-orange-400' : isCorrect ? 'text-green-400' : 'text-gray-400'}`}>
+                  <div className={`p-3 rounded-2xl flex flex-col items-center justify-center border ${
+                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-white/5 border-white/10'
+                  }`}>
+                    <span className={`text-[9px] uppercase tracking-widest font-extrabold ${
+                      isLight ? 'text-slate-500' : 'text-gray-300'
+                    }`}>POINTS RECEIVED</span>
+                    <span className={`font-outfit text-sm font-black mt-1 ${
+                      isUnanswered 
+                        ? (isLight ? 'text-orange-600' : 'text-orange-400') 
+                        : isCorrect 
+                          ? (isLight ? 'text-emerald-600' : 'text-green-400') 
+                          : (isLight ? 'text-slate-400' : 'text-gray-400')
+                    }`}>
                       {isUnanswered ? '+0' : isCorrect ? `+${pointsEarned}` : '+0'}
                     </span>
                   </div>
 
                   {/* Total Standings */}
-                  <div className="bg-white/5 border border-white/10 p-3 rounded-2xl flex flex-col items-center justify-center">
-                    <span className="text-[9px] text-gray-300 uppercase tracking-widest font-extrabold">TOTAL SCORE</span>
+                  <div className={`p-3 rounded-2xl flex flex-col items-center justify-center border ${
+                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-white/5 border-white/10'
+                  }`}>
+                    <span className={`text-[9px] uppercase tracking-widest font-extrabold ${
+                      isLight ? 'text-slate-500' : 'text-gray-300'
+                    }`}>TOTAL SCORE</span>
                     <span className="font-outfit text-sm font-black text-primary mt-1">{currentScore} pts</span>
                   </div>
                 </div>
 
                 {/* Overall Rank badge */}
                 {myLeaderboardEntry && (
-                  <div className="text-[11px] sm:text-xs text-gray-300 font-bold bg-white/5 border border-white/10 px-3 sm:px-4 py-2.5 rounded-xl inline-block mt-1">
+                  <div className={`text-[11px] sm:text-xs font-bold px-3 sm:px-4 py-2.5 rounded-xl inline-block mt-1 border ${
+                    isLight ? 'bg-slate-100 border-slate-200 text-slate-700' : 'bg-white/5 border-white/10 text-gray-300'
+                  }`}>
                     Lobby rank: <span className="text-secondary font-black">#{myLeaderboardEntry.rank}</span> &bull; Total score: <span className="text-primary font-black">{myLeaderboardEntry.totalScore !== undefined ? myLeaderboardEntry.totalScore : currentScore} pts</span>
                   </div>
                 )}
 
                 {/* Bottom status */}
-                 <p className="text-xs font-extrabold text-gray-400 animate-pulse border-t border-white/5 pt-4 sm:pt-5 mt-1">
+                 <p className={`text-xs font-extrabold animate-pulse border-t pt-4 sm:pt-5 mt-1 ${
+                   isLight ? 'text-slate-500 border-slate-100' : 'text-gray-400 border-white/5'
+                 }`}>
                    Waiting for Host to trigger next action...
                  </p>
               </motion.div>
@@ -780,14 +844,20 @@ export default function AnswerResult() {
           </div>
 
           {/* RIGHT PANEL: PODIUM LEADERBOARD STANDINGS */}
-          <div className={`glass-panel rounded-3xl p-5 sm:p-8 border ${theme.cardBorder} space-y-4 flex flex-col md:col-span-2 min-w-0 overflow-hidden md:flex ${mobileTab === 'standings' ? 'flex' : 'hidden'}`}>
-            <h3 className="font-outfit text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 border-b border-white/5 pb-4">
+          <div className={`rounded-3xl p-5 sm:p-8 border space-y-4 flex flex-col md:col-span-2 min-w-0 overflow-hidden md:flex ${
+            mobileTab === 'standings' ? 'flex' : 'hidden'
+          } ${
+            isLight ? 'bg-white/95 border-slate-200 shadow-xl text-slate-900' : `glass-panel border ${theme.cardBorder}`
+          }`}>
+            <h3 className={`font-outfit text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 border-b pb-4 ${
+              isLight ? 'text-slate-700 border-slate-100' : 'text-gray-500 border-white/5'
+            }`}>
               <Trophy className="h-4 w-4 text-primary" />
               Lobby Standings
             </h3>
 
             {leaderboard.length === 0 ? (
-              <p className="text-xs text-gray-500 italic text-center py-8">No score values logged.</p>
+              <p className={`text-xs italic text-center py-8 ${isLight ? 'text-slate-500' : 'text-gray-500'}`}>No score values logged.</p>
             ) : (
               <div className="flex-1 flex flex-col justify-between space-y-4 min-h-[300px]">
                 
@@ -796,15 +866,23 @@ export default function AnswerResult() {
                   {/* 2nd Place */}
                   {secondPlace ? (
                     <div className="flex flex-col items-center flex-1 min-w-0">
-                      <span className="text-[10px] font-bold text-gray-300 truncate w-full text-center">{secondPlace.username}</span>
-                      <span className="text-[8px] text-gray-400 font-semibold">{secondPlace.totalScore || 0} pts ({secondPlace.lastTimeTaken || '0.00'}s)</span>
+                      <span className={`text-[10px] font-bold truncate w-full text-center ${
+                        isLight ? 'text-slate-800' : 'text-gray-300'
+                      }`}>{secondPlace.username}</span>
+                      <span className={`text-[8px] font-semibold ${
+                        isLight ? 'text-slate-600' : 'text-gray-400'
+                      }`}>{secondPlace.totalScore || 0} pts ({secondPlace.lastTimeTaken || '0.00'}s)</span>
                       <motion.div 
                         initial={{ height: 0 }}
                         animate={{ height: 50 }}
                         transition={{ type: 'spring', stiffness: 50, delay: 0.2 }}
-                        className="w-full bg-gradient-to-t from-white/5 to-white/15 border border-white/10 rounded-t-xl flex items-center justify-center mt-1"
+                        className={`w-full rounded-t-xl flex items-center justify-center mt-1 border ${
+                          isLight 
+                            ? 'bg-gradient-to-t from-slate-200 to-slate-100 border-slate-300 shadow-sm' 
+                            : 'bg-gradient-to-t from-white/5 to-white/15 border-white/10'
+                        }`}
                       >
-                        <Medal className="h-4 w-4 text-slate-400" />
+                        <Medal className={`h-4 w-4 ${isLight ? 'text-slate-600' : 'text-slate-400'}`} />
                       </motion.div>
                     </div>
                   ) : <div className="flex-1" />}
@@ -812,16 +890,24 @@ export default function AnswerResult() {
                   {/* 1st Place */}
                   {firstPlace ? (
                     <div className="flex flex-col items-center flex-1 min-w-0">
-                      <Crown className="h-3 w-3 text-warning animate-bounce mb-0.5" />
-                      <span className="text-[11px] font-extrabold text-white truncate w-full text-center">{firstPlace.username}</span>
-                      <span className="text-[8px] text-warning font-bold">{firstPlace.totalScore || 0} pts ({firstPlace.lastTimeTaken || '0.00'}s)</span>
+                      <Crown className="h-3.5 w-3.5 text-amber-500 animate-bounce mb-0.5" />
+                      <span className={`text-[11px] font-black truncate w-full text-center ${
+                        isLight ? 'text-slate-900' : 'text-white'
+                      }`}>{firstPlace.username}</span>
+                      <span className={`text-[9px] font-extrabold ${
+                        isLight ? 'text-amber-700' : 'text-warning'
+                      }`}>{firstPlace.totalScore || 0} pts ({firstPlace.lastTimeTaken || '0.00'}s)</span>
                       <motion.div 
                         initial={{ height: 0 }}
                         animate={{ height: 80 }}
                         transition={{ type: 'spring', stiffness: 50 }}
-                        className="w-full bg-gradient-to-t from-primary/10 to-primary/30 border border-primary/20 rounded-t-xl flex items-center justify-center mt-1"
+                        className={`w-full rounded-t-xl flex items-center justify-center mt-1 border ${
+                          isLight 
+                            ? 'bg-gradient-to-t from-amber-200/60 to-yellow-100 border-amber-300 shadow-sm' 
+                            : 'bg-gradient-to-t from-primary/10 to-primary/30 border border-primary/20'
+                        }`}
                       >
-                        <Crown className="h-5 w-5 text-yellow-400" />
+                        <Crown className={`h-5 w-5 ${isLight ? 'text-amber-600' : 'text-yellow-400'}`} />
                       </motion.div>
                     </div>
                   ) : <div className="flex-1" />}
@@ -829,33 +915,43 @@ export default function AnswerResult() {
                   {/* 3rd Place */}
                   {thirdPlace ? (
                     <div className="flex flex-col items-center flex-1 min-w-0">
-                      <span className="text-[10px] font-bold text-gray-300 truncate w-full text-center">{thirdPlace.username}</span>
-                      <span className="text-[8px] text-gray-400 font-semibold">{thirdPlace.totalScore || 0} pts ({thirdPlace.lastTimeTaken || '0.00'}s)</span>
+                      <span className={`text-[10px] font-bold truncate w-full text-center ${
+                        isLight ? 'text-slate-800' : 'text-gray-300'
+                      }`}>{thirdPlace.username}</span>
+                      <span className={`text-[8px] font-semibold ${
+                        isLight ? 'text-slate-600' : 'text-gray-400'
+                      }`}>{thirdPlace.totalScore || 0} pts ({thirdPlace.lastTimeTaken || '0.00'}s)</span>
                       <motion.div 
                         initial={{ height: 0 }}
                         animate={{ height: 35 }}
                         transition={{ type: 'spring', stiffness: 50, delay: 0.3 }}
-                        className="w-full bg-gradient-to-t from-white/5 to-white/10 border border-white/10 rounded-t-xl flex items-center justify-center mt-1"
+                        className={`w-full rounded-t-xl flex items-center justify-center mt-1 border ${
+                          isLight 
+                            ? 'bg-gradient-to-t from-amber-100 to-amber-50/50 border-amber-200 shadow-sm' 
+                            : 'bg-gradient-to-t from-white/5 to-white/10 border-white/10'
+                        }`}
                       >
-                        <Medal className="h-4 w-4 text-amber-700" />
+                        <Medal className="h-4 w-4 text-amber-800" />
                       </motion.div>
                     </div>
                   ) : <div className="flex-1" />}
                 </div>
 
                 {/* Runners Up List */}
-                <div className="space-y-1.5 overflow-y-auto max-h-[150px] border-t border-white/5 pt-3 flex-1">
+                <div className={`space-y-1.5 overflow-y-auto max-h-[150px] border-t pt-3 flex-1 ${
+                  isLight ? 'border-slate-100' : 'border-white/5'
+                }`}>
                   {leaderboard.slice(3).map((player, idx) => (
                     <div 
                       key={idx} 
                       className={`p-2 rounded-lg border text-[10px] font-semibold flex items-center justify-between ${
                         player.username?.toLowerCase() === localPlayer?.toLowerCase()
-                          ? 'bg-secondary/15 border-secondary/30 text-secondary' 
-                          : 'bg-white/5 border-white/10 text-gray-300'
+                          ? (isLight ? 'bg-secondary/15 border-secondary/40 text-secondary' : 'bg-secondary/15 border-secondary/30 text-secondary')
+                          : (isLight ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-white/5 border-white/10 text-gray-300')
                       }`}
                     >
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="font-mono text-gray-500 font-bold">#{player.rank}</span>
+                        <span className={`font-mono font-bold ${isLight ? 'text-slate-500' : 'text-gray-500'}`}>#{player.rank}</span>
                         <span className="font-bold truncate">{player.username}</span>
                       </div>
                       <span className="font-outfit font-black shrink-0">{player.totalScore || 0} pts ({player.lastTimeTaken || '0.00'}s)</span>
