@@ -118,7 +118,7 @@ export default function WhyChooseSection() {
               Superior Architecture
             </span>
             <h2 className="font-outfit text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mt-3 tracking-tight">
-              Why <span className="text-gradient-primary">QuizForge</span> Beats Traditional Quiz Apps
+              Why <span className="text-gradient-primary">Gubbi</span> Beats Traditional Quiz Apps
             </h2>
             <p className="mt-3 text-sm text-slate-600 dark:text-gray-400 leading-relaxed">
               Designed from the ground up for seamless real-time performance, modern aesthetic appeal, and zero setup friction.

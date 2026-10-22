@@ -5,19 +5,19 @@ import { ChevronDown, HelpCircle } from 'lucide-react';
 const faqs = [
   {
     q: 'How do students join a live quiz game?',
-    a: 'Students simply navigate to QuizForge and enter the 6-digit Game PIN provided by the host, or scan the generated QR code on screen. No account creation or app installation is required for players!',
+    a: 'Students simply navigate to Gubbi and enter the 6-digit Game PIN provided by the host, or scan the generated QR code on screen. No account creation or app installation is required for players!',
   },
   {
-    q: 'Is QuizForge completely free to use?',
-    a: 'Yes! QuizForge offers a robust Free Forever plan that includes creating up to 5 custom quizzes, hosting up to 20 live participants, and real-time leaderboards. You can upgrade to Pro anytime for unlimited players.',
+    q: 'Is Gubbi completely free to use?',
+    a: 'Yes! Gubbi offers a robust Free Forever plan that includes creating up to 5 custom quizzes, hosting up to 20 live participants, and real-time leaderboards. You can upgrade to Pro anytime for unlimited players.',
   },
   {
     q: 'Can I host unlimited live quizzes?',
     a: 'On our Pro and Enterprise plans, hosts enjoy unlimited quiz creation and unlimited participant hosting with zero restrictions.',
   },
   {
-    q: 'Does QuizForge work on mobile devices and tablets?',
-    a: 'Absolutely! QuizForge is 100% web-based and fully responsive. Players can join and answer questions seamlessly on any smartphone, tablet, laptop, or desktop browser.',
+    q: 'Does Gubbi work on mobile devices and tablets?',
+    a: 'Absolutely! Gubbi is 100% web-based and fully responsive. Players can join and answer questions seamlessly on any smartphone, tablet, laptop, or desktop browser.',
   },
   {
     q: 'Can schools and educational institutions purchase subscriptions?',
@@ -57,7 +57,7 @@ export default function FAQSection() {
           Frequently Asked <span className="text-gradient-primary">Questions</span>
         </h2>
         <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-gray-400">
-          Everything you need to know about hosting and playing on QuizForge.
+          Everything you need to know about hosting and playing on Gubbi.
         </p>
       </motion.div>
 

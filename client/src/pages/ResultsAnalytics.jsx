@@ -121,11 +121,11 @@ export default function ResultsAnalytics() {
       const lines = [];
       
       // Metadata Header Block
-      lines.push('=== Quizy REPORT ===');
+      lines.push('=== Gubbi REPORT ===');
       if (result.organizationName) {
         lines.push(`Organization Name,${escapeCSV(result.organizationName)}`);
       }
-      lines.push(`Quiz Title,${escapeCSV(result.quizTitle || 'Quizy Match')}`);
+      lines.push(`Quiz Title,${escapeCSV(result.quizTitle || 'Gubbi Match')}`);
       lines.push(`Category,${escapeCSV(result.quizCategory || result.quiz?.category || 'General')}`);
       lines.push(`Played At,${escapeCSV(result.playedAt ? new Date(result.playedAt).toLocaleString() : new Date().toLocaleString())}`);
       lines.push(`Session ID,${escapeCSV(id)}`);
@@ -180,7 +180,7 @@ export default function ResultsAnalytics() {
       const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvString], { type: 'text/csv;charset=utf-8;' });
       
       const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Quizy';
+      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Gubbi';
       const fileName = `${prefix}_${cleanTitle}_${id ? id.slice(-6) : 'report'}.csv`;
 
       const link = document.createElement("a");
@@ -276,7 +276,7 @@ export default function ResultsAnalytics() {
       XLSX.utils.book_append_sheet(wb, wsHighlights, 'Question Highlights');
 
       const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Quizy';
+      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Gubbi';
       const fileName = `${prefix}_${cleanTitle}_${id ? id.slice(-6) : 'report'}.xlsx`;
 
       XLSX.writeFile(wb, fileName);
@@ -323,7 +323,7 @@ export default function ResultsAnalytics() {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(22);
       doc.setTextColor(30, 41, 59);
-      doc.text('Quizy', margin, 20);
+      doc.text('Gubbi', margin, 20);
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
@@ -511,7 +511,7 @@ export default function ResultsAnalytics() {
         doc.line(margin, doc.internal.pageSize.getHeight() - 15, pageW - margin, doc.internal.pageSize.getHeight() - 15);
         
         doc.text(
-          `Quizy  •  Generated ${new Date().toLocaleString()}  •  Page ${pg} of ${totalPages}`,
+          `Gubbi  •  Generated ${new Date().toLocaleString()}  •  Page ${pg} of ${totalPages}`,
           pageW / 2,
           doc.internal.pageSize.getHeight() - 8,
           { align: 'center' }
@@ -519,7 +519,7 @@ export default function ResultsAnalytics() {
       }
 
       const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Quizy';
+      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Gubbi';
       const fileName = `${prefix}_${cleanTitle}_${id ? id.slice(-6) : 'report'}.pdf`;
 
       doc.save(fileName);
@@ -545,7 +545,7 @@ export default function ResultsAnalytics() {
         WidthType, AlignmentType, HeadingLevel, ShadingType 
       } = await import('docx');
 
-      const title = result.quizTitle || 'Quizy Match';
+      const title = result.quizTitle || 'Gubbi Match';
       const category = result.quizCategory || result.quiz?.category || 'General';
       const playedDate = result.playedAt ? new Date(result.playedAt).toLocaleString() : new Date().toLocaleString();
 
@@ -558,7 +558,7 @@ export default function ResultsAnalytics() {
               alignment: AlignmentType.LEFT,
               children: [
                 new TextRun({
-                  text: 'Quizy',
+                  text: 'Gubbi',
                   bold: true,
                   size: 32,
                   color: '4F46E5',
@@ -804,7 +804,7 @@ export default function ResultsAnalytics() {
               alignment: AlignmentType.CENTER,
               children: [
                 new TextRun({
-                  text: 'Quizy • Official Multiplayer Battle Report',
+                  text: 'Gubbi • Official Multiplayer Battle Report',
                   size: 16,
                   color: '94A3B8',
                 }),
@@ -816,7 +816,7 @@ export default function ResultsAnalytics() {
 
       const buffer = await Packer.toBlob(wordDoc);
       const cleanTitle = (result.quizTitle || 'Battle_Report').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Quizy';
+      const prefix = result.organizationName ? result.organizationName.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Gubbi';
       const fileName = `${prefix}_${cleanTitle}_${id ? id.slice(-6) : 'report'}.docx`;
 
       const link = document.createElement('a');

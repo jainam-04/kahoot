@@ -109,19 +109,28 @@ export default function JoinGame() {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const displayPlayerName = data.nickname || data.fullName;
-      const response = await joinGame(data.pin, displayPlayerName, selectedAvatar, data.fullName, data.mobileNumber, data.nickname);
+      const displayPlayerName = (data.nickname || data.fullName || '').toString().trim();
+      const cleanPin = (data.pin || '').toString().trim();
+      const cleanFullName = (data.fullName || '').toString().trim();
+      const cleanMobile = (data.mobileNumber || '').toString().trim();
+      const cleanNickname = (data.nickname || '').toString().trim();
+
+      const response = await joinGame(cleanPin, displayPlayerName, selectedAvatar, cleanFullName, cleanMobile, cleanNickname);
       if (response.success) {
-        // Update global game contexts
-        setPin(data.pin);
+        // Update global game contexts & immediately persist to localStorage
+        setPin(cleanPin);
         setPlayerName(displayPlayerName);
-        // Assuming we might want to store avatar in context later, for now we just pass it to backend
+        localStorage.setItem('guest_pin', cleanPin);
+        localStorage.setItem('guest_playerName', displayPlayerName);
+        localStorage.setItem('guest_avatar', selectedAvatar);
+        // Clear any old host flags if joining as student
+        localStorage.removeItem('current_hosted_pin');
 
         toast.success(`Welcome to the lobby, ${displayPlayerName}!`);
         
         // Navigate to the Waiting Room page
         setTimeout(() => {
-          navigate(`/waiting/${data.pin}`);
+          navigate(`/waiting/${cleanPin}`);
         }, 800);
       } else {
         toast.error(response.message || 'Lobby join failed. Check the PIN.');

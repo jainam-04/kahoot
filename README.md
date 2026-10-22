@@ -1,4 +1,4 @@
-# QuizForge 🚀
+# Gubbi 🚀
 
 A Kahoot-inspired Quiz Platform built using the MERN Stack as part of our internship project.
 
@@ -52,7 +52,7 @@ Build a real-time quiz platform inspired by Kahoot where users can:
 ## Project Structure
 
 ```text
-QuizForge/
+Gubbi/
 
 ├── client/
 │   ├── src/
@@ -194,7 +194,7 @@ feature-results
 
 ---
 
-## Demo: Lightweight local multiplayer demo (QuizForge)
+## Demo: Lightweight local multiplayer demo (Gubbi)
 
 This repository includes a simple, runnable multiplayer quiz demo (no DB) located in the `client/` and `server/` folders. The demo is designed for quick local presentations where one host creates a room and other players join using a 6-digit PIN.
 

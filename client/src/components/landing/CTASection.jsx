@@ -31,7 +31,7 @@ export default function CTASection() {
           </h2>
 
           <p className="text-xs sm:text-base text-slate-700 dark:text-gray-300 font-medium leading-relaxed">
-            Join thousands of educators, hosts, and teams building interactive real-time multiplayer quizzes on Quiz Hub today.
+            Join thousands of educators, hosts, and teams building interactive real-time multiplayer quizzes on Gubbi today.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">

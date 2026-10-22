@@ -57,7 +57,7 @@ module.exports = (io) => {
                     const updatedGame = await GameSession.findOneAndUpdate(
                         {
                             pin: roomPin,
-                            status: 'waiting',
+                            status: { $in: ['waiting', 'active'] },
                             'players.name': { $not: new RegExp('^' + escName + '$', 'i') }
                         },
                         {
@@ -81,6 +81,11 @@ module.exports = (io) => {
                             players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
                             roomStatus: updatedGame.status
                         });
+                        io.to(roomPin).emit('player_list', {
+                            pin: updatedGame.pin,
+                            players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
+                            roomStatus: updatedGame.status
+                        });
                     }
                 } catch (err) {
                     console.error('Error ensuring player in DB on join:', err.message);
@@ -88,6 +93,10 @@ module.exports = (io) => {
 
                 // Notify everyone in room (host + other players) a new player joined
                 io.to(`room_${roomPin}`).emit('player_connected', {
+                    username: playerName,
+                    message: `${playerName} joined the game!`
+                });
+                io.to(roomPin).emit('player_connected', {
                     username: playerName,
                     message: `${playerName} joined the game!`
                 });
@@ -255,30 +264,14 @@ module.exports = (io) => {
                 const roomName = `room_${pin}`;
 
                 if (role === 'host') {
-                    console.log(`⚡ Host disconnected from room: ${pin}`);
-                    try {
-                        const game = await GameSession.findOne({ pin });
-                        // Only close session if game was actively in progress, not when host is in waiting lobby
-                        // (Host may be switching apps to share WhatsApp link or reconnecting)
-                        if (game && game.status !== 'waiting') {
-                            await GameSession.findOneAndUpdate(
-                                { pin },
-                                { status: 'finished' }
-                            );
-                            const payload = {
-                                message: 'Host has ended the quiz',
-                                reason: 'host_disconnected'
-                            };
-                            io.to(roomName).emit('room_closed', payload);
-                            io.to(pin).emit('room_closed', payload);
-                            io.to(roomName).emit('host_left', payload);
-                            io.to(pin).emit('host_left', payload);
-                        }
-                    } catch (err) {
-                        console.error('Error handling host disconnect:', err.message);
-                    }
+                    console.log(`⚡ Host socket disconnected from room: ${pin} (game preserved for reconnect)`);
+                    // IMPORTANT: Do NOT terminate the game session on transient host socket disconnects!
+                    // Hosts regularly navigate pages (LiveQuiz -> AnswerResult -> Leaderboard) or experience
+                    // brief Wi-Fi/screen-lock drops. The game is only finished when the host explicitly
+                    // triggers 'host-end-quiz' or the quiz reaches the final results screen.
                 } else if (username) {
                     io.to(roomName).emit('player_disconnected', { username });
+                    io.to(pin).emit('player_disconnected', { username });
                     // Do NOT pull player from MongoDB on temporary socket disconnects
                     // Players on mobile networks or switching tabs need their session preserved
                 }

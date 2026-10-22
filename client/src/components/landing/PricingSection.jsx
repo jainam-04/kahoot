@@ -275,7 +275,7 @@ export default function PricingSection() {
 
           <div className="pt-8">
             <a
-              href="mailto:sales@quizzy.com?subject=Enterprise%20Plan%20Inquiry"
+              href="mailto:sales@gubbi.com?subject=Enterprise%20Plan%20Inquiry"
               className="btn-premium btn-secondary-gradient text-white w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 text-sm font-extrabold shadow-secondary-glow transition-all"
             >
               <span>Contact Sales</span>

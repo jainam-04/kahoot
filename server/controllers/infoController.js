@@ -71,7 +71,7 @@ const defaultPlans = [
 const defaultFaqs = [
   {
     question: 'How do I host a live quiz battle?',
-    answer: 'Sign up or log in to your QuizForge account, create a custom quiz or select an existing one from "My Quizzes", and click "Launch Lobby". A 6-digit Game PIN and QR code will be generated instantly for your players.',
+    answer: 'Sign up or log in to your Gubbi account, create a custom quiz or select an existing one from "My Quizzes", and click "Launch Lobby". A 6-digit Game PIN and QR code will be generated instantly for your players.',
     category: 'Gameplay',
     displayOrder: 1,
     isActive: true,
@@ -84,8 +84,8 @@ const defaultFaqs = [
     isActive: true,
   },
   {
-    question: 'Is QuizForge free for teachers and students?',
-    answer: 'Yes! QuizForge offers a feature-packed Starter Explorer plan that is completely free forever. It allows up to 50 concurrent live players per battle session with full access to leaderboards and quiz creation.',
+    question: 'Is Gubbi free for teachers and students?',
+    answer: 'Yes! Gubbi offers a feature-packed Starter Explorer plan that is completely free forever. It allows up to 50 concurrent live players per battle session with full access to leaderboards and quiz creation.',
     category: 'Billing',
     displayOrder: 3,
     isActive: true,
@@ -105,8 +105,8 @@ const defaultFaqs = [
     isActive: true,
   },
   {
-    question: 'Is my data secure on QuizForge?',
-    answer: 'QuizForge protects user data using enterprise-grade JWT authentication, SSL/TLS encryption for socket and HTTP connections, and strict database security protocols.',
+    question: 'Is my data secure on Gubbi?',
+    answer: 'Gubbi protects user data using enterprise-grade JWT authentication, SSL/TLS encryption for socket and HTTP connections, and strict database security protocols.',
     category: 'Security',
     displayOrder: 6,
     isActive: true,

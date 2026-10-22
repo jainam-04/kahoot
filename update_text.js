@@ -1,4 +1,4 @@
-﻿const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 
 const walk = (dir) => {
@@ -34,9 +34,13 @@ files.forEach(file => {
         }
     }
     
-    // Replace remaining Quizzy with Quizy
+    // Replace Quizzy and Quizy with Gubbi
     if (content.includes('Quizzy')) {
-        content = content.replace(/Quizzy/g, 'Quizy');
+        content = content.replace(/Quizzy/g, 'Gubbi');
+        changed = true;
+    }
+    if (content.includes('Quizy')) {
+        content = content.replace(/Quizy/g, 'Gubbi');
         changed = true;
     }
 

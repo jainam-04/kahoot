@@ -411,34 +411,6 @@ const LOCAL_PIXEL_LIBRARY = {
       category: 'gaming'
     }
   ],
-  technology: [
-    {
-      id: 'ltec1',
-      photographer: 'Microchip Board',
-      photographer_url: 'https://unsplash.com',
-      url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80',
-      src: {
-        medium: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=60',
-        large2x: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80',
-        original: 'https://images.unsplash.com/photo-1518770660439-4636190af475'
-      },
-      label: 'Microchip semiconductor board cpu tech technology coding computer',
-      category: 'technology'
-    },
-    {
-      id: 'ltec2',
-      photographer: 'Coding Screen',
-      photographer_url: 'https://unsplash.com',
-      url: 'https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=1200&auto=format&fit=crop&q=80',
-      src: {
-        medium: 'https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=600&auto=format&fit=crop&q=60',
-        large2x: 'https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=1200&auto=format&fit=crop&q=80',
-        original: 'https://images.unsplash.com/photo-1607799279861-4dd421887fb3'
-      },
-      label: 'Coding Screen html css program tech technology code developer',
-      category: 'technology'
-    }
-  ],
   flowers: [
     {
       id: 'lflo1',
@@ -1319,7 +1291,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
     }
 
     try {
-      // On Vercel/production: VITE_API_URL is set (e.g. https://quizforge-server.onrender.com)
+      // On Vercel/production: VITE_API_URL is set (e.g. https://gubbi-server.onrender.com)
       // On local dev: falls back to http://hostname:5000
       let baseUrl;
       if (import.meta.env.VITE_API_URL) {

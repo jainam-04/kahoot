@@ -18,10 +18,12 @@ export default function AdminRoute({ children }) {
   }
 
   let user = null;
-  try {
-    user = userStr ? JSON.parse(userStr) : null;
-  } catch (err) {
-    user = null;
+  if (userStr) {
+    try {
+      user = JSON.parse(userStr);
+    } catch {
+      user = null;
+    }
   }
 
   if (user?.role !== 'superadmin') {

@@ -97,7 +97,7 @@ const HOST = process.env.HOST || '0.0.0.0';
 
 const startServer = (port = PORT, host = HOST) => {
     server.listen(port, host, () => {
-        console.log(`✅ QuizForge server listening on http://${host}:${port}`);
+        console.log(`✅ Gubbi server listening on http://${host}:${port}`);
     });
 
     server.once('error', (error) => {

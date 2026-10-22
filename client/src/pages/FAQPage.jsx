@@ -28,7 +28,7 @@ export default function FAQPage() {
     {
       category: 'gameplay',
       q: 'How do players join a live quiz game?',
-      a: 'Players simply go to Quizzy (/join) and enter the 6-digit Game PIN displayed on the host screen, or scan the on-screen QR code using their phone camera. No app download or account creation is required!'
+      a: 'Players simply go to Gubbi (/join) and enter the 6-digit Game PIN displayed on the host screen, or scan the on-screen QR code using their phone camera. No app download or account creation is required!'
     },
     {
       category: 'gameplay',
@@ -38,12 +38,12 @@ export default function FAQPage() {
     {
       category: 'gameplay',
       q: 'Can players join from different networks or phones?',
-      a: 'Yes! QuizForge works across any smartphone, tablet, laptop, or desktop browser. For local classroom sessions, the host lobby automatically resolves the host LAN IP. For remote video sessions, hosts can use our built-in tunneling (ngrok/localtunnel) or cloud deployment.'
+      a: 'Yes! Gubbi works across any smartphone, tablet, laptop, or desktop browser. For local classroom sessions, the host lobby automatically resolves the host LAN IP. For remote video sessions, hosts can use our built-in tunneling (ngrok/localtunnel) or cloud deployment.'
     },
     {
       category: 'quizzes',
       q: 'What types of questions can I create?',
-      a: 'QuizForge supports 4-option multiple-choice questions with configurable countdown timers (from 10 to 120 seconds), custom category tagging, organization branding, and customizable visual backgrounds.'
+      a: 'Gubbi supports 4-option multiple-choice questions with configurable countdown timers (from 10 to 120 seconds), custom category tagging, organization branding, and customizable visual backgrounds.'
     },
     {
       category: 'quizzes',
@@ -57,13 +57,13 @@ export default function FAQPage() {
     },
     {
       category: 'billing',
-      q: 'Is QuizForge free to use?',
-      a: 'Yes! QuizForge provides a generous Free Forever tier that lets you create quizzes and host live rooms without any time limits or credit card requirements.'
+      q: 'Is Gubbi free to use?',
+      a: 'Yes! Gubbi provides a generous Free Forever tier that lets you create quizzes and host live rooms without any time limits or credit card requirements.'
     },
     {
       category: 'billing',
       q: 'What is your refund policy for paid plans?',
-      a: 'We offer a 14-day 100% money-back guarantee for first-time upgrades to Pro or Enterprise plans. If you are not satisfied, email billing@quizzy.com within 14 days for a full refund.'
+      a: 'We offer a 14-day 100% money-back guarantee for first-time upgrades to Pro or Enterprise plans. If you are not satisfied, email billing@gubbi.com within 14 days for a full refund.'
     },
     {
       category: 'billing',

@@ -15,6 +15,11 @@ export const getProfile = async () => {
   return response.data;
 };
 
+export const updateProfile = async (userData) => {
+  const response = await API.put('/auth/profile', userData);
+  return response.data;
+};
+
 export const forgotPassword = async (emailData) => {
   const response = await API.post('/auth/forgot-password', emailData);
   return response.data;

@@ -417,10 +417,113 @@ const deleteAccount = async (req, res) => {
     }
 };
 
+const updateProfile = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { name, email, currentPassword, newPassword } = req.body;
+
+        if (!name || !email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name and email are required'
+            });
+        }
+
+        const trimmedName = name.trim();
+        const normalizedEmail = email.trim().toLowerCase();
+
+        if (trimmedName.length < 2) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name must be at least 2 characters long'
+            });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(normalizedEmail)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide a valid email address'
+            });
+        }
+
+        // Check if the email is already in use by another user
+        const emailTaken = await User.findOne({ 
+            email: normalizedEmail, 
+            _id: { $ne: userId } 
+        });
+
+        if (emailTaken) {
+            return res.status(400).json({
+                success: false,
+                message: 'This email address is already in use by another account'
+            });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Optional password update
+        if (newPassword) {
+            if (!currentPassword) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Current password is required to set a new password'
+                });
+            }
+
+            const isMatch = await user.comparePassword(currentPassword);
+            if (!isMatch) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Current password is incorrect'
+                });
+            }
+
+            if (newPassword.length < 6) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'New password must be at least 6 characters long'
+                });
+            }
+
+            user.password = newPassword;
+        }
+
+        user.name = trimmedName;
+        user.email = normalizedEmail;
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Profile updated successfully',
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role || 'user',
+                createdAt: user.createdAt
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to update profile'
+        });
+    }
+};
+
 module.exports = {
     register,
     login,
     getProfile,
+    updateProfile,
     forgotPassword,
     verifySecurityAnswer,
     resetPassword,

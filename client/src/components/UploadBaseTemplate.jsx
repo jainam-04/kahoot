@@ -67,7 +67,7 @@ export default function UploadBaseTemplate({ onTriggerUpload }) {
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Questions Template");
-      XLSX.writeFile(workbook, "QuizForge_Question_Upload_Template.xlsx");
+      XLSX.writeFile(workbook, "Gubbi_Question_Upload_Template.xlsx");
       toast.success('Downloaded Excel Base Template (.xlsx)!');
     } catch (err) {
       console.error(err);

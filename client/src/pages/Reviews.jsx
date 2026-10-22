@@ -11,13 +11,13 @@ const reviews = [
     name: 'Aarav Sharma',
     role: 'Educator',
     rating: 5,
-    text: 'Quizzy transformed my classroom sessions. The real-time multiplayer mode keeps every student engaged and excited to participate.',
+    text: 'Gubbi transformed my classroom sessions. The real-time multiplayer mode keeps every student engaged and excited to participate.',
   },
   {
     name: 'Priya Patel',
     role: 'Corporate Trainer',
     rating: 5,
-    text: 'I use Quizzy for team-building trivia nights. The live leaderboard adds a competitive spark that everyone loves.',
+    text: 'I use Gubbi for team-building trivia nights. The live leaderboard adds a competitive spark that everyone loves.',
   },
   {
     name: 'Rohan Mehta',
@@ -35,7 +35,7 @@ const reviews = [
     name: 'Karan Verma',
     role: 'Event Organizer',
     rating: 5,
-    text: 'We hosted a 200-player trivia event and Quizzy handled it flawlessly. Secure auth and smooth gameplay throughout.',
+    text: 'We hosted a 200-player trivia event and Gubbi handled it flawlessly. Secure auth and smooth gameplay throughout.',
   },
   {
     name: 'Ananya Iyer',
@@ -76,7 +76,7 @@ export default function Reviews() {
                   Community <span className="text-gradient-primary">Reviews</span>
                 </h1>
                 <p className="text-xs sm:text-sm text-muted mt-1">
-                  See what educators, corporate trainers, and quiz hosts say about Quizzy.
+                  See what educators, corporate trainers, and quiz hosts say about Gubbi.
                 </p>
               </div>
             </div>
@@ -151,7 +151,7 @@ export default function Reviews() {
                 No Reviews Yet
               </h3>
               <p className="text-xs text-muted max-w-[280px] mx-auto leading-relaxed">
-                Be the first to share your experience with Quizzy!
+                Be the first to share your experience with Gubbi!
               </p>
               <Link to="/dashboard" className="inline-flex btn-premium btn-primary-gradient px-4 py-2.5 text-xs font-bold text-white">
                 Back to Dashboard

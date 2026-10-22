@@ -60,7 +60,7 @@ export default function FeaturesSection() {
           Everything You Need to <span className="text-gradient-primary">Engage & Conquer</span>
         </h2>
         <p className="mt-2 sm:mt-4 text-xs sm:text-base max-w-2xl mx-auto leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-          QuizForge comes packed with core features for teachers, quizmasters, and trivia hosts.
+          Gubbi comes packed with core features for teachers, quizmasters, and trivia hosts.
         </p>
       </motion.div>
 

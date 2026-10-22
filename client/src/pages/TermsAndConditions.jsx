@@ -20,7 +20,7 @@ export default function TermsAndConditions() {
       title: '1. Agreement to Terms',
       content: (
         <p>
-          By accessing or using <strong>Quizzy (QuizForge)</strong>, whether as a registered quiz host or as a guest player joining via PIN, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, you may not access or use our services.
+          By accessing or using <strong>Gubbi</strong>, whether as a registered quiz host or as a guest player joining via PIN, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, you may not access or use our services.
         </p>
       )
     },
@@ -74,7 +74,7 @@ export default function TermsAndConditions() {
       title: '5. Intellectual Property Rights',
       content: (
         <p>
-          The Quizzy platform, including our interactive UI, animations, scoring algorithms, logos, and software codebase, is the property of Quizzy Inc. and is protected by applicable copyright, trademark, and intellectual property laws. You may not reverse engineer, decompile, or copy our software architecture without written authorization.
+          The Gubbi platform, including our interactive UI, animations, scoring algorithms, logos, and software codebase, is the property of Gubbi Inc. and is protected by applicable copyright, trademark, and intellectual property laws. You may not reverse engineer, decompile, or copy our software architecture without written authorization.
         </p>
       )
     },
@@ -90,7 +90,7 @@ export default function TermsAndConditions() {
       title: '7. Disclaimer of Warranties & Limitation of Liability',
       content: (
         <p>
-          Our services are provided on an "as is" and "as available" basis without warranties of any kind. While we strive for 99.9% uptime and low-latency multiplayer performance, we do not guarantee uninterrupted connectivity during local network or third-party cloud outages. To the maximum extent permitted by law, Quizzy Inc. shall not be liable for indirect, incidental, or consequential damages.
+          Our services are provided on an "as is" and "as available" basis without warranties of any kind. While we strive for 99.9% uptime and low-latency multiplayer performance, we do not guarantee uninterrupted connectivity during local network or third-party cloud outages. To the maximum extent permitted by law, Gubbi Inc. shall not be liable for indirect, incidental, or consequential damages.
         </p>
       )
     },
@@ -140,7 +140,7 @@ export default function TermsAndConditions() {
             <p className={`text-sm leading-relaxed max-w-2xl ${
               isLight ? 'text-gray-600' : 'text-gray-400'
             }`}>
-              Rules, rights, and responsibilities for hosts and participants on the Quizzy interactive quiz platform.
+              Rules, rights, and responsibilities for hosts and participants on the Gubbi interactive quiz platform.
             </p>
 
             <div className="text-xs text-muted font-medium pt-1">
@@ -181,10 +181,10 @@ export default function TermsAndConditions() {
             </h3>
             <p className="text-xs text-muted">
               For questions regarding our terms, reach us at{' '}
-              <a href="mailto:legal@quizzy.com" className="text-primary hover:underline font-semibold">
-                legal@quizzy.com
+              <a href="mailto:legal@gubbi.com" className="text-primary hover:underline font-semibold">
+                legal@gubbi.com
               </a>{' '}
-              or write to Quizzy Inc., 305 City Vista, Kharadi, Pune 411014.
+              or write to Gubbi Inc., 305 City Vista, Kharadi, Pune 411014.
             </p>
           </div>
 

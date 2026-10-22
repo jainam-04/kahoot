@@ -43,17 +43,17 @@ export default function Footer() {
             <div className="space-y-1">
               <h5 className="text-xs font-bold uppercase tracking-wide flex items-center gap-1.5" style={{ color: 'var(--text-heading)' }}>
                 <Building2 className="h-3.5 w-3.5 text-secondary shrink-0" />
-                <span>Quizy Inc.</span>
+                <span>Gubbi Inc.</span>
               </h5>
               
               <a
-                href="https://quizy.gradezy.in"
+                href="https://gubbi.gradezy.in"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-secondary hover:underline transition-colors"
               >
                 <Globe className="h-3.5 w-3.5 shrink-0" />
-                <span>quizy.gradezy.in</span>
+                <span>gubbi.gradezy.in</span>
                 <ExternalLink className="h-3 w-3 shrink-0" />
               </a>
             </div>
@@ -76,7 +76,7 @@ export default function Footer() {
                   className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
                 >
                   <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>About Quizy</span>
+                  <span>About Gubbi</span>
                 </Link>
               </li>
               <li>
@@ -94,7 +94,7 @@ export default function Footer() {
                   className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
                 >
                   <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>How Quiz Hub Works</span>
+                  <span>How Gubbi Works</span>
                 </button>
               </li>
               <li>
@@ -186,7 +186,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="group block p-3 rounded-xl bg-sky-100/70 dark:bg-white/5 border border-sky-200 dark:border-white/10 hover:border-sky-400 dark:hover:border-primary/40 hover:bg-sky-100 dark:hover:bg-white/10 transition-all text-left cursor-pointer shadow-sm"
-              title="Quizy Inc. Pune (Google Maps)"
+              title="Gubbi Inc. Pune (Google Maps)"
             >
               <div className="flex items-start gap-2.5">
                 <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
@@ -230,10 +230,10 @@ export default function Footer() {
 
         {/* Bottom Copyright & Legal Row */}
         <div className="pt-5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-center md:text-left" style={{ color: 'var(--text-muted)' }}>
-          <p>© {new Date().getFullYear()} Quizy Inc. · Quizy. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Gubbi Inc. · Gubbi. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs font-medium">
             <Link to="/about" className="hover:text-primary transition-colors">
-              About Quizy
+              About Gubbi
             </Link>
             <Link to="/faq" className="hover:text-primary transition-colors">
               FAQ
@@ -247,8 +247,8 @@ export default function Footer() {
             <Link to="/refund" className="hover:text-primary transition-colors">
               Refund Policy
             </Link>
-            <a href="https://quizzy.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-              Quizy
+            <a href="https://gubbi.gradezy.in" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              Gubbi
             </a>
           </div>
         </div>

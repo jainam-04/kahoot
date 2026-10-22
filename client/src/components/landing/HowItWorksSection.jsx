@@ -56,7 +56,7 @@ export default function HowItWorksSection() {
           4-Step Process
         </span>
         <h2 className="font-outfit text-3xl sm:text-5xl font-black text-slate-900 dark:text-white mt-4 tracking-tight">
-          How <span className="text-gradient-primary">Quiz Hub</span> Works
+          How <span className="text-gradient-primary">Gubbi</span> Works
         </h2>
         <p className="mt-3 text-xs sm:text-base text-slate-600 dark:text-gray-400 max-w-xl mx-auto leading-relaxed">
           From lobby countdown to live podium glory — join multiplayer quiz battles in seconds.

@@ -178,17 +178,30 @@ const joinGame = async (req, res) => {
                 });
             }
 
-            const existingPlayer = checkGame.players?.find(
-                p => p.name.toLowerCase() === cleanName.toLowerCase()
-            );
+            const target = cleanName.toLowerCase();
+            const existingPlayer = checkGame.players?.find(p => {
+                const pName = (p.name || '').trim().toLowerCase();
+                const pNick = (p.nickname || '').trim().toLowerCase();
+                const pFull = (p.fullName || '').trim().toLowerCase();
+                return pName === target || (pNick && pNick === target) || (pFull && pFull === target);
+            });
 
             if (existingPlayer) {
                 updatedGame = checkGame;
             } else if (checkGame.status === 'active') {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Quiz battle is already in progress!'
-                });
+                // Allow late players to join the active battle so they are NOT left out of the game!
+                const newPlayer = {
+                    name: cleanName,
+                    avatar: cleanAvatar,
+                    fullName: cleanFullName,
+                    mobileNumber: cleanMobile,
+                    nickname: cleanNickname,
+                    totalScore: 0,
+                    answers: []
+                };
+                checkGame.players.push(newPlayer);
+                await checkGame.save();
+                updatedGame = checkGame;
             } else if (checkGame.status === 'finished') {
                 return res.status(400).json({
                     success: false,
@@ -204,19 +217,29 @@ const joinGame = async (req, res) => {
 
         const io = req.app.get('io');
         if (io) {
-            io.to(`room_${pin}`).emit('player_list', {
+            const playerListPayload = {
                 pin: updatedGame.pin,
                 players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
                 roomStatus: updatedGame.status
+            };
+            io.to(`room_${cleanPin}`).emit('player_list', playerListPayload);
+            io.to(cleanPin).emit('player_list', playerListPayload);
+            io.to(`room_${cleanPin}`).emit('player_connected', {
+                username: cleanName,
+                message: `${cleanName} joined the game!`
+            });
+            io.to(cleanPin).emit('player_connected', {
+                username: cleanName,
+                message: `${cleanName} joined the game!`
             });
         }
 
         res.status(200).json({
             success: true,
-            message: `${playerName} joined successfully!`,
+            message: `${cleanName} joined successfully!`,
             game: {
                 pin: updatedGame.pin,
-                playerName: playerName,
+                playerName: cleanName,
                 totalPlayers: updatedGame.players.length
             }
         });
@@ -333,7 +356,18 @@ const submitAnswer = async (req, res) => {
     try {
         const { pin, playerName, answerIndex } = req.body;
 
-        const game = await GameSession.findOne({ pin })
+        const cleanPin = pin ? pin.toString().trim() : '';
+        const cleanName = playerName ? playerName.toString().trim() : '';
+        const parsedAnswerIndex = Number(answerIndex);
+
+        if (!cleanPin || !cleanName || isNaN(parsedAnswerIndex)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid submission data (PIN, player name, and answer index are required)'
+            });
+        }
+
+        const game = await GameSession.findOne({ pin: cleanPin })
             .populate('quizId');
 
         if (!game) {
@@ -346,113 +380,116 @@ const submitAnswer = async (req, res) => {
         if (game.status !== 'active') {
             return res.status(400).json({
                 success: false,
-                message: 'Game is not active'
+                message: game.status === 'finished' ? 'This quiz has ended' : 'Game is not active'
+            });
+        }
+
+        const currentQuestion = game.quizId?.questions?.[game.currentQuestionIndex];
+        if (!currentQuestion) {
+            return res.status(400).json({
+                success: false,
+                message: 'No active question found'
             });
         }
 
         const now = Date.now();
-        const timeTaken = now - game.questionStartTime;
+        const timeTaken = Math.max(0, now - (game.questionStartTime || now));
 
-        const currentQuestion = game.quizId.questions[game.currentQuestionIndex];
-
-        const timeLimitMs = currentQuestion.timeLimit * 1000;
-        if (timeTaken > timeLimitMs) {
+        // 3-second network latency grace period so students tapping near 0s are not rejected
+        const timeLimitMs = (currentQuestion.timeLimit || 20) * 1000;
+        const GRACE_PERIOD_MS = 3000;
+        if (timeTaken > timeLimitMs + GRACE_PERIOD_MS) {
             return res.status(400).json({
                 success: false,
                 message: 'Time is up!'
             });
         }
 
-        const isCorrect = Number(answerIndex) === Number(currentQuestion.correctAnswer);
-        const score = calculateScore(isCorrect, timeTaken, currentQuestion.timeLimit);
+        // Match player by name, nickname, or fullName (case-insensitive & trimmed)
+        const escName = cleanName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const nameRegex = new RegExp('^' + escName + '$', 'i');
 
-        const escName = playerName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const updatedGame = await GameSession.findOneAndUpdate(
-            {
-                pin,
-                status: 'active',
-                players: {
-                    $elemMatch: {
-                        name: { $regex: new RegExp('^' + escName + '$', 'i') },
-                        'answers.questionIndex': { $ne: game.currentQuestionIndex }
-                    }
-                }
-            },
-            {
-                $push: {
-                    'players.$.answers': {
-                        questionIndex: game.currentQuestionIndex,
-                        answerIndex: answerIndex,
-                        isCorrect: isCorrect,
-                        timeTaken: timeTaken,
-                        score: score
-                    }
-                },
-                $inc: {
-                    'players.$.totalScore': score
-                }
-            },
-            { new: true }
-        );
+        let player = game.players.find(p => {
+            const pName = (p.name || '').trim();
+            const pNick = (p.nickname || '').trim();
+            const pFull = (p.fullName || '').trim();
+            return nameRegex.test(pName) || (pNick && nameRegex.test(pNick)) || (pFull && nameRegex.test(pFull));
+        });
 
-        if (!updatedGame) {
-            // Find why it failed
-            const checkGame = await GameSession.findOne({ pin });
-            if (!checkGame) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Game not found'
-                });
-            }
-            if (checkGame.status !== 'active') {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Game is not active'
-                });
-            }
-            const player = checkGame.players.find(p => p.name.toLowerCase() === playerName.toLowerCase());
-            if (!player) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Player not found in this game'
-                });
-            }
-            const alreadyAnswered = player.answers.find(a => a.questionIndex === checkGame.currentQuestionIndex);
-            if (alreadyAnswered) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'You already answered this question!'
-                });
-            }
+        // Auto-recover/auto-register player if missing so they are NEVER left out with 'player not found'
+        if (!player) {
+            player = {
+                name: cleanName,
+                fullName: cleanName,
+                nickname: cleanName,
+                mobileNumber: '',
+                avatar: '👤',
+                totalScore: 0,
+                answers: []
+            };
+            game.players.push(player);
+        }
+
+        const alreadyAnswered = player.answers.find(a => a.questionIndex === game.currentQuestionIndex);
+        if (alreadyAnswered) {
             return res.status(400).json({
                 success: false,
-                message: 'Failed to submit answer'
+                message: 'You already answered this question!'
             });
         }
 
-        const updatedPlayer = updatedGame.players.find(p => p.name.toLowerCase() === playerName.toLowerCase());
+        const isCorrect = Number(parsedAnswerIndex) === Number(currentQuestion.correctAnswer);
+        const score = calculateScore(isCorrect, timeTaken, currentQuestion.timeLimit);
+
+        player.answers.push({
+            questionIndex: game.currentQuestionIndex,
+            answerIndex: parsedAnswerIndex,
+            isCorrect: isCorrect,
+            timeTaken: timeTaken,
+            score: score
+        });
+        player.totalScore = (player.totalScore || 0) + score;
+
+        // Ensure all player records satisfy schema constraints before saving
+        if (Array.isArray(game.players)) {
+            game.players.forEach(p => {
+                if (!p.fullName) p.fullName = p.name || 'Player';
+                if (!p.mobileNumber) p.mobileNumber = '';
+                if (!p.nickname) p.nickname = p.name || 'Player';
+                if (!p.avatar) p.avatar = '👤';
+            });
+        }
+
+        await game.save();
 
         const io = req.app.get('io');
         if (io) {
-            const answeredCount = updatedGame.players.filter(p =>
-                p.answers.some(a => a.questionIndex === updatedGame.currentQuestionIndex)
+            const answeredCount = game.players.filter(p =>
+                p.answers.some(a => a.questionIndex === game.currentQuestionIndex)
             ).length;
 
-            io.to(`room_${pin}`).emit('player_answered', {
-                username: playerName,
+            const payload = {
+                username: player.name,
+                playerName: player.name,
                 answeredCount,
-                totalPlayers: updatedGame.players.length
-            });
+                totalPlayers: game.players.length
+            };
+
+            io.to(`room_${cleanPin}`).emit('player_answered', payload);
+            io.to(cleanPin).emit('player_answered', payload);
+            io.to(`room_${cleanPin}`).emit('player-answered', payload);
+            io.to(cleanPin).emit('player-answered', payload);
         }
 
         res.status(200).json({
             success: true,
             isCorrect: isCorrect,
             correctAnswer: currentQuestion.correctAnswer,
+            correctAnswerText: currentQuestion.options ? (currentQuestion.options[currentQuestion.correctAnswer] || '') : '',
             timeTaken: timeTaken,
             timeTakenSeconds: (timeTaken / 1000).toFixed(2),
             score: score,
-            totalScore: updatedPlayer ? updatedPlayer.totalScore : score,
+            totalScore: player.totalScore,
             message: isCorrect ? 'Correct Answer! 🎉' : 'Wrong Answer! ❌'
         });
 
@@ -466,9 +503,9 @@ const submitAnswer = async (req, res) => {
 
 const getLeaderboard = async (req, res) => {
     try {
-        const { pin } = req.params;
+        const cleanPin = (req.params.pin || '').toString().trim();
 
-        const game = await GameSession.findOne({ pin });
+        const game = await GameSession.findOne({ pin: cleanPin });
 
         if (!game) {
             return res.status(404).json({
@@ -496,9 +533,9 @@ const getLeaderboard = async (req, res) => {
 
 const endGame = async (req, res) => {
     try {
-        const { pin } = req.body;
+        const cleanPin = (req.body.pin || '').toString().trim();
 
-        const game = await GameSession.findOne({ pin });
+        const game = await GameSession.findOne({ pin: cleanPin });
 
         if (!game) {
             return res.status(404).json({
@@ -521,7 +558,9 @@ const endGame = async (req, res) => {
             const playerIndex = game.players.findIndex(
                 p => p.name === player.name
             );
-            game.players[playerIndex].rank = player.rank;
+            if (playerIndex !== -1) {
+                game.players[playerIndex].rank = player.rank;
+            }
         });
 
         if (Array.isArray(game.players)) {
@@ -547,12 +586,12 @@ const endGame = async (req, res) => {
                 message: 'Battle finished!'
             };
             // Emit all event aliases for maximum client compatibility
-            io.to(`room_${pin}`).emit('quiz_ended', payload);
-            io.to(pin).emit('quiz_ended', payload);
-            io.to(`room_${pin}`).emit('show_final_result', payload);
-            io.to(pin).emit('show_final_result', payload);
-            io.to(`room_${pin}`).emit('show-final-result', payload);
-            io.to(pin).emit('show-final-result', payload);
+            io.to(`room_${cleanPin}`).emit('quiz_ended', payload);
+            io.to(cleanPin).emit('quiz_ended', payload);
+            io.to(`room_${cleanPin}`).emit('show_final_result', payload);
+            io.to(cleanPin).emit('show_final_result', payload);
+            io.to(`room_${cleanPin}`).emit('show-final-result', payload);
+            io.to(cleanPin).emit('show-final-result', payload);
         }
 
         res.status(200).json({
@@ -572,9 +611,9 @@ const endGame = async (req, res) => {
 
 const getGame = async (req, res) => {
     try {
-        const { pin } = req.params;
+        const cleanPin = (req.params.pin || '').toString().trim();
 
-        const game = await GameSession.findOne({ pin })
+        const game = await GameSession.findOne({ pin: cleanPin })
             .populate('quizId', 'title category description questions backgroundImage')
             .populate('hostId', 'name email');
 
@@ -619,9 +658,9 @@ const getGame = async (req, res) => {
 
 const endQuestion = async (req, res) => {
     try {
-        const { pin } = req.body;
+        const cleanPin = (req.body.pin || '').toString().trim();
 
-        const game = await GameSession.findOne({ pin })
+        const game = await GameSession.findOne({ pin: cleanPin })
             .populate('quizId');
 
         if (!game) {
@@ -644,8 +683,7 @@ const endQuestion = async (req, res) => {
         // Calculate ranked players
         const rankedPlayers = sortAndRankPlayers(game.players, game.currentQuestionIndex);
 
-        // FIXED: coerce both sides to Number — answerIndex is stored as whatever
-        // was submitted (may be a string from req.body), optIdx is always a number
+        // Coerce both sides to Number
         const answerStats = currentQuestion.options.map((_, optIdx) =>
             game.players.reduce((count, player) => {
                 const ans = player.answers.find(a => a.questionIndex === game.currentQuestionIndex);
@@ -655,12 +693,16 @@ const endQuestion = async (req, res) => {
 
         const io = req.app.get('io');
         if (io) {
-            io.to(`room_${pin}`).emit('question_ended', {
+            const payload = {
                 correctAnswerIndex: currentQuestion.correctAnswer,
+                correctAnswerText: currentQuestion.options ? (currentQuestion.options[currentQuestion.correctAnswer] || '') : '',
+                options: currentQuestion.options || [],
                 leaderboard: rankedPlayers,
                 answerStats: answerStats,
                 isLastQuestion: isLastQuestion
-            });
+            };
+            io.to(`room_${cleanPin}`).emit('question_ended', payload);
+            io.to(cleanPin).emit('question_ended', payload);
         }
 
         res.status(200).json({
@@ -678,9 +720,9 @@ const endQuestion = async (req, res) => {
 
 const showLeaderboard = async (req, res) => {
     try {
-        const { pin } = req.body;
+        const cleanPin = (req.body.pin || '').toString().trim();
 
-        const game = await GameSession.findOne({ pin });
+        const game = await GameSession.findOne({ pin: cleanPin });
         if (!game) {
             return res.status(404).json({
                 success: false,
@@ -697,7 +739,8 @@ const showLeaderboard = async (req, res) => {
 
         const io = req.app.get('io');
         if (io) {
-            io.to(`room_${pin}`).emit('show_leaderboard');
+            io.to(`room_${cleanPin}`).emit('show_leaderboard');
+            io.to(cleanPin).emit('show_leaderboard');
         }
 
         res.status(200).json({

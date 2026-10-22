@@ -34,3 +34,126 @@ test('GameSession validates cleanly when players only have name provided', () =>
   assert.equal(session.players[0].avatar, '👤');
 });
 
+test('submitAnswer validates required inputs', async () => {
+  const res = {
+    statusCode: 200,
+    data: null,
+    status(code) { this.statusCode = code; return this; },
+    json(payload) { this.data = payload; return this; }
+  };
+
+  await gameController.submitAnswer({ body: { pin: '', playerName: 'John', answerIndex: 0 } }, res);
+  assert.equal(res.statusCode, 400);
+  assert.equal(res.data.success, false);
+
+  await gameController.submitAnswer({ body: { pin: '123456', playerName: '  ', answerIndex: 0 } }, res);
+  assert.equal(res.statusCode, 400);
+  assert.equal(res.data.success, false);
+});
+
+test('submitAnswer matches player with trailing space and records answer', async () => {
+  const originalFindOne = GameSession.findOne;
+  try {
+    const mockSession = {
+      pin: '999888',
+      status: 'active',
+      currentQuestionIndex: 0,
+      questionStartTime: Date.now(),
+      quizId: {
+        questions: [
+          {
+            questionText: 'What is 2+2?',
+            options: ['3', '4', '5'],
+            correctAnswer: 1,
+            timeLimit: 20
+          }
+        ]
+      },
+      players: [
+        {
+          name: 'Priya',
+          fullName: 'Priya Sharma',
+          nickname: 'Priya',
+          answers: [],
+          totalScore: 0
+        }
+      ],
+      save: async function() { return this; }
+    };
+
+    GameSession.findOne = () => ({
+      populate: async () => mockSession
+    });
+
+    const res = {
+      statusCode: 200,
+      data: null,
+      status(code) { this.statusCode = code; return this; },
+      json(payload) { this.data = payload; return this; }
+    };
+
+    // Submit with trailing whitespace and lowercase "priya  "
+    await gameController.submitAnswer({
+      body: { pin: '999888', playerName: '  priya  ', answerIndex: 1 },
+      app: { get: () => null }
+    }, res);
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.data.success, true);
+    assert.equal(res.data.isCorrect, true);
+    assert.equal(mockSession.players[0].answers.length, 1);
+    assert.equal(mockSession.players[0].answers[0].answerIndex, 1);
+  } finally {
+    GameSession.findOne = originalFindOne;
+  }
+});
+
+test('submitAnswer auto-registers missing player and accepts answer rather than 404', async () => {
+  const originalFindOne = GameSession.findOne;
+  try {
+    const mockSession = {
+      pin: '999888',
+      status: 'active',
+      currentQuestionIndex: 0,
+      questionStartTime: Date.now(),
+      quizId: {
+        questions: [
+          {
+            questionText: 'Capital of France?',
+            options: ['Berlin', 'Madrid', 'Paris'],
+            correctAnswer: 2,
+            timeLimit: 20
+          }
+        ]
+      },
+      players: [],
+      save: async function() { return this; }
+    };
+
+    GameSession.findOne = () => ({
+      populate: async () => mockSession
+    });
+
+    const res = {
+      statusCode: 200,
+      data: null,
+      status(code) { this.statusCode = code; return this; },
+      json(payload) { this.data = payload; return this; }
+    };
+
+    // Submit for a student not initially in players list
+    await gameController.submitAnswer({
+      body: { pin: '999888', playerName: 'Aarav', answerIndex: 2 },
+      app: { get: () => null }
+    }, res);
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.data.success, true);
+    assert.equal(mockSession.players.length, 1);
+    assert.equal(mockSession.players[0].name, 'Aarav');
+    assert.equal(mockSession.players[0].answers.length, 1);
+  } finally {
+    GameSession.findOne = originalFindOne;
+  }
+});
+

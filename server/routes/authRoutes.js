@@ -4,6 +4,7 @@ const {
     register,
     login,
     getProfile,
+    updateProfile,
     forgotPassword,
     verifySecurityAnswer,
     resetPassword,
@@ -20,6 +21,7 @@ router.post('/reset-password', resetPassword);
 
 // Protected routes
 router.get('/profile', protect, getProfile);
+router.put('/profile', protect, updateProfile);
 router.delete('/delete-account', protect, deleteAccount);
 
 module.exports = router;

@@ -51,7 +51,8 @@ export default function Leaderboard() {
 
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
-    const isUserHost = !localPlayer && !!hostToken;
+    const hostedPin = localStorage.getItem('current_hosted_pin');
+    const isUserHost = !!hostToken && hostedPin === pin;
     setIsHost(isUserHost);
 
     setIsLastQuestion(localStorage.getItem('last_isLastQuestion') === 'true');
@@ -66,7 +67,8 @@ export default function Leaderboard() {
           setLeaderboard(board);
 
           if (localPlayer) {
-            const me = board.find(p => p.name.toLowerCase() === localPlayer.toLowerCase());
+            const target = (localPlayer || '').trim().toLowerCase();
+            const me = board.find(p => (p.name || p.username || '').trim().toLowerCase() === target);
             if (me) setMyRank(me.rank);
           }
         }

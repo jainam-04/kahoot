@@ -3,8 +3,8 @@ import React, { createContext, useContext, useState } from 'react';
 const GameContext = createContext();
 
 export const GameProvider = ({ children }) => {
-  const [pin, setPin] = useState('');
-  const [playerName, setPlayerName] = useState('');
+  const [pin, setPinState] = useState(() => localStorage.getItem('guest_pin') || '');
+  const [playerName, setPlayerNameState] = useState(() => localStorage.getItem('guest_playerName') || '');
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [score, setScore] = useState(0);
   const [leaderboard, setLeaderboard] = useState([]);
@@ -14,9 +14,27 @@ export const GameProvider = ({ children }) => {
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [lastResult, setLastResult] = useState(null);
 
+  const setPin = (val) => {
+    const clean = (val || '').toString().trim();
+    setPinState(clean);
+    if (clean) {
+      localStorage.setItem('guest_pin', clean);
+    }
+  };
+
+  const setPlayerName = (val) => {
+    const clean = (val || '').toString().trim();
+    setPlayerNameState(clean);
+    if (clean) {
+      localStorage.setItem('guest_playerName', clean);
+    }
+  };
+
   const resetGame = () => {
-    setPin('');
-    setPlayerName('');
+    setPinState('');
+    setPlayerNameState('');
+    localStorage.removeItem('guest_pin');
+    localStorage.removeItem('guest_playerName');
     setCurrentQuestion(null);
     setScore(0);
     setLeaderboard([]);

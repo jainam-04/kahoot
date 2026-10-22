@@ -25,7 +25,7 @@ export default function DemoModal({ isOpen, onClose }) {
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-secondary animate-pulse" />
               <h3 className="font-outfit text-lg sm:text-xl font-extrabold text-white">
-                Quiz Hub Interactive Demo
+                Gubbi Interactive Demo
               </h3>
             </div>
 

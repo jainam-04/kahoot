@@ -173,7 +173,7 @@ function ThemedToaster() {
 
 export default function App() {
   useEffect(() => {
-    const savedAppMode = localStorage.getItem('quizforge_mode') || 'dark';
+    const savedAppMode = localStorage.getItem('gubbi_mode') || localStorage.getItem('quizforge_mode') || 'dark';
     if (savedAppMode === 'light') {
       document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');

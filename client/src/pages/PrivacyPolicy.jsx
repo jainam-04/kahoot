@@ -75,11 +75,11 @@ export default function PrivacyPolicy() {
       icon: <Sparkles className="h-5 w-5 text-primary" />,
       title: 'Platform Overview & Scope',
       badge: 'Core Scope',
-      summary: 'Describes Quizzy / QuizForge real-time multiplayer architecture and who this policy protects.',
+      summary: 'Describes Gubbi real-time multiplayer architecture and who this policy protects.',
       content: (
         <div className="space-y-4">
           <p>
-            Welcome to <strong>Quizzy (QuizForge)</strong>. We provide an interactive, real-time multiplayer quiz and trivia platform tailored for educators, academic institutions, enterprise trainers, event hosts, and players worldwide.
+            Welcome to <strong>Gubbi</strong>. We provide an interactive, real-time multiplayer quiz and trivia platform tailored for educators, academic institutions, enterprise trainers, event hosts, and players worldwide.
           </p>
           <p>
             This Privacy Policy governs your use of our web application, Socket.IO live game rooms, QR code scanning engines, host dashboard, and client-side analytical report generators (PDF, Excel, Word). It outlines with complete transparency what information we process, how we secure it, and your full ownership over your data.
@@ -302,7 +302,7 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3">
           <p>
-            Quizzy operates with a strict "Essential Only" storage philosophy. We use browser <code>localStorage</code> strictly for functional session handling:
+            Gubbi operates with a strict "Essential Only" storage philosophy. We use browser <code>localStorage</code> strictly for functional session handling:
           </p>
           <div className="overflow-x-auto">
             <table className={`w-full text-xs text-left border rounded-xl overflow-hidden ${
@@ -327,7 +327,7 @@ export default function PrivacyPolicy() {
                   <td className="p-2.5">Until logout</td>
                 </tr>
                 <tr>
-                  <td className="p-2.5 font-mono text-emerald-400 font-bold">quizforge_mode</td>
+                  <td className="p-2.5 font-mono text-emerald-400 font-bold">gubbi_mode</td>
                   <td className="p-2.5">Remembers your preferred theme (Dark Mode / Light Mode)</td>
                   <td className="p-2.5">Persistent</td>
                 </tr>
@@ -356,7 +356,7 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3">
           <p>
-            Quizzy is widely used in classrooms and educational environments. We have intentionally structured our player workflow to comply with the principles of the <strong>Children's Online Privacy Protection Act (COPPA)</strong> and the <strong>Family Educational Rights and Privacy Act (FERPA)</strong>.
+            Gubbi is widely used in classrooms and educational environments. We have intentionally structured our player workflow to comply with the principles of the <strong>Children's Online Privacy Protection Act (COPPA)</strong> and the <strong>Family Educational Rights and Privacy Act (FERPA)</strong>.
           </p>
           <ul className="space-y-2 text-xs leading-relaxed">
             <li className="flex items-start gap-2">
@@ -451,7 +451,7 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3">
           <p className="text-xs leading-relaxed">
-            Regardless of your geographical location, Quizzy grants all users the following fundamental privacy rights:
+            Regardless of your geographical location, Gubbi grants all users the following fundamental privacy rights:
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             <div className={`p-2.5 rounded-xl border ${isLight ? 'bg-gray-50 border-gray-200' : 'bg-white/5 border-white/10'}`}>
@@ -489,7 +489,7 @@ export default function PrivacyPolicy() {
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="font-bold text-sm flex items-center gap-2 text-primary">
                 <Building2 className="h-4 w-4" />
-                Quizzy Inc. (Headquarters)
+                Gubbi Inc. (Headquarters)
               </div>
               <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                 isLight ? 'bg-primary/10 text-primary' : 'bg-primary/20 text-primary-light'
@@ -623,9 +623,9 @@ export default function PrivacyPolicy() {
 
   // Download policy as formatted Markdown file
   const handleDownloadMarkdown = () => {
-    let md = `# Quizzy (QuizForge) - Privacy Policy\n`;
+    let md = `# Gubbi - Privacy Policy\n`;
     md += `**Last Updated:** ${lastUpdated} | **Effective Date:** ${effectiveDate} | **Version:** ${version}\n\n`;
-    md += `Official Policy Document · Quizzy Inc.\n\n`;
+    md += `Official Policy Document · Gubbi Inc.\n\n`;
     md += `---\n\n`;
 
     allPolicySections.forEach(s => {
@@ -639,7 +639,7 @@ export default function PrivacyPolicy() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `Quizzy_Privacy_Policy_${version}.md`;
+    link.download = `Gubbi_Privacy_Policy_${version}.md`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -764,7 +764,7 @@ export default function PrivacyPolicy() {
                 <p className={`text-xs sm:text-sm leading-relaxed max-w-3xl ${
                   isLight ? 'text-gray-600' : 'text-gray-300'
                 }`}>
-                  Transparent rules on how Quizzy safeguards your identity, protects classroom participants, processes camera QR scans strictly client-side, and gives you irreversible 1-click account deletion.
+                  Transparent rules on how Gubbi safeguards your identity, protects classroom participants, processes camera QR scans strictly client-side, and gives you irreversible 1-click account deletion.
                 </p>
               </div>
 

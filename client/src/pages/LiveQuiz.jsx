@@ -179,10 +179,10 @@ export default function LiveQuiz() {
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
 
-  const localPlayer = playerName || localStorage.getItem('guest_playerName');
+  const localPlayer = (playerName || localStorage.getItem('guest_playerName') || '').trim();
   const hostToken = localStorage.getItem('token');
   const hostedPin = localStorage.getItem('current_hosted_pin');
-  const isUserHost = !!hostToken && (hostedPin === pin || !localPlayer);
+  const isUserHost = !!hostToken && hostedPin === pin;
   const isHost = isUserHost;
   const [question, setQuestion] = useState(null);
   const [questionNumber, setQuestionNumber] = useState(1);
@@ -199,13 +199,16 @@ export default function LiveQuiz() {
   // Player state
   const [hasAnswered, setHasAnswered] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(null);
+  const questionRef = React.useRef(question);
+  questionRef.current = question;
 
   useEffect(() => {
-    const localPlayer = playerName || localStorage.getItem('guest_playerName');
+    const localPlayer = (playerName || localStorage.getItem('guest_playerName') || '').trim();
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
+    const isUserHost = !!hostToken && hostedPin === pin;
 
-    if (!localPlayer && !isHost) {
+    if (!localPlayer && !isUserHost) {
       toast.error('Session invalid. Please join again.');
       navigate('/join');
       return;
@@ -245,7 +248,13 @@ export default function LiveQuiz() {
             }
 
             if (!isUserHost && localPlayer) {
-              const myPlayerRecord = game.players?.find(p => p.name.toLowerCase() === localPlayer.toLowerCase());
+              const target = localPlayer.toLowerCase();
+              const myPlayerRecord = game.players?.find(p => {
+                const pName = (p.name || '').trim().toLowerCase();
+                const pNick = (p.nickname || '').trim().toLowerCase();
+                const pFull = (p.fullName || '').trim().toLowerCase();
+                return pName === target || (pNick && pNick === target) || (pFull && pFull === target);
+              });
               if (myPlayerRecord) {
                 const myAnswer = myPlayerRecord.answers?.find(a => a.questionIndex === currentIdx);
                 if (myAnswer) {
@@ -341,16 +350,27 @@ export default function LiveQuiz() {
     socket.on('question_ended', (data) => {
       console.log('[SOCKET CLIENT] Question ended:', data);
 
+      const currentQ = questionRef.current || question;
+      const correctIdx = Number(data.correctAnswerIndex ?? currentQ?.correctAnswer ?? 0);
+      const correctText = data.correctAnswerText || (data.options && data.options[correctIdx]) || (currentQ?.options && currentQ.options[correctIdx]) || '';
+
       // Save stats to context and local storage for results page
-      localStorage.setItem('last_correctAnswerIndex', data.correctAnswerIndex);
-      localStorage.setItem('last_answerStats', JSON.stringify(data.answerStats));
-      localStorage.setItem('last_leaderboard', JSON.stringify(data.leaderboard));
+      localStorage.setItem('last_correctAnswerIndex', String(correctIdx));
+      if (correctText) {
+        localStorage.setItem('last_correctAnswerText', correctText);
+      }
+      localStorage.setItem('last_answerStats', JSON.stringify(data.answerStats || []));
+      localStorage.setItem('last_leaderboard', JSON.stringify(data.leaderboard || []));
       localStorage.setItem('last_isLastQuestion', data.isLastQuestion ? 'true' : 'false');
       localStorage.setItem('last_category', category);
 
       // If player, save if their answer was correct and points earned
       if (!isUserHost) {
-        const myData = data.leaderboard?.find(p => p.username?.toLowerCase() === localPlayer?.toLowerCase());
+        const target = (localPlayer || '').trim().toLowerCase();
+        const myData = data.leaderboard?.find(p => {
+          const pName = (p.username || p.name || '').trim().toLowerCase();
+          return pName === target;
+        });
         if (myData) {
           localStorage.setItem('last_isCorrect', myData.lastAnswerCorrect ? 'true' : 'false');
           localStorage.setItem('last_pointsEarned', String(myData.pointsEarned));
@@ -427,16 +447,36 @@ export default function LiveQuiz() {
   const handleSelectAnswer = async (index) => {
     if (hasAnswered || isHost) return;
 
+    const player = (playerName || localStorage.getItem('guest_playerName') || '').trim();
+    if (!player) {
+      toast.error('Player session not found. Please rejoin.');
+      return;
+    }
+
     setHasAnswered(true);
     setSelectedIdx(index);
 
     try {
-      const player = playerName || localStorage.getItem('guest_playerName');
       const response = await submitAnswer(pin, player, index);
 
       if (response.success) {
         localStorage.setItem('last_hasAnswered', 'true');
         localStorage.setItem('last_answerSubmitted', 'true');
+        if (response.isCorrect !== undefined) {
+          localStorage.setItem('last_isCorrect', response.isCorrect ? 'true' : 'false');
+          localStorage.setItem('last_pointsEarned', String(response.score || 0));
+          localStorage.setItem('last_score', String(response.totalScore || 0));
+          localStorage.setItem('last_timeTaken', String(response.timeTakenSeconds || '0.00'));
+          if (response.correctAnswer !== undefined) {
+            localStorage.setItem('last_correctAnswerIndex', String(response.correctAnswer));
+          }
+          if (response.correctAnswerText) {
+            localStorage.setItem('last_correctAnswerText', response.correctAnswerText);
+          } else if (questionRef.current?.options && response.correctAnswer !== undefined) {
+            const txt = questionRef.current.options[response.correctAnswer] || '';
+            if (txt) localStorage.setItem('last_correctAnswerText', txt);
+          }
+        }
       } else {
         toast.error(response.message || 'Error locking answer');
         setHasAnswered(false);

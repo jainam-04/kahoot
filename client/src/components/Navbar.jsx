@@ -2,28 +2,57 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   BookOpen, PlusCircle, LayoutDashboard, LogOut, LogIn, User, 
-  Sun, Moon, Menu, X, ArrowRight, ChevronDown, Trash2 
+  Sun, Moon, Menu, X, ArrowRight, ChevronDown, Trash2, Edit3, UserCheck, Settings 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import Logo from './Logo';
 import DeleteAccountModal from './DeleteAccountModal';
+import HostProfileModal from './HostProfileModal';
 import { useTheme } from '../context/ThemeContext';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || 'null');
+    } catch {
+      return null;
+    }
+  });
   const { themeMode, toggleThemeMode } = useTheme();
   const isLight = themeMode === 'light';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
   const [scrolled, setScrolled] = useState(false);
   const headerRef = React.useRef(null);
   const profileDropdownRef = useRef(null);
+
+  // Synchronize user profile across window events and storage changes
+  useEffect(() => {
+    const handleProfileSync = (e) => {
+      if (e?.detail) {
+        setUser(e.detail);
+      } else {
+        try {
+          setUser(JSON.parse(localStorage.getItem('user') || 'null'));
+        } catch {
+          setUser(null);
+        }
+      }
+    };
+    window.addEventListener('user-profile-updated', handleProfileSync);
+    window.addEventListener('storage', handleProfileSync);
+    return () => {
+      window.removeEventListener('user-profile-updated', handleProfileSync);
+      window.removeEventListener('storage', handleProfileSync);
+    };
+  }, []);
 
   // Close profile dropdown on click outside
   useEffect(() => {
@@ -258,26 +287,54 @@ export default function Navbar() {
                         isLight ? 'bg-white/95 border-gray-200 text-gray-900' : 'bg-[#12121a]/95 border-white/10 text-white'
                       }`}
                     >
-                      {/* Host Profile Header */}
-                      <div className={`p-2.5 rounded-xl border mb-2 ${
-                        isLight ? 'bg-sky-50/70 border-sky-100' : 'bg-white/5 border-white/5'
-                      }`}>
-                        <div className="flex items-center gap-2.5">
-                          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-extrabold text-xs text-white shrink-0">
-                            {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                      {/* Host Profile Header - Click to edit */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfileDropdownOpen(false);
+                          setIsProfileModalOpen(true);
+                        }}
+                        className={`w-full text-left p-2.5 rounded-xl border mb-2 transition-all cursor-pointer group ${
+                          isLight 
+                            ? 'bg-sky-50/70 border-sky-100 hover:bg-sky-100/80 hover:border-sky-200' 
+                            : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/15'
+                        }`}
+                        title="Click to edit Host Profile"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2.5 overflow-hidden">
+                            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-extrabold text-xs text-white shrink-0 shadow-sm">
+                              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                            <div className="overflow-hidden min-w-0">
+                              <h4 className="font-outfit font-bold text-xs truncate group-hover:text-primary transition-colors">{user?.name || 'Host Account'}</h4>
+                              <p className="text-[10px] text-muted truncate">{user?.email || 'Logged In Host'}</p>
+                              <span className="inline-block text-[9px] uppercase font-extrabold px-1.5 py-0.5 rounded bg-primary/15 text-primary mt-0.5">
+                                Quiz Moderator
+                              </span>
+                            </div>
                           </div>
-                          <div className="overflow-hidden min-w-0">
-                            <h4 className="font-outfit font-bold text-xs truncate">{user?.name || 'Host Account'}</h4>
-                            <p className="text-[10px] text-muted truncate">{user?.email || 'Logged In Host'}</p>
-                            <span className="inline-block text-[9px] uppercase font-extrabold px-1.5 py-0.5 rounded bg-primary/15 text-primary mt-0.5">
-                              Quiz Moderator
-                            </span>
+                          <div className="shrink-0 p-1.5 rounded-lg bg-primary/10 text-primary opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all">
+                            <Edit3 className="h-3.5 w-3.5" />
                           </div>
                         </div>
-                      </div>
+                      </button>
 
                       {/* Navigation Links */}
                       <div className="space-y-0.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            setIsProfileModalOpen(true);
+                          }}
+                          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer text-left ${
+                            isLight ? 'hover:bg-purple-50 text-purple-700' : 'hover:bg-purple-950/30 text-purple-300'
+                          }`}
+                        >
+                          <Edit3 className="h-3.5 w-3.5 text-primary" />
+                          <span>Edit Host Profile</span>
+                        </button>
                         <Link
                           to="/dashboard"
                           onClick={() => setProfileDropdownOpen(false)}
@@ -461,8 +518,13 @@ export default function Navbar() {
         >
           {token ? (
             <>
-              <div 
-                className="flex items-center justify-between px-3.5 py-3 mb-3 rounded-xl border"
+              <button
+                type="button"
+                onClick={() => {
+                  closeMobile();
+                  setIsProfileModalOpen(true);
+                }}
+                className="w-full text-left flex items-center justify-between px-3.5 py-3 mb-3 rounded-xl border transition-all cursor-pointer"
                 style={{
                   background: isLight ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.04)',
                   borderColor: isLight ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.08)'
@@ -481,10 +543,26 @@ export default function Navbar() {
                     </span>
                   </div>
                 </div>
-                <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-secondary/15 text-secondary border border-secondary/20">
-                  Host
-                </span>
-              </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-secondary/15 text-secondary border border-secondary/20">
+                    Host
+                  </span>
+                  <Edit3 className="h-3.5 w-3.5 text-primary" />
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  closeMobile();
+                  setIsProfileModalOpen(true);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all hover:bg-primary/10 text-left cursor-pointer"
+                style={{ color: 'var(--text-main)' }}
+              >
+                <Edit3 className="h-4 w-4 text-primary" />
+                Edit Host Profile
+              </button>
 
               <Link
                 to="/dashboard"
@@ -581,6 +659,15 @@ export default function Navbar() {
           )}
         </div>
       )}
+
+      {/* Host Profile Edit Modal */}
+      <HostProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        onUpdated={(updatedUser) => {
+          setUser(updatedUser);
+        }}
+      />
 
       {/* Account Deletion Confirmation Modal */}
       <DeleteAccountModal

@@ -94,7 +94,7 @@ export default function AboutKahoot() {
             <h1 className={`font-outfit text-3xl sm:text-5xl font-extrabold tracking-tight ${
               isLight ? 'text-gray-900' : 'text-white'
             }`}>
-              About <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-400 to-secondary">Quizy</span>
+              About <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-400 to-secondary">Gubbi</span>
             </h1>
 
             <p className={`text-sm sm:text-base leading-relaxed max-w-2xl ${
@@ -104,7 +104,7 @@ export default function AboutKahoot() {
             </p>
           </div>
 
-          {/* Story & What is Quizy */}
+          {/* Story & What is Gubbi */}
           <div className="space-y-8 text-sm leading-relaxed">
             <section className={`p-6 sm:p-8 rounded-2xl border ${
               isLight ? 'bg-white border-gray-200 shadow-sm text-gray-700' : 'glass-panel border-white/5 text-gray-300'
@@ -113,14 +113,14 @@ export default function AboutKahoot() {
                 isLight ? 'text-gray-900' : 'text-white'
               }`}>
                 <Sparkles className="h-5 w-5 text-primary shrink-0" />
-                What is Quizy?
+                What is Gubbi?
               </h2>
               <div className="space-y-4 text-xs sm:text-sm">
                 <p>
-                  <strong>Quizy</strong> is a full-stack, real-time multiplayer quiz application designed for educators, corporate trainers, event organizers, and trivia enthusiasts. It replaces static paper tests and monotonous presentations with dynamic, synchronized live game sessions where every participant actively competes.
+                  <strong>Gubbi</strong> is a full-stack, real-time multiplayer quiz application designed for educators, corporate trainers, event organizers, and trivia enthusiasts. It replaces static paper tests and monotonous presentations with dynamic, synchronized live game sessions where every participant actively competes.
                 </p>
                 <p>
-                  With Quizy, hosts can create rich custom quizzes, set configurable countdown timers, choose gorgeous visual wallpaper themes, and launch games instantly using simple 6-digit PINs. Participants join seamlessly from any smartphone, tablet, or laptop browser without needing to download apps or create accounts.
+                  With Gubbi, hosts can create rich custom quizzes, set configurable countdown timers, choose gorgeous visual wallpaper themes, and launch games instantly using simple 6-digit PINs. Participants join seamlessly from any smartphone, tablet, or laptop browser without needing to download apps or create accounts.
                 </p>
               </div>
             </section>
@@ -151,15 +151,15 @@ export default function AboutKahoot() {
               ))}
             </div>
 
-            {/* What Makes Quizy Powerful */}
+            {/* What Makes Gubbi Powerful */}
             <section className={`p-6 sm:p-8 rounded-2xl border space-y-5 ${
               isLight ? 'bg-white border-gray-200 shadow-sm' : 'glass-panel border-white/5'
             }`}>
               <h2 className={`font-outfit text-xl sm:text-2xl font-black ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                What Makes Quizy Powerful
+                What Makes Gubbi Powerful
               </h2>
               <p className={`text-xs sm:text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                Engineered with React 19, Node.js, Express, MongoDB, and Socket.IO, Quizy provides high responsiveness, classroom LAN adaptability, and enterprise-grade security:
+                Engineered with React 19, Node.js, Express, MongoDB, and Socket.IO, Gubbi provides high responsiveness, classroom LAN adaptability, and enterprise-grade security:
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">

@@ -208,7 +208,7 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
             <span>Interactive Product Demo</span>
           </div>
           <h2 className="font-outfit text-2xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-            See How <span className="text-gradient-primary">Quiz Hub</span> Works
+            See How <span className="text-gradient-primary">Gubbi</span> Works
           </h2>
           <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600 dark:text-gray-400 max-w-xl mx-auto leading-relaxed px-2">
             Test drive our real-time interactive quiz experience! Pick an answer fast before the 30-second timer runs out.

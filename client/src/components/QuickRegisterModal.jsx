@@ -71,7 +71,7 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess }) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
 
-        toast.success(`Welcome to Quiz Hub, ${response.user.name || 'User'}!`);
+        toast.success(`Welcome to Gubbi, ${response.user.name || 'User'}!`);
 
         if (onClose) onClose();
         if (onSuccess) {

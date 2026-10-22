@@ -8,14 +8,14 @@ const reviews = [
     role: 'Physics Educator & School Lead',
     avatar: 'A',
     rating: 5,
-    text: 'QuizForge completely revolutionized my classroom quizzes. The live real-time leaderboard keeps every student 100% engaged and excited to participate every week!',
+    text: 'Gubbi completely revolutionized my classroom quizzes. The live real-time leaderboard keeps every student 100% engaged and excited to participate every week!',
   },
   {
     name: 'Priya Patel',
     role: 'Corporate L&D Trainer',
     avatar: 'P',
     rating: 5,
-    text: 'We host weekly trivia battles for 300+ remote employees across continents. QuizForge handles real-time synchronization flawlessly without a single hitch.',
+    text: 'We host weekly trivia battles for 300+ remote employees across continents. Gubbi handles real-time synchronization flawlessly without a single hitch.',
   },
   {
     name: 'Rohan Mehta',
@@ -43,7 +43,7 @@ const reviews = [
     role: 'High School Teacher',
     avatar: 'A',
     rating: 5,
-    text: 'The host control dashboard is incredibly intuitive. My students request QuizForge battles at the end of every lecture now!',
+    text: 'The host control dashboard is incredibly intuitive. My students request Gubbi battles at the end of every lecture now!',
   },
 ];
 
@@ -86,7 +86,7 @@ export default function TestimonialsSection() {
           Loved by <span className="text-gradient-primary">Teachers & Champion Players</span>
         </h2>
         <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-gray-400 max-w-xl mx-auto">
-          See why thousands of educators, corporate squads, and trivia lovers choose QuizForge.
+          See why thousands of educators, corporate squads, and trivia lovers choose Gubbi.
         </p>
       </motion.div>
 

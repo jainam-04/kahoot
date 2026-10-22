@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, BookOpen, PlusCircle, LogOut, User, 
-  Sun, Moon, Menu, X, Sparkles, Trash2 
+  Sun, Moon, Menu, X, Sparkles, Trash2, Edit3 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Logo from './Logo';
 import DeleteAccountModal from './DeleteAccountModal';
+import HostProfileModal from './HostProfileModal';
 import { useTheme } from '../context/ThemeContext';
 
 export default function Sidebar() {
@@ -16,8 +17,36 @@ export default function Sidebar() {
   const isLight = themeMode === 'light';
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || 'null');
+    } catch {
+      return null;
+    }
+  });
+
+  // Synchronize user profile across window events and storage changes
+  useEffect(() => {
+    const handleProfileSync = (e) => {
+      if (e?.detail) {
+        setUser(e.detail);
+      } else {
+        try {
+          setUser(JSON.parse(localStorage.getItem('user') || 'null'));
+        } catch {
+          setUser(null);
+        }
+      }
+    };
+    window.addEventListener('user-profile-updated', handleProfileSync);
+    window.addEventListener('storage', handleProfileSync);
+    return () => {
+      window.removeEventListener('user-profile-updated', handleProfileSync);
+      window.removeEventListener('storage', handleProfileSync);
+    };
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -167,19 +196,22 @@ export default function Sidebar() {
           </button>
 
           {/* USER PROFILE CARD */}
-          <div 
-            className="flex items-center justify-between p-3 rounded-xl border"
+          <button 
+            type="button"
+            onClick={() => setIsProfileModalOpen(true)}
+            className="w-full flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer text-left group hover:scale-[1.01]"
             style={{
               background: isLight ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.04)',
               borderColor: isLight ? 'rgba(139,92,246,0.14)' : 'rgba(255,255,255,0.08)'
             }}
+            title="Click to edit host profile"
           >
             <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-sm shrink-0 border border-primary/30">
+              <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-sm shrink-0 border border-primary/30 group-hover:scale-105 transition-transform">
                 {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
               </div>
               <div className="overflow-hidden text-left">
-                <span className="text-xs font-black block truncate" style={{ color: 'var(--text-heading)' }}>
+                <span className="text-xs font-black block truncate group-hover:text-primary transition-colors" style={{ color: 'var(--text-heading)' }}>
                   {user?.name || user?.username || 'User Account'}
                 </span>
                 <span className="text-[10px] text-gray-400 block truncate">
@@ -187,10 +219,15 @@ export default function Sidebar() {
                 </span>
               </div>
             </div>
-            <span className="text-[9px] uppercase font-black px-1.5 py-0.5 rounded bg-secondary/20 text-secondary border border-secondary/30 shrink-0">
-              Host
-            </span>
-          </div>
+            <div className="flex items-center gap-1 shrink-0">
+              <span className="text-[9px] uppercase font-black px-1.5 py-0.5 rounded bg-secondary/20 text-secondary border border-secondary/30">
+                Host
+              </span>
+              <div className="p-1 rounded-md text-primary opacity-75 group-hover:opacity-100">
+                <Edit3 className="h-3 w-3" />
+              </div>
+            </div>
+          </button>
 
           {/* DELETE ACCOUNT & LOGOUT BUTTONS */}
           <div className="space-y-2">
@@ -214,6 +251,15 @@ export default function Sidebar() {
         </div>
 
       </aside>
+
+      {/* HOST PROFILE EDIT MODAL */}
+      <HostProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        onUpdated={(updatedUser) => {
+          setUser(updatedUser);
+        }}
+      />
 
       {/* DELETE ACCOUNT MODAL */}
       <DeleteAccountModal

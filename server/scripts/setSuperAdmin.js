@@ -7,7 +7,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 const User = require('../models/User');
 
 const setSuperAdmin = async () => {
-    const targetEmail = process.argv[2] || 'admin@fourisequizhub.com';
+    const targetEmail = process.argv[2] || 'admin@fourisegubbi.com';
 
     try {
         await mongoose.connect(process.env.MONGO_URI);

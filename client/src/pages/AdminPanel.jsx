@@ -312,7 +312,7 @@ export default function AdminPanel() {
               <h1 className={`text-xl font-bold ${
                 isLight ? 'text-slate-900' : 'bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-violet-300'
               }`}>
-                QuizForge Super Admin
+                Gubbi Super Admin
               </h1>
               <p className={`text-xs flex items-center gap-1.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>

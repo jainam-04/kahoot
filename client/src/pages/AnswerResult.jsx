@@ -199,13 +199,18 @@ export default function AnswerResult() {
   const [isHost, setIsHost] = useState(() => {
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
-    const guestName = localStorage.getItem('guest_playerName');
-    return !!hostToken && (hostedPin === pin || !guestName);
+    return !!hostToken && hostedPin === pin;
   });
-  const [isCorrect, setIsCorrect] = useState(false);
-  const [pointsEarned, setPointsEarned] = useState(0);
-  const [currentScore, setCurrentScore] = useState(0);
-  const [correctAnswerIdx, setCorrectAnswerIdx] = useState(0);
+  const [correctAnswerIdx, setCorrectAnswerIdx] = useState(() => {
+    const saved = localStorage.getItem('last_correctAnswerIndex');
+    return saved !== null ? Number(saved) : 0;
+  });
+  const [correctAnswerText, setCorrectAnswerText] = useState(() => {
+    return localStorage.getItem('last_correctAnswerText') || '';
+  });
+  const [isCorrect, setIsCorrect] = useState(() => localStorage.getItem('last_isCorrect') === 'true');
+  const [pointsEarned, setPointsEarned] = useState(() => Number(localStorage.getItem('last_pointsEarned') || 0));
+  const [currentScore, setCurrentScore] = useState(() => Number(localStorage.getItem('last_score') || 0));
   const [timeTaken, setTimeTaken] = useState('0.00');
   const [answerStats, setAnswerStats] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
@@ -217,7 +222,11 @@ export default function AnswerResult() {
   const [mobileTab, setMobileTab] = useState('feedback'); // 'feedback' or 'standings'
   const confettiFiredRef = useRef(false);
 
-  const myLeaderboardEntry = leaderboard.find(p => p.username?.toLowerCase() === localPlayer?.toLowerCase());
+  const myLeaderboardEntry = leaderboard.find(p => {
+    const pName = (p.username || p.name || '').trim().toLowerCase();
+    const target = (localPlayer || '').trim().toLowerCase();
+    return pName === target;
+  });
 
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
@@ -236,12 +245,16 @@ export default function AnswerResult() {
     const savedPoints = localStorage.getItem('last_pointsEarned');
     const savedScore = localStorage.getItem('last_score');
     const savedCorrectIdx = localStorage.getItem('last_correctAnswerIndex');
+    const savedCorrectText = localStorage.getItem('last_correctAnswerText');
 
     if (savedIsCorrect !== null) {
       setIsCorrect(savedIsCorrect === 'true');
       setPointsEarned(Number(savedPoints || 0));
       setCurrentScore(Number(savedScore || 0));
       setCorrectAnswerIdx(Number(savedCorrectIdx || 0));
+    }
+    if (savedCorrectText) {
+      setCorrectAnswerText(savedCorrectText);
     }
     const savedHasSubmitted = localStorage.getItem('last_answerSubmitted');
     if (savedHasSubmitted !== null) {
@@ -279,7 +292,13 @@ export default function AnswerResult() {
           localStorage.setItem('last_bg_image', currentBg);
           setIsLastQuestion(game.currentQuestion === game.quiz?.questions?.length);
           if (currentQuestion) {
-            setCorrectAnswerIdx(Number(currentQuestion.correctAnswer || 0));
+            const correctIdx = Number(currentQuestion.correctAnswer ?? 0);
+            setCorrectAnswerIdx(correctIdx);
+            const correctText = currentQuestion.options?.[correctIdx] || '';
+            if (correctText) {
+              setCorrectAnswerText(correctText);
+              localStorage.setItem('last_correctAnswerText', correctText);
+            }
             
             // Calculate stats for chart
             const stats = currentQuestion.options?.map((_, optIdx) => 
@@ -698,13 +717,28 @@ export default function AnswerResult() {
                 </div>
 
                 {/* Title */}
-                <div className="space-y-1">
+                <div className="space-y-1.5 max-w-lg mx-auto">
                   <h3 className={`font-outfit text-2xl sm:text-3xl font-black break-words ${isUnanswered ? 'text-orange-400' : isCorrect ? 'text-green-400' : 'text-red-400'}`}>
-                    {isUnanswered ? 'Answer Not Submitted' : isCorrect ? 'Correct Answer!' : 'Incorrect Answer'}
+                    {isUnanswered ? 'Answer Not Submitted' : isCorrect ? 'Correct Answer!' : 'Wrong Answer'}
                   </h3>
-                  <p className="text-xs sm:text-sm font-bold text-gray-200">
-                    {isUnanswered ? 'No answer was recorded before the timer ended.' : isCorrect ? 'Superb speed! Claim your points.' : `The correct answer was Option ${optionLetters[correctAnswerIdx]}`}
-                  </p>
+                  <div className="text-xs sm:text-sm text-gray-200">
+                    {isUnanswered ? (
+                      <div className="space-y-1">
+                        <p className="font-semibold text-gray-300">No answer was recorded before the timer ended.</p>
+                        <p className="text-orange-200 font-semibold">
+                          The correct answer is <span className="font-extrabold text-white">Option {optionLetters[correctAnswerIdx] || 'A'}</span>
+                          {correctAnswerText ? <>: <span className="font-extrabold text-white">{correctAnswerText}</span></> : ''}
+                        </p>
+                      </div>
+                    ) : isCorrect ? (
+                      <p className="font-bold text-emerald-200">Superb speed! Claim your points.</p>
+                    ) : (
+                      <p className="font-semibold text-red-100">
+                        The correct answer is <span className="font-extrabold text-white">Option {optionLetters[correctAnswerIdx] || 'A'}</span>
+                        {correctAnswerText ? <>: <span className="font-extrabold text-white">{correctAnswerText}</span></> : ''}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Stats Grid */}

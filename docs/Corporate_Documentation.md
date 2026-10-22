@@ -1,16 +1,16 @@
 # Corporate Technical, Functional & Operations Documentation
-## Project: Fourise Quiz Hub (Real-time Quiz Hub System)
+## Project: Fourise Gubbi (Real-time Gubbi System)
 
 ---
 
 ## 1. Project Overview
 
-Fourise Quiz Hub is an enterprise-grade, real-time multiplayer quiz platform (similar to Kahoot) built on a modern JavaScript stack. It allows hosts to create interactive, timed quizzes, generate unique PINs and QR codes for live game sessions, stream live questions, process player answers in real-time, compute live rankings, and archive detailed performance analytics for post-game reporting.
+Fourise Gubbi is an enterprise-grade, real-time multiplayer quiz platform (similar to Kahoot) built on a modern JavaScript stack. It allows hosts to create interactive, timed quizzes, generate unique PINs and QR codes for live game sessions, stream live questions, process player answers in real-time, compute live rankings, and archive detailed performance analytics for post-game reporting.
 
 ### 1.1 Target Users
 * **Quiz Hosts / Educators / Corporate Trainers:** Users who register to create custom quizzes, host live interactive sessions, monitor participant performance, and export detailed PDF/Excel reports.
 * **Players / Participants / Students:** End users who join live quiz sessions on mobile or desktop without needing registration, by scanning a QR code or entering a 6-digit PIN.
-* **System Administrators:** Engineers responsible for deploying, maintaining, scaling, and monitoring the Fourise Quiz Hub backend services and database.
+* **System Administrators:** Engineers responsible for deploying, maintaining, scaling, and monitoring the Fourise Gubbi backend services and database.
 
 ### 1.2 Key Features
 * **Authentication & Recovery:** JWT-based stateless authentication with password reset supported via SMTP email or hashed security questions.
@@ -49,7 +49,7 @@ Fourise Quiz Hub is an enterprise-grade, real-time multiplayer quiz platform (si
 
 ## 3. Project Architecture
 
-Fourise Quiz Hub operates on a Client-Server architecture with dual communication channels:
+Fourise Gubbi operates on a Client-Server architecture with dual communication channels:
 1. **HTTP/REST API Layer:** Standard stateless endpoints handling user management, quiz CRUD operations, initial game initialization, and analytical reporting.
 2. **WebSocket / Socket.IO Layer:** State-full persistent connections executing real-time game state synchronization.
 
@@ -86,7 +86,7 @@ Fourise Quiz Hub operates on a Client-Server architecture with dual communicatio
 
 ### 3.2 Attendance Check-in Flow (Game PIN & Player Join)
 
-In Fourise Quiz Hub, player check-in operates similarly to an event attendance flow:
+In Fourise Gubbi, player check-in operates similarly to an event attendance flow:
 
 ```
 [ Player Device ]             [ Express Backend ]            [ Socket.IO Engine ]        [ Host Device ]
@@ -107,7 +107,7 @@ In Fourise Quiz Hub, player check-in operates similarly to an event attendance f
 
 ## 4. Repository / Git Details
 
-* **Root Directory:** `Fourise Quiz Hub (QuizForge)/`
+* **Root Directory:** `Fourise Gubbi (QuizForge)/`
 * **Monorepo Structure:** Multi-package repository (`client/`, `server/`, `postman/`, `docs/`) managed with npm scripts.
 * **Entry Script (Server):** `server/index.js`
 * **Entry Script (Client):** `client/src/main.jsx`
@@ -130,7 +130,7 @@ The repository strictly excludes environment secrets, transient build outputs, a
 ## 5. Complete Folder Structure
 
 ```text
-Fourise-Quiz-Hub/
+Fourise-Gubbi/
 ├── .gitignore
 ├── package.json
 ├── package-lock.json
@@ -258,7 +258,7 @@ Fourise-Quiz-Hub/
 ## 7. Page-by-Page Documentation
 
 ### 7.1 Public / Authentication
-* **`LandingPage.jsx` (`/`):** Public hero screen introducing Fourise Quiz Hub features, pricing plan matrix, FAQs, and navigation triggers to Login/Register or quick-join.
+* **`LandingPage.jsx` (`/`):** Public hero screen introducing Fourise Gubbi features, pricing plan matrix, FAQs, and navigation triggers to Login/Register or quick-join.
 * **`Login.jsx` (`/login`):** User authentication interface validating email/password and persisting JWT tokens to `localStorage.token`.
 * **`Register.jsx` (`/register`):** User sign-up page capturing name, email, password, and security question/answer pair.
 * **`ForgotPassword.jsx` (`/forgot-password`):** Multi-step account recovery flow supporting either email SMTP recovery links or security question verification.
@@ -752,7 +752,7 @@ npm --prefix client run build
 ## 35. Final System Map & Developer Onboarding
 
 ### 35.1 Master Architecture Pattern
-Fourise Quiz Hub enforces a decoupled MVC-Socket architecture where HTTP endpoints initialize resources and Socket.IO manages live execution.
+Fourise Gubbi enforces a decoupled MVC-Socket architecture where HTTP endpoints initialize resources and Socket.IO manages live execution.
 
 ### 35.2 Master Examples
 * **Creating a REST Endpoint:** See `server/controllers/quizController.js` and `server/routes/quizRoutes.js`.
@@ -766,4 +766,4 @@ Fourise Quiz Hub enforces a decoupled MVC-Socket architecture where HTTP endpoin
 5. Launch a test quiz between two browser windows (Host vs Player) to familiarize yourself with the live Socket.IO event flow.
 
 ---
-*Documentation compiled for Fourise Quiz Hub handover.*
+*Documentation compiled for Fourise Gubbi handover.*

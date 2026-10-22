@@ -81,7 +81,7 @@ export default function Register() {
         localStorage.setItem('user', JSON.stringify(response.user));
         setRegisteredUser(response.user);
         setIsRegistered(true);
-        toast.success(`Welcome to Quiz Hub, ${response.user.name || 'User'}!`);
+        toast.success(`Welcome to Gubbi, ${response.user.name || 'User'}!`);
       } else {
         toast.error(response.message || 'Registration failed.');
       }
@@ -368,7 +368,7 @@ export default function Register() {
                         Welcome Aboard, {registeredUser?.name || 'User'}!
                       </h2>
                       <p className="text-xs sm:text-sm text-emerald-500 font-bold mt-1">
-                        Your free Quiz Hub host account has been created successfully.
+                        Your free Gubbi host account has been created successfully.
                       </p>
                     </div>
 

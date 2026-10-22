@@ -31,8 +31,7 @@ export default function FinalResult() {
   const [isHost, setIsHost] = useState(() => {
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
-    const guestName = localStorage.getItem('guest_playerName');
-    return !!hostToken && (hostedPin === pin || !guestName);
+    return !!hostToken && hostedPin === pin;
   });
   const [isSaved, setIsSaved] = useState(false);
   const localPlayerName = localStorage.getItem('guest_playerName');

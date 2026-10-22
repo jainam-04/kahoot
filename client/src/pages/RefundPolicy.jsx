@@ -40,7 +40,7 @@ export default function RefundPolicy() {
       content: (
         <div className="space-y-3">
           <p>
-            Thank you for using <strong>Quizy (QuizForge)</strong>. Quizy provides online live interactive quizzes, multiplayer game arenas, assessment tools, host lobbies, institute trivia management, and related digital services to educational institutions, enterprises, organizations, administrators, faculty members, event hosts, students, candidates, and other authorized users.
+            Thank you for using <strong>Gubbi</strong>. Gubbi provides online live interactive quizzes, multiplayer game arenas, assessment tools, host lobbies, institute trivia management, and related digital services to educational institutions, enterprises, organizations, administrators, faculty members, event hosts, students, candidates, and other authorized users.
           </p>
           <p>
             As our services are primarily digital and access to subscribed features or services may be provided immediately upon purchase or activation, our refund and cancellation policy is set forth below.
@@ -53,10 +53,10 @@ export default function RefundPolicy() {
       content: (
         <div className="space-y-3">
           <p>
-            Unless otherwise required by applicable law or expressly agreed in writing, all subscription payments, service fees, and purchases made through Quizy are final and non-refundable.
+            Unless otherwise required by applicable law or expressly agreed in writing, all subscription payments, service fees, and purchases made through Gubbi are final and non-refundable.
           </p>
           <p>
-            Once a subscription or service has been activated, or access to a purchased service has been provided, Quizy does not generally provide refunds or credits for:
+            Once a subscription or service has been activated, or access to a purchased service has been provided, Gubbi does not generally provide refunds or credits for:
           </p>
           <ul className="list-disc list-inside space-y-1.5 pl-1 text-xs opacity-95">
             <li>Partial use of a subscription.</li>
@@ -99,7 +99,7 @@ export default function RefundPolicy() {
       content: (
         <div className="space-y-3">
           <p>
-            If you have any questions regarding this Refund & Cancellation Policy, subscription cancellation, or applicable refund terms, please contact <strong>Quizy / Fourise Software Solutions Pvt. Ltd.</strong> through the official support or contact channels provided on the Platform:
+            If you have any questions regarding this Refund & Cancellation Policy, subscription cancellation, or applicable refund terms, please contact <strong>Gubbi / Fourise Software Solutions Pvt. Ltd.</strong> through the official support or contact channels provided on the Platform:
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
             <div className={`p-3.5 rounded-xl border text-xs ${
@@ -133,7 +133,7 @@ export default function RefundPolicy() {
             </div>
           </div>
           <p className="text-xs pt-1">
-            We will be happy to clarify the applicable terms before you purchase or subscribe to any Quizy service.
+            We will be happy to clarify the applicable terms before you purchase or subscribe to any Gubbi service.
           </p>
         </div>
       )
@@ -176,7 +176,7 @@ export default function RefundPolicy() {
             <p className={`text-sm leading-relaxed max-w-2xl ${
               isLight ? 'text-gray-600' : 'text-gray-400'
             }`}>
-              Standard terms governing digital service activations, plan renewals, cancellations, and refund eligibility for Quizy.
+              Standard terms governing digital service activations, plan renewals, cancellations, and refund eligibility for Gubbi.
             </p>
 
             <div className="text-xs text-muted font-medium pt-1">

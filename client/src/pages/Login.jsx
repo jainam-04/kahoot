@@ -219,7 +219,7 @@ export default function Login() {
                   </div>
                   <div className="overflow-hidden">
                     <h4 className={`font-outfit text-xs sm:text-sm font-extrabold truncate ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                      Want to test Quiz Hub first?
+                      Want to test Gubbi first?
                     </h4>
                     <p className={`text-[10px] sm:text-xs truncate ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                       Try our interactive 30s mini quiz demo!
@@ -300,7 +300,7 @@ export default function Login() {
                         </div>
                         <input
                           type="email"
-                          placeholder="host@quizhub.com"
+                          placeholder="host@gubbi.com"
                           {...hostForm.register('email', {
                             required: 'Email address is required',
                             pattern: {
@@ -433,7 +433,7 @@ export default function Login() {
                 {/* Footer link */}
                 <div className={`mt-5 text-center border-t pt-4 ${isLight ? 'border-gray-100' : 'border-white/10'}`}>
                   <p className={`text-xs font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                    New to Quiz Hub?{' '}
+                    New to Gubbi?{' '}
                     <Link to="/register" className="font-extrabold text-secondary hover:underline">
                       Create an account
                     </Link>

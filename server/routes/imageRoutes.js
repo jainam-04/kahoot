@@ -33,7 +33,7 @@ function filterSafePhotos(photos) {
 // Fetch from Openverse with a given query
 async function fetchFromOpenverse(query, page) {
   const url = `https://api.openverse.org/v1/images/?q=${encodeURIComponent(query)}&page=${page}&page_size=${PER_PAGE}&license_type=commercial,modification`;
-  const r = await fetch(url, { headers: { 'User-Agent': 'QuizForge/1.0 (educational app)' } });
+  const r = await fetch(url, { headers: { 'User-Agent': 'Gubbi/1.0 (educational app)' } });
   if (!r.ok) return null;
   const d = await r.json();
   if (!d.results || d.results.length === 0) return null;
