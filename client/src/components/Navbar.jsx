@@ -287,38 +287,27 @@ export default function Navbar() {
                         isLight ? 'bg-white/95 border-gray-200 text-gray-900' : 'bg-[#12121a]/95 border-white/10 text-white'
                       }`}
                     >
-                      {/* Host Profile Header - Click to edit */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setProfileDropdownOpen(false);
-                          setIsProfileModalOpen(true);
-                        }}
-                        className={`w-full text-left p-2.5 rounded-xl border mb-2 transition-all cursor-pointer group ${
+                      {/* Host Account Summary Card */}
+                      <div
+                        className={`w-full text-left p-2.5 rounded-xl border mb-2 select-none ${
                           isLight 
-                            ? 'bg-sky-50/70 border-sky-100 hover:bg-sky-100/80 hover:border-sky-200' 
-                            : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/15'
+                            ? 'bg-sky-50/70 border-sky-100' 
+                            : 'bg-white/5 border-white/5'
                         }`}
-                        title="Click to edit Host Profile"
                       >
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2.5 overflow-hidden">
-                            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-extrabold text-xs text-white shrink-0 shadow-sm">
-                              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                            </div>
-                            <div className="overflow-hidden min-w-0">
-                              <h4 className="font-outfit font-bold text-xs truncate group-hover:text-primary transition-colors">{user?.name || 'Host Account'}</h4>
-                              <p className="text-[10px] text-muted truncate">{user?.email || 'Logged In Host'}</p>
-                              <span className="inline-block text-[9px] uppercase font-extrabold px-1.5 py-0.5 rounded bg-primary/15 text-primary mt-0.5">
-                                Quiz Moderator
-                              </span>
-                            </div>
+                        <div className="flex items-center gap-2.5 overflow-hidden">
+                          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-extrabold text-xs text-white shrink-0 shadow-sm">
+                            {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                           </div>
-                          <div className="shrink-0 p-1.5 rounded-lg bg-primary/10 text-primary opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all">
-                            <Edit3 className="h-3.5 w-3.5" />
+                          <div className="overflow-hidden min-w-0">
+                            <h4 className="font-outfit font-bold text-xs truncate text-foreground">{user?.name || 'Host Account'}</h4>
+                            <p className="text-[10px] text-muted truncate">{user?.email || 'Logged In Host'}</p>
+                            <span className="inline-block text-[9px] uppercase font-extrabold px-1.5 py-0.5 rounded bg-primary/15 text-primary mt-0.5">
+                              Quiz Moderator
+                            </span>
                           </div>
                         </div>
-                      </button>
+                      </div>
 
                       {/* Navigation Links */}
                       <div className="space-y-0.5">
@@ -518,13 +507,8 @@ export default function Navbar() {
         >
           {token ? (
             <>
-              <button
-                type="button"
-                onClick={() => {
-                  closeMobile();
-                  setIsProfileModalOpen(true);
-                }}
-                className="w-full text-left flex items-center justify-between px-3.5 py-3 mb-3 rounded-xl border transition-all cursor-pointer"
+              <div
+                className="w-full text-left flex items-center justify-between px-3.5 py-3 mb-3 rounded-xl border select-none"
                 style={{
                   background: isLight ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.04)',
                   borderColor: isLight ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.08)'
@@ -536,7 +520,7 @@ export default function Navbar() {
                   </div>
                   <div className="overflow-hidden">
                     <span className="text-xs font-black block truncate" style={{ color: 'var(--text-heading)' }}>
-                      {user?.name}
+                      {user?.name || 'Host Account'}
                     </span>
                     <span className="text-[10px] text-gray-400 block truncate">
                       {user?.email || 'Logged In Host'}
@@ -547,9 +531,8 @@ export default function Navbar() {
                   <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-secondary/15 text-secondary border border-secondary/20">
                     Host
                   </span>
-                  <Edit3 className="h-3.5 w-3.5 text-primary" />
                 </div>
-              </button>
+              </div>
 
               <button
                 type="button"
