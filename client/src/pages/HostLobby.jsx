@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import { getGame as fetchGameDetails, startQuestion } from '../services/gameService';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
+import { useTheme } from '../context/ThemeContext';
 import tunnelData from '../tunnel.json';
 
 // Helper to deduplicate player list case-insensitively
@@ -33,6 +34,8 @@ const deduplicatePlayers = (list) => {
 export default function HostLobby() {
   const { pin } = useParams();
   const navigate = useNavigate();
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
   const [players, setPlayers] = useState([]);
   // FIXED: guard to prevent double-navigation (socket + API response both used to navigate)
   const hasNavigatedRef = React.useRef(false);
@@ -297,7 +300,9 @@ export default function HostLobby() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen bg-background text-gray-200 p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center overflow-x-hidden">
+      <div className={`relative min-h-screen p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center overflow-x-hidden ${
+        isLight ? 'bg-background text-slate-900' : 'bg-background text-gray-200'
+      }`}>
         
         {/* Glow Spheres */}
         <div className="absolute top-[5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-45"></div>
@@ -307,7 +312,11 @@ export default function HostLobby() {
         <div className="w-full max-w-4xl flex justify-start mb-4 relative z-10">
           <button 
             onClick={handleHostExit}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-200 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs font-black uppercase tracking-wider cursor-pointer"
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-xs font-black uppercase tracking-wider cursor-pointer ${
+              isLight
+                ? 'bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 shadow-sm'
+                : 'bg-white/5 border border-white/10 text-gray-200 hover:text-white hover:bg-white/10 hover:border-white/20'
+            }`}
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Return to Dashboard</span>
@@ -320,19 +329,35 @@ export default function HostLobby() {
           <div className="md:col-span-2 space-y-6">
             
             {/* PIN Card */}
-            <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-white/5 flex flex-col sm:flex-row justify-between items-center gap-6 relative overflow-hidden">
+            <div className={`rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-6 relative overflow-hidden ${
+              isLight
+                ? 'bg-white/95 border border-slate-200 shadow-xl'
+                : 'glass-panel border border-white/5'
+            }`}>
               <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
               
               <div className="space-y-2 text-center sm:text-left">
-                <span className="text-[10px] font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${
+                  isLight ? 'text-primary bg-primary/10 border border-primary/20' : 'text-primary bg-primary/10'
+                }`}>
                   Host Lobby Room
                 </span>
-                <h2 className="font-outfit text-xl font-extrabold text-white mt-2">{game?.quiz?.title || 'Commencing Battle'}</h2>
-                <p className="text-xs text-gray-400 max-w-[280px]">Scan the QR or visit Gubbi and enter the PIN below.</p>
+                <h2 className={`font-outfit text-xl font-extrabold mt-2 ${
+                  isLight ? 'text-slate-900' : 'text-white'
+                }`}>
+                  {game?.quiz?.title || 'Commencing Battle'}
+                </h2>
+                <p className={`text-xs max-w-[280px] ${
+                  isLight ? 'text-slate-600 font-medium' : 'text-gray-400'
+                }`}>
+                  Scan the QR or visit Gubbi and enter the PIN below.
+                </p>
               </div>
 
               <div className="space-y-1 text-center shrink-0">
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">LOBBY PIN</span>
+                <span className={`text-[10px] font-bold uppercase tracking-widest block ${
+                  isLight ? 'text-slate-500' : 'text-gray-500'
+                }`}>LOBBY PIN</span>
                 <div className="font-outfit text-4xl sm:text-5xl font-black text-secondary tracking-widest animate-pulse">
                   {pin}
                 </div>
@@ -340,15 +365,27 @@ export default function HostLobby() {
             </div>
 
             {/* Players Panel */}
-            <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-white/5 min-h-[320px] flex flex-col justify-between">
+            <div className={`rounded-3xl p-6 sm:p-8 min-h-[320px] flex flex-col justify-between ${
+              isLight
+                ? 'bg-white/95 border border-slate-200 shadow-xl text-slate-900'
+                : 'glass-panel border border-white/5 text-white'
+            }`}>
               
               <div>
-                <div className="flex justify-between items-center border-b border-white/5 pb-4 mb-4">
-                  <h3 className="font-outfit text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                <div className={`flex justify-between items-center border-b pb-4 mb-4 ${
+                  isLight ? 'border-slate-100' : 'border-white/5'
+                }`}>
+                  <h3 className={`font-outfit text-sm font-bold uppercase tracking-wider flex items-center gap-2 ${
+                    isLight ? 'text-slate-700' : 'text-gray-400'
+                  }`}>
                     <Users className="h-4.5 w-4.5 text-secondary" />
                     Players Joined
                   </h3>
-                  <span className="text-xs font-bold text-white bg-white/5 border border-white/10 px-3 py-1 rounded-xl">
+                  <span className={`text-xs font-black px-3 py-1 rounded-xl border ${
+                    isLight 
+                      ? 'bg-slate-100 border-slate-200 text-slate-900' 
+                      : 'text-white bg-white/5 border-white/10'
+                  }`}>
                     {players.length} Joined
                   </span>
                 </div>
@@ -356,8 +393,12 @@ export default function HostLobby() {
                 {players.length === 0 ? (
                   /* Waiting animation illustration */
                   <div className="py-12 text-center space-y-4">
-                    <div className="h-10 w-10 border-2 border-dashed border-gray-600 rounded-full animate-spin mx-auto"></div>
-                    <p className="text-xs text-gray-500">Waiting for challengers to join the arena...</p>
+                    <div className={`h-10 w-10 border-2 border-dashed rounded-full animate-spin mx-auto ${
+                      isLight ? 'border-primary/50' : 'border-gray-600'
+                    }`}></div>
+                    <p className={`text-xs font-semibold ${isLight ? 'text-slate-500' : 'text-gray-500'}`}>
+                      Waiting for challengers to join the arena...
+                    </p>
                   </div>
                 ) : (
                   /* Connected players badge grid */
@@ -369,15 +410,23 @@ export default function HostLobby() {
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.8 }}
-                          className="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-white flex items-center gap-2 hover:border-primary/40 transition-colors"
+                          className={`px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all border ${
+                            isLight
+                              ? 'bg-slate-100/90 border-slate-300 text-slate-900 hover:border-primary hover:bg-slate-50 shadow-sm'
+                              : 'bg-white/5 border-white/10 text-white hover:border-primary/40'
+                          }`}
                         >
-                          <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                          <span>{player.username}</span>
+                          <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 shrink-0 shadow-sm"></div>
+                          <span className="truncate max-w-[180px]">{player.username}</span>
                         </motion.div>
                       ))}
                     </AnimatePresence>
                     {players.length > 100 && (
-                      <div className="px-3.5 py-2 rounded-xl border border-dashed border-white/10 bg-white/5 text-xs font-bold text-gray-400">
+                      <div className={`px-3.5 py-2 rounded-xl border border-dashed text-xs font-bold ${
+                        isLight 
+                          ? 'border-slate-300 bg-slate-50 text-slate-600' 
+                          : 'border-white/10 bg-white/5 text-gray-400'
+                      }`}>
                         + {players.length - 100} more challengers...
                       </div>
                     )}
@@ -389,22 +438,30 @@ export default function HostLobby() {
               <button
                 onClick={handleStartGame}
                 disabled={players.length === 0}
-                className={`w-full btn-premium btn-primary-gradient py-3.5 flex items-center justify-center gap-2 text-sm font-bold shadow-premium-glow ${
+                className={`w-full btn-premium btn-primary-gradient py-3.5 flex items-center justify-center gap-2 text-sm font-bold shadow-premium-glow text-white cursor-pointer ${
                   players.length === 0 ? 'opacity-40 cursor-not-allowed' : ''
                 }`}
               >
-                <Play className="h-4 w-4 fill-current" />
-                <span>Start Quiz</span>
+                <Play className="h-4 w-4 fill-current text-white" />
+                <span className="text-white">Start Quiz</span>
               </button>
 
             </div>
           </div>
 
           {/* RIGHT PANEL: QR CODE DISPLAY */}
-          <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-white/5 flex flex-col justify-center items-center gap-4 text-center">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Quick Scan</span>
+          <div className={`rounded-3xl p-6 sm:p-8 flex flex-col justify-center items-center gap-4 text-center ${
+            isLight
+              ? 'bg-white/95 border border-slate-200 shadow-xl text-slate-900'
+              : 'glass-panel border border-white/5 text-white'
+          }`}>
+            <span className={`text-[10px] font-bold uppercase tracking-widest ${
+              isLight ? 'text-slate-600' : 'text-gray-500'
+            }`}>Quick Scan</span>
             
-            <div className="p-3 bg-white rounded-2xl shadow-premium-glow">
+            <div className={`p-3 bg-white rounded-2xl ${
+              isLight ? 'shadow-md border border-slate-200' : 'shadow-premium-glow'
+            }`}>
               <img 
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(customUrl)}`} 
                 alt={`Lobby Scan QR Code`} 
@@ -413,7 +470,9 @@ export default function HostLobby() {
             </div>
 
             {/* IP/URL Edit & Share Section */}
-            <div className="w-full border-t border-white/5 pt-3.5 space-y-3">
+            <div className={`w-full border-t pt-3.5 space-y-3 ${
+              isLight ? 'border-slate-100' : 'border-white/5'
+            }`}>
               {isEditingIp ? (
                 <div className="flex gap-2 items-center">
                   <input
@@ -421,24 +480,36 @@ export default function HostLobby() {
                     value={ipInput}
                     onChange={(e) => setIpInput(e.target.value)}
                     placeholder="e.g. 192.168.1.113:5173"
-                    className="flex-1 bg-white/5 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-primary font-mono"
+                    className={`flex-1 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:border-primary font-mono border ${
+                      isLight 
+                        ? 'bg-slate-50 border-slate-300 text-slate-900' 
+                        : 'bg-white/5 border-white/15 text-white'
+                    }`}
                   />
                   <button
                     onClick={handleSaveIp}
-                    className="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/95 transition-colors shrink-0"
+                    className="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/95 transition-colors shrink-0 cursor-pointer"
                   >
                     Save
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center justify-between gap-2 bg-white/5 px-3 py-2 rounded-xl border border-white/10">
-                  <span className="text-[10px] text-gray-300 font-mono truncate select-all flex-1 text-left">
+                <div className={`flex items-center justify-between gap-2 px-3 py-2 rounded-xl border ${
+                  isLight 
+                    ? 'bg-slate-50 border-slate-200 text-slate-800' 
+                    : 'bg-white/5 border-white/10 text-gray-300'
+                }`}>
+                  <span className={`text-[10px] font-mono truncate select-all flex-1 text-left font-bold ${
+                    isLight ? 'text-slate-700' : 'text-gray-300'
+                  }`}>
                     {customUrl}
                   </span>
                   <button
                     onClick={() => setIsEditingIp(true)}
                     title="Edit IP address if incorrect"
-                    className="text-gray-400 hover:text-white transition-colors shrink-0"
+                    className={`transition-colors shrink-0 cursor-pointer ${
+                      isLight ? 'text-slate-500 hover:text-slate-900' : 'text-gray-400 hover:text-white'
+                    }`}
                   >
                     <Edit2 className="h-3.5 w-3.5" />
                   </button>
@@ -449,14 +520,22 @@ export default function HostLobby() {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={handleCopyLink}
-                  className="py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                  className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border ${
+                    isLight 
+                      ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200' 
+                      : 'bg-white/5 border-white/10 hover:bg-white/10 text-white'
+                  }`}
                 >
-                  {copiedLink ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copiedLink ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
                   <span>{copiedLink ? 'Copied' : 'Copy Link'}</span>
                 </button>
                 <button
                   onClick={handleCopyQRCode}
-                  className="py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                  className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border ${
+                    isLight 
+                      ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200' 
+                      : 'bg-white/5 border-white/10 hover:bg-white/10 text-white'
+                  }`}
                 >
                   <QrCode className="h-3.5 w-3.5 text-secondary" />
                   <span>Copy QR</span>
@@ -475,7 +554,9 @@ export default function HostLobby() {
               </button>
             </div>
             
-            <p className="text-[9px] text-gray-500 leading-relaxed max-w-[200px]">
+            <p className={`text-[9px] leading-relaxed max-w-[200px] ${
+              isLight ? 'text-slate-500 font-medium' : 'text-gray-500'
+            }`}>
               Point your phone camera to scan the code and instantly connect to the battle lobby.
             </p>
           </div>

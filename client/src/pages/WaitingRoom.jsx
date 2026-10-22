@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import { connectSocket, emitJoinRoom } from '../services/socketService';
 import { useGame } from '../context/GameContext';
+import { useTheme } from '../context/ThemeContext';
 import { getGame } from '../services/gameService';
 
 const parseBgConfig = (bgStr) => {
@@ -88,6 +89,8 @@ export default function WaitingRoom() {
   const { pin } = useParams();
   const navigate = useNavigate();
   const { playerName, setPin, setPlayerName } = useGame();
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
   const [players, setPlayers] = useState([]);
   const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
 
@@ -217,7 +220,9 @@ export default function WaitingRoom() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen text-gray-200 p-6 sm:p-8 flex flex-col items-center justify-center overflow-hidden">
+      <div className={`relative min-h-screen p-6 sm:p-8 flex flex-col items-center justify-center overflow-hidden ${
+        isLight ? 'text-slate-900' : 'text-gray-200'
+      }`}>
         
         {/* Customized Background Layer */}
         {bgConfig.url ? (
@@ -261,51 +266,71 @@ export default function WaitingRoom() {
         <div className="absolute top-[10%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-45"></div>
         <div className="absolute bottom-[10%] right-[10%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
 
-
-
         {/* Waiting card */}
         <motion.div
           initial={{ opacity: 0, y: 30, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: 'spring', stiffness: 80, damping: 15 }}
-          className="w-full max-w-xl glass-panel rounded-3xl p-8 sm:p-10 border border-white/5 text-center relative overflow-hidden"
+          className={`w-full max-w-xl rounded-3xl p-8 sm:p-10 border text-center relative overflow-hidden ${
+            isLight
+              ? 'bg-white/95 border-slate-200 shadow-xl text-slate-900'
+              : 'glass-panel border-white/5 text-white'
+          }`}
         >
           <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
           {/* Large Loading animation */}
           <div className="mb-8 relative flex items-center justify-center">
-            <div className="h-20 w-20 rounded-full bg-primary/5 border border-primary/20 flex items-center justify-center relative">
+            <div className={`h-20 w-20 rounded-full flex items-center justify-center relative border ${
+              isLight ? 'bg-primary/10 border-primary/20' : 'bg-primary/5 border-primary/20'
+            }`}>
               <Loader2 className="h-10 w-10 text-primary animate-spin" />
             </div>
             {/* Pulsing ring */}
             <div className="absolute h-28 w-28 rounded-full border border-secondary/15 animate-ping opacity-25 pointer-events-none"></div>
           </div>
 
-          <h2 className="font-outfit text-3xl font-extrabold text-white">Waiting for Host...</h2>
-          <p className="text-sm text-gray-400 mt-2">
+          <h2 className={`font-outfit text-3xl font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>Waiting for Host...</h2>
+          <p className={`text-sm mt-2 ${isLight ? 'text-slate-600' : 'text-gray-400'}`}>
             Stay tuned. The host will commence the quiz battle shortly.
           </p>
 
           {/* Lobby PIN details */}
-          <div className="mt-6 inline-flex flex-col items-center px-6 py-2.5 rounded-2xl bg-white/5 border border-white/10 font-bold text-gray-300">
-            <span className="text-[10px] text-gray-500 uppercase tracking-widest block mb-0.5">Arena PIN</span>
-            <span className="font-outfit text-2xl tracking-widest text-secondary">{pin}</span>
+          <div className={`mt-6 inline-flex flex-col items-center px-6 py-2.5 rounded-2xl border font-bold ${
+            isLight
+              ? 'bg-slate-100 border-slate-200 text-slate-800'
+              : 'bg-white/5 border-white/10 text-gray-300'
+          }`}>
+            <span className={`text-[10px] uppercase tracking-widest block mb-0.5 ${
+              isLight ? 'text-slate-500' : 'text-gray-500'
+            }`}>Arena PIN</span>
+            <span className="font-outfit text-2xl tracking-widest text-secondary font-black">{pin}</span>
           </div>
 
           {/* Players joined section */}
-          <div className="mt-10 pt-8 border-t border-white/5 text-left">
+          <div className={`mt-10 pt-8 border-t text-left ${
+            isLight ? 'border-slate-100' : 'border-white/5'
+          }`}>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-outfit text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+              <h3 className={`font-outfit text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                isLight ? 'text-slate-700' : 'text-gray-500'
+              }`}>
                 <Users className="h-4 w-4 text-primary" />
                 Challengers in Arena
               </h3>
-              <span className="text-xs font-bold text-white bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-lg">
+              <span className={`text-xs font-black px-2.5 py-0.5 rounded-lg border ${
+                isLight
+                  ? 'bg-slate-100 border-slate-200 text-slate-900'
+                  : 'text-white bg-white/5 border-white/10'
+              }`}>
                 {players.length} Ready
               </span>
             </div>
 
             {players.length === 0 ? (
-              <p className="text-xs text-gray-500 italic text-center py-4">Synchronizing player logs...</p>
+              <p className={`text-xs italic text-center py-4 ${
+                isLight ? 'text-slate-500' : 'text-gray-500'
+              }`}>Synchronizing player logs...</p>
             ) : (
               <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto pr-1">
                 {players.slice(0, 50).map((p, idx) => (
@@ -313,16 +338,18 @@ export default function WaitingRoom() {
                     key={idx} 
                     className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 ${
                       p.username.toLowerCase() === localPlayerName.toLowerCase()
-                        ? 'bg-secondary/10 border-secondary/25 text-secondary font-bold' 
-                        : 'bg-white/5 border-white/10 text-gray-300'
+                        ? (isLight ? 'bg-secondary/15 border-secondary/40 text-secondary font-black' : 'bg-secondary/10 border-secondary/25 text-secondary font-bold')
+                        : (isLight ? 'bg-slate-100 border-slate-200 text-slate-900 font-bold' : 'bg-white/5 border-white/10 text-gray-300')
                     }`}
                   >
-                    <div className={`h-1.5 w-1.5 rounded-full ${p.username.toLowerCase() === localPlayerName.toLowerCase() ? 'bg-secondary' : 'bg-gray-500'}`}></div>
+                    <div className={`h-1.5 w-1.5 rounded-full ${p.username.toLowerCase() === localPlayerName.toLowerCase() ? 'bg-secondary' : (isLight ? 'bg-emerald-500' : 'bg-gray-500')}`}></div>
                     <span>{p.username}</span>
                   </div>
                 ))}
                 {players.length > 50 && (
-                  <div className="px-3 py-1.5 rounded-lg border border-dashed border-white/10 bg-white/5 text-xs font-semibold text-gray-400">
+                  <div className={`px-3 py-1.5 rounded-lg border border-dashed text-xs font-semibold ${
+                    isLight ? 'border-slate-300 bg-slate-50 text-slate-600' : 'border-white/10 bg-white/5 text-gray-400'
+                  }`}>
                     + {players.length - 50} more challengers...
                   </div>
                 )}
