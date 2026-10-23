@@ -578,14 +578,14 @@ export default function AnswerResult() {
           }`}>
             <button 
               onClick={handleHostExit}
-              className={`btn-premium flex items-center gap-1.5 px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer active:scale-95 ${
                 isLight 
-                  ? 'bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 shadow-sm' 
-                  : 'btn-glass'
+                  ? 'bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 shadow-sm' 
+                  : 'bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md shadow-sm'
               }`}
             >
-              <ArrowLeft className="h-4 w-4" />
-              <span>Return to Dashboard</span>
+              <ArrowLeft className="h-4 w-4 shrink-0 text-slate-800 dark:text-white" />
+              <span className="text-slate-900 dark:text-white">Return to Dashboard</span>
             </button>
             <span className={`text-[10px] font-bold uppercase tracking-widest ${
               isLight ? 'text-slate-600' : 'text-gray-500'

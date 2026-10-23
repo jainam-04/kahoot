@@ -225,10 +225,14 @@ export default function Leaderboard() {
             {isHost && (
               <button
                 onClick={handleHostExit}
-                className="btn-premium btn-glass flex items-center gap-1.5 px-3.5 py-2 text-xs font-black uppercase tracking-wider mr-2 cursor-pointer"
+                className={`flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-wider mr-2 rounded-xl transition-all cursor-pointer active:scale-95 ${
+                  isLight
+                    ? 'bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 shadow-sm'
+                    : 'bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md shadow-sm'
+                }`}
               >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                <span>Return to Dashboard</span>
+                <ArrowLeft className="h-3.5 w-3.5 shrink-0 text-slate-800 dark:text-white" />
+                <span className="text-slate-900 dark:text-white">Return to Dashboard</span>
               </button>
             )}
             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Scoreboard Standings</span>

@@ -647,14 +647,14 @@ export default function LiveQuiz() {
             {isHost && (
               <button
                 onClick={handleHostExit}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-[10px] font-black uppercase tracking-wider mr-1 cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-[10px] font-black uppercase tracking-wider mr-1 cursor-pointer active:scale-95 ${
                   isLight
-                    ? 'bg-white/90 border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-white shadow-sm'
-                    : 'bg-white/5 border-white/10 text-gray-200 hover:text-white hover:bg-white/10'
+                    ? 'bg-white hover:bg-slate-50 border-slate-300 text-slate-900 shadow-sm'
+                    : 'bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-md shadow-sm'
                 }`}
               >
-                <ArrowLeft className="h-3 w-3" />
-                <span>Return to Dashboard</span>
+                <ArrowLeft className="h-3 w-3 shrink-0 text-slate-800 dark:text-white" />
+                <span className="text-slate-900 dark:text-white">Return to Dashboard</span>
               </button>
             )}
             <span className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl uppercase tracking-wider ${theme.badgeBg}`}>
