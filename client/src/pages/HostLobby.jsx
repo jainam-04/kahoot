@@ -140,7 +140,6 @@ export default function HostLobby() {
       const username = (data?.username || data?.playerName || '').toString().trim();
       if (username) {
         setPlayers((prev) => prev.filter((p) => p.username.toLowerCase() !== username.toLowerCase()));
-        toast.error(`${username} left the lobby`);
       }
     };
 
@@ -151,11 +150,10 @@ export default function HostLobby() {
         if (playerName.startsWith('__LEAVE__:')) {
           const username = playerName.replace('__LEAVE__:', '').trim();
           setPlayers((prev) => prev.filter((p) => p.username.toLowerCase() !== username.toLowerCase()));
-          toast.error(`${username} left the lobby`);
         } else {
           const trimmed = playerName.toString().trim();
           setPlayers((prev) => deduplicatePlayers([...prev, { username: trimmed, avatar: '👤', score: 0 }]));
-          toast.success(`${trimmed} joined the battle! ⚔️`);
+          toast.success(`${trimmed} joined the battle! ⚔️`, { id: `join-${trimmed}`, duration: 2500 });
         }
       }
     });

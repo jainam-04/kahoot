@@ -173,9 +173,6 @@ export default function WaitingRoom() {
         const u = username.toLowerCase();
         knownPlayersRef.current.delete(u);
         setPlayers((prev) => prev.filter((p) => p.username.toLowerCase() !== u));
-        if (u !== localPlayerName.toLowerCase()) {
-          toast.error(`${username} left the lobby`, { id: `leave-${u}`, duration: 2500 });
-        }
       }
     };
 
@@ -188,9 +185,6 @@ export default function WaitingRoom() {
           const username = playerName.replace('__LEAVE__:', '').trim();
           knownPlayersRef.current.delete(username.toLowerCase());
           setPlayers((prev) => prev.filter((p) => p.username.toLowerCase() !== username.toLowerCase()));
-          if (username.toLowerCase() !== localPlayerName.toLowerCase()) {
-            toast.error(`${username} left the lobby`, { id: `leave-${username}`, duration: 2500 });
-          }
         } else {
           const trimmed = playerName.toString().trim();
           setPlayers((prev) => deduplicatePlayers([...prev, { username: trimmed, avatar: '👤', score: 0 }]));
