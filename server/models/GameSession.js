@@ -21,6 +21,9 @@ const answerSchema = new mongoose.Schema({
         type: Number,
         default: 0
     }
+}, {
+    _id: true,
+    versionKey: false
 });
 
 const playerSchema = new mongoose.Schema({
@@ -64,6 +67,9 @@ const playerSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
+}, {
+    _id: true,
+    versionKey: false
 });
 
 const gameSessionSchema = new mongoose.Schema({
@@ -113,7 +119,8 @@ const gameSessionSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true,
-    versionKey: false
+    versionKey: false,
+    optimisticConcurrency: false
 });
 
 module.exports = mongoose.model('GameSession', gameSessionSchema);

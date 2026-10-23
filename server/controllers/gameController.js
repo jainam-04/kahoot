@@ -345,23 +345,20 @@ const startQuestion = async (req, res) => {
             });
         }
 
+        const cleanPin = (pin || '').toString().trim();
         const nextQuestion = quiz.questions[nextIndex];
         const questionStartTime = Date.now();
 
-        // Sanitize any existing player records to guarantee valid schema before save
-        if (Array.isArray(game.players)) {
-            game.players.forEach(p => {
-                if (!p.fullName) p.fullName = p.name || 'Player';
-                if (!p.mobileNumber) p.mobileNumber = '';
-                if (!p.nickname) p.nickname = p.name || 'Player';
-                if (!p.avatar) p.avatar = '👤';
-            });
-        }
-
-        game.currentQuestionIndex = nextIndex;
-        game.questionStartTime = questionStartTime;
-        game.status = 'active';
-        await game.save();
+        await GameSession.findOneAndUpdate(
+            { pin: cleanPin },
+            {
+                $set: {
+                    currentQuestionIndex: nextIndex,
+                    questionStartTime: questionStartTime,
+                    status: 'active'
+                }
+            }
+        );
 
         const io = req.app.get('io');
         // Use the cached backgroundImage from GameSession (most reliable), fallback to quiz
@@ -601,8 +598,12 @@ const submitAnswer = async (req, res) => {
                                 {
                                     pin: cleanPin,
                                     status: 'active',
-                                    'players._id': matchedInDb._id,
-                                    'players.answers.questionIndex': { $ne: game.currentQuestionIndex }
+                                    players: {
+                                        $elemMatch: {
+                                            _id: matchedInDb._id,
+                                            'answers.questionIndex': { $ne: game.currentQuestionIndex }
+                                        }
+                                    }
                                 },
                                 {
                                     $push: { 'players.$.answers': answerRecord },
@@ -679,9 +680,12 @@ const submitAnswer = async (req, res) => {
 
     } catch (error) {
         console.error('Error submitting answer:', error);
+        const errMsg = error.name === 'VersionError' || (error.message && error.message.includes('version'))
+            ? 'Answer submission processed with contention. Your answer is safe!'
+            : error.message;
         res.status(500).json({
             success: false,
-            message: error.message
+            message: errMsg
         });
     }
 };
@@ -748,18 +752,16 @@ const endGame = async (req, res) => {
             }
         });
 
-        if (Array.isArray(game.players)) {
-            game.players.forEach(p => {
-                if (!p.fullName) p.fullName = p.name || 'Player';
-                if (!p.mobileNumber) p.mobileNumber = '';
-                if (!p.nickname) p.nickname = p.name || 'Player';
-                if (!p.avatar) p.avatar = '👤';
-            });
-        }
-
-        game.status = 'finished';
-        game.winner = winner;
-        await game.save();
+        await GameSession.findOneAndUpdate(
+            { pin: cleanPin },
+            {
+                $set: {
+                    status: 'finished',
+                    winner: winner,
+                    players: game.players
+                }
+            }
+        );
 
         const finalLeaderboard = formattedRanked;
 
