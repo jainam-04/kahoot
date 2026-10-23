@@ -14,6 +14,7 @@ import { saveResult } from '../services/resultService';
 import { disconnectSocket } from '../services/socketService';
 import toast from 'react-hot-toast';
 import Avatar from '../components/Avatar';
+import { useTheme } from '../context/ThemeContext';
 
 const isUnansweredAnswer = (answer) => {
   const value = answer?.answerIndex;
@@ -23,6 +24,19 @@ const isUnansweredAnswer = (answer) => {
 const getSubmittedAnswers = (answers = []) => (answers || []).filter((answer) => !isUnansweredAnswer(answer));
 
 export default function FinalResult() {
+  const { themeMode } = useTheme();
+  const isLight = themeMode !== 'dark';
+
+  useEffect(() => {
+    if (isLight) {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    }
+  }, [isLight]);
+
   const { pin } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,22 +49,6 @@ export default function FinalResult() {
   });
   const [isSaved, setIsSaved] = useState(false);
   const localPlayerName = localStorage.getItem('guest_playerName');
-
-  // Force dark purple stage background on root HTML element while on FinalResult screen
-  useEffect(() => {
-    const root = document.documentElement;
-    const previousWasLight = root.classList.contains('light');
-
-    root.classList.remove('light');
-    root.classList.add('dark');
-
-    return () => {
-      if (previousWasLight) {
-        root.classList.remove('dark');
-        root.classList.add('light');
-      }
-    };
-  }, []);
 
   // Fetch final game data
   const { 
@@ -272,10 +270,10 @@ export default function FinalResult() {
   if (isLoading && !game) {
     return (
       <AnimatedPage>
-        <div className="flex-1 flex items-center justify-center min-h-screen bg-[#46178F]">
+        <div className={`flex-1 flex items-center justify-center min-h-screen ${isLight ? 'bg-slate-50 text-slate-900' : 'bg-[#46178F] text-white'}`}>
           <div className="text-center space-y-4">
-            <Loader2 className="h-12 w-12 animate-spin mx-auto text-white" />
-            <p className="text-sm font-bold uppercase tracking-widest text-white">Loading Results...</p>
+            <Loader2 className={`h-12 w-12 animate-spin mx-auto ${isLight ? 'text-primary' : 'text-white'}`} />
+            <p className={`text-sm font-bold uppercase tracking-widest ${isLight ? 'text-slate-600' : 'text-white'}`}>Loading Results...</p>
           </div>
         </div>
       </AnimatedPage>
@@ -284,7 +282,11 @@ export default function FinalResult() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen font-outfit bg-gradient-to-br from-[#0c051e] via-[#241249] to-[#0a0216] text-white overflow-x-hidden overflow-y-auto flex flex-col justify-between">
+      <div className={`relative min-h-screen font-outfit overflow-x-hidden overflow-y-auto flex flex-col justify-between transition-colors duration-200 ${
+        isLight 
+          ? 'bg-slate-50 text-slate-900' 
+          : 'bg-gradient-to-br from-[#0c051e] via-[#241249] to-[#0a0216] text-white'
+      }`}>
         
         {/* Component specific animations and keyframes */}
         <style>{`
@@ -303,46 +305,57 @@ export default function FinalResult() {
           }
         `}</style>
 
-        {/* Sweeping stage spotlights */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div 
-            className="absolute top-[-20%] left-[10%] w-[320px] h-[120vh] bg-gradient-to-r from-transparent via-white/10 to-transparent origin-top"
-            style={{
-              transform: 'rotate(-25deg)',
-              animation: 'sweepLeft 8s ease-in-out infinite',
-            }}
-          />
-          <div 
-            className="absolute top-[-20%] right-[10%] w-[320px] h-[120vh] bg-gradient-to-l from-transparent via-white/10 to-transparent origin-top"
-            style={{
-              transform: 'rotate(25deg)',
-              animation: 'sweepRight 8s ease-in-out infinite',
-            }}
-          />
-        </div>
+        {!isLight ? (
+          <>
+            {/* Sweeping stage spotlights */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+              <div 
+                className="absolute top-[-20%] left-[10%] w-[320px] h-[120vh] bg-gradient-to-r from-transparent via-white/10 to-transparent origin-top"
+                style={{
+                  transform: 'rotate(-25deg)',
+                  animation: 'sweepLeft 8s ease-in-out infinite',
+                }}
+              />
+              <div 
+                className="absolute top-[-20%] right-[10%] w-[320px] h-[120vh] bg-gradient-to-l from-transparent via-white/10 to-transparent origin-top"
+                style={{
+                  transform: 'rotate(25deg)',
+                  animation: 'sweepRight 8s ease-in-out infinite',
+                }}
+              />
+            </div>
 
-        {/* Radial vignette overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#0c051e]/40 to-[#0a0216] pointer-events-none z-0"></div>
-        
-        {/* Animated Torch Spotlight for Suspense */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 0.6, 0.8, 1, 1, 0] }}
-          transition={{ delay: 2.2, duration: 2.6, ease: "easeInOut", times: [0, 0.1, 0.3, 0.7, 0.85, 1] }}
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[80vh] bg-gradient-to-b from-white/70 via-white/20 to-transparent z-10 pointer-events-none mix-blend-overlay"
-          style={{ clipPath: 'polygon(35% 0, 65% 0, 100% 100%, 0% 100%)' }}
-        />
-        
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#864CBF]/30 rounded-full blur-[120px] pointer-events-none z-0"></div>
+            {/* Radial vignette overlay */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#0c051e]/40 to-[#0a0216] pointer-events-none z-0" />
+            
+            {/* Animated Torch Spotlight for Suspense */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.6, 0.8, 1, 1, 0] }}
+              transition={{ delay: 2.2, duration: 2.6, ease: "easeInOut", times: [0, 0.1, 0.3, 0.7, 0.85, 1] }}
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[80vh] bg-gradient-to-b from-white/70 via-white/20 to-transparent z-10 pointer-events-none mix-blend-overlay"
+              style={{ clipPath: 'polygon(35% 0, 65% 0, 100% 100%, 0% 100%)' }}
+            />
+            
+            <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#864CBF]/30 rounded-full blur-[120px] pointer-events-none z-0" />
+          </>
+        ) : (
+          <>
+            {/* Light ambient subtle glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-gradient-to-b from-primary/[0.06] via-primary/[0.02] to-transparent rounded-full blur-3xl pointer-events-none z-0" />
+          </>
+        )}
 
         <div className="relative z-10 flex flex-col items-center flex-1 w-full px-4 pt-6 pb-6">
           {/* Header (Title & Category) */}
           <div className="w-full max-w-6xl flex justify-between items-center mb-6">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl md:text-3xl font-black text-white">
+              <h1 className={`text-2xl md:text-3xl font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>
                 {game?.quiz?.title || 'Quiz Results'}
               </h1>
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-white/10 text-gray-300">
+              <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                isLight ? 'bg-slate-200 text-slate-700' : 'bg-white/10 text-gray-300'
+              }`}>
                 {game?.quiz?.category || 'General'}
               </span>
             </div>
@@ -355,11 +368,19 @@ export default function FinalResult() {
                 initial={{ y: -50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ type: 'spring', bounce: 0.5, duration: 0.8 }}
-                className="backdrop-blur-md border border-white/10 bg-white/10 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5)] px-10 py-4 mb-auto text-center"
+                className={`rounded-2xl px-6 sm:px-10 py-4 mb-4 sm:mb-6 text-center border ${
+                  isLight 
+                    ? 'bg-white border-slate-200/90 shadow-sm text-slate-900' 
+                    : 'backdrop-blur-md border-white/10 bg-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.5)] text-white'
+                }`}
               >
-                <h1 className="text-3xl md:text-4xl font-black text-white">Battle Finished!</h1>
+                <h1 className={`text-3xl md:text-4xl font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>Battle Finished!</h1>
                 <div className="flex justify-center mt-2">
-                  <div className="inline-flex items-center gap-1.5 border border-white/10 bg-white/5 px-4 py-1.5 rounded-full text-sm font-bold text-gray-200">
+                  <div className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-bold border ${
+                    isLight 
+                      ? 'bg-slate-100 text-slate-700 border-slate-200' 
+                      : 'border-white/10 bg-white/5 text-gray-200'
+                  }`}>
                     <span>Congratulations to all players!</span>
                   </div>
                 </div>
@@ -382,10 +403,14 @@ export default function FinalResult() {
                         transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
                         className="text-4xl sm:text-6xl md:text-7xl mb-1 sm:mb-2 filter drop-shadow-xl select-none"
                       >
-                        {second.avatar ? <Avatar emoji={second.avatar} className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20" /> : <User className="w-12 h-12 text-white/50" />}
+                        {second.avatar ? <Avatar emoji={second.avatar} className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20" /> : <User className={`w-12 h-12 ${isLight ? 'text-slate-400' : 'text-white/50'}`} />}
                       </motion.div>
-                      <div className="font-black text-white text-[11px] sm:text-xs md:text-sm tracking-tight truncate max-w-[70px] sm:max-w-[80px] drop-shadow-md">{second.name}</div>
-                      <div className="font-black text-gray-300 text-[9px] sm:text-[10px] md:text-xs drop-shadow-sm mt-0.5">{second.totalScore || 0} pts</div>
+                      <div className={`font-black text-[11px] sm:text-xs md:text-sm tracking-tight truncate max-w-[70px] sm:max-w-[80px] ${
+                        isLight ? 'text-slate-900' : 'text-white drop-shadow-md'
+                      }`}>{second.name}</div>
+                      <div className={`font-black text-[9px] sm:text-[10px] md:text-xs mt-0.5 ${
+                        isLight ? 'text-slate-600' : 'text-gray-300 drop-shadow-sm'
+                      }`}>{second.totalScore || 0} pts</div>
                     </motion.div>
 
                     <motion.div 
@@ -393,7 +418,11 @@ export default function FinalResult() {
                       animate={{ scaleY: 1 }}
                       transition={{ type: 'spring', stiffness: 55, damping: 14, delay: revealDelays.p2Rise }}
                       style={{ transformOrigin: 'bottom' }}
-                      className="w-full h-[150px] sm:h-[190px] md:h-[250px] bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_35px_rgba(255,255,255,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffffff]"
+                      className={`w-full h-[150px] sm:h-[190px] md:h-[250px] bg-gradient-to-b from-[#e0e0e0] via-[#a6a6a6] to-[#6b6b6b] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden border-t-[4px] sm:border-t-[6px] ${
+                        isLight 
+                          ? 'border-slate-300 shadow-[0_10px_25px_rgba(0,0,0,0.08)]' 
+                          : 'border-[#ffffff] shadow-[0_15px_35px_rgba(255,255,255,0.08)]'
+                      }`}
                     >
                       {/* Silver Medal */}
                       <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
@@ -447,13 +476,19 @@ export default function FinalResult() {
                         </motion.div>
 
                         {/* Golden Halo aura behind 1st place */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 blur-xl opacity-50 z-0 animate-pulse" />
+                        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 blur-xl z-0 animate-pulse ${
+                          isLight ? 'opacity-30' : 'opacity-50'
+                        }`} />
 
-                        {winner.avatar ? <Avatar emoji={winner.avatar} className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 relative z-10" /> : <User className="w-14 h-14 text-white/50" />}
+                        {winner.avatar ? <Avatar emoji={winner.avatar} className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 relative z-10" /> : <User className={`w-14 h-14 ${isLight ? 'text-slate-400' : 'text-white/50'}`} />}
                       </motion.div>
 
-                      <div className="font-extrabold text-white text-xs sm:text-sm md:text-lg tracking-tight truncate max-w-[90px] sm:max-w-[120px] drop-shadow-md">{winner.name}</div>
-                      <div className="font-black text-yellow-300 text-[10px] sm:text-xs md:text-sm drop-shadow-sm mt-0.5">{winner.totalScore || 0} pts</div>
+                      <div className={`font-extrabold text-xs sm:text-sm md:text-lg tracking-tight truncate max-w-[90px] sm:max-w-[120px] ${
+                        isLight ? 'text-slate-900' : 'text-white drop-shadow-md'
+                      }`}>{winner.name}</div>
+                      <div className={`font-black text-[10px] sm:text-xs md:text-sm mt-0.5 ${
+                        isLight ? 'text-amber-600' : 'text-yellow-300 drop-shadow-sm'
+                      }`}>{winner.totalScore || 0} pts</div>
                     </motion.div>
                     
                     <motion.div 
@@ -461,7 +496,11 @@ export default function FinalResult() {
                       animate={{ scaleY: 1 }}
                       transition={{ type: 'spring', stiffness: 45, damping: 12, delay: revealDelays.p1Rise }}
                       style={{ transformOrigin: 'bottom', animation: 'glowGoldPulse 3s ease-in-out infinite' }}
-                      className="w-full h-[210px] sm:h-[270px] md:h-[330px] bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_45px_rgba(255,215,0,0.2)] border-t-[4px] sm:border-t-[6px] border-[#ffe082]"
+                      className={`w-full h-[210px] sm:h-[270px] md:h-[330px] bg-gradient-to-b from-[#ffd700] via-[#d4af37] to-[#aa7c11] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden border-t-[4px] sm:border-t-[6px] border-[#ffe082] ${
+                        isLight 
+                          ? 'shadow-[0_15px_35px_rgba(212,175,55,0.25)]' 
+                          : 'shadow-[0_15px_45px_rgba(255,215,0,0.2)]'
+                      }`}
                     >
                       {/* Gold Medal */}
                       <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
@@ -494,10 +533,14 @@ export default function FinalResult() {
                         transition={{ repeat: Infinity, duration: 2.4, ease: "easeInOut" }}
                         className="text-4xl sm:text-6xl md:text-7xl mb-1 sm:mb-2 filter drop-shadow-xl select-none"
                       >
-                        {third.avatar ? <Avatar emoji={third.avatar} className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16" /> : <User className="w-10 h-10 text-white/50" />}
+                        {third.avatar ? <Avatar emoji={third.avatar} className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16" /> : <User className={`w-10 h-10 ${isLight ? 'text-slate-400' : 'text-white/50'}`} />}
                       </motion.div>
-                      <div className="font-black text-white text-[11px] sm:text-xs md:text-sm tracking-tight truncate max-w-[70px] sm:max-w-[80px] drop-shadow-md">{third.name}</div>
-                      <div className="font-black text-gray-300 text-[9px] sm:text-[10px] md:text-xs drop-shadow-sm mt-0.5">{third.totalScore || 0} pts</div>
+                      <div className={`font-black text-[11px] sm:text-xs md:text-sm tracking-tight truncate max-w-[70px] sm:max-w-[80px] ${
+                        isLight ? 'text-slate-900' : 'text-white drop-shadow-md'
+                      }`}>{third.name}</div>
+                      <div className={`font-black text-[9px] sm:text-[10px] md:text-xs mt-0.5 ${
+                        isLight ? 'text-slate-600' : 'text-gray-300 drop-shadow-sm'
+                      }`}>{third.totalScore || 0} pts</div>
                     </motion.div>
 
                     <motion.div 
@@ -505,7 +548,11 @@ export default function FinalResult() {
                       animate={{ scaleY: 1 }}
                       transition={{ type: 'spring', stiffness: 60, damping: 15, delay: revealDelays.p3Rise }}
                       style={{ transformOrigin: 'bottom' }}
-                      className="w-full h-[105px] sm:h-[140px] md:h-[190px] bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden shadow-[0_15px_25px_rgba(205,127,50,0.08)] border-t-[4px] sm:border-t-[6px] border-[#ffb74d]"
+                      className={`w-full h-[105px] sm:h-[140px] md:h-[190px] bg-gradient-to-b from-[#cd7f32] via-[#a05a2c] to-[#5a2e0e] rounded-t-2xl sm:rounded-t-3xl flex flex-col items-center justify-start pt-2 sm:pt-4 relative overflow-hidden border-t-[4px] sm:border-t-[6px] ${
+                        isLight 
+                          ? 'border-[#ffb74d] shadow-[0_10px_20px_rgba(0,0,0,0.08)]' 
+                          : 'border-[#ffb74d] shadow-[0_15px_25px_rgba(205,127,50,0.08)]'
+                      }`}
                     >
                       {/* Bronze Medal */}
                       <div className="relative flex flex-col items-center mb-1 sm:mb-2 mt-1 sm:mt-2">
@@ -532,12 +579,18 @@ export default function FinalResult() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 4.6, duration: 0.8 }}
-              className="w-full max-w-lg mt-12 mb-6"
+              className="w-full max-w-lg mt-8 sm:mt-12 mb-6"
             >
-              <div className="bg-black/30 backdrop-blur-md rounded-2xl p-4 border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                <h3 className="text-white/80 font-bold mb-4 px-2 uppercase tracking-widest text-sm flex items-center gap-2">
+              <div className={`rounded-2xl p-4 border ${
+                isLight 
+                  ? 'bg-white border-slate-200 shadow-sm' 
+                  : 'bg-black/30 backdrop-blur-md border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'
+              }`}>
+                <h3 className={`font-bold mb-4 px-2 uppercase tracking-widest text-sm flex items-center gap-2 ${
+                  isLight ? 'text-slate-700' : 'text-white/80'
+                }`}>
                   <span>Runners Up</span>
-                  <div className="h-[1px] flex-1 bg-white/20"></div>
+                  <div className={`h-[1px] flex-1 ${isLight ? 'bg-slate-200' : 'bg-white/20'}`}></div>
                 </h3>
                 <div className="flex flex-col gap-2">
                   {rankedPlayers.slice(3).map((player, index) => (
@@ -548,18 +601,24 @@ export default function FinalResult() {
                       transition={{ delay: 5.0 + index * 0.2 }}
                       className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 border ${
                         player.name === localPlayerName
-                          ? 'bg-[#864CBF]/40 border-[#864CBF] shadow-[0_0_15px_rgba(134,76,191,0.5)] scale-[1.02]'
-                          : 'bg-white/5 hover:bg-white/10 border-white/5'
+                          ? isLight
+                            ? 'bg-purple-50 border-purple-200 shadow-xs scale-[1.02]'
+                            : 'bg-[#864CBF]/40 border-[#864CBF] shadow-[0_0_15px_rgba(134,76,191,0.5)] scale-[1.02]'
+                          : isLight
+                            ? 'bg-slate-50 hover:bg-slate-100 border-slate-200/80'
+                            : 'bg-white/5 hover:bg-white/10 border-white/5'
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-white/50 font-black w-6 text-right">{player.rank}</span>
-                        <div className="flex justify-center items-center">{player.avatar ? <Avatar emoji={player.avatar} className="w-8 h-8" /> : <User className="w-6 h-6 text-white/50" />}</div>
-                        <span className="font-bold text-white text-base md:text-lg">{player.name}</span>
+                        <span className={`font-black w-6 text-right ${isLight ? 'text-slate-400' : 'text-white/50'}`}>{player.rank}</span>
+                        <div className="flex justify-center items-center">
+                          {player.avatar ? <Avatar emoji={player.avatar} className="w-8 h-8" /> : <User className={`w-6 h-6 ${isLight ? 'text-slate-400' : 'text-white/50'}`} />}
+                        </div>
+                        <span className={`font-bold text-base md:text-lg ${isLight ? 'text-slate-900' : 'text-white'}`}>{player.name}</span>
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="font-black text-white">{player.totalScore || 0} pts</span>
-                        <span className="text-xs text-white/50">{player.correctAnswers || 0} correct</span>
+                        <span className={`font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>{player.totalScore || 0} pts</span>
+                        <span className={`text-xs ${isLight ? 'text-slate-500' : 'text-white/50'}`}>{player.correctAnswers || 0} correct</span>
                       </div>
                     </motion.div>
                   ))}
@@ -578,75 +637,123 @@ export default function FinalResult() {
                 >
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
                     {/* Total Questions */}
-                    <div className="p-3 sm:p-4 rounded-xl border bg-white/5 border-white/10">
+                    <div className={`p-3 sm:p-4 rounded-xl border ${
+                      isLight ? 'bg-white border-slate-200 shadow-sm' : 'bg-white/5 border-white/10'
+                    }`}>
                       <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
-                        <Target className="h-4 w-4 text-blue-400 shrink-0" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase text-gray-400 truncate">Total Questions</span>
+                        <Target className="h-4 w-4 text-blue-500 shrink-0" />
+                        <span className={`text-[10px] sm:text-xs font-bold uppercase truncate ${
+                          isLight ? 'text-slate-500' : 'text-gray-400'
+                        }`}>Total Questions</span>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.totalQuestions}</p>
+                      <p className={`text-xl sm:text-2xl font-black ${
+                        isLight ? 'text-slate-900' : 'text-white'
+                      }`}>{playerStats.totalQuestions}</p>
                     </div>
 
                     {/* Correct Answers */}
-                    <div className="p-3 sm:p-4 rounded-xl border bg-green-500/10 border-green-500/20">
+                    <div className={`p-3 sm:p-4 rounded-xl border ${
+                      isLight ? 'bg-emerald-50/70 border-emerald-200/80 shadow-sm' : 'bg-green-500/10 border-green-500/20'
+                    }`}>
                       <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
-                        <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase text-green-400 truncate">Correct</span>
+                        <CheckCircle className="h-4 w-4 text-emerald-600 shrink-0" />
+                        <span className={`text-[10px] sm:text-xs font-bold uppercase truncate ${
+                          isLight ? 'text-emerald-700' : 'text-green-400'
+                        }`}>Correct</span>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.correctAnswers}</p>
+                      <p className={`text-xl sm:text-2xl font-black ${
+                        isLight ? 'text-emerald-950' : 'text-white'
+                      }`}>{playerStats.correctAnswers}</p>
                     </div>
 
                     {/* Incorrect Answers */}
-                    <div className="p-3 sm:p-4 rounded-xl border bg-red-500/10 border-red-500/20">
+                    <div className={`p-3 sm:p-4 rounded-xl border ${
+                      isLight ? 'bg-rose-50/70 border-rose-200/80 shadow-sm' : 'bg-red-500/10 border-red-500/20'
+                    }`}>
                       <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
-                        <XCircle className="h-4 w-4 text-red-500 shrink-0" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase text-red-400 truncate">Incorrect</span>
+                        <XCircle className="h-4 w-4 text-rose-600 shrink-0" />
+                        <span className={`text-[10px] sm:text-xs font-bold uppercase truncate ${
+                          isLight ? 'text-rose-700' : 'text-red-400'
+                        }`}>Incorrect</span>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.incorrectAnswers}</p>
+                      <p className={`text-xl sm:text-2xl font-black ${
+                        isLight ? 'text-rose-950' : 'text-white'
+                      }`}>{playerStats.incorrectAnswers}</p>
                     </div>
 
                     {/* Not Submitted */}
-                    <div className="p-3 sm:p-4 rounded-xl border bg-orange-500/10 border-orange-500/20">
+                    <div className={`p-3 sm:p-4 rounded-xl border ${
+                      isLight ? 'bg-amber-50/70 border-amber-200/80 shadow-sm' : 'bg-orange-500/10 border-orange-500/20'
+                    }`}>
                       <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
-                        <AlertCircle className="h-4 w-4 text-orange-500 shrink-0" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase text-orange-400 truncate">Not Submitted</span>
+                        <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
+                        <span className={`text-[10px] sm:text-xs font-bold uppercase truncate ${
+                          isLight ? 'text-amber-700' : 'text-orange-400'
+                        }`}>Not Submitted</span>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.notSubmitted}</p>
+                      <p className={`text-xl sm:text-2xl font-black ${
+                        isLight ? 'text-amber-950' : 'text-white'
+                      }`}>{playerStats.notSubmitted}</p>
                     </div>
 
                     {/* Score */}
-                    <div className="p-3 sm:p-4 rounded-xl border bg-purple-500/10 border-purple-500/20">
+                    <div className={`p-3 sm:p-4 rounded-xl border ${
+                      isLight ? 'bg-purple-50/70 border-purple-200/80 shadow-sm' : 'bg-purple-500/10 border-purple-500/20'
+                    }`}>
                       <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
-                        <Trophy className="h-4 w-4 text-purple-500 shrink-0" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase text-purple-400 truncate">Score</span>
+                        <Trophy className="h-4 w-4 text-purple-600 shrink-0" />
+                        <span className={`text-[10px] sm:text-xs font-bold uppercase truncate ${
+                          isLight ? 'text-purple-700' : 'text-purple-400'
+                        }`}>Score</span>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.totalScore}</p>
+                      <p className={`text-xl sm:text-2xl font-black ${
+                        isLight ? 'text-purple-950' : 'text-white'
+                      }`}>{playerStats.totalScore}</p>
                     </div>
 
                     {/* Percentage */}
-                    <div className="p-3 sm:p-4 rounded-xl border bg-blue-500/10 border-blue-500/20">
+                    <div className={`p-3 sm:p-4 rounded-xl border ${
+                      isLight ? 'bg-blue-50/70 border-blue-200/80 shadow-sm' : 'bg-blue-500/10 border-blue-500/20'
+                    }`}>
                       <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
-                        <Percent className="h-4 w-4 text-blue-500 shrink-0" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase text-blue-400 truncate">Percentage</span>
+                        <Percent className="h-4 w-4 text-blue-600 shrink-0" />
+                        <span className={`text-[10px] sm:text-xs font-bold uppercase truncate ${
+                          isLight ? 'text-blue-700' : 'text-blue-400'
+                        }`}>Percentage</span>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-white">{playerStats.percentage}%</p>
+                      <p className={`text-xl sm:text-2xl font-black ${
+                        isLight ? 'text-blue-950' : 'text-white'
+                      }`}>{playerStats.percentage}%</p>
                     </div>
 
                     {/* Rank */}
-                    <div className="p-3 sm:p-4 rounded-xl border bg-yellow-500/10 border-yellow-500/20">
+                    <div className={`p-3 sm:p-4 rounded-xl border ${
+                      isLight ? 'bg-amber-50/70 border-amber-200/80 shadow-sm' : 'bg-yellow-500/10 border-yellow-500/20'
+                    }`}>
                       <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
-                        <Award className="h-4 w-4 text-yellow-500 shrink-0" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase text-yellow-400 truncate">Rank</span>
+                        <Award className="h-4 w-4 text-amber-600 shrink-0" />
+                        <span className={`text-[10px] sm:text-xs font-bold uppercase truncate ${
+                          isLight ? 'text-amber-700' : 'text-yellow-400'
+                        }`}>Rank</span>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-white">#{playerStats.rank}</p>
+                      <p className={`text-xl sm:text-2xl font-black ${
+                        isLight ? 'text-amber-950' : 'text-white'
+                      }`}>#{playerStats.rank}</p>
                     </div>
 
                     {/* Completion */}
-                    <div className="p-3 sm:p-4 rounded-xl border bg-teal-500/10 border-teal-500/20">
+                    <div className={`p-3 sm:p-4 rounded-xl border ${
+                      isLight ? 'bg-teal-50/70 border-teal-200/80 shadow-sm' : 'bg-teal-500/10 border-teal-500/20'
+                    }`}>
                       <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
-                        <TrendingUp className="h-4 w-4 text-teal-500 shrink-0" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase text-teal-400 truncate">Completion</span>
+                        <TrendingUp className="h-4 w-4 text-teal-600 shrink-0" />
+                        <span className={`text-[10px] sm:text-xs font-bold uppercase truncate ${
+                          isLight ? 'text-teal-700' : 'text-teal-400'
+                        }`}>Completion</span>
                       </div>
-                      <p className="text-xl sm:text-2xl font-black text-white">
+                      <p className={`text-xl sm:text-2xl font-black ${
+                        isLight ? 'text-teal-950' : 'text-white'
+                      }`}>
                         {Math.round(((playerStats.totalQuestions - playerStats.notSubmitted) / playerStats.totalQuestions) * 100)}%
                       </p>
                     </div>
@@ -660,61 +767,97 @@ export default function FinalResult() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.5 }}
-                  className="w-full max-w-4xl mx-auto p-6 rounded-2xl text-left bg-white/5 border border-white/10"
+                  className={`w-full max-w-4xl mx-auto p-4 sm:p-6 rounded-2xl text-left border ${
+                    isLight 
+                      ? 'bg-white border-slate-200 shadow-sm' 
+                      : 'bg-white/5 border-white/10'
+                  }`}
                 >
-                  <h2 className="font-outfit text-xl font-bold mb-2 flex items-center gap-2 text-white">
-                    <BookOpen className="h-5 w-5 text-blue-500" />
+                  <h2 className={`font-outfit text-xl font-bold mb-1 flex items-center gap-2 ${
+                    isLight ? 'text-slate-900' : 'text-white'
+                  }`}>
+                    <BookOpen className="h-5 w-5 text-blue-600" />
                     <span>Your Performance Breakdown</span>
                   </h2>
-                  <p className="text-xs mb-6 text-gray-400">
+                  <p className={`text-xs mb-6 ${
+                    isLight ? 'text-slate-600' : 'text-gray-400'
+                  }`}>
                     Review your answers below to see where you excelled and where you can improve.
                   </p>
 
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-5">
                     {questions.map((q, idx) => {
                       const userAnswer = currentPlayer.answers?.find(a => a.questionIndex === idx);
                       const isUserCorrect = userAnswer?.isCorrect;
                       const hasAnswered = !!userAnswer && !isUnansweredAnswer(userAnswer);
-                      const statusLabel = !hasAnswered ? 'Answer Not Submitted' : (isUserCorrect ? 'Correct Answer' : 'Incorrect Answer');
 
                       return (
-                        <div key={idx} className="p-4 rounded-xl space-y-3 bg-white/[0.02] border border-white/5">
-                          <div className="flex items-start justify-between gap-4">
+                        <div 
+                          key={idx} 
+                          className={`p-4 sm:p-5 rounded-xl space-y-3.5 border ${
+                            isLight 
+                              ? 'bg-slate-50/70 border-slate-200' 
+                              : 'bg-white/[0.02] border-white/5'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-3">
                             <div className="flex-1">
-                              <span className="text-[10px] uppercase font-bold tracking-wider text-gray-500">
+                              <span className={`text-[10px] sm:text-[11px] uppercase font-bold tracking-wider ${
+                                isLight ? 'text-slate-500' : 'text-gray-500'
+                              }`}>
                                 Question {idx + 1}
                               </span>
-                              <h3 className="text-sm font-semibold mt-0.5 text-white">{q.questionText}</h3>
+                              <h3 className={`text-sm sm:text-base font-bold mt-0.5 leading-snug ${
+                                isLight ? 'text-slate-900' : 'text-white'
+                              }`}>
+                                {q.questionText}
+                              </h3>
                             </div>
-                            <div>
+                            <div className="shrink-0">
                               {hasAnswered ? (
                                 isUserCorrect ? (
-                                  <span className="inline-flex items-center gap-1 bg-green-500/10 text-green-400 border border-green-500/20 px-3 py-1 rounded text-xs font-bold">
-                                    <CheckCircle className="h-3 w-3" /> Correct Answer
+                                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
+                                    isLight 
+                                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200 shadow-2xs' 
+                                      : 'bg-green-500/10 text-green-400 border-green-500/20'
+                                  }`}>
+                                    <CheckCircle className="h-3.5 w-3.5 text-emerald-600" /> Correct Answer
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 bg-red-500/10 text-red-400 border border-red-500/20 px-3 py-1 rounded text-xs font-bold">
-                                    <XCircle className="h-3 w-3" /> Incorrect Answer
+                                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
+                                    isLight 
+                                      ? 'bg-rose-50 text-rose-800 border-rose-200 shadow-2xs' 
+                                      : 'bg-red-500/10 text-red-400 border-red-500/20'
+                                  }`}>
+                                    <XCircle className="h-3.5 w-3.5 text-rose-600" /> Incorrect Answer
                                   </span>
                                 )
                               ) : (
-                                <span className="inline-flex items-center gap-1 bg-orange-500/10 text-orange-400 border border-orange-500/20 px-3 py-1 rounded text-xs font-bold">
-                                  <AlertCircle className="h-3 w-3" /> Answer Not Submitted
+                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
+                                  isLight 
+                                    ? 'bg-amber-50 text-amber-800 border-amber-200 shadow-2xs' 
+                                    : 'bg-orange-500/10 text-orange-400 border-orange-500/20'
+                                  }`}>
+                                  <AlertCircle className="h-3.5 w-3.5 text-amber-600" /> Answer Not Submitted
                                 </span>
                               )}
                             </div>
                           </div>
 
-
-
                           {/* Your Answer and Correct Answer */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-300">
+                          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-lg border ${
+                            isLight ? 'bg-white border-slate-200/80' : 'bg-white/[0.03] border-white/5'
+                          }`}>
                             <div>
-                              <span className="text-[10px] font-bold uppercase text-gray-500">Your Answer:</span>
-                              <p className={`text-sm mt-1 ${
+                              <span className={`text-[10px] font-bold uppercase ${
+                                isLight ? 'text-slate-500' : 'text-gray-500'
+                              }`}>Your Answer:</span>
+                              <p className={`text-sm mt-0.5 font-bold ${
                                 hasAnswered 
-                                  ? (isUserCorrect ? 'text-green-400 font-semibold' : 'text-red-400 font-semibold')
-                                  : 'text-orange-400 font-semibold'
+                                  ? (isUserCorrect 
+                                      ? (isLight ? 'text-emerald-700' : 'text-green-400') 
+                                      : (isLight ? 'text-rose-700' : 'text-red-400'))
+                                  : (isLight ? 'text-amber-700' : 'text-orange-400')
                               }`}>
                                 {hasAnswered 
                                   ? q.options[userAnswer?.answerIndex] || 'Not selected'
@@ -723,36 +866,46 @@ export default function FinalResult() {
                               </p>
                             </div>
                             <div>
-                              <span className="text-[10px] font-bold uppercase text-gray-500">Correct Answer:</span>
-                              <p className="text-sm mt-1 text-green-400 font-semibold">
+                              <span className={`text-[10px] font-bold uppercase ${
+                                isLight ? 'text-slate-500' : 'text-gray-500'
+                              }`}>Correct Answer:</span>
+                              <p className={`text-sm mt-0.5 font-bold ${
+                                isLight ? 'text-emerald-700' : 'text-green-400'
+                              }`}>
                                 {q.options[q.correctAnswer]}
                               </p>
                             </div>
                           </div>
 
                           {/* Answer Options Grid */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 text-gray-400">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
                             {q.options.map((opt, optIdx) => {
                               const isCorrectOption = optIdx === q.correctAnswer;
                               const isSelectedOption = userAnswer && Number(userAnswer.answerIndex) === optIdx;
 
-                              let optClass = "border-white/5 bg-white/5 text-gray-400";
+                              let optClass = isLight 
+                                ? "border-slate-200 bg-white text-slate-700 shadow-2xs" 
+                                : "border-white/5 bg-white/5 text-gray-400";
                               let icon = null;
 
                               if (isCorrectOption) {
-                                optClass = "border-green-500/30 bg-green-500/10 text-green-300 font-medium";
-                                icon = <CheckCircle className="h-3.5 w-3.5 text-green-500 shrink-0" />;
+                                optClass = isLight
+                                  ? "border-emerald-300 bg-emerald-50 text-emerald-900 font-bold ring-1 ring-emerald-400/40 shadow-xs"
+                                  : "border-green-500/30 bg-green-500/10 text-green-300 font-medium";
+                                icon = <CheckCircle className={`h-4 w-4 ${isLight ? 'text-emerald-600' : 'text-green-500'} shrink-0`} />;
                               } else if (isSelectedOption && !isUserCorrect) {
-                                optClass = "border-red-500/30 bg-red-500/10 text-red-300 font-medium";
-                                icon = <XCircle className="h-3.5 w-3.5 text-red-500 shrink-0" />;
+                                optClass = isLight
+                                  ? "border-rose-300 bg-rose-50 text-rose-900 font-bold ring-1 ring-rose-400/40 shadow-xs"
+                                  : "border-red-500/30 bg-red-500/10 text-red-300 font-medium";
+                                icon = <XCircle className={`h-4 w-4 ${isLight ? 'text-rose-600' : 'text-red-500'} shrink-0`} />;
                               }
 
                               return (
                                 <div
                                   key={optIdx}
-                                  className={`flex items-center justify-between gap-2 p-2.5 rounded-lg border text-xs ${optClass}`}
+                                  className={`flex items-center justify-between gap-2 p-2.5 sm:p-3 rounded-lg border text-xs sm:text-sm font-medium transition-colors ${optClass}`}
                                 >
-                                  <span>{opt}</span>
+                                  <span className="truncate">{opt}</span>
                                   {icon}
                                 </div>
                               );
@@ -761,14 +914,18 @@ export default function FinalResult() {
 
                           {/* Extra Info (Score & Time) */}
                           {hasAnswered && (
-                            <div className="flex flex-wrap items-center justify-between gap-3 text-xs pt-2.5 mt-1 border-t border-white/5 text-gray-400">
+                            <div className={`flex flex-wrap items-center justify-between gap-3 text-xs pt-2.5 mt-1 border-t ${
+                              isLight ? 'border-slate-200 text-slate-500' : 'border-white/5 text-gray-400'
+                            }`}>
                               <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                                <Clock className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                                <span>Time taken: <span className="text-gray-300 font-medium">{(userAnswer.timeTaken / 1000).toFixed(2)}s</span></span>
+                                <Clock className={`h-3.5 w-3.5 ${isLight ? 'text-slate-400' : 'text-gray-400'} shrink-0`} />
+                                <span>Time taken: <span className={`font-semibold ${isLight ? 'text-slate-800' : 'text-gray-300'}`}>{(userAnswer.timeTaken / 1000).toFixed(2)}s</span></span>
                               </span>
                               {isUserCorrect && (
-                                <span className="inline-flex items-center gap-1.5 text-yellow-400 font-bold whitespace-nowrap">
-                                  <Award className="h-3.5 w-3.5 text-yellow-400 shrink-0" />
+                                <span className={`inline-flex items-center gap-1.5 font-bold whitespace-nowrap ${
+                                  isLight ? 'text-amber-600' : 'text-yellow-400'
+                                }`}>
+                                  <Award className={`h-3.5 w-3.5 ${isLight ? 'text-amber-600' : 'text-yellow-400'} shrink-0`} />
                                   <span>+{userAnswer.score} pts</span>
                                 </span>
                               )}
@@ -788,14 +945,14 @@ export default function FinalResult() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 3 }}
-            className="w-full max-w-md grid gap-3 mt-auto"
+            className="w-full max-w-md grid gap-3 mt-8 mb-4"
           >
             {isHost ? (
               <>
                 {isSaved ? (
                   <Link 
                     to={`/results/${game?.id}`}
-                    className="w-full py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all bg-primary text-white hover:bg-primary-dark shadow-premium-glow"
+                    className="w-full py-3.5 sm:py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all bg-primary text-white hover:bg-primary-dark shadow-md"
                   >
                     <BarChart3 className="h-5 w-5" />
                     <span>View Full Analytics</span>
@@ -817,7 +974,7 @@ export default function FinalResult() {
                         toast.dismiss('save-res');
                       }
                     }}
-                    className="w-full py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all animate-pulse bg-primary text-white hover:bg-primary-dark shadow-premium-glow"
+                    className="w-full py-3.5 sm:py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all animate-pulse bg-primary text-white hover:bg-primary-dark shadow-md"
                   >
                     <Save className="h-5 w-5" />
                     <span>Save Results to Dashboard</span>
@@ -825,7 +982,11 @@ export default function FinalResult() {
                 )}
                 <Link 
                   to="/dashboard"
-                  className="w-full py-4 rounded-xl flex items-center justify-center gap-2 text-base font-bold transition-all border bg-white/10 hover:bg-white/20 text-white border-white/10"
+                  className={`w-full py-3.5 sm:py-4 rounded-xl flex items-center justify-center gap-2 text-base font-bold transition-all border ${
+                    isLight 
+                      ? 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-sm' 
+                      : 'bg-white/10 hover:bg-white/20 text-white border-white/10'
+                  }`}
                 >
                   <Home className="h-5 w-5" />
                   <span>Return to Dashboard</span>
@@ -835,14 +996,18 @@ export default function FinalResult() {
               <>
                 <Link 
                   to="/join"
-                  className="w-full py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all bg-primary text-white hover:bg-primary-dark shadow-premium-glow"
+                  className="w-full py-3.5 sm:py-4 rounded-xl flex items-center justify-center gap-2 text-base font-black active:translate-y-1 transition-all bg-primary text-white hover:bg-primary-dark shadow-md"
                 >
                   <RefreshCw className="h-5 w-5" />
                   <span>Play Again</span>
                 </Link>
                 <Link 
                   to="/join"
-                  className="w-full py-4 rounded-xl flex items-center justify-center gap-2 text-base font-bold transition-all border bg-white/10 hover:bg-white/20 text-white border-white/10"
+                  className={`w-full py-3.5 sm:py-4 rounded-xl flex items-center justify-center gap-2 text-base font-bold transition-all border ${
+                    isLight 
+                      ? 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-sm' 
+                      : 'bg-white/10 hover:bg-white/20 text-white border-white/10'
+                  }`}
                 >
                   <Home className="h-5 w-5" />
                   <span>Exit Game</span>
