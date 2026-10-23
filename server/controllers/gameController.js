@@ -147,7 +147,7 @@ const joinGame = async (req, res) => {
 
         const cleanPin = pin ? pin.toString().trim() : '';
         const cleanName = playerName ? playerName.toString().trim() : '';
-        const cleanFullName = (fullName && fullName.toString().trim()) || cleanName;
+        const cleanFullName = (fullName && fullName.toString().replace(/[^a-zA-Z\s]/g, '').trim()) || cleanName;
         const cleanMobile = (mobileNumber && mobileNumber.toString().trim()) || '';
         const cleanNickname = (nickname && nickname.toString().trim()) || cleanName;
         const cleanAvatar = avatar || 'dog';

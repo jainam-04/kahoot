@@ -280,7 +280,8 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
                       type="text"
                       value={name}
                       onChange={(e) => {
-                        setName(e.target.value);
+                        const sanitized = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                        setName(sanitized);
                         if (errorMessage) setErrorMessage('');
                       }}
                       disabled={isSaving}

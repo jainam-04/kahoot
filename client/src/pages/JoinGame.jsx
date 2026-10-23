@@ -109,11 +109,11 @@ export default function JoinGame() {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const displayPlayerName = (data.nickname || data.fullName || '').toString().trim();
-      const cleanPin = (data.pin || '').toString().trim();
-      const cleanFullName = (data.fullName || '').toString().trim();
-      const cleanMobile = (data.mobileNumber || '').toString().trim();
+      const cleanFullName = (data.fullName || '').toString().replace(/[^a-zA-Z\s]/g, '').trim();
       const cleanNickname = (data.nickname || '').toString().trim();
+      const displayPlayerName = cleanNickname || cleanFullName;
+      const cleanPin = (data.pin || '').toString().trim();
+      const cleanMobile = (data.mobileNumber || '').toString().trim();
 
       const previousPlayerName = localStorage.getItem('guest_playerName');
       const previousPin = localStorage.getItem('guest_pin');
@@ -284,11 +284,29 @@ export default function JoinGame() {
                 type="text"
                 placeholder="e.g. John Doe"
                 maxLength="50"
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                }}
                 {...register('fullName', {
                   required: 'Full Name is required',
                   minLength: {
                     value: 2,
                     message: 'Full Name must be at least 2 characters',
+                  },
+                  pattern: {
+                    value: /^[a-zA-Z\s]+$/,
+                    message: 'Full Name can only contain letters and spaces',
+                  },
+                  validate: (val) => {
+                    const trimmed = (val || '').trim();
+                    if (!trimmed) return 'Full Name is required';
+                    if (trimmed.length < 2) return 'Full Name must be at least 2 characters';
+                    return true;
+                  },
+                  onChange: (e) => {
+                    const sanitized = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                    e.target.value = sanitized;
+                    setValue('fullName', sanitized, { shouldValidate: true });
                   }
                 })}
                 className={`w-full rounded-xl border px-4 py-2.5 sm:py-3 text-center text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/35 focus:border-primary transition-all ${
