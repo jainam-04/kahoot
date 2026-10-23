@@ -112,7 +112,8 @@ const gameSessionSchema = new mongoose.Schema({
         default: ''
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    versionKey: false
 });
 
 module.exports = mongoose.model('GameSession', gameSessionSchema);

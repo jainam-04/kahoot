@@ -478,12 +478,24 @@ export default function LiveQuiz() {
           }
         }
       } else {
-        toast.error(response.message || 'Error locking answer');
-        setHasAnswered(false);
+        const msg = response.message || 'Error locking answer';
+        if (msg.includes('already answered')) {
+          localStorage.setItem('last_hasAnswered', 'true');
+          localStorage.setItem('last_answerSubmitted', 'true');
+        } else {
+          toast.error(msg);
+          setHasAnswered(false);
+        }
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Error submitting answer');
-      setHasAnswered(false);
+      const msg = err.response?.data?.message || 'Error submitting answer';
+      if (msg.includes('already answered')) {
+        localStorage.setItem('last_hasAnswered', 'true');
+        localStorage.setItem('last_answerSubmitted', 'true');
+      } else {
+        toast.error(msg);
+        setHasAnswered(false);
+      }
     }
   };
 

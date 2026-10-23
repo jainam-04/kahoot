@@ -157,3 +157,87 @@ test('submitAnswer auto-registers missing player and accepts answer rather than 
   }
 });
 
+test('submitAnswer uses atomic findOneAndUpdate when connected', async () => {
+  const originalFindOne = GameSession.findOne;
+  const originalFindOneAndUpdate = GameSession.findOneAndUpdate;
+  const originalConnection = mongoose.connection.readyState;
+  try {
+    // Simulate connected state
+    Object.defineProperty(mongoose.connection, 'readyState', { value: 1, configurable: true });
+
+    let findOneAndUpdateCalled = false;
+    let atomicQuery = null;
+    let atomicUpdate = null;
+
+    const mockSession = {
+      pin: '112233',
+      status: 'active',
+      currentQuestionIndex: 0,
+      questionStartTime: Date.now(),
+      quizId: {
+        questions: [
+          {
+            questionText: 'Capital of India?',
+            options: ['Mumbai', 'Delhi', 'Kolkata'],
+            correctAnswer: 1,
+            timeLimit: 20
+          }
+        ]
+      },
+      players: [
+        {
+          _id: new mongoose.Types.ObjectId(),
+          name: 'Rohan',
+          answers: [],
+          totalScore: 0
+        }
+      ]
+    };
+
+    GameSession.findOne = () => ({
+      populate: async () => mockSession
+    });
+
+    GameSession.findOneAndUpdate = async (query, update) => {
+      findOneAndUpdateCalled = true;
+      atomicQuery = query;
+      atomicUpdate = update;
+      return {
+        ...mockSession,
+        players: [
+          {
+            ...mockSession.players[0],
+            answers: [{ questionIndex: 0, answerIndex: 1, isCorrect: true, score: 1000 }],
+            totalScore: 1000
+          }
+        ]
+      };
+    };
+
+    const res = {
+      statusCode: 200,
+      data: null,
+      status(code) { this.statusCode = code; return this; },
+      json(payload) { this.data = payload; return this; }
+    };
+
+    await gameController.submitAnswer({
+      body: { pin: '112233', playerName: 'Rohan', answerIndex: 1 },
+      app: { get: () => null }
+    }, res);
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.data.success, true);
+    assert.equal(findOneAndUpdateCalled, true, 'findOneAndUpdate should have been used for atomic update');
+    assert.equal(atomicQuery.pin, '112233');
+    assert.equal(atomicQuery.status, 'active');
+    assert.ok(atomicQuery.players.$elemMatch, 'query should use $elemMatch on players');
+    assert.ok(atomicUpdate.$push['players.$.answers'], 'update should push to players.$.answers');
+    assert.ok(atomicUpdate.$inc['players.$.totalScore'], 'update should inc players.$.totalScore');
+  } finally {
+    Object.defineProperty(mongoose.connection, 'readyState', { value: originalConnection, configurable: true });
+    GameSession.findOne = originalFindOne;
+    GameSession.findOneAndUpdate = originalFindOneAndUpdate;
+  }
+});
+
