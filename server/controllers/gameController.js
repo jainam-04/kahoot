@@ -239,9 +239,20 @@ const joinGame = async (req, res) => {
                 if (joinedGame) {
                     updatedGame = joinedGame;
                 } else {
-                    checkGame.players.push(newPlayer);
-                    if (typeof checkGame.save === 'function') await checkGame.save();
-                    updatedGame = checkGame;
+                    const refreshed = await GameSession.findOne({ pin: cleanPin });
+                    const alreadyIn = refreshed?.players?.find(p => nameRegex.test((p.name || '').trim()));
+                    if (alreadyIn) {
+                        updatedGame = refreshed;
+                    } else if (isDbConnected) {
+                        updatedGame = await GameSession.findOneAndUpdate(
+                            { pin: cleanPin },
+                            { $push: { players: newPlayer } },
+                            { new: true }
+                        ) || refreshed || checkGame;
+                    } else {
+                        checkGame.players.push(newPlayer);
+                        updatedGame = checkGame;
+                    }
                 }
             } else if (checkGame.status === 'finished') {
                 return res.status(400).json({
@@ -529,9 +540,22 @@ const submitAnswer = async (req, res) => {
 
         // ATOMIC CONCURRENT UPDATE:
         // Update the player's answers and totalScore atomically in MongoDB using $elemMatch.
-        // This eliminates Mongoose OCC VersionErrors and race conditions when dozens of students submit simultaneously.
+        // We NEVER call game.save() here so Mongoose OCC VersionErrors (__v mismatches) are impossible.
         let updatedGame = null;
-        const playerMatch = player._id ? { _id: player._id } : { name: nameRegex };
+
+        // Build robust multi-field player matching criteria (_id, name, nickname, fullName)
+        const playerMatchCriteria = [];
+        if (player._id) {
+            playerMatchCriteria.push({ _id: player._id });
+        }
+        playerMatchCriteria.push({ name: nameRegex });
+        playerMatchCriteria.push({ nickname: nameRegex });
+        playerMatchCriteria.push({ fullName: nameRegex });
+
+        const playerElemFilter = {
+            $or: playerMatchCriteria,
+            'answers.questionIndex': { $ne: game.currentQuestionIndex }
+        };
 
         if (isDbConnected) {
             try {
@@ -540,10 +564,7 @@ const submitAnswer = async (req, res) => {
                         pin: cleanPin,
                         status: 'active',
                         players: {
-                            $elemMatch: {
-                                ...playerMatch,
-                                'answers.questionIndex': { $ne: game.currentQuestionIndex }
-                            }
+                            $elemMatch: playerElemFilter
                         }
                     },
                     {
@@ -553,14 +574,55 @@ const submitAnswer = async (req, res) => {
                     { returnDocument: 'after' }
                 );
             } catch (dbErr) {
-                console.warn('Atomic answer update failed, falling back to document save:', dbErr.message);
+                console.warn('Atomic answer update failed:', dbErr.message);
+            }
+
+            // If updatedGame is null, check if the query didn't match because player already answered
+            if (!updatedGame) {
+                try {
+                    const refreshed = await GameSession.findOne({ pin: cleanPin });
+                    if (refreshed) {
+                        const matchedInDb = refreshed.players?.find(p =>
+                            (player._id && p._id && p._id.toString() === player._id.toString()) ||
+                            nameRegex.test((p.name || '').trim()) ||
+                            nameRegex.test((p.nickname || '').trim())
+                        );
+
+                        if (matchedInDb?.answers?.some(a => a.questionIndex === game.currentQuestionIndex)) {
+                            return res.status(400).json({
+                                success: false,
+                                message: 'You already answered this question!'
+                            });
+                        }
+
+                        // If player exists and hasn't answered, retry atomic update directly targeting matched player
+                        if (matchedInDb && refreshed.status === 'active') {
+                            updatedGame = await GameSession.findOneAndUpdate(
+                                {
+                                    pin: cleanPin,
+                                    status: 'active',
+                                    'players._id': matchedInDb._id,
+                                    'players.answers.questionIndex': { $ne: game.currentQuestionIndex }
+                                },
+                                {
+                                    $push: { 'players.$.answers': answerRecord },
+                                    $inc: { 'players.$.totalScore': score }
+                                },
+                                { returnDocument: 'after' }
+                            );
+                        }
+                    }
+                } catch (retryErr) {
+                    console.warn('Retry atomic answer update failed:', retryErr.message);
+                }
             }
         }
 
         if (updatedGame) {
             const updatedPlayer = updatedGame.players.find(p =>
                 (player._id && p._id && p._id.toString() === player._id.toString()) ||
-                nameRegex.test((p.name || '').trim())
+                nameRegex.test((p.name || '').trim()) ||
+                nameRegex.test((p.nickname || '').trim())
             );
             if (updatedPlayer) {
                 player = updatedPlayer;
@@ -569,42 +631,18 @@ const submitAnswer = async (req, res) => {
                 player.answers.push(answerRecord);
             }
         } else {
-            // If DB is connected and updatedGame is null, check if the query didn't match because the player already answered
-            if (isDbConnected) {
-                try {
-                    const refreshed = await GameSession.findOne({ pin: cleanPin });
-                    const matchedInDb = refreshed?.players?.find(p =>
-                        (player._id && p._id && p._id.toString() === player._id.toString()) ||
-                        nameRegex.test((p.name || '').trim())
-                    );
-                    if (matchedInDb?.answers?.some(a => a.questionIndex === game.currentQuestionIndex)) {
-                        return res.status(400).json({
-                            success: false,
-                            message: 'You already answered this question!'
-                        });
-                    }
-                } catch (e) {
-                    // Ignore DB check error in mocked environments
-                }
-            }
-
-            // Fallback for mocked/in-memory unit test environments or disconnected DB
-            player.answers.push(answerRecord);
-            player.totalScore = (player.totalScore || 0) + score;
-
-            if (Array.isArray(game.players)) {
-                game.players.forEach(p => {
-                    if (!p.fullName) p.fullName = p.name || 'Player';
-                    if (!p.mobileNumber) p.mobileNumber = '';
-                    if (!p.nickname) p.nickname = p.name || 'Player';
-                    if (!p.avatar) p.avatar = '👤';
+            // For unit tests / mocked environments without active DB connection:
+            if (!isDbConnected) {
+                player.answers.push(answerRecord);
+                player.totalScore = (player.totalScore || 0) + score;
+                updatedGame = game;
+            } else {
+                // In DB environments: if atomic update didn't match, player already answered
+                return res.status(400).json({
+                    success: false,
+                    message: 'You already answered this question!'
                 });
             }
-
-            if (typeof game.save === 'function') {
-                await game.save();
-            }
-            updatedGame = game;
         }
 
         const io = req.app.get('io');
