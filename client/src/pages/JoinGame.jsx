@@ -17,7 +17,8 @@ export default function JoinGame() {
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
   const [searchParams] = useSearchParams();
-  const urlPin = searchParams.get('pin') || '';
+  const urlPin = searchParams.get('pin') || location.state?.pin || '';
+  const initialPin = urlPin || localStorage.getItem('guest_pin') || '';
   const endedMessage = location.state?.endedMessage;
   const { setPin, setPlayerName } = useGame();
   const [isLoading, setIsLoading] = useState(false);
@@ -35,19 +36,20 @@ export default function JoinGame() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      pin: urlPin,
+      pin: initialPin,
       fullName: '',
-      mobileNumber: '',
+      mobileNumber: localStorage.getItem('guest_mobileNumber') || '',
       nickname: '',
     }
   });
 
-  // Keep PIN value in sync if URL query parameter changes
+  // Keep PIN value in sync if URL query parameter, navigation state, or storage changes
   useEffect(() => {
-    if (urlPin) {
-      setValue('pin', urlPin);
+    const pinToSet = urlPin || location.state?.pin || localStorage.getItem('guest_pin') || '';
+    if (pinToSet) {
+      setValue('pin', pinToSet);
     }
-  }, [urlPin, setValue]);
+  }, [urlPin, location.state, setValue]);
 
   // QR Code Scanner mounting
   useEffect(() => {
@@ -135,6 +137,9 @@ export default function JoinGame() {
         localStorage.setItem('guest_pin', cleanPin);
         localStorage.setItem('guest_playerName', displayPlayerName);
         localStorage.setItem('guest_avatar', selectedAvatar);
+        if (cleanMobile) {
+          localStorage.setItem('guest_mobileNumber', cleanMobile);
+        }
         // Clear any old host flags if joining as student
         localStorage.removeItem('current_hosted_pin');
 

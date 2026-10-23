@@ -133,6 +133,21 @@ export default function WaitingRoom() {
     }
   };
 
+  const handleChangeName = async () => {
+    if (isLeaving) return;
+    setIsLeaving(true);
+    try {
+      emitLeaveRoom(pin, localPlayerName);
+      await leaveGame(pin, localPlayerName).catch(() => {});
+    } finally {
+      // Clear previous name so the user can enter a new one, but PRESERVE the PIN
+      localStorage.removeItem('guest_playerName');
+      localStorage.setItem('guest_pin', pin);
+      toast('Enter your new name to join', { icon: '✏️' });
+      navigate(`/join?pin=${pin}`, { state: { pin } });
+    }
+  };
+
   useEffect(() => {
     if (!playerName && !localStorage.getItem('guest_playerName')) {
       toast.error('Session expired. Please join the lobby again.');
@@ -357,7 +372,8 @@ export default function WaitingRoom() {
             </span>
             <button
               type="button"
-              onClick={handleLeaveLobby}
+              onClick={handleChangeName}
+              disabled={isLeaving}
               className={`text-xs font-bold underline transition-colors ${
                 isLight ? 'text-rose-600 hover:text-rose-800' : 'text-rose-400 hover:text-rose-300'
               }`}
