@@ -191,7 +191,7 @@ export default function AnswerResult() {
   const navigate = useNavigate();
   const { playerName } = useGame();
   const { themeMode } = useTheme();
-  const isLight = themeMode === 'light';
+  const isLight = themeMode === 'light' || (!themeMode && !document.documentElement.classList.contains('dark')) || document.documentElement.classList.contains('light');
   const localPlayer = playerName || localStorage.getItem('guest_playerName');
   const optionLetters = ['A', 'B', 'C', 'D'];
 
@@ -752,8 +752,8 @@ export default function AnswerResult() {
                   )}
                 </div>
 
-                {/* Title */}
-                <div className="space-y-1.5 max-w-lg mx-auto">
+                {/* Title & Answer Status */}
+                <div className="space-y-2.5 max-w-lg mx-auto w-full">
                   <h3 className={`font-outfit text-2xl sm:text-3xl font-black break-words ${
                     isUnanswered 
                       ? (isLight ? 'text-orange-600' : 'text-orange-400') 
@@ -763,24 +763,65 @@ export default function AnswerResult() {
                   }`}>
                     {isUnanswered ? 'Answer Not Submitted' : isCorrect ? 'Correct Answer!' : 'Wrong Answer'}
                   </h3>
-                  <div className={`text-xs sm:text-sm ${isLight ? 'text-slate-700' : 'text-gray-200'}`}>
-                    {isUnanswered ? (
-                      <div className="space-y-1">
-                        <p className={`font-semibold ${isLight ? 'text-slate-700' : 'text-gray-300'}`}>No answer was recorded before the timer ended.</p>
-                        <p className={`font-semibold ${isLight ? 'text-orange-700' : 'text-orange-200'}`}>
-                          The correct answer is <span className={`font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>Option {optionLetters[correctAnswerIdx] || 'A'}</span>
-                          {correctAnswerText ? <>: <span className={`font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>{correctAnswerText}</span></> : ''}
-                        </p>
-                      </div>
-                    ) : isCorrect ? (
-                      <p className={`font-bold ${isLight ? 'text-emerald-800' : 'text-emerald-200'}`}>Superb speed! Claim your points.</p>
-                    ) : (
-                      <p className={`font-semibold ${isLight ? 'text-rose-800' : 'text-red-100'}`}>
-                        The correct answer is <span className={`font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>Option {optionLetters[correctAnswerIdx] || 'A'}</span>
-                        {correctAnswerText ? <>: <span className={`font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>{correctAnswerText}</span></> : ''}
+
+                  {isCorrect ? (
+                    <p className={`font-bold text-sm sm:text-base ${isLight ? 'text-emerald-800' : 'text-emerald-200'}`}>
+                      Superb speed! Claim your points.
+                    </p>
+                  ) : isUnanswered ? (
+                    <div className="space-y-2 mt-2">
+                      <p className={`text-xs sm:text-sm font-semibold ${isLight ? 'text-slate-600' : 'text-gray-300'}`}>
+                        No answer was recorded before the timer ended.
                       </p>
-                    )}
-                  </div>
+                      <div className={`p-3.5 sm:p-4 rounded-2xl border text-center transition-all ${
+                        isLight 
+                          ? 'bg-amber-50/90 border-amber-300 shadow-sm' 
+                          : 'bg-amber-950/50 border-amber-500/40 shadow-inner'
+                      }`}>
+                        <div className={`text-xs sm:text-sm uppercase tracking-widest font-black mb-1.5 ${
+                          isLight ? 'text-amber-800' : 'text-amber-300'
+                        }`}>
+                          The Correct Answer is
+                        </div>
+                        <div className="flex flex-wrap items-center justify-center gap-2">
+                          <span className="px-3 py-1 rounded-xl bg-amber-600 text-white font-black text-sm sm:text-base shadow-sm">
+                            Option {optionLetters[correctAnswerIdx] || 'A'}
+                          </span>
+                          {correctAnswerText ? (
+                            <span className={`text-base sm:text-lg font-black break-words ${
+                              isLight ? 'text-slate-900' : 'text-white'
+                            }`}>
+                              : {correctAnswerText}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`mt-2 p-3.5 sm:p-4 rounded-2xl border text-center transition-all ${
+                      isLight 
+                        ? 'bg-rose-50/90 border-rose-300 shadow-sm' 
+                        : 'bg-red-950/50 border-red-500/40 shadow-inner'
+                    }`}>
+                      <div className={`text-xs sm:text-sm uppercase tracking-widest font-black mb-1.5 ${
+                        isLight ? 'text-rose-800' : 'text-rose-300'
+                      }`}>
+                        The Correct Answer is
+                      </div>
+                      <div className="flex flex-wrap items-center justify-center gap-2">
+                        <span className="px-3 py-1 rounded-xl bg-rose-600 text-white font-black text-sm sm:text-base shadow-sm">
+                          Option {optionLetters[correctAnswerIdx] || 'A'}
+                        </span>
+                        {correctAnswerText ? (
+                          <span className={`text-base sm:text-lg font-black break-words ${
+                            isLight ? 'text-slate-900' : 'text-white'
+                          }`}>
+                            : {correctAnswerText}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Stats Grid */}
