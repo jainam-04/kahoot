@@ -799,6 +799,10 @@
 .light .text-gray-500 {
   color: var(--text-muted) !important;
 }
+.light .podium-rank-1-name,
+.light .podium-first-name {
+  color: #0f172a !important; /* Force high contrast dark slate for first place ranker in light mode */
+}
 
 /* ── Typography and Text Utilities ── */
 .text-muted {

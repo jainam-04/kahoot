@@ -14,15 +14,16 @@ import { getLeaderboard, startQuestion, endGame } from '../services/gameService'
 
 
 import { useGame } from '../context/GameContext';
+import { useTheme } from '../context/ThemeContext';
 import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
-
-
 
 export default function Leaderboard() {
   const { pin } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { playerName } = useGame();
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light' || (!themeMode && !document.documentElement.classList.contains('dark')) || document.documentElement.classList.contains('light');
   const localPlayer = playerName || localStorage.getItem('guest_playerName');
 
   // Component State
@@ -241,7 +242,7 @@ export default function Leaderboard() {
         {/* PODIUM DISPLAY CONTAINER (VISIBLE TO EVERYONE) */}
         <div className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full my-8 space-y-8 animate-fade-in relative z-10">
           
-          <h2 className="font-outfit text-2xl sm:text-3.5xl font-black text-center text-white">
+          <h2 className={`font-outfit text-2xl sm:text-3.5xl font-black text-center ${isLight ? 'text-slate-900' : 'text-white'}`}>
             Leaderboard Arena
           </h2>
 
@@ -250,15 +251,23 @@ export default function Leaderboard() {
             {/* 2ND PLACE PODIUM */}
             {secondPlace ? (
               <div className="flex flex-col items-center flex-1 min-w-0">
-                <span className="text-[10px] sm:text-xs font-bold text-gray-300 truncate w-full text-center max-w-[70px] sm:max-w-[80px]">{secondPlace.name}</span>
-                <span className="text-[8px] sm:text-[10px] text-gray-400 font-semibold text-center w-full truncate">{secondPlace.totalScore || 0} pts ({secondPlace.lastTimeTaken || '0.00'}s)</span>
+                <span className={`text-[10px] sm:text-xs font-bold truncate w-full text-center max-w-[70px] sm:max-w-[80px] ${
+                  isLight ? 'text-slate-800' : 'text-gray-300'
+                }`}>{secondPlace.name}</span>
+                <span className={`text-[8px] sm:text-[10px] font-semibold text-center w-full truncate ${
+                  isLight ? 'text-slate-600' : 'text-gray-400'
+                }`}>{secondPlace.totalScore || 0} pts ({secondPlace.lastTimeTaken || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 100 }}
                   transition={{ type: 'spring', stiffness: 50, delay: 0.2 }}
-                  className="w-full bg-gradient-to-t from-white/5 to-white/15 border border-white/10 rounded-t-2xl flex items-center justify-center mt-2"
+                  className={`w-full rounded-t-2xl flex items-center justify-center mt-2 border ${
+                    isLight 
+                      ? 'bg-gradient-to-t from-slate-200 to-slate-100 border-slate-300 shadow-sm' 
+                      : 'bg-gradient-to-t from-white/5 to-white/15 border-white/10'
+                  }`}
                 >
-                  <Medal className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
+                  <Medal className={`h-5 w-5 sm:h-6 sm:w-6 ${isLight ? 'text-slate-600' : 'text-gray-400'}`} />
                 </motion.div>
               </div>
             ) : <div className="flex-1" />}
@@ -267,16 +276,24 @@ export default function Leaderboard() {
             {firstPlace ? (
               <div className="flex flex-col items-center flex-1 min-w-0">
                 <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-warning animate-bounce mb-1" />
-                <span className="text-xs sm:text-sm font-bold text-white truncate w-full text-center max-w-[80px] sm:max-w-[90px]">{firstPlace.name}</span>
-                <span className="text-[8px] sm:text-[10px] text-warning font-bold text-center w-full truncate">{firstPlace.totalScore || 0} pts ({firstPlace.lastTimeTaken || '0.00'}s)</span>
+                <span className={`text-xs sm:text-sm font-black truncate w-full text-center max-w-[80px] sm:max-w-[90px] podium-rank-1-name ${
+                  isLight ? 'text-slate-900' : 'text-white'
+                }`}>{firstPlace.name}</span>
+                <span className={`text-[8px] sm:text-[10px] font-extrabold text-center w-full truncate ${
+                  isLight ? 'text-amber-800' : 'text-warning'
+                }`}>{firstPlace.totalScore || 0} pts ({firstPlace.lastTimeTaken || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 140 }}
                   transition={{ type: 'spring', stiffness: 50 }}
-                  className="w-full bg-gradient-to-t from-primary/10 to-primary/30 border border-primary/20 rounded-t-2xl flex items-center justify-center mt-2 relative"
+                  className={`w-full border rounded-t-2xl flex items-center justify-center mt-2 relative ${
+                    isLight 
+                      ? 'bg-gradient-to-t from-amber-200/80 to-yellow-100 border-amber-300 shadow-sm'
+                      : 'bg-gradient-to-t from-primary/10 to-primary/30 border-primary/20'
+                  }`}
                 >
                   <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
-                  <Crown className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-400" />
+                  <Crown className={`h-6 w-6 sm:h-8 sm:w-8 ${isLight ? 'text-amber-600' : 'text-yellow-400'}`} />
                 </motion.div>
               </div>
             ) : <div className="flex-1" />}
@@ -284,13 +301,21 @@ export default function Leaderboard() {
             {/* 3RD PLACE PODIUM */}
             {thirdPlace ? (
               <div className="flex flex-col items-center flex-1 min-w-0">
-                <span className="text-[10px] sm:text-xs font-bold text-gray-300 truncate w-full text-center max-w-[70px] sm:max-w-[80px]">{thirdPlace.name}</span>
-                <span className="text-[8px] sm:text-[10px] text-gray-400 font-semibold text-center w-full truncate">{thirdPlace.totalScore || 0} pts ({thirdPlace.lastTimeTaken || '0.00'}s)</span>
+                <span className={`text-[10px] sm:text-xs font-bold truncate w-full text-center max-w-[70px] sm:max-w-[80px] ${
+                  isLight ? 'text-slate-800' : 'text-gray-300'
+                }`}>{thirdPlace.name}</span>
+                <span className={`text-[8px] sm:text-[10px] font-semibold text-center w-full truncate ${
+                  isLight ? 'text-slate-600' : 'text-gray-400'
+                }`}>{thirdPlace.totalScore || 0} pts ({thirdPlace.lastTimeTaken || '0.00'}s)</span>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: 75 }}
                   transition={{ type: 'spring', stiffness: 50, delay: 0.3 }}
-                  className="w-full bg-gradient-to-t from-white/5 to-white/10 border border-white/10 rounded-t-2xl flex items-center justify-center mt-2"
+                  className={`w-full rounded-t-2xl flex items-center justify-center mt-2 border ${
+                    isLight 
+                      ? 'bg-gradient-to-t from-amber-100 to-amber-50/50 border-amber-200 shadow-sm' 
+                      : 'bg-gradient-to-t from-white/5 to-white/10 border-white/10'
+                  }`}
                 >
                   <Medal className="h-5 w-5 sm:h-6 sm:w-6 text-amber-700" />
                 </motion.div>

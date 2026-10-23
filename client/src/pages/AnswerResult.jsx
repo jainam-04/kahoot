@@ -931,12 +931,12 @@ export default function AnswerResult() {
                   {/* 1st Place */}
                   {firstPlace ? (
                     <div className="flex flex-col items-center flex-1 min-w-0">
-                      <Crown className="h-3.5 w-3.5 text-amber-500 animate-bounce mb-0.5" />
-                      <span className={`text-[11px] font-black truncate w-full text-center ${
+                      <Crown className="h-4 w-4 text-amber-500 animate-bounce mb-0.5" />
+                      <span className={`text-xs font-black truncate w-full text-center podium-rank-1-name ${
                         isLight ? 'text-slate-900' : 'text-white'
                       }`}>{firstPlace.username}</span>
                       <span className={`text-[9px] font-extrabold ${
-                        isLight ? 'text-amber-700' : 'text-warning'
+                        isLight ? 'text-amber-800' : 'text-amber-300'
                       }`}>{firstPlace.totalScore || 0} pts ({firstPlace.lastTimeTaken || '0.00'}s)</span>
                       <motion.div 
                         initial={{ height: 0 }}
@@ -944,7 +944,7 @@ export default function AnswerResult() {
                         transition={{ type: 'spring', stiffness: 50 }}
                         className={`w-full rounded-t-xl flex items-center justify-center mt-1 border ${
                           isLight 
-                            ? 'bg-gradient-to-t from-amber-200/60 to-yellow-100 border-amber-300 shadow-sm' 
+                            ? 'bg-gradient-to-t from-amber-200/80 to-yellow-100 border-amber-300 shadow-sm' 
                             : 'bg-gradient-to-t from-primary/10 to-primary/30 border border-primary/20'
                         }`}
                       >
