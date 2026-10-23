@@ -143,7 +143,7 @@ const createGame = async (req, res) => {
 
 const joinGame = async (req, res) => {
     try {
-        const { pin, playerName, avatar, fullName, mobileNumber, nickname } = req.body;
+        const { pin, playerName, avatar, fullName, mobileNumber, nickname, previousPlayerName } = req.body;
 
         const cleanPin = pin ? pin.toString().trim() : '';
         const cleanName = playerName ? playerName.toString().trim() : '';
@@ -151,12 +151,39 @@ const joinGame = async (req, res) => {
         const cleanMobile = (mobileNumber && mobileNumber.toString().trim()) || '';
         const cleanNickname = (nickname && nickname.toString().trim()) || cleanName;
         const cleanAvatar = avatar || 'dog';
+        const cleanPrevName = previousPlayerName ? previousPlayerName.toString().trim() : '';
 
         if (!cleanPin || !cleanName) {
             return res.status(400).json({
                 success: false,
                 message: 'Please provide PIN and player name'
             });
+        }
+
+        // If the player previously joined with a different name on this session/device,
+        // remove the old player from the waiting room so they don't see duplicate/ghost entries
+        let removedPrevious = false;
+        if (cleanPrevName && cleanPrevName.toLowerCase() !== cleanName.toLowerCase()) {
+            const escPrev = cleanPrevName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const prevRegex = new RegExp('^' + escPrev + '$', 'i');
+            const removedDoc = await GameSession.findOneAndUpdate(
+                { pin: cleanPin, status: 'waiting' },
+                { 
+                    $pull: { 
+                        players: { 
+                            $or: [
+                                { name: prevRegex },
+                                { nickname: prevRegex },
+                                { fullName: prevRegex }
+                            ] 
+                        } 
+                    } 
+                },
+                { new: true }
+            );
+            if (removedDoc) {
+                removedPrevious = true;
+            }
         }
 
         const escName = cleanName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -238,6 +265,16 @@ const joinGame = async (req, res) => {
             };
             io.to(`room_${cleanPin}`).emit('player_list', playerListPayload);
             io.to(cleanPin).emit('player_list', playerListPayload);
+
+            if (removedPrevious && cleanPrevName) {
+                io.to(`room_${cleanPin}`).emit('player-joined', { playerName: `__LEAVE__:${cleanPrevName}` });
+                io.to(cleanPin).emit('player-joined', { playerName: `__LEAVE__:${cleanPrevName}` });
+                io.to(`room_${cleanPin}`).emit('player_left', { username: cleanPrevName });
+                io.to(cleanPin).emit('player_left', { username: cleanPrevName });
+                io.to(`room_${cleanPin}`).emit('player_disconnected', { username: cleanPrevName });
+                io.to(cleanPin).emit('player_disconnected', { username: cleanPrevName });
+            }
+
             io.to(`room_${cleanPin}`).emit('player_connected', {
                 username: cleanName,
                 message: `${cleanName} joined the game!`
@@ -866,9 +903,74 @@ const showLeaderboard = async (req, res) => {
     }
 };
 
+const leaveGame = async (req, res) => {
+    try {
+        const { pin, playerName } = req.body;
+        const cleanPin = pin ? pin.toString().trim() : '';
+        const cleanName = playerName ? playerName.toString().trim() : '';
+
+        if (!cleanPin || !cleanName) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide PIN and player name'
+            });
+        }
+
+        const escName = cleanName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const nameRegex = new RegExp('^' + escName + '$', 'i');
+
+        const updatedGame = await GameSession.findOneAndUpdate(
+            { pin: cleanPin, status: 'waiting' },
+            { 
+                $pull: { 
+                    players: { 
+                        $or: [
+                            { name: nameRegex },
+                            { nickname: nameRegex },
+                            { fullName: nameRegex }
+                        ] 
+                    } 
+                } 
+            },
+            { new: true }
+        );
+
+        if (updatedGame) {
+            const io = req.app.get('io');
+            if (io) {
+                const playerListPayload = {
+                    pin: updatedGame.pin,
+                    players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
+                    roomStatus: updatedGame.status
+                };
+                io.to(`room_${cleanPin}`).emit('player_list', playerListPayload);
+                io.to(cleanPin).emit('player_list', playerListPayload);
+                io.to(`room_${cleanPin}`).emit('player-joined', { playerName: `__LEAVE__:${cleanName}` });
+                io.to(cleanPin).emit('player-joined', { playerName: `__LEAVE__:${cleanName}` });
+                io.to(`room_${cleanPin}`).emit('player_left', { username: cleanName });
+                io.to(cleanPin).emit('player_left', { username: cleanName });
+                io.to(`room_${cleanPin}`).emit('player_disconnected', { username: cleanName });
+                io.to(cleanPin).emit('player_disconnected', { username: cleanName });
+            }
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `${cleanName} successfully left the lobby`
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
     createGame,
     joinGame,
+    leaveGame,
     startQuestion,
     submitAnswer,
     getLeaderboard,

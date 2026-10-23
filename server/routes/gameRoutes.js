@@ -3,6 +3,7 @@ const router = express.Router();
 const {
     createGame,
     joinGame,
+    leaveGame,
     startQuestion,
     submitAnswer,
     getLeaderboard,
@@ -14,6 +15,7 @@ const {
 const { protect } = require('../middleware/authMiddleware');
 
 router.post('/join', joinGame);
+router.post('/leave', leaveGame);
 router.post('/answer', submitAnswer);
 router.get('/:pin/leaderboard', getLeaderboard);
 router.get('/:pin', getGame);

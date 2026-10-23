@@ -115,7 +115,19 @@ export default function JoinGame() {
       const cleanMobile = (data.mobileNumber || '').toString().trim();
       const cleanNickname = (data.nickname || '').toString().trim();
 
-      const response = await joinGame(cleanPin, displayPlayerName, selectedAvatar, cleanFullName, cleanMobile, cleanNickname);
+      const previousPlayerName = localStorage.getItem('guest_playerName');
+      const previousPin = localStorage.getItem('guest_pin');
+      const shouldReplacePrevious = (previousPin === cleanPin) && previousPlayerName && (previousPlayerName.trim().toLowerCase() !== displayPlayerName.toLowerCase());
+
+      const response = await joinGame(
+        cleanPin, 
+        displayPlayerName, 
+        selectedAvatar, 
+        cleanFullName, 
+        cleanMobile, 
+        cleanNickname,
+        shouldReplacePrevious ? previousPlayerName.trim() : undefined
+      );
       if (response.success) {
         // Update global game contexts & immediately persist to localStorage
         setPin(cleanPin);

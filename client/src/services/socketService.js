@@ -51,6 +51,12 @@ export const playerJoinRoom = (pin, playerName) => {
     emitJoinRoom(pin, playerName);
 };
 
+export const emitLeaveRoom = (pin, playerName) => {
+    const rawPin = pin ? pin.toString().replace(/^room_/, '') : '';
+    socket.emit('player-leave', { pin: `room_${rawPin}`, rawPin, playerName });
+    socket.emit('player-join', { pin: `room_${rawPin}`, rawPin, playerName: `__LEAVE__:${playerName}` });
+};
+
 export const onPlayerJoined = (callback) => {
     socket.on('player-joined', callback);
 };

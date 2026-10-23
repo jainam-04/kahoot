@@ -30,26 +30,44 @@ module.exports = (io) => {
             console.log(`${playerName} joined room: ${roomPin} (and room_${roomPin})`);
 
             if (playerName && playerName.startsWith('__LEAVE__:')) {
-                const username = playerName.replace('__LEAVE__:', '');
+                const username = playerName.replace('__LEAVE__:', '').trim();
                 try {
-                    const game = await GameSession.findOne({ pin: roomPin });
-                    if (game && game.status === 'waiting') {
-                        const updatedGame = await GameSession.findOneAndUpdate(
-                            { pin: roomPin, status: 'waiting' },
-                            { $pull: { players: { name: username } } },
-                            { new: true }
-                        );
-                        if (updatedGame) {
-                            io.to(`room_${roomPin}`).emit('player_list', {
-                                pin: updatedGame.pin,
-                                players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
-                                roomStatus: updatedGame.status
-                            });
-                        }
+                    const escName = username.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                    const nameRegex = new RegExp('^' + escName + '$', 'i');
+                    const updatedGame = await GameSession.findOneAndUpdate(
+                        { pin: roomPin, status: 'waiting' },
+                        { 
+                            $pull: { 
+                                players: { 
+                                    $or: [
+                                        { name: nameRegex },
+                                        { nickname: nameRegex },
+                                        { fullName: nameRegex }
+                                    ] 
+                                } 
+                            } 
+                        },
+                        { new: true }
+                    );
+                    if (updatedGame) {
+                        const payload = {
+                            pin: updatedGame.pin,
+                            players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
+                            roomStatus: updatedGame.status
+                        };
+                        io.to(`room_${roomPin}`).emit('player_list', payload);
+                        io.to(roomPin).emit('player_list', payload);
+                        io.to(`room_${roomPin}`).emit('player-joined', { playerName: `__LEAVE__:${username}` });
+                        io.to(roomPin).emit('player-joined', { playerName: `__LEAVE__:${username}` });
+                        io.to(`room_${roomPin}`).emit('player_left', { username });
+                        io.to(roomPin).emit('player_left', { username });
+                        io.to(`room_${roomPin}`).emit('player_disconnected', { username });
+                        io.to(roomPin).emit('player_disconnected', { username });
                     }
                 } catch (err) {
                     console.error('Error removing player on leave:', err.message);
                 }
+                return;
             } else if (playerName) {
                 // Ensure player is in MongoDB if they rejoined (e.g. on reconnect)
                 try {
@@ -100,6 +118,50 @@ module.exports = (io) => {
                     username: playerName,
                     message: `${playerName} joined the game!`
                 });
+            }
+        });
+
+        // ─── PLAYER LEAVES GAME ROOM (EXPLICIT) ────
+        socket.on('player-leave', async ({ pin, rawPin, playerName }) => {
+            const roomPin = rawPin || (pin ? pin.toString().replace(/^room_/, '') : '');
+            const username = (playerName || socket.playerName || socket.data?.name || '').toString().trim();
+            if (!roomPin || !username) return;
+
+            try {
+                const escName = username.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                const nameRegex = new RegExp('^' + escName + '$', 'i');
+                const updatedGame = await GameSession.findOneAndUpdate(
+                    { pin: roomPin, status: 'waiting' },
+                    { 
+                        $pull: { 
+                            players: { 
+                                $or: [
+                                    { name: nameRegex },
+                                    { nickname: nameRegex },
+                                    { fullName: nameRegex }
+                                ] 
+                            } 
+                        } 
+                    },
+                    { new: true }
+                );
+                if (updatedGame) {
+                    const payload = {
+                        pin: updatedGame.pin,
+                        players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
+                        roomStatus: updatedGame.status
+                    };
+                    io.to(`room_${roomPin}`).emit('player_list', payload);
+                    io.to(roomPin).emit('player_list', payload);
+                    io.to(`room_${roomPin}`).emit('player-joined', { playerName: `__LEAVE__:${username}` });
+                    io.to(roomPin).emit('player-joined', { playerName: `__LEAVE__:${username}` });
+                    io.to(`room_${roomPin}`).emit('player_left', { username });
+                    io.to(roomPin).emit('player_left', { username });
+                    io.to(`room_${roomPin}`).emit('player_disconnected', { username });
+                    io.to(roomPin).emit('player_disconnected', { username });
+                }
+            } catch (err) {
+                console.error('Error on player-leave socket:', err.message);
             }
         });
 

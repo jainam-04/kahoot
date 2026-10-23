@@ -136,6 +136,16 @@ export default function HostLobby() {
       setPlayers(deduplicatePlayers(data.players));
     });
 
+    const handlePlayerLeft = (data) => {
+      const username = (data?.username || data?.playerName || '').toString().trim();
+      if (username) {
+        setPlayers((prev) => prev.filter((p) => p.username.toLowerCase() !== username.toLowerCase()));
+        toast.error(`${username} left the lobby`);
+      }
+    };
+
+    socket.on('player_left', handlePlayerLeft);
+
     socket.on('player-joined', ({ playerName }) => {
       if (playerName) {
         if (playerName.startsWith('__LEAVE__:')) {
@@ -162,6 +172,7 @@ export default function HostLobby() {
       // Clean up event listeners on unmount
       socket.off('connect', joinRoom);
       socket.off('player_list');
+      socket.off('player_left', handlePlayerLeft);
       socket.off('player-joined');
       socket.off('question_started');
     };

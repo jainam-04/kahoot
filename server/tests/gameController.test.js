@@ -8,6 +8,7 @@ const GameSession = require('../models/GameSession');
 test('game controller exports the handlers used by the routes', () => {
   assert.equal(typeof gameController.createGame, 'function');
   assert.equal(typeof gameController.joinGame, 'function');
+  assert.equal(typeof gameController.leaveGame, 'function');
   assert.equal(typeof gameController.startQuestion, 'function');
   assert.equal(typeof gameController.submitAnswer, 'function');
   assert.equal(typeof gameController.getLeaderboard, 'function');

@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Users, Loader2 } from 'lucide-react';
+import { Users, Loader2, LogOut } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import { connectSocket, emitJoinRoom } from '../services/socketService';
+import { connectSocket, emitJoinRoom, emitLeaveRoom } from '../services/socketService';
 import { useGame } from '../context/GameContext';
 import { useTheme } from '../context/ThemeContext';
-import { getGame } from '../services/gameService';
+import { getGame, leaveGame } from '../services/gameService';
 
 const parseBgConfig = (bgStr) => {
   if (!bgStr) {
@@ -90,9 +90,11 @@ export default function WaitingRoom() {
   const navigate = useNavigate();
   const { playerName, setPin, setPlayerName } = useGame();
   const { themeMode } = useTheme();
-  const isLight = themeMode === 'light';
+  const isLight = themeMode === 'light' || (!themeMode && !document.documentElement.classList.contains('dark')) || document.documentElement.classList.contains('light');
   const [players, setPlayers] = useState([]);
+  const [isLeaving, setIsLeaving] = useState(false);
   const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
+  const quizStartedRef = useRef(false);
 
   // Fetch quiz background image and players list on mount
   useEffect(() => {
@@ -115,6 +117,21 @@ export default function WaitingRoom() {
   // Fallback if player refresh and context gets cleared
   const localPlayerName = playerName || localStorage.getItem('guest_playerName') || 'Player';
   const knownPlayersRef = useRef(new Set());
+
+  const handleLeaveLobby = async () => {
+    if (isLeaving) return;
+    setIsLeaving(true);
+    try {
+      emitLeaveRoom(pin, localPlayerName);
+      await leaveGame(pin, localPlayerName).catch(() => {});
+    } finally {
+      localStorage.removeItem('guest_pin');
+      localStorage.removeItem('guest_playerName');
+      localStorage.removeItem('guest_avatar');
+      toast('Left the quiz lobby', { icon: '👋' });
+      navigate('/join');
+    }
+  };
 
   useEffect(() => {
     if (!playerName && !localStorage.getItem('guest_playerName')) {
@@ -150,6 +167,20 @@ export default function WaitingRoom() {
       setPlayers(activePlayers);
     });
 
+    const handlePlayerLeft = (data) => {
+      const username = (data?.username || data?.playerName || '').toString().trim();
+      if (username) {
+        const u = username.toLowerCase();
+        knownPlayersRef.current.delete(u);
+        setPlayers((prev) => prev.filter((p) => p.username.toLowerCase() !== u));
+        if (u !== localPlayerName.toLowerCase()) {
+          toast.error(`${username} left the lobby`, { id: `leave-${u}`, duration: 2500 });
+        }
+      }
+    };
+
+    socket.on('player_left', handlePlayerLeft);
+
     // Listen to player-joined socket event (emitted by backend socket.on('player-join'))
     socket.on('player-joined', ({ playerName }) => {
       if (playerName) {
@@ -173,6 +204,7 @@ export default function WaitingRoom() {
 
     socket.on('question_started', (data) => {
       console.log('[SOCKET CLIENT] Battle started! Redirecting...', data);
+      quizStartedRef.current = true;
       // Store the global background before navigating
       const globalBg = localStorage.getItem('quiz_global_bg_image') || '';
       const questionBg = data?.question?.backgroundImage || '';
@@ -206,6 +238,7 @@ export default function WaitingRoom() {
     return () => {
       socket.off('connect', joinRoom);
       socket.off('player_list');
+      socket.off('player_left', handlePlayerLeft);
       socket.off('player-joined');
       socket.off('question_started');
       socket.off('quiz_ended', handleQuizEnded);
@@ -279,6 +312,22 @@ export default function WaitingRoom() {
         >
           <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
+          {/* Quick Leave Lobby Button */}
+          <button
+            type="button"
+            onClick={handleLeaveLobby}
+            disabled={isLeaving}
+            className={`absolute top-4 right-4 px-3 py-1.5 rounded-xl border text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-sm ${
+              isLight
+                ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
+                : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border-rose-500/20'
+            }`}
+            title="Leave Quiz Lobby"
+          >
+            {isLeaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <LogOut className="h-3.5 w-3.5" />}
+            <span>Leave Lobby</span>
+          </button>
+
           {/* Large Loading animation */}
           <div className="mb-8 relative flex items-center justify-center">
             <div className={`h-20 w-20 rounded-full flex items-center justify-center relative border ${
@@ -305,6 +354,22 @@ export default function WaitingRoom() {
               isLight ? 'text-slate-500' : 'text-gray-500'
             }`}>Arena PIN</span>
             <span className="font-outfit text-2xl tracking-widest text-secondary font-black">{pin}</span>
+          </div>
+
+          {/* Current Player Identification */}
+          <div className="mt-3 flex items-center justify-center gap-2">
+            <span className={`text-xs ${isLight ? 'text-slate-600' : 'text-gray-400'}`}>
+              Joined as <strong className={isLight ? 'text-slate-900 font-extrabold' : 'text-white font-bold'}>{localPlayerName}</strong>
+            </span>
+            <button
+              type="button"
+              onClick={handleLeaveLobby}
+              className={`text-xs font-bold underline transition-colors ${
+                isLight ? 'text-rose-600 hover:text-rose-800' : 'text-rose-400 hover:text-rose-300'
+              }`}
+            >
+              (Change Name)
+            </button>
           </div>
 
           {/* Players joined section */}

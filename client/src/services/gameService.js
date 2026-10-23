@@ -5,8 +5,13 @@ export const createGame = async (quizId) => {
   return response.data;
 };
 
-export const joinGame = async (pin, playerName, avatar, fullName, mobileNumber, nickname) => {
-  const response = await API.post('/game/join', { pin, playerName, avatar, fullName, mobileNumber, nickname });
+export const joinGame = async (pin, playerName, avatar, fullName, mobileNumber, nickname, previousPlayerName) => {
+  const response = await API.post('/game/join', { pin, playerName, avatar, fullName, mobileNumber, nickname, previousPlayerName });
+  return response.data;
+};
+
+export const leaveGame = async (pin, playerName) => {
+  const response = await API.post('/game/leave', { pin, playerName });
   return response.data;
 };
 
