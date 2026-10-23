@@ -118,34 +118,43 @@ export default function WaitingRoom() {
   const localPlayerName = playerName || localStorage.getItem('guest_playerName') || 'Player';
   const knownPlayersRef = useRef(new Set());
 
-  const handleLeaveLobby = async () => {
+  const handleLeaveLobby = () => {
     if (isLeaving) return;
     setIsLeaving(true);
+
     try {
       emitLeaveRoom(pin, localPlayerName);
-      await leaveGame(pin, localPlayerName).catch(() => {});
-    } finally {
-      localStorage.removeItem('guest_pin');
-      localStorage.removeItem('guest_playerName');
-      localStorage.removeItem('guest_avatar');
-      toast('Left the quiz lobby', { icon: '👋' });
-      navigate('/join');
+    } catch (e) {
+      console.error('Socket leave error:', e);
     }
+
+    // Fire and forget server cleanup without blocking user transition
+    leaveGame(pin, localPlayerName).catch(() => {});
+
+    localStorage.removeItem('guest_pin');
+    localStorage.removeItem('guest_playerName');
+    localStorage.removeItem('guest_avatar');
+    toast('Left the quiz lobby', { icon: '👋' });
+    navigate('/join');
   };
 
-  const handleChangeName = async () => {
+  const handleChangeName = () => {
     if (isLeaving) return;
     setIsLeaving(true);
+
     try {
       emitLeaveRoom(pin, localPlayerName);
-      await leaveGame(pin, localPlayerName).catch(() => {});
-    } finally {
-      // Clear previous name so the user can enter a new one, but PRESERVE the PIN
-      localStorage.removeItem('guest_playerName');
-      localStorage.setItem('guest_pin', pin);
-      toast('Enter your new name to join', { icon: '✏️' });
-      navigate(`/join?pin=${pin}`, { state: { pin } });
+    } catch (e) {
+      console.error('Socket leave error:', e);
     }
+
+    leaveGame(pin, localPlayerName).catch(() => {});
+
+    // Clear previous name so user can enter a new one, but PRESERVE the PIN
+    localStorage.removeItem('guest_playerName');
+    localStorage.setItem('guest_pin', pin);
+    toast('Enter your new name to join', { icon: '✏️' });
+    navigate(`/join?pin=${pin}`, { state: { pin } });
   };
 
   useEffect(() => {
@@ -313,7 +322,7 @@ export default function WaitingRoom() {
           initial={{ opacity: 0, y: 30, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: 'spring', stiffness: 80, damping: 15 }}
-          className={`w-full max-w-xl rounded-3xl p-8 sm:p-10 border text-center relative overflow-hidden ${
+          className={`w-full max-w-xl rounded-3xl p-5 sm:p-10 border text-center relative overflow-hidden ${
             isLight
               ? 'bg-white/95 border-slate-200 shadow-xl text-slate-900'
               : 'glass-panel border-white/5 text-white'
@@ -321,24 +330,26 @@ export default function WaitingRoom() {
         >
           <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
 
-          {/* Quick Leave Lobby Button */}
-          <button
-            type="button"
-            onClick={handleLeaveLobby}
-            disabled={isLeaving}
-            className={`absolute top-4 right-4 px-3 py-1.5 rounded-xl border text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-sm ${
-              isLight
-                ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
-                : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border-rose-500/20'
-            }`}
-            title="Leave Quiz Lobby"
-          >
-            {isLeaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <LogOut className="h-3.5 w-3.5" />}
-            <span>Leave Lobby</span>
-          </button>
+          {/* Quick Leave Lobby Button - responsive top bar */}
+          <div className="w-full flex justify-end items-center relative z-30 mb-2 sm:mb-4">
+            <button
+              type="button"
+              onClick={handleLeaveLobby}
+              disabled={isLeaving}
+              className={`px-3.5 py-2 min-h-[38px] rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer select-none touch-manipulation active:scale-95 ${
+                isLight
+                  ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200 active:bg-rose-200'
+                  : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border-rose-500/20 active:bg-rose-500/30'
+              }`}
+              title="Leave Quiz Lobby"
+            >
+              {isLeaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
+              <span>Leave Lobby</span>
+            </button>
+          </div>
 
           {/* Large Loading animation */}
-          <div className="mb-8 relative flex items-center justify-center">
+          <div className="my-5 sm:my-8 relative flex items-center justify-center">
             <div className={`h-20 w-20 rounded-full flex items-center justify-center relative border ${
               isLight ? 'bg-primary/10 border-primary/20' : 'bg-primary/5 border-primary/20'
             }`}>
