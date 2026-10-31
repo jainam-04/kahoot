@@ -59,7 +59,8 @@ const listQuizzes = async (req, res) => {
     try {
         const quizzes = await Quiz.find({ isActive: true })
             .populate('createdBy', 'name email')
-            .select('-questions');
+            .select('-questions')
+            .sort({ createdAt: -1, _id: -1 });
 
         res.status(200).json({
             success: true,
@@ -155,7 +156,7 @@ const getMyQuizzes = async (req, res) => {
         const quizzes = await Quiz.find({
             createdBy: req.user.id,
             isActive: true
-        });
+        }).sort({ createdAt: -1, _id: -1 });
 
         res.status(200).json({
             success: true,

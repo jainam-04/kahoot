@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import Logo from './Logo';
 import DeleteAccountModal from './DeleteAccountModal';
 import HostProfileModal from './HostProfileModal';
+import { clearAuthSession, getStoredUser } from '../utils/auth';
 import { useTheme } from '../context/ThemeContext';
 
 export default function Sidebar() {
@@ -19,25 +20,15 @@ export default function Sidebar() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  const [user, setUser] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('user') || 'null');
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState(() => getStoredUser());
 
   // Synchronize user profile across window events and storage changes
   useEffect(() => {
     const handleProfileSync = (e) => {
-      if (e?.detail) {
+      if (e && 'detail' in e) {
         setUser(e.detail);
       } else {
-        try {
-          setUser(JSON.parse(localStorage.getItem('user') || 'null'));
-        } catch {
-          setUser(null);
-        }
+        setUser(getStoredUser());
       }
     };
     window.addEventListener('user-profile-updated', handleProfileSync);
@@ -48,9 +39,14 @@ export default function Sidebar() {
     };
   }, []);
 
+  // Sync user state on route change
+  useEffect(() => {
+    setUser(getStoredUser());
+  }, [location.pathname]);
+
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuthSession();
+    setUser(null);
     toast.success('Logged out successfully');
     navigate('/login');
     setMobileOpen(false);
@@ -267,8 +263,8 @@ export default function Sidebar() {
         onClose={() => setIsDeleteModalOpen(false)}
         onSuccess={() => {
           setIsDeleteModalOpen(false);
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          clearAuthSession();
+          setUser(null);
           toast.success('Account deleted successfully.');
           navigate('/login');
         }}

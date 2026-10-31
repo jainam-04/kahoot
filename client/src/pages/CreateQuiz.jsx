@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Trash2, Save, HelpCircle, Layout, ArrowLeft, 
@@ -18,17 +19,18 @@ import BackgroundPicker from '../components/BackgroundPicker';
 import AIQuizAssistantModal from '../components/AIQuizAssistantModal';
 import UploadBaseTemplate from '../components/UploadBaseTemplate';
 import { useTheme } from '../context/ThemeContext';
+import { clearAuthSession } from '../utils/auth';
 
 export default function CreateQuiz() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { themeMode, toggleThemeMode } = useTheme();
   const isLight = themeMode === 'light';
 
   const user = JSON.parse(localStorage.getItem('user') || 'null');
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuthSession();
     toast.success('Logged out successfully');
     navigate('/login');
   };
@@ -289,8 +291,10 @@ export default function CreateQuiz() {
     try {
       const response = await createQuiz(payload);
       if (response.success) {
+        queryClient.invalidateQueries({ queryKey: ['my-quizzes'] });
+        queryClient.invalidateQueries({ queryKey: ['my-quizzes-full'] });
         toast.success('Quiz created successfully!');
-        navigate('/dashboard');
+        navigate('/quiz/my');
       } else {
         toast.error(response.message || 'Failed to save quiz');
       }
@@ -392,6 +396,8 @@ export default function CreateQuiz() {
                     toast.loading('Initializing lobby...', { id: 'forge-host' });
                     const response = await createQuiz(payload);
                     if (response.success) {
+                      queryClient.invalidateQueries({ queryKey: ['my-quizzes'] });
+                      queryClient.invalidateQueries({ queryKey: ['my-quizzes-full'] });
                       const newQuiz = response.quiz;
                       const gameRes = await createGame(newQuiz._id);
                       if (gameRes.success) {

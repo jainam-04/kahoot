@@ -91,7 +91,13 @@ export default function MyQuizzes() {
   };
 
   // Filter quizzes based on search query and category selector
-  const quizzes = data?.quizzes || [];
+  const rawQuizzes = data?.quizzes || [];
+  // Ensure recent quizzes appear at the top (newest first)
+  const quizzes = [...rawQuizzes].sort((a, b) => {
+    const timeA = new Date(a.createdAt || 0).getTime() || (a._id ? parseInt(a._id.substring(0, 8), 16) * 1000 : 0);
+    const timeB = new Date(b.createdAt || 0).getTime() || (b._id ? parseInt(b._id.substring(0, 8), 16) * 1000 : 0);
+    return timeB - timeA;
+  });
   const filteredQuizzes = quizzes.filter(quiz => {
     const matchesSearch = quiz.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           quiz.description?.toLowerCase().includes(searchQuery.toLowerCase());

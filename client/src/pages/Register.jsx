@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
 import { register as registerUser } from '../services/authService';
+import { setAuthSession } from '../utils/auth';
 import { useTheme } from '../context/ThemeContext';
 
 export default function Register() {
@@ -77,8 +78,7 @@ export default function Register() {
       });
 
       if (response.success) {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        setAuthSession(response.token, response.user);
         setRegisteredUser(response.user);
         setIsRegistered(true);
         toast.success(`Welcome to Gubbi, ${response.user.name || 'User'}!`);

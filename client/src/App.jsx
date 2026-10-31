@@ -36,8 +36,7 @@ import AdminRoute from './components/AdminRoute';
 
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { GameProvider } from './context/GameContext';
-
-const queryClient = new QueryClient();
+import { queryClient } from './queryClient';
 
 // Sleek minimal fallback loader during route transitions
 function PageLoader() {

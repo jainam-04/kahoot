@@ -9,6 +9,7 @@ import {
 import toast from 'react-hot-toast';
 import Logo from './Logo';
 import { register as registerUser } from '../services/authService';
+import { setAuthSession } from '../utils/auth';
 import { useTheme } from '../context/ThemeContext';
 
 export default function QuickRegisterModal({ isOpen, onClose, onSuccess }) {
@@ -68,8 +69,7 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess }) {
       });
 
       if (response.success) {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        setAuthSession(response.token, response.user);
 
         toast.success(`Welcome to Gubbi, ${response.user.name || 'User'}!`);
 

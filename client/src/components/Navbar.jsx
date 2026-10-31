@@ -10,18 +10,13 @@ import Logo from './Logo';
 import DeleteAccountModal from './DeleteAccountModal';
 import HostProfileModal from './HostProfileModal';
 import { useTheme } from '../context/ThemeContext';
+import { clearAuthSession, getStoredUser, getStoredToken } from '../utils/auth';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const token = localStorage.getItem('token');
-  const [user, setUser] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('user') || 'null');
-    } catch {
-      return null;
-    }
-  });
+  const [token, setToken] = useState(() => getStoredToken());
+  const [user, setUser] = useState(() => getStoredUser());
   const { themeMode, toggleThemeMode } = useTheme();
   const isLight = themeMode === 'light';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -36,14 +31,12 @@ export default function Navbar() {
   // Synchronize user profile across window events and storage changes
   useEffect(() => {
     const handleProfileSync = (e) => {
-      if (e?.detail) {
+      if (e && 'detail' in e) {
         setUser(e.detail);
+        setToken(getStoredToken());
       } else {
-        try {
-          setUser(JSON.parse(localStorage.getItem('user') || 'null'));
-        } catch {
-          setUser(null);
-        }
+        setUser(getStoredUser());
+        setToken(getStoredToken());
       }
     };
     window.addEventListener('user-profile-updated', handleProfileSync);
@@ -53,6 +46,13 @@ export default function Navbar() {
       window.removeEventListener('storage', handleProfileSync);
     };
   }, []);
+
+  // Re-sync user and token whenever location changes (e.g. login -> dashboard)
+  useEffect(() => {
+    setUser(getStoredUser());
+    setToken(getStoredToken());
+    setProfileDropdownOpen(false);
+  }, [location.pathname]);
 
   // Close profile dropdown on click outside
   useEffect(() => {
@@ -113,11 +113,13 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuthSession();
+    setUser(null);
+    setToken(null);
     toast.success('Logged out successfully');
     navigate('/login');
     setMobileMenuOpen(false);
+    setProfileDropdownOpen(false);
   };
 
   const closeMobile = () => setMobileMenuOpen(false);
@@ -658,8 +660,9 @@ export default function Navbar() {
         onClose={() => setIsDeleteModalOpen(false)}
         onSuccess={() => {
           setIsDeleteModalOpen(false);
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          clearAuthSession();
+          setUser(null);
+          setToken(null);
           toast.success('Your account and all associated quizzes have been permanently deleted.');
           navigate('/login');
         }}

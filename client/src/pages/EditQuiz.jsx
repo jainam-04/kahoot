@@ -9,15 +9,17 @@ import {
   LayoutDashboard, LogOut, User, Sun, Moon
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
 import BackgroundPicker from '../components/BackgroundPicker';
 import { useTheme } from '../context/ThemeContext';
 import { getQuizById, updateQuiz } from '../services/quizService';
+import { clearAuthSession } from '../utils/auth';
 
 export default function EditQuiz() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { id } = useParams();
   const { themeMode, toggleThemeMode } = useTheme();
   const isLight = themeMode === 'light';
@@ -25,8 +27,7 @@ export default function EditQuiz() {
   const user = JSON.parse(localStorage.getItem('user') || 'null');
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuthSession();
     toast.success('Logged out successfully');
     navigate('/login');
   };
@@ -145,6 +146,8 @@ export default function EditQuiz() {
     mutationFn: updateQuiz,
     onSuccess: (res) => {
       if (res.success) {
+        queryClient.invalidateQueries({ queryKey: ['my-quizzes'] });
+        queryClient.invalidateQueries({ queryKey: ['my-quizzes-full'] });
         toast.success('Quiz updated successfully! ✅');
         navigate('/quiz/my');
       } else {

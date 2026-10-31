@@ -70,8 +70,14 @@ export default function Dashboard() {
     }
   });
 
-  // Calculate Metrics
-  const totalQuizzes = quizzesData?.quizzes?.length || 0;
+  // Calculate Metrics & Sort Quizzes Newest First
+  const rawQuizzes = quizzesData?.quizzes || [];
+  const userQuizzes = [...rawQuizzes].sort((a, b) => {
+    const timeA = new Date(a.createdAt || 0).getTime() || (a._id ? parseInt(a._id.substring(0, 8), 16) * 1000 : 0);
+    const timeB = new Date(b.createdAt || 0).getTime() || (b._id ? parseInt(b._id.substring(0, 8), 16) * 1000 : 0);
+    return timeB - timeA;
+  });
+  const totalQuizzes = userQuizzes.length;
   const hostedSessions = resultsData?.results || [];
   const totalGamesHosted = hostedSessions.length;
 
@@ -441,7 +447,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {quizzesData?.quizzes?.slice(0, 6).map((quiz) => (
+                {userQuizzes.slice(0, 6).map((quiz) => (
                   <div 
                     key={quiz._id}
                     onClick={() => navigate(`/quiz/edit/${quiz._id}`)}

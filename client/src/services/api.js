@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { clearAuthSession } from '../utils/auth';
 
 const getBaseUrl = () => {
     if (import.meta.env.VITE_API_URL) {
@@ -38,8 +39,12 @@ API.interceptors.response.use(
                                       reqUrl.includes('/auth/reset-password');
 
             if (!isPublicAuthRoute) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
+                try {
+                    clearAuthSession();
+                } catch {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                }
                 if (typeof window !== 'undefined' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
                     window.location.href = '/login?expired=true';
                 }
