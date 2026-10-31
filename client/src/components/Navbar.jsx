@@ -285,7 +285,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
                       transition={{ duration: 0.15 }}
-                      className={`absolute right-0 mt-2 w-64 rounded-2xl shadow-2xl border p-2 z-50 text-left backdrop-blur-xl ${
+                      className={`absolute right-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] rounded-2xl shadow-2xl border p-2 z-50 text-left backdrop-blur-xl ${
                         isLight ? 'bg-white/95 border-gray-200 text-gray-900' : 'bg-[#12121a]/95 border-white/10 text-white'
                       }`}
                     >
@@ -431,19 +431,21 @@ export default function Navbar() {
             </>
           )}
 
-          {/* Mobile Hamburger Button */}
-          <button
-            className="md:hidden flex items-center justify-center p-2 rounded-xl border transition-all active:scale-95 cursor-pointer ml-0.5"
-            style={{
-              background: isLight ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
-              borderColor: isLight ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
-              color: 'var(--text-main)',
-            }}
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          {/* Mobile Hamburger Button (Only displayed for logged-out visitors to access public links) */}
+          {!token && (
+            <button
+              className="md:hidden flex items-center justify-center p-2 rounded-xl border transition-all active:scale-95 cursor-pointer ml-0.5"
+              style={{
+                background: isLight ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
+                borderColor: isLight ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
+                color: 'var(--text-main)',
+              }}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          )}
         </div>
       </div>
 
@@ -497,8 +499,8 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
+      {/* Mobile Menu Dropdown (Only for public guests when logged out) */}
+      {!token && mobileMenuOpen && (
         <div
           className="md:hidden border-t px-4 py-4 space-y-2 animate-in slide-in-from-top duration-200 shadow-2xl"
           style={{
@@ -507,143 +509,48 @@ export default function Navbar() {
             backdropFilter: 'blur(20px)'
           }}
         >
-          {token ? (
-            <>
-              <div
-                className="w-full text-left flex items-center justify-between px-3.5 py-3 mb-3 rounded-xl border select-none"
-                style={{
-                  background: isLight ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.04)',
-                  borderColor: isLight ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.08)'
-                }}
-              >
-                <div className="flex items-center gap-2.5 overflow-hidden">
-                  <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-sm shrink-0">
-                    {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                  </div>
-                  <div className="overflow-hidden">
-                    <span className="text-xs font-black block truncate" style={{ color: 'var(--text-heading)' }}>
-                      {user?.name || 'Host Account'}
-                    </span>
-                    <span className="text-[10px] text-gray-400 block truncate">
-                      {user?.email || 'Logged In Host'}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-secondary/15 text-secondary border border-secondary/20">
-                    Host
-                  </span>
-                </div>
-              </div>
+          {navLinks.map((link) => (
+            <button
+              key={link.label}
+              onClick={() => handleNavClick(link.hash)}
+              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-extrabold transition-colors cursor-pointer flex items-center justify-between ${
+                link.highlight ? 'bg-primary/10 border border-primary/25 text-primary' : ''
+              }`}
+              style={link.highlight ? {} : { color: 'var(--text-main)' }}
+            >
+              <span>{link.label}</span>
+              {link.highlight && (
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-secondary/20 text-secondary border border-secondary/30">
+                  30s Quiz
+                </span>
+              )}
+            </button>
+          ))}
 
-              <button
-                type="button"
-                onClick={() => {
-                  closeMobile();
-                  setIsProfileModalOpen(true);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all hover:bg-primary/10 text-left cursor-pointer"
-                style={{ color: 'var(--text-main)' }}
-              >
-                <Edit3 className="h-4 w-4 text-primary" />
-                Edit Host Profile
-              </button>
-
-              <Link
-                to="/dashboard"
-                onClick={closeMobile}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all hover:bg-primary/10"
-                style={{ color: 'var(--text-main)' }}
-              >
-                <LayoutDashboard className="h-4 w-4 text-primary" />
-                Dashboard Overview
-              </Link>
-              <Link
-                to="/quiz/my"
-                onClick={closeMobile}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all hover:bg-secondary/10"
-                style={{ color: 'var(--text-main)' }}
-              >
-                <BookOpen className="h-4 w-4 text-secondary" />
-                My Quizzes
-              </Link>
-              <Link
-                to="/quiz/create"
-                onClick={closeMobile}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all hover:bg-accent/10"
-                style={{ color: 'var(--text-main)' }}
-              >
-                <PlusCircle className="h-4 w-4 text-accent" />
-                Create New Quiz
-              </Link>
-
-              <div className="pt-3 border-t mt-2 space-y-2" style={{ borderColor: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    closeMobile();
-                    setIsDeleteModalOpen(true);
-                  }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-red-500 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-all cursor-pointer"
-                >
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                  <span>Delete Host Account</span>
-                </button>
-
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-black text-white bg-red-600 hover:bg-red-700 transition-all cursor-pointer shadow-md"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              {navLinks.map((link) => (
-                <button
-                  key={link.label}
-                  onClick={() => handleNavClick(link.hash)}
-                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-extrabold transition-colors cursor-pointer flex items-center justify-between ${
-                    link.highlight ? 'bg-primary/10 border border-primary/25 text-primary' : ''
-                  }`}
-                  style={link.highlight ? {} : { color: 'var(--text-main)' }}
-                >
-                  <span>{link.label}</span>
-                  {link.highlight && (
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-secondary/20 text-secondary border border-secondary/30">
-                      30s Quiz
-                    </span>
-                  )}
-                </button>
-              ))}
-
-              <div className="flex flex-col gap-2.5 pt-3 border-t" style={{ borderColor: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }}>
-                <Link
-                  to="/login"
-                  onClick={closeMobile}
-                  className={`w-full text-center py-3 rounded-xl border text-sm font-extrabold ${
-                    isLight 
-                      ? 'border-purple-300 text-purple-950 hover:bg-purple-50' 
-                      : 'border-white/20 text-white hover:bg-white/10'
-                  }`}
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={closeMobile}
-                  className="btn-premium btn-primary-gradient w-full text-center py-3 text-sm font-extrabold text-white rounded-xl shadow-premium-glow flex items-center justify-center gap-2"
-                >
-                  <span>Get Started Free</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </>
-          )}
+          <div className="flex flex-col gap-2.5 pt-3 border-t" style={{ borderColor: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }}>
+            <Link
+              to="/login"
+              onClick={closeMobile}
+              className={`w-full text-center py-3 rounded-xl border text-sm font-extrabold ${
+                isLight 
+                  ? 'border-purple-300 text-purple-950 hover:bg-purple-50' 
+                  : 'border-white/20 text-white hover:bg-white/10'
+              }`}
+            >
+              Login
+            </Link>
+            <Link
+              to="/register"
+              onClick={closeMobile}
+              className="btn-premium btn-primary-gradient w-full text-center py-3 rounded-xl text-sm font-extrabold text-white shadow-premium-glow flex items-center justify-center gap-2"
+            >
+              <span>Create Free Account</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       )}
+
 
       {/* Host Profile Edit Modal */}
       <HostProfileModal
