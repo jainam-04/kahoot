@@ -1322,13 +1322,17 @@ html, body {
   }
 }
 
-/* Keep header buttons (e.g. the mobile "Get Started") content-sized so the
-   navbar never stretches a button to full width and overflows on small phones.
+/* Keep header buttons (e.g. the mobile "Get Started") and inline shrink-0 / auto
+   buttons content-sized so the navbar or inline flex layouts never stretch a button
+   to 100% width and overflow or squish inputs on small phones.
    This overrides the <=480px `.btn-premium { width: 100% }` rule above using
-   higher specificity (two selectors). CTA / form buttons OUTSIDE the header
-   still keep their full-width mobile behavior. */
-header .btn-premium {
-  width: auto;
+   higher specificity. CTA / form buttons without shrink-0 still keep their
+   full-width mobile behavior. */
+header .btn-premium,
+form .btn-premium.shrink-0,
+.btn-premium.shrink-0,
+.btn-premium-auto {
+  width: auto !important;
   justify-content: center;
 }
 
