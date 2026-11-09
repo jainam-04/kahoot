@@ -32,19 +32,211 @@ export default function Footer() {
 
   return (
     <footer
-      className="relative w-full overflow-hidden pt-14 sm:pt-20 transition-colors duration-300"
+      className="relative w-full overflow-hidden transition-colors duration-300 pt-6 sm:pt-10 lg:pt-20"
       style={{
         background: isLight
           ? 'linear-gradient(180deg, #FAF8FF 0%, #FAF6FF 50%, rgba(237, 233, 254, 0.6) 100%)'
           : 'linear-gradient(180deg, #0B0E17 0%, #120F26 50%, #0B0914 100%)',
       }}
     >
-      {/* Top 4-Column Grid matching Figma specification & previous section structure */}
-      <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8 pb-10 sm:pb-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8 items-start">
+      {/* ========================================================
+          MOBILE COMPACT VIEW (< 1024px)
+          Designed to fit completely in "ONE VIEW" on mobile screens
+          without requiring long vertical scrolling.
+          ======================================================== */}
+      <div className="block lg:hidden px-4 sm:px-6 max-w-lg mx-auto pb-4">
+        {/* Brand & Socials Compact Row */}
+        <div className="flex items-center justify-between pb-3 border-b border-purple-100/80 dark:border-purple-900/30">
+          <Link to="/" className="inline-flex items-center gap-2">
+            <div className="w-8 h-8 bg-white rounded-lg shadow-xs flex items-center justify-center shrink-0">
+              <img
+                src="/gubbi-bird.png"
+                alt="Gubbi Logo"
+                className="w-6 h-6 object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = '/gubbi-logo.png';
+                }}
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-['Inter'] font-extrabold text-lg tracking-tight text-[#0F172A] dark:text-white leading-none">
+                Gubbi
+              </span>
+              <span className="text-[10px] font-semibold text-[#551BF5] dark:text-purple-400 uppercase tracking-wider mt-0.5">
+                Game. Quiz. Engage.
+              </span>
+            </div>
+          </Link>
+
+          {/* Social Icons 4 compact buttons */}
+          <div className="flex items-center gap-1.5">
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="w-7 h-7 rounded-lg bg-[rgba(250,245,255,0.8)] dark:bg-purple-950/40 border border-[#F3E8FF] dark:border-purple-800/40 flex items-center justify-center text-[#334155] dark:text-slate-300 hover:text-[#551BF5]"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9h2.79v8.37H6.46v-8.37M7.86 6.32a1.63 1.63 0 1 0 0 3.25 1.63 1.63 0 0 0 0-3.25z" />
+              </svg>
+            </a>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="w-7 h-7 rounded-lg bg-[rgba(250,245,255,0.8)] dark:bg-purple-950/40 border border-[#F3E8FF] dark:border-purple-800/40 flex items-center justify-center text-[#334155] dark:text-slate-300 hover:text-[#551BF5]"
+            >
+              <svg className="w-3.5 h-3.5 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+            </a>
+            <a
+              href="https://youtube.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube"
+              className="w-7 h-7 rounded-lg bg-[rgba(250,245,255,0.8)] dark:bg-purple-950/40 border border-[#F3E8FF] dark:border-purple-800/40 flex items-center justify-center text-[#334155] dark:text-slate-300 hover:text-[#551BF5]"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+              </svg>
+            </a>
+            <a
+              href="https://x.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X (Twitter)"
+              className="w-7 h-7 rounded-lg bg-[rgba(250,245,255,0.8)] dark:bg-purple-950/40 border border-[#F3E8FF] dark:border-purple-800/40 flex items-center justify-center text-[#334155] dark:text-slate-300 hover:text-[#551BF5]"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        {/* 2-Column Links Grid on Mobile (Explore & Policies Side by Side) */}
+        <div className="grid grid-cols-2 gap-x-3 gap-y-2 py-3 border-b border-purple-100/80 dark:border-purple-900/30">
+          {/* Column A: EXPLORE PLATFORM */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <Gamepad2 className="w-3.5 h-3.5 text-[#551BF5]" />
+              <h4 className="font-['Inter'] font-bold text-[11px] uppercase tracking-wider text-[#0F172A] dark:text-white">
+                EXPLORE
+              </h4>
+            </div>
+            <ul className="flex flex-col gap-1 text-[11px]">
+              <li>
+                <Link to="/about" className="text-[#334155] dark:text-slate-300 hover:text-[#551BF5] flex items-center gap-1">
+                  <span className="text-[#551BF5] text-[10px] font-bold">›</span>
+                  <span className="truncate">About Gubbi</span>
+                </Link>
+              </li>
+              <li>
+                <button type="button" onClick={() => handleNavClick('#interactive-demo')} className="text-[#334155] dark:text-slate-300 hover:text-[#551BF5] flex items-center gap-1 text-left cursor-pointer">
+                  <span className="text-[#551BF5] text-[10px] font-bold">›</span>
+                  <span className="truncate">Play Demo</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" onClick={() => handleNavClick('#how-it-works')} className="text-[#334155] dark:text-slate-300 hover:text-[#551BF5] flex items-center gap-1 text-left cursor-pointer">
+                  <span className="text-[#551BF5] text-[10px] font-bold">›</span>
+                  <span className="truncate">How It Works</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" onClick={() => handleNavClick('#pricing')} className="text-[#334155] dark:text-slate-300 hover:text-[#551BF5] flex items-center gap-1 text-left cursor-pointer">
+                  <span className="text-[#551BF5] text-[10px] font-bold">›</span>
+                  <span className="truncate">Pricing &amp; Plans</span>
+                </button>
+              </li>
+              <li>
+                <Link to="/join" className="text-[#334155] dark:text-slate-300 hover:text-[#551BF5] flex items-center gap-1">
+                  <span className="text-[#551BF5] text-[10px] font-bold">›</span>
+                  <span className="truncate">Join Game</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column B: HELP & POLICIES */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#551BF5]" />
+              <h4 className="font-['Inter'] font-bold text-[11px] uppercase tracking-wider text-[#0F172A] dark:text-white">
+                HELP &amp; POLICIES
+              </h4>
+            </div>
+            <ul className="flex flex-col gap-1 text-[11px]">
+              <li>
+                <Link to="/faq" className="text-[#334155] dark:text-slate-300 hover:text-[#551BF5] flex items-center gap-1">
+                  <span className="text-[#551BF5] text-[10px] font-bold">›</span>
+                  <span className="truncate">FAQ &amp; Knowledge</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="text-[#334155] dark:text-slate-300 hover:text-[#551BF5] flex items-center gap-1">
+                  <span className="text-[#551BF5] text-[10px] font-bold">›</span>
+                  <span className="truncate">Privacy Policy</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-[#334155] dark:text-slate-300 hover:text-[#551BF5] flex items-center gap-1">
+                  <span className="text-[#551BF5] text-[10px] font-bold">›</span>
+                  <span className="truncate">Terms of Service</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/refund" className="text-[#334155] dark:text-slate-300 hover:text-[#551BF5] flex items-center gap-1">
+                  <span className="text-[#551BF5] text-[10px] font-bold">›</span>
+                  <span className="truncate">Refund Policy</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/login" className="text-[#334155] dark:text-slate-300 hover:text-[#551BF5] flex items-center gap-1">
+                  <span className="text-[#551BF5] text-[10px] font-bold">›</span>
+                  <span className="truncate">Host Login</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Compact Office & Contact Bar on Mobile */}
+        <div className="pt-2.5 flex flex-col gap-1.5 text-[11px]">
+          <div className="flex items-center gap-1.5 text-[#551BF5] dark:text-purple-300 font-bold">
+            <MapPin className="w-3.5 h-3.5 shrink-0" />
+            <span>PUNE (HEAD OFFICE):</span>
+            <span className="font-normal text-[#334155] dark:text-slate-300 truncate">
+              305, City Vista, Kharadi, Pune 411014
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[#334155] dark:text-slate-300 pt-0.5">
+            <a href="mailto:info@fouriseindia.com" className="inline-flex items-center gap-1 hover:text-[#551BF5]">
+              <Mail className="w-3 h-3 text-[#551BF5]" />
+              <span>info@fouriseindia.com</span>
+            </a>
+            <a href="tel:+919527605805" className="inline-flex items-center gap-1 hover:text-[#551BF5]">
+              <Phone className="w-3 h-3 text-[#551BF5]" />
+              <span>+91 95276 05805</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================
+          DESKTOP 4-COLUMN VIEW (>= 1024px)
+          Full-width spacious Figma layout
+          ======================================================== */}
+      <div className="hidden lg:block mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8 pb-10 sm:pb-14">
+        <div className="grid grid-cols-12 gap-8 items-start">
           
           {/* Column 1: Brand Info & Socials (Figma Col 1) */}
-          <div className="lg:col-span-4 flex flex-col items-start">
+          <div className="col-span-4 flex flex-col items-start">
             <Link to="/" className="inline-flex items-center gap-2.5 mb-3 group">
               <div className="w-10 h-10 bg-white rounded-xl shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25),0px_2px_4px_-2px_rgba(168,85,247,0.25)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                 <img
@@ -88,7 +280,6 @@ export default function Footer() {
 
             {/* Social Icons (Rounded-xl soft buttons matching Figma) */}
             <div className="flex items-center gap-3">
-              {/* LinkedIn */}
               <a
                 href="https://linkedin.com"
                 target="_blank"
@@ -101,7 +292,6 @@ export default function Footer() {
                 </svg>
               </a>
 
-              {/* Instagram */}
               <a
                 href="https://instagram.com"
                 target="_blank"
@@ -116,7 +306,6 @@ export default function Footer() {
                 </svg>
               </a>
 
-              {/* YouTube */}
               <a
                 href="https://youtube.com"
                 target="_blank"
@@ -129,7 +318,6 @@ export default function Footer() {
                 </svg>
               </a>
 
-              {/* X (Twitter) */}
               <a
                 href="https://x.com"
                 target="_blank"
@@ -145,7 +333,7 @@ export default function Footer() {
           </div>
 
           {/* Column 2: EXPLORE PLATFORM (Figma Col 2) */}
-          <div className="lg:col-span-3 flex flex-col items-start">
+          <div className="col-span-3 flex flex-col items-start">
             <div className="flex items-center gap-2 mb-4">
               <Gamepad2 className="w-5 h-5 text-[#551BF5]" />
               <h4 className="font-['Inter'] font-bold text-base sm:text-lg tracking-[-0.45px] text-[#0F172A] dark:text-white">
@@ -206,7 +394,7 @@ export default function Footer() {
           </div>
 
           {/* Column 3: HELP & POLICIES (Figma Col 3) */}
-          <div className="lg:col-span-2 flex flex-col items-start">
+          <div className="col-span-2 flex flex-col items-start">
             <div className="flex items-center gap-2 mb-4">
               <ShieldCheck className="w-5 h-5 text-[#551BF5]" />
               <h4 className="font-['Inter'] font-bold text-base sm:text-lg tracking-[-0.45px] text-[#0F172A] dark:text-white">
@@ -264,7 +452,7 @@ export default function Footer() {
           </div>
 
           {/* Column 4: HEAD OFFICE & CONTACT (Figma Col 4) */}
-          <div className="lg:col-span-3 flex flex-col items-start w-full">
+          <div className="col-span-3 flex flex-col items-start w-full">
             <div className="flex items-center gap-2 mb-4">
               <Headphones className="w-5 h-5 text-[#551BF5]" />
               <h4 className="font-['Inter'] font-bold text-base sm:text-lg tracking-[-0.45px] text-[#0F172A] dark:text-white">
@@ -323,7 +511,7 @@ export default function Footer() {
       {/* Layered Soft Wave SVG Transition matching Figma vector specs */}
       <div className="w-full overflow-hidden leading-none relative -mb-1">
         <svg
-          className="relative block w-full h-[60px] sm:h-[80px] lg:h-[96px]"
+          className="relative block w-full h-[40px] sm:h-[60px] lg:h-[96px]"
           viewBox="0 0 1440 96"
           preserveAspectRatio="none"
         >
@@ -342,13 +530,13 @@ export default function Footer() {
       </div>
 
       {/* Solid Royal Purple Bottom Sub-footer */}
-      <div className="w-full bg-[#551BF5] dark:bg-[#4314D6] text-white py-6 px-4 sm:px-8">
-        <div className="mx-auto max-w-[1240px] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <p className="font-['Inter'] text-xs sm:text-sm text-white/95 font-normal">
+      <div className="w-full bg-[#551BF5] dark:bg-[#4314D6] text-white py-3.5 sm:py-6 px-4 sm:px-8">
+        <div className="mx-auto max-w-[1240px] flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4 text-center sm:text-left">
+          <p className="font-['Inter'] text-[11px] sm:text-sm text-white/95 font-normal">
             © 2026 Gubbi Inc. · Gubbi. All rights reserved.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-xs sm:text-sm font-['Inter'] font-medium text-white/90">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-[11px] sm:text-sm font-['Inter'] font-medium text-white/90">
             <Link to="/about" className="hover:text-white transition-colors">
               About Gubbi
             </Link>
@@ -368,8 +556,8 @@ export default function Footer() {
             <Link to="/refund" className="hover:text-white transition-colors">
               Refund Policy
             </Link>
-            <span className="text-white/40">|</span>
-            <Link to="/" className="hover:text-white transition-colors">
+            <span className="text-white/40 hidden sm:inline">|</span>
+            <Link to="/" className="hover:text-white transition-colors hidden sm:inline">
               Gubbi
             </Link>
           </div>
