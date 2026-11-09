@@ -81,7 +81,7 @@ export default function PricingSection() {
       id="pricing" 
       className="relative w-full py-12 sm:py-16 lg:py-20 scroll-mt-20 overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 40%, #FFFFFF 100%)'
+        background: 'linear-gradient(180deg, #FAF8FF 0%, #FAF6FF 50%, #FAF8FF 100%)'
       }}
     >
       <div className="max-w-[1349px] mx-auto px-4 sm:px-8 w-full flex flex-col items-center">

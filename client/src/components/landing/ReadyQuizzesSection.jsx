@@ -150,7 +150,7 @@ export default function ReadyQuizzesSection() {
       className="py-16 md:py-24 relative overflow-hidden transition-colors"
       style={{
         background: isLight
-          ? 'linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 25%, #F4EEFE 55%, #FFFFFF 100%)'
+          ? 'linear-gradient(180deg, #FAF8FF 0%, #FAF5FF 25%, #F4EEFE 55%, #FAF8FF 100%)'
           : 'linear-gradient(180deg, #0B0914 0%, #16122E 45%, #0B0914 100%)',
       }}
     >

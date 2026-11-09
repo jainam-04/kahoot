@@ -695,7 +695,7 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
   return (
     <section
       id="interactive-demo"
-      className="relative w-full bg-white py-14 sm:py-20 overflow-hidden scroll-mt-20"
+      className="relative w-full bg-[#FAF8FF] py-14 sm:py-20 overflow-hidden scroll-mt-20"
     >
       {/* Ambient soft gradient glowing backdrops directly from Figma CSS */}
       <div

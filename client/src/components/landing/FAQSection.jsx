@@ -59,7 +59,7 @@ export default function FAQSection() {
       id="faq"
       className="relative w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-8 scroll-mt-20 overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 40%, #FFFFFF 100%)',
+        background: 'linear-gradient(180deg, #FAF8FF 0%, #FAF6FF 50%, #FAF8FF 100%)',
       }}
     >
       {/* Ambient soft decorative purple glow blooms from Figma */}

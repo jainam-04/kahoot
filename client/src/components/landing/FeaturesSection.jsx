@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   Users,
@@ -53,9 +53,162 @@ const rightFeatures = [
   },
 ];
 
+// Fallback initial connectors so there is never a blank flash before layout measurements
+const defaultConnectors = [
+  { id: 'left-0', x1: 340, y1: 58, x2: 450, y2: 140, pathD: 'M 340 58 C 400 58, 430 140, 450 140' },
+  { id: 'left-1', x1: 340, y1: 205, x2: 445, y2: 205, pathD: 'M 340 205 L 445 205' },
+  { id: 'left-2', x1: 340, y1: 352, x2: 460, y2: 285, pathD: 'M 340 352 C 400 352, 435 285, 460 285' },
+  { id: 'right-0', x1: 812, y1: 58, x2: 702, y2: 140, pathD: 'M 812 58 C 752 58, 722 140, 702 140' },
+  { id: 'right-1', x1: 812, y1: 205, x2: 707, y2: 205, pathD: 'M 812 205 L 707 205' },
+  { id: 'right-2', x1: 812, y1: 352, x2: 692, y2: 285, pathD: 'M 812 352 C 752 352, 717 285, 692 285' },
+];
+
 export default function FeaturesSection() {
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
+
+  const stageRef = useRef(null);
+  const laptopRef = useRef(null);
+  const leftCardRefs = useRef([]);
+  const rightCardRefs = useRef([]);
+
+  const [connectors, setConnectors] = useState(defaultConnectors);
+
+  const updateConnectors = useCallback(() => {
+    if (!stageRef.current || !laptopRef.current) return;
+    const stageRect = stageRef.current.getBoundingClientRect();
+    const laptopRect = laptopRef.current.getBoundingClientRect();
+
+    if (stageRect.width === 0 || stageRect.height === 0 || laptopRect.width === 0) return;
+
+    const list = [];
+
+    // Precise attachment points on the 3D laptop illustration:
+    // Left side:
+    // Top: screen top-left corner
+    // Middle: screen left bezel
+    // Bottom: laptop keyboard/base left
+    const leftTargets = [
+      {
+        x: laptopRect.left + laptopRect.width * 0.17 - stageRect.left,
+        y: laptopRect.top + laptopRect.height * 0.34 - stageRect.top,
+      },
+      {
+        x: laptopRect.left + laptopRect.width * 0.155 - stageRect.left,
+        y: laptopRect.top + laptopRect.height * 0.49 - stageRect.top,
+      },
+      {
+        x: laptopRect.left + laptopRect.width * 0.20 - stageRect.left,
+        y: laptopRect.top + laptopRect.height * 0.69 - stageRect.top,
+      },
+    ];
+
+    // Right side:
+    // Top: screen top-right corner
+    // Middle: screen right bezel
+    // Bottom: laptop keyboard/base right
+    const rightTargets = [
+      {
+        x: laptopRect.left + laptopRect.width * 0.83 - stageRect.left,
+        y: laptopRect.top + laptopRect.height * 0.34 - stageRect.top,
+      },
+      {
+        x: laptopRect.left + laptopRect.width * 0.845 - stageRect.left,
+        y: laptopRect.top + laptopRect.height * 0.49 - stageRect.top,
+      },
+      {
+        x: laptopRect.left + laptopRect.width * 0.80 - stageRect.left,
+        y: laptopRect.top + laptopRect.height * 0.69 - stageRect.top,
+      },
+    ];
+
+    // Measure left cards and build cubic Bézier paths starting exactly at the right border
+    leftCardRefs.current.forEach((el, idx) => {
+      if (!el) return;
+      const cardRect = el.getBoundingClientRect();
+      const x1 = cardRect.right - stageRect.left;
+      const y1 = cardRect.top + cardRect.height / 2 - stageRect.top;
+      const target = leftTargets[idx];
+      if (!target) return;
+      const x2 = target.x;
+      const y2 = target.y;
+
+      const dx = x2 - x1;
+      const cp1x = x1 + dx * 0.55;
+      const cp1y = y1;
+      const cp2x = x1 + dx * 0.85;
+      const cp2y = y2;
+      const pathD = `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`;
+
+      list.push({
+        id: `left-${idx}`,
+        x1,
+        y1,
+        x2,
+        y2,
+        pathD,
+      });
+    });
+
+    // Measure right cards and build cubic Bézier paths starting exactly at the left border
+    rightCardRefs.current.forEach((el, idx) => {
+      if (!el) return;
+      const cardRect = el.getBoundingClientRect();
+      const x1 = cardRect.left - stageRect.left;
+      const y1 = cardRect.top + cardRect.height / 2 - stageRect.top;
+      const target = rightTargets[idx];
+      if (!target) return;
+      const x2 = target.x;
+      const y2 = target.y;
+
+      const dx = x1 - x2;
+      const cp1x = x1 - dx * 0.55;
+      const cp1y = y1;
+      const cp2x = x1 - dx * 0.85;
+      const cp2y = y2;
+      const pathD = `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`;
+
+      list.push({
+        id: `right-${idx}`,
+        x1,
+        y1,
+        x2,
+        y2,
+        pathD,
+      });
+    });
+
+    if (list.length === 6) {
+      setConnectors(list);
+    }
+  }, []);
+
+  useEffect(() => {
+    updateConnectors();
+    const t1 = setTimeout(updateConnectors, 50);
+    const t2 = setTimeout(updateConnectors, 200);
+
+    const handleResize = () => {
+      window.requestAnimationFrame(updateConnectors);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    let observer;
+    if (typeof ResizeObserver !== 'undefined' && stageRef.current) {
+      observer = new ResizeObserver(() => {
+        window.requestAnimationFrame(updateConnectors);
+      });
+      observer.observe(stageRef.current);
+    }
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener('resize', handleResize);
+      if (observer) observer.disconnect();
+    };
+  }, [updateConnectors]);
 
   return (
     <section
@@ -63,7 +216,7 @@ export default function FeaturesSection() {
       className="w-full relative overflow-hidden transition-colors lg:h-[calc(100vh-81px)] lg:max-h-[calc(100vh-81px)] lg:flex lg:flex-col lg:justify-between py-6 lg:py-5 xl:py-7 scroll-mt-20"
       style={{
         background: isLight
-          ? 'linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 40%, #FAF8FF 75%, #FFFFFF 100%)'
+          ? '#FAF8FF'
           : 'linear-gradient(180deg, #0B0914 0%, #120F26 50%, #0B0914 100%)',
       }}
     >
@@ -104,58 +257,52 @@ export default function FeaturesSection() {
         </div>
 
         {/* Main 3-Column Architecture Container with Connectors and Cards */}
-        <div className="relative w-full max-w-[1152px] mx-auto h-[400px] xl:h-[420px] flex items-center justify-between my-auto">
+        <div
+          ref={stageRef}
+          className="relative w-full max-w-[1152px] mx-auto h-[400px] xl:h-[420px] flex items-center justify-between my-auto"
+        >
           
-          {/* SVG Curved Connector Lines matching Figma coordinates */}
+          {/* Dynamic SVG Connector Lines & Unified Anchored Dots */}
           <svg
-            className="absolute inset-0 w-full h-full pointer-events-none z-15"
-            viewBox="0 0 1152 410"
-            fill="none"
+            className="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible"
           >
-            {/* Left Card 1 -> Laptop Screen */}
-            <path
-              d="M 340 58 C 395 58, 415 140, 455 140"
-              stroke="#DDD6FE"
-              strokeWidth="1.5"
-            />
-            {/* Left Card 2 -> Laptop Bezel */}
-            <path
-              d="M 340 205 L 430 205"
-              stroke="#DDD6FE"
-              strokeWidth="1.5"
-            />
-            {/* Left Card 3 -> Laptop Base */}
-            <path
-              d="M 340 352 C 395 352, 405 290, 435 290"
-              stroke="#DDD6FE"
-              strokeWidth="1.5"
-            />
-
-            {/* Right Card 1 -> Laptop Screen */}
-            <path
-              d="M 812 58 C 757 58, 737 140, 697 140"
-              stroke="#DDD6FE"
-              strokeWidth="1.5"
-            />
-            {/* Right Card 2 -> Laptop Bezel */}
-            <path
-              d="M 812 205 L 722 205"
-              stroke="#DDD6FE"
-              strokeWidth="1.5"
-            />
-            {/* Right Card 3 -> Laptop Base */}
-            <path
-              d="M 812 352 C 757 352, 747 290, 717 290"
-              stroke="#DDD6FE"
-              strokeWidth="1.5"
-            />
+            {connectors.map((c) => (
+              <g key={c.id}>
+                {/* Curved connector line touching card dot and laptop directly */}
+                <path
+                  d={c.pathD}
+                  fill="none"
+                  stroke={isLight ? '#DDD6FE' : 'rgba(167, 139, 250, 0.5)'}
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                />
+                {/* Endpoint pulse dot at laptop bezel/screen */}
+                <circle
+                  cx={c.x2}
+                  cy={c.y2}
+                  r={3}
+                  fill={isLight ? '#A78BFA' : '#C084FC'}
+                  opacity={0.85}
+                />
+                {/* Purple Connector Dot on card edge - sharing (x1, y1) with 0px gap */}
+                <circle
+                  cx={c.x1}
+                  cy={c.y1}
+                  r={6}
+                  fill="#551BF5"
+                  stroke={isLight ? '#FFFFFF' : '#151224'}
+                  strokeWidth="2.5"
+                />
+              </g>
+            ))}
           </svg>
 
           {/* Left 3 Feature Cards */}
-          <div className="w-[340px] h-full flex flex-col justify-between z-20">
+          <div className="w-[320px] xl:w-[340px] h-full flex flex-col justify-between z-10">
             {leftFeatures.map((feat, idx) => (
               <motion.div
                 key={feat.title}
+                ref={(el) => (leftCardRefs.current[idx] = el)}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -166,9 +313,6 @@ export default function FeaturesSection() {
                     : 'bg-[#151224] border-purple-500/20 shadow-xl'
                 }`}
               >
-                {/* Purple Connector Dot on Right Edge */}
-                <span className="absolute -right-[6px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#551BF5] ring-2 ring-white dark:ring-[#151224] z-30 shadow-sm" />
-
                 <div className="flex items-center gap-3.5 xl:gap-4">
                   <div className={`w-12 h-12 xl:w-14 xl:h-14 rounded-2xl ${feat.iconBg} flex items-center justify-center shrink-0 shadow-inner`}>
                     {feat.icon}
@@ -196,21 +340,24 @@ export default function FeaturesSection() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.45 }}
-              className="relative w-full max-w-[440px] flex items-center justify-center"
+              className="relative w-full max-w-[420px] xl:max-w-[450px] flex items-center justify-center"
             >
               <img
+                ref={laptopRef}
                 src={featuresLaptopCenter}
                 alt="Gubbi Live Quiz Experience"
+                onLoad={updateConnectors}
                 className="w-full h-auto object-contain select-none drop-shadow-[0_20px_35px_rgba(85,27,245,0.12)]"
               />
             </motion.div>
           </div>
 
           {/* Right 3 Feature Cards */}
-          <div className="w-[340px] h-full flex flex-col justify-between z-20">
+          <div className="w-[320px] xl:w-[340px] h-full flex flex-col justify-between z-10">
             {rightFeatures.map((feat, idx) => (
               <motion.div
                 key={feat.title}
+                ref={(el) => (rightCardRefs.current[idx] = el)}
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -221,9 +368,6 @@ export default function FeaturesSection() {
                     : 'bg-[#151224] border-purple-500/20 shadow-xl'
                 }`}
               >
-                {/* Purple Connector Dot on Left Edge */}
-                <span className="absolute -left-[6px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#551BF5] ring-2 ring-white dark:ring-[#151224] z-30 shadow-sm" />
-
                 <div className="flex items-center gap-3.5 xl:gap-4">
                   <div className={`w-12 h-12 xl:w-14 xl:h-14 rounded-2xl ${feat.iconBg} flex items-center justify-center shrink-0 shadow-inner`}>
                     {feat.icon}

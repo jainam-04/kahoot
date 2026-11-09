@@ -12,7 +12,7 @@ export default function CTASection() {
       id="cta" 
       className="relative w-full py-10 sm:py-16 lg:py-20 overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 50%, #FFFFFF 100%)'
+        background: 'linear-gradient(180deg, #FAF8FF 0%, #FAF6FF 50%, #FAF8FF 100%)'
       }}
     >
       <div className="relative mx-auto max-w-[1280px] px-3 sm:px-6 lg:px-8">
