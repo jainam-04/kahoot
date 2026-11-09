@@ -157,7 +157,7 @@ export default function ReadyQuizzesSection() {
       <div className="max-w-[1351px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center gap-10">
         
         {/* Section Header matching Figma reference */}
-        <div className="flex flex-col items-center text-center max-w-[768px] mx-auto gap-4">
+        <div className="flex flex-col items-center text-center w-full max-w-[960px] mx-auto gap-4">
           <h2 className="flex flex-wrap items-center justify-center gap-2 text-3xl sm:text-4xl md:text-[48px] md:leading-[48px] tracking-[-1.2px] font-semibold text-[#0D0B26] dark:text-white">
             <span>Ready to Use</span>
             <span className="font-bold text-[#551BF5]">Quizzes</span>
@@ -168,30 +168,32 @@ export default function ReadyQuizzesSection() {
           </p>
 
           {/* Capsule Container Bar with category filter pills */}
-          <div className="mt-2 p-2 flex flex-wrap items-center justify-center gap-2 rounded-full bg-white/70 dark:bg-[#181528]/80 border border-[#E9D5FF]/70 dark:border-purple-500/20 shadow-[0px_1px_12px_rgba(0,0,0,0.12)] backdrop-blur-md">
-            {categoryPills.map((pill) => {
-              const Icon = pill.icon;
-              const isSelected = activeCategory === pill.name;
+          <div className="mt-2 w-full flex justify-center">
+            <div className="p-1.5 sm:p-2 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-full bg-white/70 dark:bg-[#181528]/80 border border-[#E9D5FF]/70 dark:border-purple-500/20 shadow-[0px_1px_12px_rgba(0,0,0,0.12)] backdrop-blur-md max-w-full overflow-x-auto no-scrollbar">
+              {categoryPills.map((pill) => {
+                const Icon = pill.icon;
+                const isSelected = activeCategory === pill.name;
 
-              return (
-                <button
-                  key={pill.name}
-                  type="button"
-                  onClick={() => setActiveCategory(pill.name)}
-                  className={`h-10 px-5 sm:px-6 rounded-full flex items-center gap-2 text-sm transition-all duration-200 cursor-pointer ${
-                    isSelected
-                      ? 'bg-[#551BF5] text-white font-bold shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25),0px_2px_4px_-2px_rgba(168,85,247,0.25)] scale-[1.02]'
-                      : 'bg-white/80 dark:bg-white/10 border border-slate-200/80 dark:border-white/10 text-[#334155] dark:text-slate-200 font-semibold hover:bg-white dark:hover:bg-white/20'
-                  }`}
-                >
-                  <Icon
-                    className="w-4 h-4 shrink-0 transition-colors"
-                    style={{ color: isSelected ? '#FFFFFF' : pill.iconColor }}
-                  />
-                  <span>{pill.name}</span>
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={pill.name}
+                    type="button"
+                    onClick={() => setActiveCategory(pill.name)}
+                    className={`h-9 sm:h-10 px-4 sm:px-5 rounded-full flex items-center gap-2 text-xs sm:text-sm transition-all duration-200 cursor-pointer shrink-0 whitespace-nowrap ${
+                      isSelected
+                        ? 'bg-[#551BF5] text-white font-bold shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25),0px_2px_4px_-2px_rgba(168,85,247,0.25)] scale-[1.02]'
+                        : 'bg-white/80 dark:bg-white/10 border border-slate-200/80 dark:border-white/10 text-[#334155] dark:text-slate-200 font-semibold hover:bg-white dark:hover:bg-white/20'
+                    }`}
+                  >
+                    <Icon
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 transition-colors"
+                      style={{ color: isSelected ? '#FFFFFF' : pill.iconColor }}
+                    />
+                    <span>{pill.name}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
