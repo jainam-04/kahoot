@@ -1556,12 +1556,14 @@ form .btn-premium.shrink-0,
    ══════════════════════════════════════════════════════════ */
 
 /* Scrollbar hiding utility */
-.scrollbar-none {
+.scrollbar-none,
+.no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-.scrollbar-none::-webkit-scrollbar {
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 

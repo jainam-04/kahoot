@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useRef } from 'react';
 import {
   Play,
   LayoutGrid,
@@ -7,7 +6,9 @@ import {
   BookOpen,
   Code,
   Calculator,
-  Clock
+  Clock,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -28,6 +29,8 @@ export default function ReadyQuizzesSection() {
 
   const [activeCategory, setActiveCategory] = useState('All');
   const [hostingId, setHostingId] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const carouselRef = useRef(null);
 
   const categoryPills = [
     { name: 'All', icon: LayoutGrid, iconColor: '#FFFFFF' },
@@ -41,6 +44,56 @@ export default function ReadyQuizzesSection() {
   const filteredQuizzes = activeCategory === 'All'
     ? FEATURED_PRESET_QUIZZES
     : ALL_CURATED_QUIZZES.filter(q => q.category.toLowerCase() === activeCategory.toLowerCase());
+
+  // Carousel touch/scroll synchronization
+  const handleScroll = () => {
+    if (!carouselRef.current) return;
+    const el = carouselRef.current;
+    const card = el.firstElementChild;
+    if (!card) return;
+    const cardWidth = card.getBoundingClientRect().width;
+    const gap = 16;
+    const index = Math.round(el.scrollLeft / (cardWidth + gap));
+    const clamped = Math.max(0, Math.min(filteredQuizzes.length - 1, index));
+    if (clamped !== activeIndex) {
+      setActiveIndex(clamped);
+    }
+  };
+
+  const scrollToIndex = (index) => {
+    if (!carouselRef.current) return;
+    const el = carouselRef.current;
+    const cards = el.children;
+    if (cards && cards[index]) {
+      cards[index].scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      });
+      setActiveIndex(index);
+    }
+  };
+
+  const handlePrev = () => {
+    const nextIndex = Math.max(0, activeIndex - 1);
+    scrollToIndex(nextIndex);
+  };
+
+  const handleNext = () => {
+    const nextIndex = Math.min(filteredQuizzes.length - 1, activeIndex + 1);
+    scrollToIndex(nextIndex);
+  };
+
+  const handleCategoryClick = (categoryName, e) => {
+    setActiveCategory(categoryName);
+    setActiveIndex(0);
+    if (carouselRef.current) {
+      carouselRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+    if (e?.currentTarget) {
+      e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  };
 
   // Determine metadata, illustration banner, and category styling
   const getQuizMeta = (quiz) => {
@@ -168,38 +221,46 @@ export default function ReadyQuizzesSection() {
           </p>
 
           {/* Capsule Container Bar with category filter pills */}
-          <div className="mt-2 w-full flex justify-center">
-            <div className="p-1.5 sm:p-2 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-full bg-white/70 dark:bg-[#181528]/80 border border-[#E9D5FF]/70 dark:border-purple-500/20 shadow-[0px_1px_12px_rgba(0,0,0,0.12)] backdrop-blur-md max-w-full overflow-x-auto no-scrollbar">
-              {categoryPills.map((pill) => {
-                const Icon = pill.icon;
-                const isSelected = activeCategory === pill.name;
+          <div className="w-full flex justify-center px-2 sm:px-4">
+            <div className="w-full max-w-full sm:w-auto overflow-x-auto scrollbar-none py-1.5 px-1 -mx-1">
+              <div className="flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl sm:rounded-full bg-white/85 dark:bg-[#181528]/85 border border-[#E9D5FF]/80 dark:border-purple-500/20 shadow-[0px_2px_12px_rgba(85,27,245,0.08)] backdrop-blur-md min-w-max">
+                {categoryPills.map((pill) => {
+                  const Icon = pill.icon;
+                  const isSelected = activeCategory === pill.name;
 
-                return (
-                  <button
-                    key={pill.name}
-                    type="button"
-                    onClick={() => setActiveCategory(pill.name)}
-                    className={`h-9 sm:h-10 px-4 sm:px-5 rounded-full flex items-center gap-2 text-xs sm:text-sm transition-all duration-200 cursor-pointer shrink-0 whitespace-nowrap ${
-                      isSelected
-                        ? 'bg-[#551BF5] text-white font-bold shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25),0px_2px_4px_-2px_rgba(168,85,247,0.25)] scale-[1.02]'
-                        : 'bg-white/80 dark:bg-white/10 border border-slate-200/80 dark:border-white/10 text-[#334155] dark:text-slate-200 font-semibold hover:bg-white dark:hover:bg-white/20'
-                    }`}
-                  >
-                    <Icon
-                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 transition-colors"
-                      style={{ color: isSelected ? '#FFFFFF' : pill.iconColor }}
-                    />
-                    <span>{pill.name}</span>
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      key={pill.name}
+                      type="button"
+                      onClick={(e) => handleCategoryClick(pill.name, e)}
+                      className={`h-9 sm:h-10 px-3.5 sm:px-5 rounded-xl sm:rounded-full flex items-center gap-2 text-xs sm:text-sm transition-all duration-200 cursor-pointer shrink-0 whitespace-nowrap select-none ${
+                        isSelected
+                          ? 'bg-[#551BF5] text-white font-bold shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25),0px_2px_4px_-2px_rgba(168,85,247,0.25)] scale-[1.02]'
+                          : 'bg-white/80 dark:bg-white/10 border border-slate-200/80 dark:border-white/10 text-[#334155] dark:text-slate-200 font-semibold hover:bg-white dark:hover:bg-white/20'
+                      }`}
+                    >
+                      <Icon
+                        className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 transition-colors"
+                        style={{ color: isSelected ? '#FFFFFF' : pill.iconColor }}
+                      />
+                      <span>{pill.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* 4 Curated Quiz Cards Grid matching reference */}
-        <div className="w-full max-w-[1243px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 filter drop-shadow-[0px_1px_7px_rgba(0,0,0,0.13)]">
-          <AnimatePresence mode="popLayout">
+        {/* Carousel / Cards Grid matching reference */}
+        <div className="relative w-full max-w-[1243px]">
+          {/* Scrollable Carousel Track on Mobile/Tablet (< lg), Grid on Desktop (lg:) */}
+          <div
+            ref={carouselRef}
+            onScroll={handleScroll}
+            className="w-full flex lg:grid lg:grid-cols-4 gap-4 sm:gap-5 overflow-x-auto lg:overflow-visible snap-x snap-mandatory scrollbar-none px-4 sm:px-6 lg:px-0 py-3 -my-3 after:content-[''] after:w-2 after:shrink-0 lg:after:hidden"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
             {filteredQuizzes.map((quiz, index) => {
               const meta = getQuizMeta(quiz);
               const badge = getDifficultyBadge(quiz.difficulty);
@@ -207,14 +268,9 @@ export default function ReadyQuizzesSection() {
               const isHosting = hostingId === quiz._id;
 
               return (
-                <motion.article
+                <article
                   key={quiz._id || index}
-                  layout
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.25, delay: index * 0.05 }}
-                  className={`w-full rounded-[24px] overflow-hidden flex flex-col justify-between border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                  className={`w-[84vw] max-w-[310px] sm:w-[320px] lg:w-full shrink-0 lg:shrink snap-center lg:snap-align-none rounded-[24px] overflow-hidden flex flex-col justify-between border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
                     isLight
                       ? 'bg-white border-[#F3E8FF]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
                       : 'bg-[#151224] border-purple-500/20 shadow-lg'
@@ -234,7 +290,7 @@ export default function ReadyQuizzesSection() {
                       />
                       {/* Difficulty Badge top right */}
                       <span
-                        className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-[0.25px] border shadow-sm ${badge.className}`}
+                        className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-[0.25px] border shadow-xs ${badge.className}`}
                       >
                         {badge.label}
                       </span>
@@ -299,10 +355,54 @@ export default function ReadyQuizzesSection() {
                       )}
                     </button>
                   </div>
-                </motion.article>
+                </article>
               );
             })}
-          </AnimatePresence>
+          </div>
+
+          {/* Mobile Carousel Controls: Arrows + Pagination Dots (< lg) */}
+          {filteredQuizzes.length > 1 && (
+            <div className="flex lg:hidden items-center justify-between w-full max-w-[280px] mx-auto mt-4 px-2">
+              {/* Prev Button */}
+              <button
+                type="button"
+                onClick={handlePrev}
+                disabled={activeIndex === 0}
+                aria-label="Previous quiz card"
+                className="w-9 h-9 rounded-full bg-white dark:bg-[#181528] border border-[#E9D5FF] dark:border-purple-800/40 text-[#551BF5] dark:text-purple-300 flex items-center justify-center shadow-xs transition-all active:scale-95 disabled:opacity-25 disabled:pointer-events-none cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-950/40"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+
+              {/* Pagination Dots */}
+              <div className="flex items-center gap-2">
+                {filteredQuizzes.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => scrollToIndex(idx)}
+                    aria-label={`Slide ${idx + 1}`}
+                    className={`transition-all duration-300 rounded-full cursor-pointer ${
+                      activeIndex === idx
+                        ? 'w-6 h-2 bg-[#551BF5]'
+                        : 'w-2 h-2 bg-purple-200 dark:bg-purple-900/60 hover:bg-purple-300'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Next Button */}
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={activeIndex === filteredQuizzes.length - 1}
+                aria-label="Next quiz card"
+                className="w-9 h-9 rounded-full bg-white dark:bg-[#181528] border border-[#E9D5FF] dark:border-purple-800/40 text-[#551BF5] dark:text-purple-300 flex items-center justify-center shadow-xs transition-all active:scale-95 disabled:opacity-25 disabled:pointer-events-none cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-950/40"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
         </div>
 
       </div>
