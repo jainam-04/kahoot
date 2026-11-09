@@ -159,13 +159,16 @@ export default function EditQuiz() {
     }
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data, targetStatus = 'published') => {
     if (data.questions.length === 0) {
       toast.error('Please add at least one question');
       return;
     }
+    const isDraft = targetStatus === 'draft';
     const payload = {
       ...data,
+      status: targetStatus,
+      isDraft,
       backgroundImage: data.backgroundImage || '',
       questions: data.questions.map(q => ({
         ...q,
@@ -245,7 +248,18 @@ export default function EditQuiz() {
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 mt-1 sm:mt-0 w-full sm:w-auto">
                 <button
                   type="button"
-                  onClick={handleSubmit(onSubmit, onInvalid)}
+                  onClick={handleSubmit((data) => onSubmit(data, 'draft'), onInvalid)}
+                  disabled={updateMutation.isPending}
+                  className="btn-premium w-full sm:w-auto justify-center px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-300 bg-amber-500/20 border border-amber-500/30 hover:bg-amber-500/30 shadow-md cursor-pointer rounded-xl transition-all disabled:opacity-60"
+                  title="Save in drafts to edit later"
+                >
+                  <Save className="h-4 w-4 shrink-0" />
+                  <span className="truncate">Save as Draft</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSubmit((data) => onSubmit(data, 'published'), onInvalid)}
                   disabled={updateMutation.isPending}
                   className="btn-premium w-full sm:w-auto justify-center px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer disabled:opacity-60"
                   style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
@@ -254,7 +268,7 @@ export default function EditQuiz() {
                     ? <Loader2 className="h-4 w-4 animate-spin shrink-0" />
                     : <Save className="h-4 w-4 shrink-0" />
                   }
-                  <span>{updateMutation.isPending ? 'Saving...' : 'Save Changes'}</span>
+                  <span>{updateMutation.isPending ? 'Saving...' : 'Save & Publish'}</span>
                 </button>
               </div>
             </div>

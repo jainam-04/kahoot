@@ -25,6 +25,11 @@ export const updateQuiz = async ({ id, data }) => {
   return response.data;
 };
 
+export const updateQuizStatus = async (id, status) => {
+  const response = await API.patch(`/quiz/${id}/status`, { status });
+  return response.data;
+};
+
 export const deleteQuiz = async (id) => {
   const response = await API.delete(`/quiz/${id}`);
   return response.data;

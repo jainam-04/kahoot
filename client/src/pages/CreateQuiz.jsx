@@ -269,16 +269,19 @@ export default function CreateQuiz() {
     return parsedQuestions;
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data, targetStatus = 'published') => {
     // Basic verification
     if (data.questions.length === 0) {
       toast.error('Please add at least one question');
       return;
     }
 
+    const isDraft = targetStatus === 'draft';
     // Convert correctAnswer values to numbers just in case
     const payload = {
       ...data,
+      status: targetStatus,
+      isDraft,
       backgroundImage: data.backgroundImage || '',
       questions: data.questions.map(q => ({
         ...q,
@@ -293,7 +296,7 @@ export default function CreateQuiz() {
       if (response.success) {
         queryClient.invalidateQueries({ queryKey: ['my-quizzes'] });
         queryClient.invalidateQueries({ queryKey: ['my-quizzes-full'] });
-        toast.success('Quiz created successfully!');
+        toast.success(isDraft ? 'Quiz saved as draft! 📝' : 'Quiz published successfully! 🚀');
         navigate('/quiz/my');
       } else {
         toast.error(response.message || 'Failed to save quiz');
@@ -420,12 +423,22 @@ export default function CreateQuiz() {
 
                 <button
                   type="button"
-                  onClick={handleSubmit(onSubmit, onInvalid)}
+                  onClick={handleSubmit((data) => onSubmit(data, 'draft'), onInvalid)}
+                  className="btn-premium w-full sm:w-auto justify-center px-3 sm:px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-300 bg-amber-500/20 border border-amber-500/30 hover:bg-amber-500/30 shadow-md cursor-pointer rounded-xl transition-all"
+                  title="Save in drafts to edit later"
+                >
+                  <Save className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">Save as Draft</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSubmit((data) => onSubmit(data, 'published'), onInvalid)}
                   className="btn-premium w-full sm:w-auto justify-center px-3 sm:px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer rounded-xl"
                   style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
                 >
                   <Save className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">Save Quiz</span>
+                  <span className="truncate">Publish Quiz</span>
                 </button>
               </div>
             </div>

@@ -81,7 +81,7 @@ function AnimatedRoutes() {
   const location = useLocation();
   useScrollToHash();
 
-  // Hide Navbar during gameplay and on dedicated application views (Dashboard, Admin)
+  // Hide Navbar during gameplay and on dedicated application views (Dashboard, My Quizzes, Admin)
   const isGameplayView = [
     '/live', 
     '/waiting', 
@@ -89,7 +89,8 @@ function AnimatedRoutes() {
     '/leaderboard', 
     '/final-result',
     '/admin',
-    '/dashboard'
+    '/dashboard',
+    '/quiz/my'
   ].some(path => location.pathname.startsWith(path));
 
   // Footer is displayed on the homepage and all public info/policy pages, hidden during gameplay

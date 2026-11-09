@@ -72,6 +72,15 @@ const quizSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    status: {
+        type: String,
+        enum: ['draft', 'published'],
+        default: 'published'
+    },
+    isDraft: {
+        type: Boolean,
+        default: false
+    },
     backgroundImage: {
         type: String,
         default: ''

@@ -3,7 +3,8 @@ const GameSession = require('../models/GameSession');
 
 const createQuiz = async (req, res) => {
     try {
-        const { title, category, description, organizationName, questions, backgroundImage } = req.body;
+        const { title, category, description, organizationName, questions, backgroundImage, status, isDraft } = req.body;
+        const isDraftFlag = isDraft === true || status === 'draft';
 
         if (!title) {
             return res.status(400).json({
@@ -35,6 +36,8 @@ const createQuiz = async (req, res) => {
             organizationName,
             questions,
             backgroundImage: backgroundImage || '',
+            status: isDraftFlag ? 'draft' : 'published',
+            isDraft: isDraftFlag,
             createdBy: req.user.id
         });
 
@@ -186,7 +189,7 @@ const updateQuiz = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Not authorized to edit this quiz' });
         }
 
-        const { title, category, description, organizationName, questions, backgroundImage } = req.body;
+        const { title, category, description, organizationName, questions, backgroundImage, status, isDraft } = req.body;
 
         if (!title) {
             return res.status(400).json({ success: false, message: 'Please provide quiz title' });
@@ -206,9 +209,37 @@ const updateQuiz = async (req, res) => {
         quiz.organizationName = organizationName || '';
         quiz.questions = questions;
         quiz.backgroundImage = backgroundImage || '';
+        if (status !== undefined) {
+            quiz.status = status;
+            quiz.isDraft = (status === 'draft');
+        } else if (isDraft !== undefined) {
+            quiz.isDraft = Boolean(isDraft);
+            quiz.status = isDraft ? 'draft' : 'published';
+        }
         await quiz.save();
 
         res.status(200).json({ success: true, message: 'Quiz updated successfully', quiz });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+const toggleQuizStatus = async (req, res) => {
+    try {
+        const quiz = await Quiz.findById(req.params.id);
+        if (!quiz) {
+            return res.status(404).json({ success: false, message: 'Quiz not found' });
+        }
+        const createdByStr = quiz.createdBy?.toString();
+        const reqUserIdStr = req.user?._id?.toString();
+        if (createdByStr !== reqUserIdStr) {
+            return res.status(401).json({ success: false, message: 'Not authorized to edit this quiz' });
+        }
+        const newStatus = req.body.status || (quiz.status === 'draft' ? 'published' : 'draft');
+        quiz.status = newStatus;
+        quiz.isDraft = (newStatus === 'draft');
+        await quiz.save();
+        res.status(200).json({ success: true, message: `Quiz marked as ${newStatus}`, quiz });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -552,5 +583,6 @@ module.exports = {
     deleteQuiz,
     getMyQuizzes,
     updateQuiz,
+    toggleQuizStatus,
     generateAIQuestions
 };
