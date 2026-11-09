@@ -1,6 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Zap, ChevronRight } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Zap, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 /* ==========================================================
@@ -240,6 +239,47 @@ export default function HowItWorksSection() {
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
 
+  const [activeIndex, setActiveIndex] = useState(0);
+  const carouselRef = useRef(null);
+
+  const handleScroll = () => {
+    if (!carouselRef.current) return;
+    const el = carouselRef.current;
+    const card = el.firstElementChild;
+    if (!card) return;
+    const cardWidth = card.getBoundingClientRect().width;
+    const gap = 16;
+    const index = Math.round(el.scrollLeft / (cardWidth + gap));
+    const clamped = Math.max(0, Math.min(stepsData.length - 1, index));
+    if (clamped !== activeIndex) {
+      setActiveIndex(clamped);
+    }
+  };
+
+  const scrollToIndex = (index) => {
+    if (!carouselRef.current) return;
+    const el = carouselRef.current;
+    const cards = el.children;
+    if (cards && cards[index]) {
+      cards[index].scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      });
+      setActiveIndex(index);
+    }
+  };
+
+  const handlePrev = () => {
+    const nextIndex = Math.max(0, activeIndex - 1);
+    scrollToIndex(nextIndex);
+  };
+
+  const handleNext = () => {
+    const nextIndex = Math.min(stepsData.length - 1, activeIndex + 1);
+    scrollToIndex(nextIndex);
+  };
+
   return (
     <section
       id="how-it-works"
@@ -280,59 +320,104 @@ export default function HowItWorksSection() {
           </p>
         </div>
 
-        {/* 4 Cards Row with Interconnecting Arrow Bubbles */}
-        <div className="w-full max-w-[1216px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 filter drop-shadow-[0px_2px_8px_rgba(0,0,0,0.13)]">
-          {stepsData.map((item, idx) => (
-            <motion.div
-              key={item.step}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.35, delay: idx * 0.08 }}
-              className={`relative rounded-[24px] p-5 flex flex-col justify-between border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
-                isLight
-                  ? 'bg-white border-[#F3E8FF]/70 shadow-[0px_10px_15px_-3px_rgba(168,85,247,0.05),0px_4px_6px_-4px_rgba(168,85,247,0.05)]'
-                  : 'bg-[#151224] border-purple-500/20 shadow-xl'
-              }`}
-            >
-              {/* Card Container */}
-              <div className="flex flex-col gap-1">
-                {/* Step Pill Badge */}
-                <div className="flex items-center">
-                  <div className="px-3 py-0.5 rounded-full bg-[#EDE9FE] dark:bg-purple-950/60 inline-flex items-center justify-center">
-                    <span className="text-[12px] font-extrabold leading-4 text-[#551BF5] dark:text-purple-300">
-                      {item.step}
-                    </span>
+        {/* 4 Cards Track: Horizontal Swipeable Carousel on Mobile (< lg), 4-Column Grid on Desktop (lg:) */}
+        <div className="relative w-full max-w-[1216px]">
+          <div
+            ref={carouselRef}
+            onScroll={handleScroll}
+            className="w-full flex lg:grid lg:grid-cols-4 gap-4 sm:gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory scrollbar-none px-4 sm:px-6 lg:px-0 py-3 -my-3 after:content-[''] after:w-2 after:shrink-0 lg:after:hidden filter drop-shadow-[0px_2px_8px_rgba(0,0,0,0.13)]"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
+            {stepsData.map((item, idx) => (
+              <div
+                key={item.step}
+                className={`relative w-[84vw] max-w-[310px] sm:w-[320px] lg:w-full shrink-0 lg:shrink snap-center lg:snap-align-none rounded-[24px] p-5 flex flex-col justify-between border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                  isLight
+                    ? 'bg-white border-[#F3E8FF]/70 shadow-[0px_10px_15px_-3px_rgba(168,85,247,0.05),0px_4px_6px_-4px_rgba(168,85,247,0.05)]'
+                    : 'bg-[#151224] border-purple-500/20 shadow-xl'
+                }`}
+              >
+                {/* Card Container */}
+                <div className="flex flex-col gap-1">
+                  {/* Step Pill Badge */}
+                  <div className="flex items-center">
+                    <div className="px-3 py-0.5 rounded-full bg-[#EDE9FE] dark:bg-purple-950/60 inline-flex items-center justify-center">
+                      <span className="text-[12px] font-extrabold leading-4 text-[#551BF5] dark:text-purple-300">
+                        {item.step}
+                      </span>
+                    </div>
                   </div>
+
+                  {/* Illustration Area */}
+                  {item.illustration}
+
+                  {/* Heading 3 - Title */}
+                  <h3 className="text-[18px] leading-[25px] font-bold text-[#0F172A] dark:text-white mt-1">
+                    {item.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-[12px] leading-5 text-[#64748B] dark:text-gray-300 min-h-[40px] mt-1">
+                    {item.desc}
+                  </p>
                 </div>
 
-                {/* Illustration Area */}
-                {item.illustration}
-
-                {/* Heading 3 - Title */}
-                <h3 className="text-[18px] leading-[25px] font-bold text-[#0F172A] dark:text-white mt-1">
-                  {item.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-[12px] leading-5 text-[#64748B] dark:text-gray-300 min-h-[40px] mt-1">
-                  {item.desc}
-                </p>
-              </div>
-
-              {/* Bottom Accent Pill Bar (48px x 4px) */}
-              <div className="pt-4 flex justify-center">
-                <div className="w-12 h-1 bg-[#551BF5] rounded-full" />
-              </div>
-
-              {/* Connector Arrow Bubble between cards (1 -> 2, 2 -> 3, 3 -> 4) */}
-              {idx < 3 && (
-                <div className="hidden lg:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-[#551BF5] shadow-[0_0_0_4px_#FFFFFF,0_4px_6px_-1px_rgba(168,85,247,0.3)] dark:shadow-[0_0_0_4px_#151224,0_4px_6px_-1px_rgba(168,85,247,0.3)] items-center justify-center text-white">
-                  <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                {/* Bottom Accent Pill Bar (48px x 4px) */}
+                <div className="pt-4 flex justify-center">
+                  <div className="w-12 h-1 bg-[#551BF5] rounded-full" />
                 </div>
-              )}
-            </motion.div>
-          ))}
+
+                {/* Connector Arrow Bubble between cards (1 -> 2, 2 -> 3, 3 -> 4) for Desktop */}
+                {idx < 3 && (
+                  <div className="hidden lg:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-[#551BF5] shadow-[0_0_0_4px_#FFFFFF,0_4px_6px_-1px_rgba(168,85,247,0.3)] dark:shadow-[0_0_0_4px_#151224,0_4px_6px_-1px_rgba(168,85,247,0.3)] items-center justify-center text-white">
+                    <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Mobile Carousel Controls: Arrows + Dots (< lg) */}
+          <div className="flex lg:hidden items-center justify-between w-full max-w-[280px] mx-auto mt-4 px-2">
+            {/* Prev Button */}
+            <button
+              type="button"
+              onClick={handlePrev}
+              disabled={activeIndex === 0}
+              aria-label="Previous step"
+              className="w-9 h-9 rounded-full bg-white dark:bg-[#181528] border border-[#E9D5FF] dark:border-purple-800/40 text-[#551BF5] dark:text-purple-300 flex items-center justify-center shadow-xs transition-all active:scale-95 disabled:opacity-25 disabled:pointer-events-none cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-950/40"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            {/* Pagination Dots */}
+            <div className="flex items-center gap-2">
+              {stepsData.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => scrollToIndex(idx)}
+                  aria-label={`Step ${idx + 1}`}
+                  className={`transition-all duration-300 rounded-full cursor-pointer ${
+                    activeIndex === idx
+                      ? 'w-6 h-2 bg-[#551BF5]'
+                      : 'w-2 h-2 bg-purple-200 dark:bg-purple-900/60 hover:bg-purple-300'
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Next Button */}
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={activeIndex === stepsData.length - 1}
+              aria-label="Next step"
+              className="w-9 h-9 rounded-full bg-white dark:bg-[#181528] border border-[#E9D5FF] dark:border-purple-800/40 text-[#551BF5] dark:text-purple-300 flex items-center justify-center shadow-xs transition-all active:scale-95 disabled:opacity-25 disabled:pointer-events-none cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-950/40"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
     </section>
