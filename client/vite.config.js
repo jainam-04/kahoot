@@ -174,6 +174,7 @@ function ngrokPlugin() {
 export default defineConfig({
   plugins: [react(), ngrokPlugin()],
   build: {
+    cssMinify: false,
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
