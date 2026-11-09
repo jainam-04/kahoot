@@ -266,7 +266,7 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
 
   const cardContent = (
     <div
-      className="w-full max-w-[975px] mx-auto rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 lg:p-12 relative overflow-hidden transition-all text-left"
+      className="w-full max-w-[975px] mx-auto rounded-[20px] sm:rounded-[32px] p-4 sm:p-8 lg:p-12 relative overflow-hidden transition-all text-left"
       style={{
         background: 'rgba(255, 255, 255, 0.9)',
         border: '1px solid rgba(243, 232, 255, 0.9)',
@@ -276,11 +276,11 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
       }}
     >
       {/* Top Card Status / Info Bar */}
-      <div className="flex flex-wrap items-center justify-between pb-6 sm:pb-8 gap-3">
-        {/* Left: PIN Pill & Question Count */}
-        <div className="flex items-center gap-3 sm:gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between pb-4 sm:pb-8 gap-3 sm:gap-4 border-b border-[#F1F5F9]/80 sm:border-none">
+        {/* Row 1 on Mobile: PIN Pill (Left) & Question Counter (Right) */}
+        <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-4 w-full sm:w-auto">
           <div
-            className="px-4 py-1.5 rounded-full flex items-center justify-center shadow-[0px_1px_2px_rgba(0,0,0,0.05)]"
+            className="px-3.5 sm:px-4 py-1.5 rounded-full flex items-center justify-center shadow-[0px_1px_2px_rgba(0,0,0,0.05)]"
             style={{
               background: '#ECFEFF',
               border: '1px solid rgba(165, 243, 252, 0.9)',
@@ -298,60 +298,62 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
           )}
         </div>
 
-        {/* Right: Timer Pill, Score Pill, Streak & Reset Button */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Timer Pill */}
-          {!isCompleted && (
+        {/* Row 2 on Mobile: Timer, Score, Streak (Left) & Reset Button (Right) */}
+        <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Timer Pill */}
+            {!isCompleted && (
+              <div
+                className={`px-3 sm:px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all ${
+                  timeLeft <= 5 && hasStarted ? 'animate-pulse' : ''
+                }`}
+                style={{
+                  background: timeLeft <= 5 && hasStarted ? 'rgba(254, 226, 226, 0.8)' : 'rgba(236, 254, 255, 0.8)',
+                  border: timeLeft <= 5 && hasStarted ? '1px solid rgba(252, 165, 165, 0.9)' : '1px solid rgba(165, 243, 252, 0.9)',
+                }}
+              >
+                <Clock className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${timeLeft <= 5 && hasStarted ? 'text-red-500' : 'text-[#0891B2]'}`} />
+                <span
+                  className={`font-['Inter'] font-semibold text-xs sm:text-sm ${
+                    timeLeft <= 5 && hasStarted ? 'text-red-600 font-bold' : 'text-[#0E7490]'
+                  }`}
+                >
+                  {!hasStarted ? '30s' : `${timeLeft}s`}
+                </span>
+              </div>
+            )}
+
+            {/* Score Pill */}
             <div
-              className={`px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all ${
-                timeLeft <= 5 && hasStarted ? 'animate-pulse' : ''
-              }`}
+              className="px-3 sm:px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]"
               style={{
-                background: timeLeft <= 5 && hasStarted ? 'rgba(254, 226, 226, 0.8)' : 'rgba(236, 254, 255, 0.8)',
-                border: timeLeft <= 5 && hasStarted ? '1px solid rgba(252, 165, 165, 0.9)' : '1px solid rgba(165, 243, 252, 0.9)',
+                background: 'rgba(255, 251, 235, 0.8)',
+                border: '1px solid rgba(253, 230, 138, 0.9)',
               }}
             >
-              <Clock className={`w-4 h-4 ${timeLeft <= 5 && hasStarted ? 'text-red-500' : 'text-[#0891B2]'}`} />
-              <span
-                className={`font-['Inter'] font-semibold text-xs sm:text-sm ${
-                  timeLeft <= 5 && hasStarted ? 'text-red-600 font-bold' : 'text-[#0E7490]'
-                }`}
-              >
-                {!hasStarted ? '30s' : `${timeLeft}s`}
+              <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#F59E0B]" />
+              <span className="font-['Inter'] font-semibold text-xs sm:text-sm text-[#B45309]">
+                {score.toLocaleString()} pts
               </span>
             </div>
-          )}
 
-          {/* Score Pill */}
-          <div
-            className="px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]"
-            style={{
-              background: 'rgba(255, 251, 235, 0.8)',
-              border: '1px solid rgba(253, 230, 138, 0.9)',
-            }}
-          >
-            <Trophy className="w-4 h-4 text-[#F59E0B]" />
-            <span className="font-['Inter'] font-semibold text-xs sm:text-sm text-[#B45309]">
-              {score.toLocaleString()} pts
-            </span>
+            {/* Streak Indicator */}
+            {streak > 1 && (
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-600 font-['Inter'] font-bold text-xs animate-pulse">
+                <Flame className="w-3.5 h-3.5 fill-current text-orange-500" />
+                <span>{streak}x</span>
+              </div>
+            )}
           </div>
-
-          {/* Streak Indicator */}
-          {streak > 1 && (
-            <div className="hidden xs:flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-600 font-['Inter'] font-bold text-xs animate-pulse">
-              <Flame className="w-3.5 h-3.5 fill-current text-orange-500" />
-              <span>{streak}x</span>
-            </div>
-          )}
 
           {/* Reset Button */}
           <button
             onClick={handleRestartDemo}
             type="button"
-            className="w-9 h-9 rounded-full bg-white border border-[rgba(226,232,240,0.9)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors cursor-pointer shrink-0"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-[rgba(226,232,240,0.9)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors cursor-pointer shrink-0"
             title="Restart Demo"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>
@@ -446,34 +448,34 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
           </motion.div>
         ) : (
           /* ACTIVE QUESTION CARD & OPTIONS */
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Inner Question Card */}
-            <div className="w-full rounded-[24px] bg-white border border-[#F1F5F9] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-6 sm:p-10 space-y-4">
+            <div className="w-full rounded-[18px] sm:rounded-[24px] bg-white border border-[#F1F5F9] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-4 sm:p-10 space-y-3 sm:space-y-4">
               <div className="flex items-center justify-between gap-2">
-                <div className="px-3 py-1 rounded-[8px] bg-[#FAF5FF] border border-[#F3E8FF] inline-flex items-center">
-                  <span className="font-['Inter'] font-extrabold text-[12px] leading-4 tracking-[0.6px] uppercase text-[#551BF5]">
+                <div className="px-2.5 sm:px-3 py-1 rounded-[8px] bg-[#FAF5FF] border border-[#F3E8FF] inline-flex items-center shrink-0">
+                  <span className="font-['Inter'] font-extrabold text-[11px] sm:text-[12px] leading-4 tracking-[0.6px] uppercase text-[#551BF5] whitespace-nowrap">
                     {currentQ.category}
                   </span>
                 </div>
 
-                <span className="font-['Inter'] font-medium text-xs sm:text-sm text-[#94A3B8]">
+                <span className="font-['Inter'] font-medium text-xs sm:text-sm text-[#94A3B8] whitespace-nowrap">
                   Question {currentQIndex + 1} of {sampleQuestions.length}
                 </span>
               </div>
 
-              <h3 className="font-['Inter'] font-extrabold text-xl sm:text-2xl lg:text-[30px] lg:leading-[36px] tracking-[-0.75px] text-[#0F172A]">
+              <h3 className="font-['Inter'] font-extrabold text-lg sm:text-2xl lg:text-[30px] lg:leading-[36px] tracking-[-0.5px] sm:tracking-[-0.75px] text-[#0F172A] leading-snug">
                 {currentQ.highlightedQuestion || currentQ.questionText}
               </h3>
             </div>
 
             {/* 2x2 Answer Options Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {currentQ.options.map((opt, idx) => {
                 const isSelected = selectedOption === idx;
                 const isRevealed = selectedOption !== null || isTimedOut;
                 const cfg = optionConfig[idx] || optionConfig[0];
 
-                let buttonClass = `${cfg.bg} ${cfg.border} shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-4 min-h-[64px] flex items-center justify-between transition-all cursor-pointer`;
+                let buttonClass = `${cfg.bg} ${cfg.border} shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[14px] sm:rounded-[16px] px-4 sm:px-5 py-3 sm:py-4 min-h-[56px] sm:min-h-[64px] flex items-center justify-between transition-all cursor-pointer`;
 
                 if (!isRevealed) {
                   buttonClass += ` ${cfg.hover} hover:scale-[1.01] active:scale-[0.99]`;
