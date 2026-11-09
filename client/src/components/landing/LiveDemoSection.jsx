@@ -1,42 +1,125 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Trophy, RotateCcw, CheckCircle2, XCircle, Sparkles, ArrowRight, Flame, Clock } from 'lucide-react';
+import { Trophy, RotateCcw, CheckCircle2, XCircle, ArrowRight, Flame, Clock } from 'lucide-react';
 import confetti from 'canvas-confetti';
+
+// 4 Geometric Shape SVGs matching Figma vectors
+function ShapeIcon({ type }) {
+  if (type === 'triangle') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#EF4444">
+        <polygon points="12 4, 21 20, 3 20" />
+      </svg>
+    );
+  }
+  if (type === 'diamond') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#2563EB">
+        <polygon points="12 2, 22 12, 12 22, 2 12" />
+      </svg>
+    );
+  }
+  if (type === 'circle') {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#F59E0B">
+        <circle cx="12" cy="12" r="8.5" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#10B981">
+      <rect x="3.5" y="3.5" width="17" height="17" rx="3.5" />
+    </svg>
+  );
+}
 
 const sampleQuestions = [
   {
     id: 1,
-    question: 'What does HTML stand for?',
-    category: 'Web Development',
+    questionText: 'What does HTML stand for, powering structure across all web browsers?',
+    highlightedQuestion: (
+      <>
+        What does <span className="text-[#551BF5]">HTML</span> stand for, powering structure across{' '}
+        <span className="text-[#551BF5]">all web browsers</span>?
+      </>
+    ),
+    category: 'WEB DEVELOPMENT',
     options: [
-      { id: 'A', text: 'HyperText Markup Language', shape: '▲', color: 'bg-red-500 hover:bg-red-600', isCorrect: true },
-      { id: 'B', text: 'High Tech Markup Language', shape: '◆', color: 'bg-blue-500 hover:bg-blue-600', isCorrect: false },
-      { id: 'C', text: 'Hyperlink Text Management Language', shape: '●', color: 'bg-yellow-500 hover:bg-yellow-600', isCorrect: false },
-      { id: 'D', text: 'Home Tool Markup Language', shape: '■', color: 'bg-emerald-500 hover:bg-emerald-600', isCorrect: false },
+      { id: 'A', text: 'HyperText Markup Language', type: 'triangle', isCorrect: true },
+      { id: 'B', text: 'High Tech Markup Language', type: 'diamond', isCorrect: false },
+      { id: 'C', text: 'Hyperlink Text Management Language', type: 'circle', isCorrect: false },
+      { id: 'D', text: 'Home Tool Markup Language', type: 'square', isCorrect: false },
     ],
   },
   {
     id: 2,
-    question: 'Which planet is known as the Red Planet?',
-    category: 'Astronomy',
+    questionText: 'Which planet is known as the Red Planet in our Solar System?',
+    highlightedQuestion: (
+      <>
+        Which planet is known as the <span className="text-[#551BF5]">Red Planet</span> in our{' '}
+        <span className="text-[#551BF5]">Solar System</span>?
+      </>
+    ),
+    category: 'ASTRONOMY',
     options: [
-      { id: 'A', text: 'Venus', shape: '▲', color: 'bg-red-500 hover:bg-red-600', isCorrect: false },
-      { id: 'B', text: 'Mars', shape: '◆', color: 'bg-blue-500 hover:bg-blue-600', isCorrect: true },
-      { id: 'C', text: 'Jupiter', shape: '●', color: 'bg-yellow-500 hover:bg-yellow-600', isCorrect: false },
-      { id: 'D', text: 'Saturn', shape: '■', color: 'bg-emerald-500 hover:bg-emerald-600', isCorrect: false },
+      { id: 'A', text: 'Venus', type: 'triangle', isCorrect: false },
+      { id: 'B', text: 'Mars', type: 'diamond', isCorrect: true },
+      { id: 'C', text: 'Jupiter', type: 'circle', isCorrect: false },
+      { id: 'D', text: 'Saturn', type: 'square', isCorrect: false },
     ],
   },
   {
     id: 3,
-    question: 'What primary colors mix together to make Green?',
-    category: 'General Knowledge',
+    questionText: 'What primary colors mix together to make Green?',
+    highlightedQuestion: (
+      <>
+        What primary colors mix together to make <span className="text-[#551BF5]">Green</span>?
+      </>
+    ),
+    category: 'GENERAL KNOWLEDGE',
     options: [
-      { id: 'A', text: 'Red & Blue', shape: '▲', color: 'bg-red-500 hover:bg-red-600', isCorrect: false },
-      { id: 'B', text: 'Yellow & Blue', shape: '◆', color: 'bg-blue-500 hover:bg-blue-600', isCorrect: true },
-      { id: 'C', text: 'Yellow & Red', shape: '●', color: 'bg-yellow-500 hover:bg-yellow-600', isCorrect: false },
-      { id: 'D', text: 'Purple & Green', shape: '■', color: 'bg-emerald-500 hover:bg-emerald-600', isCorrect: false },
+      { id: 'A', text: 'Red & Blue', type: 'triangle', isCorrect: false },
+      { id: 'B', text: 'Yellow & Blue', type: 'diamond', isCorrect: true },
+      { id: 'C', text: 'Yellow & Red', type: 'circle', isCorrect: false },
+      { id: 'D', text: 'Purple & Green', type: 'square', isCorrect: false },
     ],
+  },
+];
+
+// 4 Option Styles extracted directly from Figma CSS specification
+const optionConfig = [
+  // Option 1: Red Triangle
+  {
+    bg: 'bg-[rgba(255,241,242,0.7)]',
+    border: 'border-[rgba(254,205,211,0.9)]',
+    hover: 'hover:bg-[rgba(255,241,242,0.95)] hover:border-[#FDA4AF]',
+    radioBorder: 'border-[rgba(251,113,133,0.9)]',
+    radioDot: 'bg-[#F43F5E]',
+  },
+  // Option 2: Royal Blue Diamond
+  {
+    bg: 'bg-[rgba(239,246,255,0.7)]',
+    border: 'border-[rgba(191,219,254,0.9)]',
+    hover: 'hover:bg-[rgba(239,246,255,0.95)] hover:border-[#93C5FD]',
+    radioBorder: 'border-[rgba(96,165,250,0.9)]',
+    radioDot: 'bg-[#3B82F6]',
+  },
+  // Option 3: Amber Circle
+  {
+    bg: 'bg-[rgba(255,251,235,0.7)]',
+    border: 'border-[rgba(253,230,138,0.9)]',
+    hover: 'hover:bg-[rgba(255,251,235,0.95)] hover:border-[#FCD34D]',
+    radioBorder: 'border-[rgba(251,191,36,0.9)]',
+    radioDot: 'bg-[#F59E0B]',
+  },
+  // Option 4: Emerald Rounded Square
+  {
+    bg: 'bg-[rgba(236,253,245,0.7)]',
+    border: 'border-[rgba(167,243,208,0.9)]',
+    hover: 'hover:bg-[rgba(236,253,245,0.95)] hover:border-[#6EE7B7]',
+    radioBorder: 'border-[rgba(52,211,153,0.9)]',
+    radioDot: 'bg-[#10B981]',
   },
 ];
 
@@ -109,13 +192,12 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
     const opt = currentQ.options[index];
 
     if (opt.isCorrect) {
-      // Trigger Confetti Pop-up on correct answer click
       try {
         confetti({
           particleCount: 75,
           spread: 80,
           origin: { y: 0.65 },
-          colors: ['#a855f7', '#ec4899', '#3b82f6', '#10b981', '#f59e0b', '#ffffff']
+          colors: ['#551BF5', '#6C38FF', '#3B82F6', '#10B981', '#F59E0B', '#FFFFFF'],
         });
       } catch (e) {
         console.error('Confetti error:', e);
@@ -182,354 +264,125 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
   const sortedLeaderboard = [...benchmarkPlayers, userPlayer].sort((a, b) => b.score - a.score);
   const userRankIndex = sortedLeaderboard.findIndex((p) => p.isUser);
 
-  return (
-    <motion.section
-      id="interactive-demo"
-      onViewportEnter={startDemoTimer}
-      viewport={{ amount: 0.2, once: true }}
-      className={`relative mx-auto w-full ${isModal ? 'p-0' : 'max-w-5xl px-3 sm:px-6 lg:px-8 py-8 sm:py-20 scroll-mt-20'}`}
+  const cardContent = (
+    <div
+      className="w-full max-w-[975px] mx-auto rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 lg:p-12 relative overflow-hidden transition-all text-left"
+      style={{
+        background: 'rgba(255, 255, 255, 0.9)',
+        border: '1px solid rgba(243, 232, 255, 0.9)',
+        boxShadow:
+          '0px -3px 60px rgba(85, 27, 245, 0.15), 0px 10px 25px -5px rgba(0, 0, 0, 0.08), 0px 0px 0px 1px rgba(0, 0, 0, 0.08)',
+        backdropFilter: 'blur(12px)',
+      }}
     >
-      {/* Radial glow background */}
-      {!isModal && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[350px] sm:h-[450px] w-[350px] sm:w-[450px] rounded-full bg-primary/15 blur-[100px] pointer-events-none" />
-      )}
-
-      {/* Header section */}
-      {!isModal && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-6 sm:mb-8"
-        >
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 border border-primary/25 px-3 sm:px-4 py-1 text-[11px] sm:text-xs font-extrabold text-primary uppercase tracking-wider mb-2 sm:mb-3">
-            <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-secondary animate-pulse shrink-0" />
-            <span>Interactive Product Demo</span>
-          </div>
-          <h2 className="font-outfit text-2xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-            See How <span className="text-gradient-primary">Gubbi</span> Works
-          </h2>
-          <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600 dark:text-gray-400 max-w-xl mx-auto leading-relaxed px-2">
-            Test drive our real-time interactive quiz experience! Pick an answer fast before the 30-second timer runs out.
-          </p>
-        </motion.div>
-      )}
-
-      {/* Demo Card Container */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className="glass-panel rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/15 p-3.5 sm:p-8 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-950/90 dark:via-black/95 dark:to-slate-950 w-full"
-      >
-        {/* Top Game Bar - Flexible & Compact on Phone */}
-        <div className="flex flex-wrap items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3 mb-4 sm:mb-6 gap-1.5 sm:gap-2 gap-y-2">
-          <div className="flex items-center gap-1.5 sm:gap-3">
-            <span className="flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-[10px] sm:text-xs font-extrabold text-primary shrink-0 whitespace-nowrap">
+      {/* Top Card Status / Info Bar */}
+      <div className="flex flex-wrap items-center justify-between pb-6 sm:pb-8 gap-3">
+        {/* Left: PIN Pill & Question Count */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div
+            className="px-4 py-1.5 rounded-full flex items-center justify-center shadow-[0px_1px_2px_rgba(0,0,0,0.05)]"
+            style={{
+              background: '#ECFEFF',
+              border: '1px solid rgba(165, 243, 252, 0.9)',
+            }}
+          >
+            <span className="font-['Inter'] font-bold text-xs sm:text-sm tracking-[0.35px] text-[#0284C7]">
               PIN: 849-204
             </span>
-            {!isCompleted && (
-              <span className="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400 font-extrabold shrink-0 whitespace-nowrap">
-                Q{currentQIndex + 1}/{sampleQuestions.length}
-              </span>
-            )}
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            {/* 30-SECOND TIMER AT CORNER BESIDE POINTS */}
-            {!isCompleted && (
-              <div
-                className={`flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full border text-[11px] sm:text-sm font-black transition-all shrink-0 ${
-                  !hasStarted
-                    ? 'bg-primary/20 border-primary/40 text-primary animate-pulse'
-                    : timeLeft <= 5
-                    ? 'bg-red-500/20 border-red-500/50 text-red-600 dark:text-red-400 animate-pulse'
-                    : timeLeft <= 10
-                    ? 'bg-amber-500/20 border-amber-500/40 text-amber-700 dark:text-amber-300'
-                    : 'bg-cyan-500/15 border-cyan-500/30 text-cyan-700 dark:text-cyan-300'
-                }`}
-              >
-                <Clock className={`h-3.5 w-3.5 shrink-0 ${timeLeft <= 5 && hasStarted ? 'animate-bounce text-red-500' : 'text-cyan-600 dark:text-cyan-400'}`} />
-                <span className="whitespace-nowrap">{!hasStarted ? '30s (Ready)' : `${timeLeft}s`}</span>
-              </div>
-            )}
-
-            {/* Live Score Counter */}
-            <div className="flex items-center gap-1 px-2.5 sm:px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 font-extrabold text-[11px] sm:text-sm shrink-0">
-              <Trophy className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
-              <span className="whitespace-nowrap">{score.toLocaleString()} pts</span>
-            </div>
-
-            {/* Streak Indicator */}
-            {streak > 1 && (
-              <div className="hidden xs:flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-600 dark:text-orange-400 text-[10px] sm:text-xs font-black animate-pulse shrink-0">
-                <Flame className="h-3 w-3 fill-current" />
-                <span>{streak}x</span>
-              </div>
-            )}
-
-            {/* Reset Button */}
-            <button
-              onClick={handleRestartDemo}
-              className="p-1.5 sm:p-2 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-300 dark:border-white/10 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0"
-              title="Restart Demo"
-            >
-              <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            </button>
-          </div>
+          {!isCompleted && (
+            <span className="font-['Inter'] font-bold text-xs sm:text-sm tracking-[0.35px] text-[#64748B]">
+              Q{currentQIndex + 1}/{sampleQuestions.length}
+            </span>
+          )}
         </div>
 
-        {/* CONTENT VIEW: Active Question vs Intermediate Leaderboard vs Final Result */}
-        {!isCompleted ? (
-          showIntermediateLeaderboard ? (
-            /* INTERMEDIATE LEADERBOARD SCREEN AFTER QUESTION */
-            <motion.div
-              initial={{ opacity: 0, scale: 0.97 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4 }}
-              className="space-y-4 sm:space-y-6 text-center py-2"
+        {/* Right: Timer Pill, Score Pill, Streak & Reset Button */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Timer Pill */}
+          {!isCompleted && (
+            <div
+              className={`px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all ${
+                timeLeft <= 5 && hasStarted ? 'animate-pulse' : ''
+              }`}
+              style={{
+                background: timeLeft <= 5 && hasStarted ? 'rgba(254, 226, 226, 0.8)' : 'rgba(236, 254, 255, 0.8)',
+                border: timeLeft <= 5 && hasStarted ? '1px solid rgba(252, 165, 165, 0.9)' : '1px solid rgba(165, 243, 252, 0.9)',
+              }}
             >
-              <div className="flex flex-col sm:flex-row items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3 gap-2">
-                <div className="text-center sm:text-left">
-                  <span className="text-[10px] sm:text-xs font-black uppercase text-amber-700 dark:text-amber-400 tracking-wider bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/30">
-                    Live Leaderboard Arena
-                  </span>
-                  <h3 className="font-outfit text-lg sm:text-2xl font-black text-slate-900 dark:text-white mt-1">
-                    Standings After Question {currentQIndex + 1}
-                  </h3>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-700 dark:text-amber-300 font-extrabold text-xs sm:text-sm shrink-0">
-                  <Trophy className="h-4 w-4 text-amber-500 dark:text-amber-400 shrink-0" />
-                  <span>Current Score: {score.toLocaleString()} pts</span>
-                </div>
-              </div>
+              <Clock className={`w-4 h-4 ${timeLeft <= 5 && hasStarted ? 'text-red-500' : 'text-[#0891B2]'}`} />
+              <span
+                className={`font-['Inter'] font-semibold text-xs sm:text-sm ${
+                  timeLeft <= 5 && hasStarted ? 'text-red-600 font-bold' : 'text-[#0E7490]'
+                }`}
+              >
+                {!hasStarted ? '30s' : `${timeLeft}s`}
+              </span>
+            </div>
+          )}
 
-              {/* DYNAMIC LEADERBOARD TABLE */}
-              <div className="max-w-md mx-auto rounded-xl sm:rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 overflow-hidden divide-y divide-slate-200 dark:divide-white/5 text-left text-xs shadow-sm">
-                {sortedLeaderboard.map((player, idx) => {
-                  const rankNum = idx + 1;
-                  const isUser = player.isUser;
+          {/* Score Pill */}
+          <div
+            className="px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]"
+            style={{
+              background: 'rgba(255, 251, 235, 0.8)',
+              border: '1px solid rgba(253, 230, 138, 0.9)',
+            }}
+          >
+            <Trophy className="w-4 h-4 text-[#F59E0B]" />
+            <span className="font-['Inter'] font-semibold text-xs sm:text-sm text-[#B45309]">
+              {score.toLocaleString()} pts
+            </span>
+          </div>
 
-                  return (
-                    <div
-                      key={idx}
-                      className={`p-3 sm:p-3.5 flex items-center justify-between transition-all ${
-                        isUser
-                          ? 'bg-primary/20 dark:bg-primary/25 border-l-4 border-primary font-black'
-                          : 'hover:bg-slate-50 dark:hover:bg-white/5'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className={`h-5 w-5 sm:h-6 sm:w-6 rounded-full flex items-center justify-center font-black text-[10px] sm:text-xs ${
-                            rankNum === 1
-                              ? 'bg-amber-400 text-black'
-                              : rankNum === 2
-                              ? 'bg-gray-300 text-black'
-                              : 'bg-amber-700 text-white'
-                          }`}
-                        >
-                          {rankNum}
-                        </span>
-                        <div>
-                          <span className={`font-extrabold text-xs block ${isUser ? 'text-slate-900 dark:text-white' : 'text-slate-800 dark:text-gray-200'}`}>
-                            {player.name}
-                          </span>
-                          <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-gray-400 font-semibold">
-                            {player.correct} Correct
-                          </span>
-                        </div>
-                      </div>
-                      <span className={`font-outfit font-black text-xs sm:text-sm ${isUser ? 'text-amber-600 dark:text-amber-400' : 'text-slate-700 dark:text-gray-300'}`}>
-                        {player.score.toLocaleString()} pts
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+          {/* Streak Indicator */}
+          {streak > 1 && (
+            <div className="hidden xs:flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-600 font-['Inter'] font-bold text-xs animate-pulse">
+              <Flame className="w-3.5 h-3.5 fill-current text-orange-500" />
+              <span>{streak}x</span>
+            </div>
+          )}
 
-              {/* Action buttons inside Intermediate Leaderboard */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                <button
-                  onClick={() => setShowIntermediateLeaderboard(false)}
-                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 border border-slate-300 dark:border-white/15 text-slate-800 dark:text-white text-xs sm:text-sm font-extrabold flex items-center gap-1.5 cursor-pointer transition-all w-full sm:w-auto justify-center"
-                >
-                  <span>Back to Question Result</span>
-                </button>
+          {/* Reset Button */}
+          <button
+            onClick={handleRestartDemo}
+            type="button"
+            className="w-9 h-9 rounded-full bg-white border border-[rgba(226,232,240,0.9)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors cursor-pointer shrink-0"
+            title="Restart Demo"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
 
-                <button
-                  onClick={handleNextQuestion}
-                  className="btn-premium btn-primary-gradient px-5 py-2.5 text-xs sm:text-sm font-black text-white rounded-xl shadow-lg flex items-center gap-1.5 shrink-0 cursor-pointer w-full sm:w-auto justify-center"
-                >
-                  <span>{currentQIndex < sampleQuestions.length - 1 ? 'Next Question' : 'Show Final Standings'}</span>
-                  <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </button>
-              </div>
-            </motion.div>
-          ) : (
-            <div className="space-y-4 sm:space-y-6">
-              
-              {/* Question Box */}
-              <div className="relative p-4 sm:p-7 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-left overflow-hidden shadow-sm">
-                {/* Animated Progress Bar for Timer */}
-                <div
-                  className="absolute top-0 left-0 bottom-0 bg-primary/15 dark:bg-primary/10 transition-all duration-1000 ease-linear pointer-events-none"
-                  style={{ width: `${(timeLeft / 30) * 100}%` }}
-                />
-
-                <div className="relative z-10 flex items-center justify-between gap-2 mb-1.5">
-                  <span className="text-[9px] sm:text-xs font-black uppercase text-secondary tracking-wider bg-secondary/15 px-2 py-0.5 rounded-full border border-secondary/20">
-                    {currentQ.category}
-                  </span>
-                  <span className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-gray-400">
-                    Question {currentQIndex + 1} of {sampleQuestions.length}
-                  </span>
-                </div>
-
-                <h3 className="relative z-10 font-outfit text-sm sm:text-2xl font-extrabold text-slate-900 dark:text-white leading-snug">
-                  {currentQ.question}
+      {/* Main View: Question vs Intermediate Leaderboard vs Final Results */}
+      {!isCompleted ? (
+        showIntermediateLeaderboard ? (
+          /* INTERMEDIATE LEADERBOARD */
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-5 text-center py-2"
+          >
+            <div className="flex flex-col sm:flex-row items-center justify-between border-b border-[#F1F5F9] pb-4 gap-2">
+              <div className="text-center sm:text-left">
+                <span className="text-xs font-['Inter'] font-extrabold uppercase text-[#551BF5] tracking-wider bg-[#FAF5FF] border border-[#F3E8FF] px-3 py-1 rounded-full">
+                  Live Leaderboard Arena
+                </span>
+                <h3 className="font-['Inter'] text-lg sm:text-2xl font-bold text-[#0F172A] mt-2">
+                  Standings After Question {currentQIndex + 1}
                 </h3>
               </div>
-
-              {/* Answer Options Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
-                {currentQ.options.map((opt, idx) => {
-                  const isSelected = selectedOption === idx;
-                  const isRevealed = selectedOption !== null || isTimedOut;
-
-                  let stateStyles = opt.color;
-                  if (isRevealed) {
-                    if (opt.isCorrect) {
-                      stateStyles = 'bg-emerald-600 border-2 border-emerald-300 ring-2 ring-emerald-400/50 shadow-emerald-500/30 shadow-lg';
-                    } else if (isSelected && !opt.isCorrect) {
-                      stateStyles = 'bg-red-600/90 border-2 border-red-400 opacity-90';
-                    } else {
-                      stateStyles = 'bg-slate-200 dark:bg-white/5 border-slate-300 dark:border-white/10 opacity-50';
-                    }
-                  }
-
-                  return (
-                    <motion.button
-                      key={idx}
-                      whileHover={selectedOption === null && !isTimedOut ? { scale: 1.01 } : {}}
-                      whileTap={selectedOption === null && !isTimedOut ? { scale: 0.98 } : {}}
-                      onClick={() => handleSelectOption(idx)}
-                      disabled={selectedOption !== null || isTimedOut}
-                      className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center justify-between text-white font-extrabold text-xs sm:text-base cursor-pointer text-left border shadow-sm ${stateStyles}`}
-                    >
-                      <div className="flex items-center gap-2.5 overflow-hidden">
-                        <span className="h-6 w-6 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl bg-black/25 flex items-center justify-center font-mono text-xs sm:text-base shrink-0">
-                          {opt.shape}
-                        </span>
-                        <span className="truncate">{opt.text}</span>
-                      </div>
-
-                      {isRevealed && opt.isCorrect && (
-                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-white shrink-0 ml-1.5 animate-bounce" />
-                      )}
-                      {isRevealed && isSelected && !opt.isCorrect && (
-                        <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-white shrink-0 ml-1.5" />
-                      )}
-                    </motion.button>
-                  );
-                })}
-              </div>
-
-              {/* Feedback Banner & Next / Leaderboard Action Buttons */}
-              <AnimatePresence>
-                {(selectedOption !== null || isTimedOut) && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-left shadow-sm"
-                  >
-                    <div className="flex items-center gap-2.5 w-full sm:w-auto">
-                      {isTimedOut ? (
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-500 shrink-0">
-                          <Clock className="h-4 w-4 sm:h-6 sm:w-6" />
-                        </div>
-                      ) : currentQ.options[selectedOption].isCorrect ? (
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-500 shrink-0">
-                          <CheckCircle2 className="h-4 w-4 sm:h-6 sm:w-6" />
-                        </div>
-                      ) : (
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-500 shrink-0">
-                          <XCircle className="h-4 w-4 sm:h-6 sm:w-6" />
-                        </div>
-                      )}
-
-                      <div className="overflow-hidden">
-                        <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight truncate">
-                          {isTimedOut
-                            ? '⏰ Time Out! 30s elapsed (0 pts).'
-                            : currentQ.options[selectedOption].isCorrect
-                            ? `🎉 Correct! Earned +${earnedPts} pts!`
-                            : `✕ Incorrect! Correct: ${currentQ.options.find((o) => o.isCorrect).text}`}
-                        </p>
-                        <p className="text-[10px] text-slate-500 dark:text-gray-400 hidden xs:block">
-                          Choose Leaderboard or Next Question below.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* TWO Action Options: Leaderboard OR Next Question */}
-                    <div className="flex flex-col xs:flex-row items-center gap-2 w-full sm:w-auto shrink-0">
-                      <button
-                        onClick={() => setShowIntermediateLeaderboard(true)}
-                        className="px-3.5 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-extrabold text-amber-700 dark:text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-all w-full xs:w-auto"
-                      >
-                        <Trophy className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
-                        <span>Leaderboard</span>
-                      </button>
-
-                      <button
-                        onClick={handleNextQuestion}
-                        className="btn-premium btn-primary-gradient px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-black text-white rounded-xl shadow-lg flex items-center justify-center gap-1.5 shrink-0 cursor-pointer w-full xs:w-auto"
-                      >
-                        <span>{currentQIndex < sampleQuestions.length - 1 ? 'Next Question' : 'Show Final Standings'}</span>
-                        <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-            </div>
-          )
-        ) : (
-          /* FINAL LEADERBOARD & RESULT SCREEN */
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-4 sm:space-y-6 text-center py-1 sm:py-2"
-          >
-            {/* Victory Trophy */}
-            <div className="relative inline-flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full bg-amber-400/20 blur-lg animate-pulse" />
-              <div className="h-12 w-12 sm:h-20 sm:w-20 rounded-2xl sm:rounded-3xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-500 dark:text-amber-400 relative z-10">
-                <Trophy className="h-6 w-6 sm:h-10 sm:w-10" />
+              <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-[#B45309] font-['Inter'] font-bold text-xs sm:text-sm">
+                <Trophy className="h-4 w-4 text-[#F59E0B]" />
+                <span>Current Score: {score.toLocaleString()} pts</span>
               </div>
             </div>
 
-            <div>
-              <span className="text-[10px] sm:text-xs font-black uppercase text-secondary tracking-widest bg-secondary/10 px-2.5 py-0.5 rounded-full border border-secondary/20">
-                Demo Gameplay Complete
-              </span>
-              <h3 className="font-outfit text-xl sm:text-4xl font-black text-slate-900 dark:text-white mt-1.5">
-                {userRankIndex === 0 ? '🏆 1st Place Podium Champion!' : userRankIndex === 1 ? '🥈 2nd Place Winner!' : '🥉 3rd Place Finish!'}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-400 mt-1">
-                Calculated Score:{' '}
-                <span className="text-amber-600 dark:text-amber-400 font-extrabold">{score.toLocaleString()} pts</span> ({correctCount}/{sampleQuestions.length} Correct)
-              </p>
-            </div>
-
-            {/* DYNAMIC LEADERBOARD TABLE */}
-            <div className="max-w-md mx-auto rounded-xl sm:rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 overflow-hidden divide-y divide-slate-200 dark:divide-white/5 text-left text-xs shadow-sm">
+            {/* Leaderboard Table */}
+            <div className="max-w-md mx-auto rounded-2xl bg-white border border-[#F1F5F9] shadow-[0px_1px_3px_rgba(0,0,0,0.05)] overflow-hidden divide-y divide-[#F1F5F9] text-left text-xs">
               {sortedLeaderboard.map((player, idx) => {
                 const rankNum = idx + 1;
                 const isUser = player.isUser;
@@ -537,34 +390,32 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
                 return (
                   <div
                     key={idx}
-                    className={`p-2.5 sm:p-3.5 flex items-center justify-between transition-all ${
-                      isUser
-                        ? 'bg-primary/20 dark:bg-primary/25 border-l-4 border-primary font-black'
-                        : 'hover:bg-slate-50 dark:hover:bg-white/5'
+                    className={`p-3.5 flex items-center justify-between transition-all ${
+                      isUser ? 'bg-[#FAF7FE] border-l-4 border-[#551BF5] font-bold' : 'hover:bg-slate-50'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-3">
                       <span
-                        className={`h-5 w-5 sm:h-6 sm:w-6 rounded-full flex items-center justify-center font-black text-[10px] sm:text-xs ${
+                        className={`h-6 w-6 rounded-full flex items-center justify-center font-bold text-xs ${
                           rankNum === 1
-                            ? 'bg-amber-400 text-black'
+                            ? 'bg-amber-400 text-white'
                             : rankNum === 2
-                            ? 'bg-gray-300 text-black'
+                            ? 'bg-slate-300 text-slate-800'
                             : 'bg-amber-700 text-white'
                         }`}
                       >
                         {rankNum}
                       </span>
                       <div>
-                        <span className={`font-extrabold text-xs block ${isUser ? 'text-slate-900 dark:text-white' : 'text-slate-800 dark:text-gray-200'}`}>
+                        <span className={`font-['Inter'] text-sm block ${isUser ? 'text-[#0F172A] font-bold' : 'text-[#334155]'}`}>
                           {player.name}
                         </span>
-                        <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-gray-400 font-semibold">
+                        <span className="text-[11px] text-[#64748B] font-medium">
                           {player.correct} Correct
                         </span>
                       </div>
                     </div>
-                    <span className={`font-outfit font-black text-xs sm:text-sm ${isUser ? 'text-amber-600 dark:text-amber-400' : 'text-slate-700 dark:text-gray-300'}`}>
+                    <span className={`font-['Inter'] font-bold text-sm ${isUser ? 'text-[#551BF5]' : 'text-[#64748B]'}`}>
                       {player.score.toLocaleString()} pts
                     </span>
                   </div>
@@ -572,31 +423,323 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
               })}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-1">
+            {/* Actions inside intermediate screen */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <button
-                onClick={handleRestartDemo}
-                className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 border border-slate-300 dark:border-white/15 text-slate-800 dark:text-white text-xs sm:text-sm font-extrabold flex items-center gap-1.5 cursor-pointer transition-all w-full sm:w-auto justify-center"
+                type="button"
+                onClick={() => setShowIntermediateLeaderboard(false)}
+                className="h-11 px-5 rounded-[14px] bg-white border border-[#E2E8F0] text-[#334155] font-['Inter'] font-semibold text-sm hover:bg-slate-50 transition-all cursor-pointer w-full sm:w-auto"
               >
-                <RotateCcw className="h-3.5 w-3.5 text-secondary" />
-                <span>Replay Demo</span>
+                Back to Question Result
               </button>
 
-              <Link
-                to="/register"
-                onClick={() => {
-                  if (onCloseModal) onCloseModal();
-                }}
-                className="btn-premium btn-primary-gradient px-5 py-2.5 rounded-xl text-white text-xs sm:text-sm font-extrabold flex items-center gap-1.5 shadow-lg transition-all w-full sm:w-auto justify-center"
+              <button
+                type="button"
+                onClick={handleNextQuestion}
+                className="h-11 px-6 rounded-[14px] text-white font-['Inter'] font-bold text-sm flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-[0px_10px_22px_-4px_rgba(85,27,245,0.4)] cursor-pointer w-full sm:w-auto"
+                style={{ background: 'linear-gradient(105.23deg, #551BF5 0%, #6C38FF 50%, #7A42F8 100%)' }}
               >
-                <span>Create Your First Quiz</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
+                <span>{currentQIndex < sampleQuestions.length - 1 ? 'Next Question' : 'Show Final Standings'}</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
             </div>
           </motion.div>
-        )}
+        ) : (
+          /* ACTIVE QUESTION CARD & OPTIONS */
+          <div className="space-y-6">
+            {/* Inner Question Card */}
+            <div className="w-full rounded-[24px] bg-white border border-[#F1F5F9] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-6 sm:p-10 space-y-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="px-3 py-1 rounded-[8px] bg-[#FAF5FF] border border-[#F3E8FF] inline-flex items-center">
+                  <span className="font-['Inter'] font-extrabold text-[12px] leading-4 tracking-[0.6px] uppercase text-[#551BF5]">
+                    {currentQ.category}
+                  </span>
+                </div>
 
-      </motion.div>
-    </motion.section>
+                <span className="font-['Inter'] font-medium text-xs sm:text-sm text-[#94A3B8]">
+                  Question {currentQIndex + 1} of {sampleQuestions.length}
+                </span>
+              </div>
+
+              <h3 className="font-['Inter'] font-extrabold text-xl sm:text-2xl lg:text-[30px] lg:leading-[36px] tracking-[-0.75px] text-[#0F172A]">
+                {currentQ.highlightedQuestion || currentQ.questionText}
+              </h3>
+            </div>
+
+            {/* 2x2 Answer Options Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {currentQ.options.map((opt, idx) => {
+                const isSelected = selectedOption === idx;
+                const isRevealed = selectedOption !== null || isTimedOut;
+                const cfg = optionConfig[idx] || optionConfig[0];
+
+                let buttonClass = `${cfg.bg} ${cfg.border} shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-4 min-h-[64px] flex items-center justify-between transition-all cursor-pointer`;
+
+                if (!isRevealed) {
+                  buttonClass += ` ${cfg.hover} hover:scale-[1.01] active:scale-[0.99]`;
+                } else {
+                  if (opt.isCorrect) {
+                    buttonClass =
+                      'bg-[#ECFDF5] border-2 border-[#10B981] shadow-[0_0_20px_rgba(16,185,129,0.2)] rounded-[16px] px-5 py-4 min-h-[64px] flex items-center justify-between transition-all';
+                  } else if (isSelected && !opt.isCorrect) {
+                    buttonClass =
+                      'bg-[#FFF1F2] border-2 border-[#EF4444] shadow-[0_0_20px_rgba(239,68,68,0.2)] rounded-[16px] px-5 py-4 min-h-[64px] flex items-center justify-between transition-all';
+                  } else {
+                    buttonClass += ' opacity-50 cursor-not-allowed';
+                  }
+                }
+
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    disabled={isRevealed}
+                    onClick={() => handleSelectOption(idx)}
+                    className={buttonClass}
+                  >
+                    {/* Left: Shape Icon + Option Text */}
+                    <div className="flex items-center gap-3.5 overflow-hidden text-left pr-2">
+                      <div className="w-7 h-7 flex items-center justify-center shrink-0">
+                        <ShapeIcon type={opt.type} />
+                      </div>
+                      <span className="font-['Inter'] font-bold text-sm sm:text-base leading-6 text-[#0F172A] truncate">
+                        {opt.text}
+                      </span>
+                    </div>
+
+                    {/* Right: Radio Selection Circle / Result Icon */}
+                    <div className="shrink-0 pl-2">
+                      {isRevealed && opt.isCorrect ? (
+                        <CheckCircle2 className="w-6 h-6 text-[#10B981] animate-bounce" />
+                      ) : isRevealed && isSelected && !opt.isCorrect ? (
+                        <XCircle className="w-6 h-6 text-[#EF4444]" />
+                      ) : (
+                        <div
+                          className={`w-6 h-6 rounded-full bg-white/60 border-2 ${cfg.radioBorder} flex items-center justify-center transition-all`}
+                        >
+                          {isSelected && <div className={`w-3 h-3 rounded-full ${cfg.radioDot}`} />}
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Feedback Banner & Action Buttons */}
+            <AnimatePresence>
+              {(selectedOption !== null || isTimedOut) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 p-4 sm:p-5 rounded-[20px] bg-white border border-[#F1F5F9] shadow-[0px_4px_16px_rgba(85,27,245,0.06)] text-left"
+                >
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    {isTimedOut ? (
+                      <div className="h-10 w-10 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 shrink-0">
+                        <Clock className="h-5 w-5" />
+                      </div>
+                    ) : currentQ.options[selectedOption].isCorrect ? (
+                      <div className="h-10 w-10 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 shrink-0">
+                        <CheckCircle2 className="h-5 w-5" />
+                      </div>
+                    ) : (
+                      <div className="h-10 w-10 rounded-full bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-600 shrink-0">
+                        <XCircle className="h-5 w-5" />
+                      </div>
+                    )}
+
+                    <div>
+                      <p className="font-['Inter'] font-extrabold text-sm sm:text-base text-[#0F172A]">
+                        {isTimedOut
+                          ? '⏰ Time is up! 30 seconds elapsed.'
+                          : currentQ.options[selectedOption].isCorrect
+                          ? `🎉 Correct! Earned +${earnedPts} pts!`
+                          : `✕ Incorrect! Correct: ${currentQ.options.find((o) => o.isCorrect).text}`}
+                      </p>
+                      <p className="font-['Inter'] text-xs text-[#64748B]">
+                        {streak > 1 ? `🔥 ${streak}x Answer Streak Active!` : 'Choose an action below to proceed.'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setShowIntermediateLeaderboard(true)}
+                      className="h-10 px-4 rounded-[12px] bg-amber-50 hover:bg-amber-100 border border-amber-200 text-[#B45309] font-['Inter'] font-bold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer transition-all"
+                    >
+                      <Trophy className="h-4 w-4 text-[#F59E0B]" />
+                      <span>Leaderboard</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleNextQuestion}
+                      className="h-10 px-5 rounded-[12px] text-white font-['Inter'] font-bold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer hover:opacity-95 shadow-[0px_4px_10px_rgba(85,27,245,0.3)] transition-all"
+                      style={{ background: 'linear-gradient(105.23deg, #551BF5 0%, #6C38FF 50%, #7A42F8 100%)' }}
+                    >
+                      <span>{currentQIndex < sampleQuestions.length - 1 ? 'Next Question' : 'Show Final Standings'}</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )
+      ) : (
+        /* FINAL LEADERBOARD & RESULT SCREEN */
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="space-y-6 text-center py-4"
+        >
+          {/* Victory Trophy Badge */}
+          <div className="relative inline-flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full bg-amber-400/20 blur-xl animate-pulse" />
+            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500 relative z-10">
+              <Trophy className="h-8 w-8 sm:h-10 sm:w-10" />
+            </div>
+          </div>
+
+          <div>
+            <span className="text-xs font-['Inter'] font-extrabold uppercase text-[#551BF5] tracking-widest bg-[#FAF5FF] border border-[#F3E8FF] px-3.5 py-1 rounded-full">
+              Demo Gameplay Complete
+            </span>
+            <h3 className="font-['Inter'] text-2xl sm:text-4xl font-extrabold text-[#0F172A] mt-2.5">
+              {userRankIndex === 0 ? '🏆 1st Place Podium Champion!' : userRankIndex === 1 ? '🥈 2nd Place Winner!' : '🥉 3rd Place Finish!'}
+            </h3>
+            <p className="font-['Inter'] text-sm sm:text-base text-[#475569] mt-1.5">
+              Final Calculated Score:{' '}
+              <span className="text-[#551BF5] font-extrabold">{score.toLocaleString()} pts</span> ({correctCount}/{sampleQuestions.length} Correct)
+            </p>
+          </div>
+
+          {/* Final Standings Table */}
+          <div className="max-w-md mx-auto rounded-2xl bg-white border border-[#F1F5F9] shadow-[0px_1px_3px_rgba(0,0,0,0.05)] overflow-hidden divide-y divide-[#F1F5F9] text-left text-xs">
+            {sortedLeaderboard.map((player, idx) => {
+              const rankNum = idx + 1;
+              const isUser = player.isUser;
+
+              return (
+                <div
+                  key={idx}
+                  className={`p-3.5 flex items-center justify-between transition-all ${
+                    isUser ? 'bg-[#FAF7FE] border-l-4 border-[#551BF5] font-bold' : 'hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`h-6 w-6 rounded-full flex items-center justify-center font-bold text-xs ${
+                        rankNum === 1
+                          ? 'bg-amber-400 text-white'
+                          : rankNum === 2
+                          ? 'bg-slate-300 text-slate-800'
+                          : 'bg-amber-700 text-white'
+                      }`}
+                    >
+                      {rankNum}
+                    </span>
+                    <div>
+                      <span className={`font-['Inter'] text-sm block ${isUser ? 'text-[#0F172A] font-bold' : 'text-[#334155]'}`}>
+                        {player.name}
+                      </span>
+                      <span className="text-[11px] text-[#64748B] font-medium">
+                        {player.correct} Correct
+                      </span>
+                    </div>
+                  </div>
+                  <span className={`font-['Inter'] font-bold text-sm ${isUser ? 'text-[#551BF5]' : 'text-[#64748B]'}`}>
+                    {player.score.toLocaleString()} pts
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <button
+              type="button"
+              onClick={handleRestartDemo}
+              className="h-11 px-5 rounded-[14px] bg-white border border-[#E2E8F0] text-[#334155] font-['Inter'] font-semibold text-sm hover:bg-slate-50 transition-all cursor-pointer flex items-center justify-center gap-2 w-full sm:w-auto"
+            >
+              <RotateCcw className="h-4 w-4" />
+              <span>Replay Demo</span>
+            </button>
+
+            <Link
+              to="/register"
+              onClick={() => {
+                if (onCloseModal) onCloseModal();
+              }}
+              className="h-11 px-6 rounded-[14px] text-white font-['Inter'] font-bold text-sm flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-[0px_10px_22px_-4px_rgba(85,27,245,0.4)] w-full sm:w-auto"
+              style={{ background: 'linear-gradient(105.23deg, #551BF5 0%, #6C38FF 50%, #7A42F8 100%)' }}
+            >
+              <span>Create Your First Quiz</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+
+  if (isModal) {
+    return cardContent;
+  }
+
+  return (
+    <section
+      id="interactive-demo"
+      className="relative w-full bg-white border-y border-[#F1F5F9] py-12 sm:py-16 overflow-hidden scroll-mt-20"
+    >
+      {/* Ambient soft gradient glowing backdrops directly from Figma CSS */}
+      <div
+        className="absolute h-[384px] left-[25%] right-[37.5%] -top-[48px] rounded-full pointer-events-none filter blur-[64px]"
+        style={{ background: 'rgba(243, 232, 255, 0.6)' }}
+      />
+      <div
+        className="absolute w-[384px] h-[384px] -right-[40px] top-[30%] rounded-full pointer-events-none filter blur-[64px]"
+        style={{ background: 'rgba(239, 246, 255, 0.7)' }}
+      />
+      <div
+        className="absolute w-[320px] h-[320px] -left-[40px] -bottom-[40px] rounded-full pointer-events-none filter blur-[64px]"
+        style={{ background: 'rgba(236, 254, 255, 0.7)' }}
+      />
+
+      {/* Main Container 1024px */}
+      <div className="max-w-[1024px] mx-auto w-full px-4 sm:px-6 relative z-10 space-y-8 sm:space-y-12">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center max-w-[576px] mx-auto space-y-3 sm:space-y-4"
+        >
+          <h2 className="font-['Inter'] font-semibold text-3xl sm:text-4xl lg:text-[48px] lg:leading-[48px] tracking-[-1.2px] text-[#0F172A]">
+            Interactive Product <span className="text-[#551BF5]">Demo</span>
+          </h2>
+          <p className="font-['Inter'] font-normal text-sm sm:text-base leading-6 text-[#475569]">
+            Test drive our real-time interactive quiz experience! Pick an answer fast before the 30-second timer runs out.
+          </p>
+        </motion.div>
+
+        {/* Demo Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          onViewportEnter={startDemoTimer}
+        >
+          {cardContent}
+        </motion.div>
+      </div>
+    </section>
   );
 }

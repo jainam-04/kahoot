@@ -1,11 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import {
-  Mail, Phone, MapPin, ExternalLink, Globe, Sparkles,
-  Building2, ChevronRight, HelpCircle, Shield, FileText,
-  RotateCcw, Gamepad2, Trophy
-} from 'lucide-react';
-import Logo from './Logo';
+import { Layers, LayoutGrid, Headphones, Mail, MessageCircle, FileText } from 'lucide-react';
 
 export default function Footer() {
   const location = useLocation();
@@ -22,237 +17,395 @@ export default function Footer() {
     }
   };
 
-  const googleMapsUrl = 'https://www.google.com/maps/place/Fourise+Software+Solutions+Pvt.+Ltd+Pune/@18.5614019,73.9445274,17z/data=!4m10!1m2!2m1!1s305+City+Vista+Kharadi+Pune+411014!3m6!1s0x3bc2c11464246d03:0x7ef94ccf7fe4a2d0!8m2!3d18.5611975!4d73.9447286!15sCiIzMDUgQ2l0eSBWaXN0YSBLaGFyYWRpIFB1bmUgNDExMDE0WiQiIjMwNSBjaXR5IHZpc3RhIGtoYXJhZGkgcHVuZSA0MTEwMTSSARBzb2Z0d2FyZV9jb21wYW554AEA!16s%2Fg%2F11q_073v_m?entry=ttu&g_ep=EgoyMDI2MDgxMi4wIKXMDSoASAFQAw%3D%3D';
-
   return (
-    <footer
-      style={{ background: 'var(--footer-bg)', borderTop: '1px solid var(--footer-border)' }}
-      className="relative z-10 w-full backdrop-blur-xl transition-colors duration-300"
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <footer className="relative w-full overflow-hidden pt-6 sm:pt-12 lg:pt-20 bg-gradient-to-b from-[#FFFFFF] via-[#FAF8FF] to-[#EDE9FE]/50 text-left transition-colors duration-300">
+      {/* Top Section Content Grid */}
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-8 lg:px-10">
         
-        {/* 4-Column Synchronized Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-8 border-b border-black/10 dark:border-white/10 text-left">
+        {/* Mobile Compact Brand Header (Only visible on mobile screens < lg) */}
+        <div className="lg:hidden flex items-center justify-between gap-3 mb-4 pb-3 border-b border-purple-100/70">
+          <Link to="/" className="inline-flex items-center gap-2 group shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-white shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25),0px_2px_4px_-2px_rgba(168,85,247,0.25)] flex items-center justify-center p-1 border border-purple-100 group-hover:scale-105 transition-transform shrink-0">
+              <img
+                src="/gubbi-bird.png"
+                alt="Gubbi"
+                className="w-6 h-6 object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = '/gubbi-logo.png';
+                }}
+              />
+            </div>
+            <div>
+              <span className="font-['Inter'] font-extrabold text-xl leading-none tracking-[-0.5px] text-[#0F172A] block">
+                Gubbi
+              </span>
+              <span className="font-['Inter'] font-semibold text-[11px] text-[#64748B] block mt-0.5">
+                Game. Quiz. Engage.
+              </span>
+            </div>
+          </Link>
+
+          {/* Social Icons for Mobile */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* LinkedIn */}
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="w-8 h-8 rounded-lg bg-[#FAF5FF]/90 border border-[#F3E8FF] flex items-center justify-center text-[#334155] hover:text-[#551BF5] transition-all shadow-xs"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0-.02-3.3 1.65 1.65 0 0 0 .02 3.3m1.39 9.74V10.13H5.07v8.37h2.78z" />
+              </svg>
+            </a>
+
+            {/* Instagram */}
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="w-8 h-8 rounded-lg bg-[#FAF5FF]/90 border border-[#F3E8FF] flex items-center justify-center text-[#334155] hover:text-[#551BF5] transition-all shadow-xs"
+            >
+              <svg className="w-3.5 h-3.5 fill-none stroke-current stroke-2 stroke-linecap-round stroke-linejoin-round" viewBox="0 0 24 24">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+            </a>
+
+            {/* YouTube */}
+            <a
+              href="https://youtube.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube"
+              className="w-8 h-8 rounded-lg bg-[#FAF5FF]/90 border border-[#F3E8FF] flex items-center justify-center text-[#334155] hover:text-[#551BF5] transition-all shadow-xs"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+              </svg>
+            </a>
+
+            {/* X (Twitter) */}
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X"
+              className="w-8 h-8 rounded-lg bg-[#FAF5FF]/90 border border-[#F3E8FF] flex items-center justify-center text-[#334155] hover:text-[#551BF5] transition-all shadow-xs"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        {/* Content Columns: 2 Columns on Mobile, 4 Columns on Desktop */}
+        <div className="grid grid-cols-2 lg:grid-cols-12 gap-x-4 gap-y-4 sm:gap-6 lg:gap-8 items-start">
           
-          {/* Column 1: Brand & Identity */}
-          <div className="space-y-3.5 text-left">
-            <Link to="/" className="inline-flex items-center transition-transform active:scale-95">
-              <Logo className="shrink-0" />
+          {/* Column 1: Brand Info (Desktop Only) */}
+          <div className="hidden lg:flex lg:col-span-4 flex-col items-start">
+            {/* Logo Row */}
+            <Link to="/" className="inline-flex items-center gap-3 mb-3 group">
+              <div className="w-9 h-9 rounded-xl bg-white shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25),0px_2px_4px_-2px_rgba(168,85,247,0.25)] flex items-center justify-center p-1 border border-purple-100 group-hover:scale-105 transition-transform shrink-0">
+                <img
+                  src="/gubbi-bird.png"
+                  alt="Gubbi"
+                  className="w-7 h-7 object-contain"
+                  onError={(e) => {
+                    e.currentTarget.src = '/gubbi-logo.png';
+                  }}
+                />
+              </div>
+              <span className="font-['Inter'] font-extrabold text-[30px] leading-9 tracking-[-0.75px] text-[#0F172A]">
+                Gubbi
+              </span>
             </Link>
 
-            <div className="space-y-1">
-              <h5 className="text-xs font-bold uppercase tracking-wide flex items-center gap-1.5" style={{ color: 'var(--text-heading)' }}>
-                <Building2 className="h-3.5 w-3.5 text-secondary shrink-0" />
-                <span>Gubbi Inc.</span>
-              </h5>
-              
+            {/* Tagline */}
+            <p className="font-['Inter'] font-semibold text-base leading-6 text-[#1E293B] mb-2.5">
+              Game. Quiz. Engage.
+            </p>
+
+            {/* Description */}
+            <p className="font-['Inter'] text-sm leading-[23px] text-[#64748B] max-w-[342px] mb-6">
+              An interactive live quiz platform for educators, trivia hosts, and teams to create engaging multiplayer quiz experiences in seconds.
+            </p>
+
+            {/* Social Icons matching image */}
+            <div className="flex items-center gap-3">
+              {/* LinkedIn */}
               <a
-                href="https://gubbi.gradezy.in"
+                href="https://linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-secondary hover:underline transition-colors"
+                aria-label="LinkedIn"
+                className="w-10 h-10 rounded-xl bg-[#FAF5FF]/80 border border-[#F3E8FF] flex items-center justify-center text-[#334155] hover:text-[#551BF5] hover:border-[#D8B4FE] hover:bg-[#F3E8FF] transition-all hover:-translate-y-0.5 cursor-pointer shadow-xs"
               >
-                <Globe className="h-3.5 w-3.5 shrink-0" />
-                <span>gubbi.gradezy.in</span>
-                <ExternalLink className="h-3 w-3 shrink-0" />
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0-.02-3.3 1.65 1.65 0 0 0 .02 3.3m1.39 9.74V10.13H5.07v8.37h2.78z" />
+                </svg>
+              </a>
+
+              {/* Instagram */}
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="w-10 h-10 rounded-xl bg-[#FAF5FF]/80 border border-[#F3E8FF] flex items-center justify-center text-[#334155] hover:text-[#551BF5] hover:border-[#D8B4FE] hover:bg-[#F3E8FF] transition-all hover:-translate-y-0.5 cursor-pointer shadow-xs"
+              >
+                <svg className="w-4 h-4 fill-none stroke-current stroke-2 stroke-linecap-round stroke-linejoin-round" viewBox="0 0 24 24">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+              </a>
+
+              {/* YouTube */}
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+                className="w-10 h-10 rounded-xl bg-[#FAF5FF]/80 border border-[#F3E8FF] flex items-center justify-center text-[#334155] hover:text-[#551BF5] hover:border-[#D8B4FE] hover:bg-[#F3E8FF] transition-all hover:-translate-y-0.5 cursor-pointer shadow-xs"
+              >
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+              </a>
+
+              {/* X (Twitter) */}
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X"
+                className="w-10 h-10 rounded-xl bg-[#FAF5FF]/80 border border-[#F3E8FF] flex items-center justify-center text-[#334155] hover:text-[#551BF5] hover:border-[#D8B4FE] hover:bg-[#F3E8FF] transition-all hover:-translate-y-0.5 cursor-pointer shadow-xs"
+              >
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
               </a>
             </div>
-
-            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              Interactive multiplayer arena for live classroom trivia, Kahoot-style speed scoring, instant PIN join, and automated participant reports.
-            </p>
           </div>
 
-          {/* Column 2: Platform & Explore */}
-          <div className="space-y-3 text-left">
-            <h4 className="font-outfit text-xs font-extrabold tracking-wide uppercase flex items-center gap-1.5" style={{ color: 'var(--text-heading)' }}>
-              <Gamepad2 className="h-3.5 w-3.5 text-primary" />
-              <span>Explore Platform</span>
-            </h4>
-            <ul className="space-y-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+          {/* Column 2: Platform (col-span-1 on mobile, col-span-2 on desktop) */}
+          <div className="col-span-1 lg:col-span-2 lg:col-start-6 flex flex-col items-start">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-2.5 sm:mb-5">
+              <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-[#551BF5]" />
+              <h4 className="font-['Inter'] font-bold text-sm sm:text-lg leading-tight tracking-[-0.45px] text-[#0F172A]">
+                Platform
+              </h4>
+            </div>
+
+            <ul className="flex flex-col gap-1.5 sm:gap-3.5">
               <li>
                 <Link
-                  to="/about"
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                  to="/login"
+                  className="group inline-flex items-center gap-1.5 sm:gap-2.5 font-['Inter'] font-medium text-xs sm:text-sm text-[#334155] hover:text-[#551BF5] transition-colors"
                 >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>About Gubbi</span>
+                  <span className="text-[#551BF5] font-bold text-xs transition-transform group-hover:translate-x-0.5">›</span>
+                  <span>Create a Quiz</span>
                 </Link>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavClick('#interactive-demo')}
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Play Interactive Demo</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavClick('#how-it-works')}
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>How Gubbi Works</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleNavClick('#pricing')}
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Pricing & Plans</span>
-                </button>
               </li>
               <li>
                 <Link
                   to="/join"
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                  className="group inline-flex items-center gap-1.5 sm:gap-2.5 font-['Inter'] font-medium text-xs sm:text-sm text-[#334155] hover:text-[#551BF5] transition-colors"
                 >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Join Game with PIN</span>
+                  <span className="text-[#551BF5] font-bold text-xs transition-transform group-hover:translate-x-0.5">›</span>
+                  <span>Join with Game PIN</span>
+                </Link>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => handleNavClick('#interactive-demo')}
+                  className="group inline-flex items-center gap-1.5 sm:gap-2.5 font-['Inter'] font-medium text-xs sm:text-sm text-[#334155] hover:text-[#551BF5] transition-colors cursor-pointer text-left"
+                >
+                  <span className="text-[#551BF5] font-bold text-xs transition-transform group-hover:translate-x-0.5">›</span>
+                  <span>Live Multiplayer</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => handleNavClick('#interactive-demo')}
+                  className="group inline-flex items-center gap-1.5 sm:gap-2.5 font-['Inter'] font-medium text-xs sm:text-sm text-[#334155] hover:text-[#551BF5] transition-colors cursor-pointer text-left"
+                >
+                  <span className="text-[#551BF5] font-bold text-xs transition-transform group-hover:translate-x-0.5">›</span>
+                  <span>Leaderboards</span>
+                </button>
+              </li>
+              <li>
+                <Link
+                  to="/about"
+                  className="group inline-flex items-center gap-1.5 sm:gap-2.5 font-['Inter'] font-medium text-xs sm:text-sm text-[#334155] hover:text-[#551BF5] transition-colors"
+                >
+                  <span className="text-[#551BF5] font-bold text-xs transition-transform group-hover:translate-x-0.5">›</span>
+                  <span>Host Controls</span>
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Help & Policies */}
-          <div className="space-y-3 text-left">
-            <h4 className="font-outfit text-xs font-extrabold tracking-wide uppercase flex items-center gap-1.5" style={{ color: 'var(--text-heading)' }}>
-              <Shield className="h-3.5 w-3.5 text-secondary" />
-              <span>Help & Policies</span>
-            </h4>
-            <ul className="space-y-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+          {/* Column 3: Resources (col-span-1 on mobile, col-span-2 on desktop) */}
+          <div className="col-span-1 lg:col-span-2 flex flex-col items-start">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-2.5 sm:mb-5">
+              <LayoutGrid className="w-4 h-4 sm:w-5 sm:h-5 text-[#551BF5]" />
+              <h4 className="font-['Inter'] font-bold text-sm sm:text-lg leading-tight tracking-[-0.45px] text-[#0F172A]">
+                Resources
+              </h4>
+            </div>
+
+            <ul className="flex flex-col gap-1.5 sm:gap-3.5">
+              <li>
+                <button
+                  type="button"
+                  onClick={() => handleNavClick('#how-it-works')}
+                  className="group inline-flex items-center gap-1.5 sm:gap-2.5 font-['Inter'] font-medium text-xs sm:text-sm text-[#334155] hover:text-[#551BF5] transition-colors cursor-pointer text-left"
+                >
+                  <span className="text-[#551BF5] font-bold text-xs transition-transform group-hover:translate-x-0.5">›</span>
+                  <span>How It Works</span>
+                </button>
+              </li>
+              <li>
+                <Link
+                  to="/about"
+                  className="group inline-flex items-center gap-1.5 sm:gap-2.5 font-['Inter'] font-medium text-xs sm:text-sm text-[#334155] hover:text-[#551BF5] transition-colors"
+                >
+                  <span className="text-[#551BF5] font-bold text-xs transition-transform group-hover:translate-x-0.5">›</span>
+                  <span>Use Cases</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/about"
+                  className="group inline-flex items-center gap-1.5 sm:gap-2.5 font-['Inter'] font-medium text-xs sm:text-sm text-[#334155] hover:text-[#551BF5] transition-colors"
+                >
+                  <span className="text-[#551BF5] font-bold text-xs transition-transform group-hover:translate-x-0.5">›</span>
+                  <span>Tips for Hosts</span>
+                </Link>
+              </li>
               <li>
                 <Link
                   to="/faq"
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                  className="group inline-flex items-center gap-1.5 sm:gap-2.5 font-['Inter'] font-medium text-xs sm:text-sm text-[#334155] hover:text-[#551BF5] transition-colors"
                 >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>FAQ & Knowledge Base</span>
+                  <span className="text-[#551BF5] font-bold text-xs transition-transform group-hover:translate-x-0.5">›</span>
+                  <span>Help Center</span>
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/privacy"
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
+                <button
+                  type="button"
+                  onClick={() => handleNavClick('#faq')}
+                  className="group inline-flex items-center gap-1.5 sm:gap-2.5 font-['Inter'] font-medium text-xs sm:text-sm text-[#334155] hover:text-[#551BF5] transition-colors cursor-pointer text-left"
                 >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Privacy Policy</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/terms"
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Terms and Conditions</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/refund"
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Refund Policy</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/login"
-                  className="group flex items-center gap-2 font-semibold hover:text-primary transition-colors text-left w-full cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  <span>Host Login / Register</span>
-                </Link>
+                  <span className="text-[#551BF5] font-bold text-xs transition-transform group-hover:translate-x-0.5">›</span>
+                  <span>FAQs</span>
+                </button>
               </li>
             </ul>
           </div>
 
-          {/* Column 4: Head Office & Support */}
-          <div className="space-y-3 text-left">
-            <h4 className="font-outfit text-xs font-extrabold tracking-wide uppercase flex items-center gap-1.5" style={{ color: 'var(--text-heading)' }}>
-              <MapPin className="h-3.5 w-3.5 text-primary" />
-              <span>Head Office & Contact</span>
-            </h4>
+          {/* Column 4: Support & Contact (col-span-2 on mobile, col-span-3 on desktop) */}
+          <div className="col-span-2 lg:col-span-3 flex flex-col items-start pt-3 sm:pt-4 lg:pt-0 border-t border-purple-100/60 lg:border-t-0 w-full">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-5">
+              <Headphones className="w-4 h-4 sm:w-5 sm:h-5 text-[#551BF5]" />
+              <h4 className="font-['Inter'] font-bold text-sm sm:text-lg leading-tight tracking-[-0.45px] text-[#0F172A]">
+                Support & Contact
+              </h4>
+            </div>
 
-            {/* Clickable Navigable Address */}
-            <a
-              href={googleMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group block p-3 rounded-xl bg-sky-100/70 dark:bg-white/5 border border-sky-200 dark:border-white/10 hover:border-sky-400 dark:hover:border-primary/40 hover:bg-sky-100 dark:hover:bg-white/10 transition-all text-left cursor-pointer shadow-sm"
-              title="Gubbi Inc. Pune (Google Maps)"
-            >
-              <div className="flex items-start gap-2.5">
-                <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
-                <div className="space-y-0.5 overflow-hidden min-w-0">
-                  <span className="text-xs font-bold uppercase text-secondary tracking-wide flex items-center gap-1">
-                    <span>Pune (Head Office)</span>
-                    <ExternalLink className="h-3 w-3 text-secondary opacity-70 group-hover:opacity-100 shrink-0" />
-                  </span>
-                  <p className="text-xs font-semibold leading-snug break-words" style={{ color: 'var(--text-main)' }}>
-                    305, City Vista, Kharadi, Pune 411014
-                  </p>
-                </div>
-              </div>
-            </a>
+            <div className="flex flex-wrap sm:flex-col gap-x-4 gap-y-1 sm:gap-3.5 w-full">
+              <a
+                href="mailto:info@fouriseindia.com"
+                className="inline-flex items-center gap-2 py-0.5 font-['Inter'] font-semibold text-xs sm:text-sm text-[#1E293B] hover:text-[#551BF5] transition-colors group"
+              >
+                <Mail className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#551BF5] shrink-0 group-hover:scale-110 transition-transform" />
+                <span>info@fouriseindia.com</span>
+              </a>
 
-            <ul className="space-y-2 text-xs px-1">
-              <li>
-                <a
-                  href="mailto:info@fouriseindia.com"
-                  className="inline-flex items-center gap-2.5 hover:text-primary transition-colors font-semibold"
-                  style={{ color: 'var(--text-muted)' }}
-                >
-                  <Mail className="h-4 w-4 text-primary shrink-0" />
-                  <span>info@fouriseindia.com</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="tel:+919527605805"
-                  className="inline-flex items-center gap-2.5 hover:text-primary transition-colors font-semibold"
-                  style={{ color: 'var(--text-muted)' }}
-                >
-                  <Phone className="h-4 w-4 text-primary shrink-0" />
-                  <span>+91 95276 05805</span>
-                </a>
-              </li>
-            </ul>
+              <a
+                href="mailto:info@fouriseindia.com?subject=Chat%20with%20Support%20-%20Gubbi"
+                className="inline-flex items-center gap-2 py-0.5 font-['Inter'] font-semibold text-xs sm:text-sm text-[#1E293B] hover:text-[#551BF5] transition-colors group"
+              >
+                <MessageCircle className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#551BF5] shrink-0 group-hover:scale-110 transition-transform" />
+                <span>Chat with Support</span>
+              </a>
+
+              <a
+                href="mailto:info@fouriseindia.com?subject=Feedback%20for%20Gubbi"
+                className="inline-flex items-center gap-2 py-0.5 font-['Inter'] font-semibold text-xs sm:text-sm text-[#1E293B] hover:text-[#551BF5] transition-colors group"
+              >
+                <FileText className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#551BF5] shrink-0 group-hover:scale-110 transition-transform" />
+                <span>Send Feedback</span>
+              </a>
+            </div>
           </div>
 
         </div>
+      </div>
 
-        {/* Bottom Copyright & Legal Row */}
-        <div className="pt-5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-center md:text-left" style={{ color: 'var(--text-muted)' }}>
-          <p>© {new Date().getFullYear()} Gubbi Inc. · Gubbi. All rights reserved.</p>
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs font-medium">
-            <Link to="/about" className="hover:text-primary transition-colors">
-              About Gubbi
-            </Link>
-            <Link to="/faq" className="hover:text-primary transition-colors">
-              FAQ
-            </Link>
-            <Link to="/privacy" className="hover:text-primary transition-colors">
-              Privacy Policy
-            </Link>
-            <Link to="/terms" className="hover:text-primary transition-colors">
-              Terms & Conditions
-            </Link>
-            <Link to="/refund" className="hover:text-primary transition-colors">
-              Refund Policy
-            </Link>
-            <a href="https://gubbi.gradezy.in" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-              Gubbi
-            </a>
-          </div>
+      {/* Bottom Wave and Royal Purple Bar */}
+      <div className="relative w-full mt-4 sm:mt-12 lg:mt-20 overflow-hidden">
+        {/* Layered Wave SVG Transition matching IMAGE_1 */}
+        <div className="w-full overflow-hidden leading-none -mb-1">
+          <svg
+            className="relative block w-full h-[28px] sm:h-[64px] lg:h-[108px]"
+            viewBox="0 0 1440 108"
+            preserveAspectRatio="none"
+          >
+            {/* Back soft lavender wave (Vector 1: #EDE9FE at 0.5 opacity) */}
+            <path
+              d="M0,36 C320,68 540,16 820,46 C1100,76 1280,22 1440,36 L1440,108 L0,108 Z"
+              fill="#EDE9FE"
+              fillOpacity="0.5"
+            />
+            {/* Front Royal Purple wave (Vector 2: #551BF5) */}
+            <path
+              d="M0,54 C360,22 620,74 960,40 C1200,14 1360,50 1440,38 L1440,108 L0,108 Z"
+              fill="#551BF5"
+            />
+          </svg>
         </div>
 
+        {/* Solid Royal Purple Bottom Sub-footer */}
+        <div className="w-full bg-[#551BF5] px-4 sm:px-12 py-3.5 sm:py-7 lg:py-8">
+          <div className="max-w-[1255px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-6 text-center sm:text-left">
+            <p className="font-['Inter'] text-[11px] sm:text-sm text-white font-normal order-2 sm:order-1">
+              © 2026 Gubbi. All rights reserved.
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-[11px] sm:text-sm font-['Inter'] order-1 sm:order-2">
+              <Link
+                to="/privacy"
+                className="text-white/90 hover:text-white transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <span className="text-white/40 select-none">|</span>
+              <Link
+                to="/terms"
+                className="text-white/90 hover:text-white transition-colors"
+              >
+                Terms of Service
+              </Link>
+              <span className="text-white/40 select-none">|</span>
+              <Link
+                to="/privacy"
+                className="text-white/90 hover:text-white transition-colors"
+              >
+                Cookie Policy
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );

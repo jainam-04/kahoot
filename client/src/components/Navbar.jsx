@@ -126,7 +126,7 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Home', hash: '#hero' },
-    { label: 'Play Demo', hash: '#interactive-demo', highlight: true },
+    { label: 'Play Demo', hash: '#interactive-demo' },
     { label: 'Features', hash: '#features' },
     { label: 'Pricing', hash: '#pricing' },
     { label: 'FAQs', hash: '#faq' },
@@ -147,21 +147,21 @@ export default function Navbar() {
   return (
     <header 
       ref={headerRef}
-      className="fixed top-0 left-0 right-0 z-50 w-full border-b backdrop-blur-xl shadow-md transition-all duration-300"
+      className="fixed top-0 left-0 right-0 z-50 w-full border-b backdrop-blur-md transition-all duration-300"
       style={{
-        backgroundColor: isLight ? 'rgba(240, 249, 255, 0.94)' : 'rgba(10, 10, 15, 0.96)',
-        borderColor: isLight ? 'rgba(186, 230, 253, 0.8)' : 'rgba(255, 255, 255, 0.10)'
+        backgroundColor: isLight ? 'rgba(255, 255, 255, 0.90)' : 'rgba(10, 10, 15, 0.96)',
+        borderColor: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.10)'
       }}
     >
-      <div className="w-full flex h-16 items-center justify-between px-3 sm:px-5 lg:px-6">
+      <div className="max-w-[1351px] mx-auto w-full flex h-20 items-center justify-between px-4 sm:px-8">
         
         {/* Brand Logo - Leftmost */}
         <Link to="/" className="flex items-center transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
-          <Logo className="shrink-0" />
+          <Logo className="shrink-0" size="md" />
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-8">
           {token ? (
             <>
               <Link 
@@ -201,32 +201,25 @@ export default function Navbar() {
           ) : (
             navLinks.map((link) => {
               const secId = link.hash.replace('#', '');
-              const isActive = activeSection === secId;
-
-              if (link.highlight) {
-                return (
-                  <button
-                    key={link.label}
-                    onClick={() => handleNavClick(link.hash)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/15 border border-primary/30 text-xs font-black text-primary hover:bg-primary/25 transition-all cursor-pointer shadow-sm hover:scale-105"
-                  >
-                    <span className="h-2 w-2 rounded-full bg-secondary animate-pulse" />
-                    <span>{link.label}</span>
-                  </button>
-                );
-              }
+              const isHomeActive = secId === 'hero' && (!activeSection || activeSection === 'hero');
+              const isActive = isHomeActive || activeSection === secId;
 
               return (
                 <button
                   key={link.label}
+                  type="button"
                   onClick={() => handleNavClick(link.hash)}
-                  className={`text-sm font-extrabold transition-all cursor-pointer relative py-1 ${
-                    isActive ? 'text-sky-600' : isLight ? 'text-slate-700 hover:text-sky-600' : 'text-gray-300 hover:text-white'
+                  className={`font-['Inter'] text-[14px] leading-5 transition-colors cursor-pointer relative py-1 flex flex-col items-center ${
+                    isActive 
+                      ? 'text-[#551BF5] font-semibold' 
+                      : isLight 
+                        ? 'text-[#475569] hover:text-[#551BF5] font-medium' 
+                        : 'text-gray-300 hover:text-white font-medium'
                   }`}
                 >
-                  {link.label}
+                  <span>{link.label}</span>
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-gradient-to-r from-primary to-secondary" />
+                    <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[#551BF5]" />
                   )}
                 </button>
               );
@@ -236,23 +229,25 @@ export default function Navbar() {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-1 sm:gap-3">
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleThemeMode}
-            className="rounded-xl p-1.5 sm:p-2.5 border transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center"
-            style={{
-              background: isLight ? 'rgba(224, 242, 254, 0.7)' : 'rgba(255,255,255,0.05)',
-              borderColor: isLight ? 'rgba(186, 230, 253, 0.9)' : 'rgba(255,255,255,0.10)',
-              color: isLight ? '#0284c7' : '#d1d5db',
-            }}
-            aria-label="Toggle Theme"
-          >
-            {isLight ? (
-              <Moon className="h-4 w-4" style={{ color: '#0284c7' }} />
-            ) : (
-              <Sun className="h-4 w-4 text-yellow-400" />
-            )}
-          </button>
+          {/* Theme Toggle Button (displayed when logged in; landing page desktop uses clean Figma design) */}
+          {token && (
+            <button
+              onClick={toggleThemeMode}
+              className="rounded-xl p-1.5 sm:p-2.5 border transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center"
+              style={{
+                background: isLight ? 'rgba(237, 233, 254, 0.7)' : 'rgba(255,255,255,0.05)',
+                borderColor: isLight ? 'rgba(221, 214, 254, 0.9)' : 'rgba(255,255,255,0.10)',
+                color: isLight ? '#551BF5' : '#d1d5db',
+              }}
+              aria-label="Toggle Theme"
+            >
+              {isLight ? (
+                <Moon className="h-4 w-4" style={{ color: '#551BF5' }} />
+              ) : (
+                <Sun className="h-4 w-4 text-yellow-400" />
+              )}
+            </button>
+          )}
 
           {token ? (
             <>
@@ -401,32 +396,37 @@ export default function Navbar() {
           ) : (
             <>
               {/* Desktop Auth Buttons */}
-              <div className="hidden md:flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-4">
                 <Link
                   to="/login"
-                  className={`px-4 py-2 rounded-xl border text-sm font-extrabold transition-all ${
-                    isLight 
-                      ? 'border-purple-200 text-purple-950 hover:bg-purple-50' 
-                      : 'border-white/20 text-white hover:bg-white/10'
-                  }`}
+                  className="px-3 py-2 text-[14px] font-['Inter'] font-semibold text-[#334155] hover:text-[#551BF5] transition-colors"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="btn-premium btn-primary-gradient px-5 py-2 text-sm font-extrabold text-white rounded-xl shadow-premium-glow flex items-center gap-1.5 hover:scale-105 transition-all"
+                  className="btn-get-started px-5 py-2.5 rounded-full text-[14px] font-['Inter'] font-semibold !text-white shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center gap-1.5 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  style={{ 
+                    background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
+                    color: '#ffffff'
+                  }}
                 >
-                  <span>Get Started</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <span className="!text-white font-semibold" style={{ color: '#ffffff' }}>Get Started</span>
+                  <ArrowRight className="h-4 w-4 !text-white" style={{ color: '#ffffff' }} />
                 </Link>
               </div>
 
               {/* Mobile Quick Get Started Button */}
               <Link
                 to="/register"
-                className="md:hidden btn-premium btn-primary-gradient px-3 py-1.5 text-xs font-extrabold text-white rounded-xl shadow-sm flex items-center gap-1"
+                className="btn-get-started md:hidden px-4 py-2 text-xs font-['Inter'] font-bold !text-white rounded-full shadow-sm flex items-center gap-1"
+                style={{ 
+                  background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
+                  color: '#ffffff'
+                }}
               >
-                <span>Get Started</span>
+                <span className="!text-white font-bold" style={{ color: '#ffffff' }}>Get Started</span>
+                <ArrowRight className="h-3.5 w-3.5 !text-white" style={{ color: '#ffffff' }} />
               </Link>
             </>
           )}

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, HelpCircle } from 'lucide-react';
 
 const faqs = [
   {
@@ -29,7 +28,26 @@ const faqs = [
   },
 ];
 
+function ChevronIcon({ isOpen }) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      className={`w-4 h-4 transition-transform duration-300 ${
+        isOpen ? 'rotate-180 text-[#551BF5]' : 'text-[#94A3B8]'
+      }`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 6L8 10L12 6" />
+    </svg>
+  );
+}
+
 export default function FAQSection() {
+  // Default first item expanded matching Figma
   const [openIndex, setOpenIndex] = useState(0);
 
   const toggleAccordion = (idx) => {
@@ -37,79 +55,110 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 scroll-mt-20">
-      
-      {/* Glow */}
-      <div className="absolute top-1/3 right-10 h-72 w-72 rounded-full bg-secondary/10 blur-[120px] pointer-events-none" />
+    <section
+      id="faq"
+      className="relative w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-8 scroll-mt-20 overflow-hidden"
+      style={{
+        background: 'linear-gradient(180deg, #F7F4FF 0%, #FAF8FF 50%, #FFFFFF 100%)',
+      }}
+    >
+      {/* Ambient soft decorative purple glow blooms from Figma */}
+      <div
+        className="absolute w-[384px] h-[384px] -left-[64px] -top-[64px] rounded-full pointer-events-none filter blur-[64px]"
+        style={{ background: 'rgba(233, 213, 255, 0.4)' }}
+      />
+      <div
+        className="absolute w-[420px] h-[420px] -right-[64px] -bottom-[64px] rounded-full pointer-events-none filter blur-[64px]"
+        style={{ background: 'rgba(233, 213, 255, 0.4)' }}
+      />
 
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-12"
-      >
-        <span className="rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-xs font-bold text-primary uppercase tracking-wider">
-          Got Questions?
-        </span>
-        <h2 className="font-outfit text-3xl sm:text-5xl font-black text-slate-900 dark:text-white mt-3 tracking-tight">
-          Frequently Asked <span className="text-gradient-primary">Questions</span>
-        </h2>
-        <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-gray-400">
-          Everything you need to know about hosting and playing on Gubbi.
-        </p>
-      </motion.div>
+      {/* Main Container: 896px */}
+      <div className="max-w-[896px] mx-auto w-full relative z-10 flex flex-col items-center">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center max-w-[640px] space-y-3 mb-10 sm:mb-14"
+        >
+          {/* Heading 2 */}
+          <h2 className="font-['Inter'] font-semibold text-3xl sm:text-4xl lg:text-[48px] lg:leading-[48px] tracking-[-1.2px] text-[#0F172A]">
+            Frequently Asked <span className="text-[#551BF5]">Questions</span>
+          </h2>
 
-      {/* Accordion List */}
-      <div className="space-y-4">
-        {faqs.map((faq, idx) => {
-          const isOpen = openIndex === idx;
+          {/* Subtitle */}
+          <p className="font-['Inter'] font-normal text-sm sm:text-base leading-6 text-[#475569] max-w-[576px] mx-auto">
+            Everything you need to know about hosting and playing on Gubbi.
+          </p>
+        </motion.div>
 
-          return (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: idx * 0.05 }}
-              className="glass-panel rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden text-left bg-white/90 dark:bg-transparent shadow-sm"
-            >
-              <button
-                onClick={() => toggleAccordion(idx)}
-                className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left font-outfit text-base sm:text-lg font-extrabold text-slate-900 dark:text-white hover:text-primary transition-colors cursor-pointer"
+        {/* FAQ Accordions Stack: 768px */}
+        <div className="w-full max-w-[768px] space-y-4 filter drop-shadow-[0px_0px_7px_rgba(0,0,0,0.06)]">
+          {faqs.map((faq, idx) => {
+            const isOpen = openIndex === idx;
+
+            return (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.35, delay: idx * 0.04 }}
+                className={`rounded-[16px] transition-all overflow-hidden text-left ${
+                  isOpen
+                    ? 'bg-white border border-[#D8B4FE] shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.1),0px_2px_4px_-2px_rgba(168,85,247,0.1)] p-6'
+                    : 'bg-white border border-[rgba(243,232,255,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:border-[#D8B4FE]/60 p-6'
+                }`}
               >
-                <span className="flex items-center gap-3">
-                  <HelpCircle className="h-5 w-5 text-secondary shrink-0" />
-                  <span>{faq.q}</span>
-                </span>
-                <ChevronDown
-                  className={`h-5 w-5 text-slate-400 dark:text-gray-400 shrink-0 transition-transform duration-300 ${
-                    isOpen ? 'rotate-180 text-primary' : ''
-                  }`}
-                />
-              </button>
-
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
+                {/* Accordion Trigger Header */}
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion(idx)}
+                  className="w-full flex items-center justify-between gap-4 cursor-pointer text-left focus:outline-none"
+                  aria-expanded={isOpen}
+                >
+                  <span
+                    className={`font-['Inter'] font-bold text-base leading-6 transition-colors ${
+                      isOpen ? 'text-[#0F172A]' : 'text-[#1E293B] hover:text-[#0F172A]'
+                    }`}
                   >
-                    <div className="p-5 sm:p-6 pt-0 text-xs sm:text-sm text-slate-600 dark:text-gray-300 leading-relaxed border-t border-slate-200 dark:border-white/5">
-                      {faq.a}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          );
-        })}
-      </div>
+                    {faq.q}
+                  </span>
 
+                  {/* 32px Circular Chevron Pill */}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                      isOpen ? 'bg-[#FAF5FF]' : 'bg-[#F8FAFC]'
+                    }`}
+                  >
+                    <ChevronIcon isOpen={isOpen} />
+                  </div>
+                </button>
+
+                {/* Collapsible Answer Body with Horizontal Divider */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="border-t border-[#F3E8FF] pt-4 mt-4">
+                        <p className="font-['Inter'] font-normal text-sm leading-5 text-[#475569]">
+                          {faq.a}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
     </section>
   );
 }

@@ -11,36 +11,36 @@ const ThemeBackground = ({ children }) => {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden flex flex-col">
-      {/* Base Background: Shades of Light Blue in Light mode */}
+      {/* Base Background: Soft glowing lavender-white in Light mode */}
       <div 
         className="absolute inset-0 z-0 transition-colors duration-700" 
         style={{ 
           background: isLight 
-            ? '#f8fafc' 
+            ? '#FAF7FE' 
             : (activeTheme?.colors?.background || 'var(--theme-bg)') 
         }}
       />
 
-      {/* Subtle Ambient Soft Light Blue Orbs (Static / CSS Animated) */}
+      {/* Subtle Ambient Soft Lavender & Violet Glows */}
       <div 
-        className={`absolute top-[-5%] left-[10%] w-[500px] h-[500px] rounded-full pointer-events-none filter blur-[120px] animate-pulse ${
-          isLight ? 'mix-blend-multiply opacity-25' : 'mix-blend-screen opacity-40'
+        className={`absolute top-[-5%] left-[8%] w-[550px] h-[550px] rounded-full pointer-events-none filter blur-[130px] ${
+          isLight ? 'opacity-40' : 'mix-blend-screen opacity-40'
         }`}
-        style={{ background: isLight ? '#bae6fd' : primaryColor }}
+        style={{ background: isLight ? '#EDE9FE' : primaryColor }}
       />
 
       <div 
-        className={`absolute bottom-[5%] right-[5%] w-[600px] h-[600px] rounded-full pointer-events-none filter blur-[140px] animate-pulse ${
-          isLight ? 'mix-blend-multiply opacity-20' : 'mix-blend-screen opacity-30'
+        className={`absolute top-[15%] right-[5%] w-[600px] h-[600px] rounded-full pointer-events-none filter blur-[140px] ${
+          isLight ? 'opacity-35' : 'mix-blend-screen opacity-30'
         }`}
-        style={{ background: isLight ? '#7dd3fc' : accentColor, animationDuration: '9s' }}
+        style={{ background: isLight ? '#DDD6FE' : accentColor }}
       />
 
       <div 
-        className={`absolute top-[40%] right-[30%] w-[400px] h-[400px] rounded-full pointer-events-none filter blur-[110px] animate-pulse ${
-          isLight ? 'mix-blend-multiply opacity-15' : 'mix-blend-screen opacity-20'
+        className={`absolute top-[45%] left-[30%] w-[450px] h-[450px] rounded-full pointer-events-none filter blur-[120px] ${
+          isLight ? 'opacity-25' : 'mix-blend-screen opacity-20'
         }`}
-        style={{ background: isLight ? '#93c5fd' : secondaryColor, animationDuration: '12s' }}
+        style={{ background: isLight ? '#F5F3FF' : secondaryColor }}
       />
 
       {/* Main Content Container */}

@@ -898,17 +898,27 @@
 }
 
 /* Navbar text in light mode */
-.light header a,
-.light header nav a,
-.light header span {
-  color: var(--text-main) !important;
+.light header nav button,
+.light header nav a:not(.btn-primary-gradient):not(.btn-get-started):not([class*="text-white"]) {
+  color: var(--text-main);
 }
-.light header a:hover,
-.light header nav a:hover {
-  color: var(--text-heading) !important;
+.light header nav button:hover,
+.light header nav a:not(.btn-primary-gradient):not(.btn-get-started):not([class*="text-white"]):hover {
+  color: var(--text-heading);
 }
 .light header .font-outfit {
-  color: var(--text-heading) !important;
+  color: var(--text-heading);
+}
+
+/* ── Specific Get Started Navbar Button: Force Crisp White ── */
+.btn-get-started,
+.btn-get-started *,
+.light .btn-get-started,
+.light .btn-get-started *,
+header .btn-get-started,
+header .btn-get-started * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 /* ── Buttons — keep white text on colored buttons ── */
