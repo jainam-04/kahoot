@@ -66,7 +66,7 @@ export default function FeaturesSection() {
   return (
     <section
       id="features"
-      className="w-full relative overflow-hidden transition-colors"
+      className="w-full relative overflow-hidden transition-colors lg:h-[calc(100vh-81px)] lg:max-h-[calc(100vh-81px)] lg:flex lg:flex-col lg:items-center lg:justify-center scroll-mt-20"
       style={{
         background: isLight ? '#F8F6FF' : '#0B0914',
       }}
@@ -74,8 +74,16 @@ export default function FeaturesSection() {
       {/* ========================================================
           FULL-SCREEN DESKTOP STAGE (>= 1024px)
           Crisp, full-color original graphic with zero blur or masks
+          Constrained to 100vh - 81px so it fits 100% in one view
           ======================================================== */}
-      <div className="hidden lg:block relative w-full aspect-[1024/576] mx-auto select-none">
+      <div
+        className="hidden lg:block relative mx-auto select-none aspect-[1024/576]"
+        style={{
+          width: 'min(100%, calc((100vh - 81px) * 1024 / 576))',
+          maxHeight: 'calc(100vh - 81px)',
+          maxWidth: '1440px',
+        }}
+      >
         
         {/* Full-width crisp stage illustration (unblurred, unmasked) */}
         <div
@@ -94,28 +102,28 @@ export default function FeaturesSection() {
         )}
 
         {/* Section Header matching reference image */}
-        <div className="absolute top-[6.5%] left-1/2 -translate-x-1/2 flex flex-col items-center text-center w-full max-w-[800px] z-20 px-4">
+        <div className="absolute top-[4%] xl:top-[5%] left-1/2 -translate-x-1/2 flex flex-col items-center text-center w-full max-w-[800px] z-20 px-4">
           {/* Pill Badge */}
-          <div className="mb-2 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#EDE9FE] dark:bg-purple-950/60 border border-[#E9D5FF]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
+          <div className="mb-1.5 inline-flex items-center gap-1.5 px-3 py-0.5 xl:px-3.5 xl:py-1 rounded-full bg-[#EDE9FE] dark:bg-purple-950/60 border border-[#E9D5FF]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
             <Zap className="w-3 h-3 fill-[#551BF5] text-[#551BF5]" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.6px] text-[#551BF5] dark:text-purple-300">
+            <span className="text-[10px] xl:text-[11px] font-bold uppercase tracking-[0.6px] text-[#551BF5] dark:text-purple-300">
               CORE FEATURES
             </span>
           </div>
 
           {/* Heading 2 */}
-          <h2 className="mb-1 text-2xl xl:text-[34px] xl:leading-[40px] tracking-[-0.9px] font-bold text-[#0F0F2D] dark:text-white">
+          <h2 className="mb-1 text-xl lg:text-2xl xl:text-[32px] xl:leading-[38px] tracking-[-0.8px] font-bold text-[#0F0F2D] dark:text-white">
             <span>Everything You Need to </span>
             <span className="text-[#551BF5]">Engage &amp; Conquer</span>
           </h2>
 
           {/* Subtitle */}
-          <p className="text-[13px] xl:text-[14px] leading-5 text-[#475569] dark:text-gray-300 max-w-[640px] text-center mb-2.5">
+          <p className="text-[11.5px] xl:text-[13.5px] leading-snug xl:leading-5 text-[#475569] dark:text-gray-300 max-w-[580px] text-center mb-1.5">
             Gubbi comes packed with powerful features for teachers, quizmasters, and trivia hosts.
           </p>
 
           {/* Purple Accent Bar */}
-          <div className="w-12 h-1 bg-[#551BF5] rounded-full" />
+          <div className="w-10 xl:w-12 h-1 bg-[#551BF5] rounded-full" />
         </div>
 
         {/* SVG Curved Connectors matching reference image */}
@@ -182,21 +190,21 @@ export default function FeaturesSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.35, delay: idx * 0.08 }}
             style={{ top: feat.top }}
-            className={`absolute left-[2.6%] w-[25%] rounded-[20px] p-3.5 xl:p-4 border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl z-20 ${
+            className={`absolute left-[2.6%] w-[25%] rounded-[16px] xl:rounded-[20px] p-2.5 xl:p-3.5 border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl z-20 ${
               isLight
                 ? 'bg-white border-[#F1E8FF] shadow-[0px_4px_22px_rgba(85,27,245,0.06)]'
                 : 'bg-[#151224] border-purple-500/20 shadow-xl'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 xl:w-10 xl:h-10 rounded-xl ${feat.iconBg} flex items-center justify-center shrink-0 shadow-sm`}>
+            <div className="flex items-center gap-2.5 xl:gap-3">
+              <div className={`w-8 h-8 xl:w-10 xl:h-10 rounded-xl ${feat.iconBg} flex items-center justify-center shrink-0 shadow-sm`}>
                 {feat.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-[13px] xl:text-[14.5px] font-bold text-[#0F172A] dark:text-white leading-tight">
+                <h3 className="text-[12px] xl:text-[14px] font-bold text-[#0F172A] dark:text-white leading-tight">
                   {feat.title}
                 </h3>
-                <p className="text-[10.5px] xl:text-[12px] text-[#64748B] dark:text-gray-300 leading-snug mt-0.5">
+                <p className="text-[10px] xl:text-[11.5px] text-[#64748B] dark:text-gray-300 leading-snug mt-0.5">
                   {feat.desc}
                 </p>
               </div>
@@ -213,21 +221,21 @@ export default function FeaturesSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.35, delay: idx * 0.08 }}
             style={{ top: feat.top }}
-            className={`absolute right-[2.6%] w-[25%] rounded-[20px] p-3.5 xl:p-4 border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl z-20 ${
+            className={`absolute right-[2.6%] w-[25%] rounded-[16px] xl:rounded-[20px] p-2.5 xl:p-3.5 border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl z-20 ${
               isLight
                 ? 'bg-white border-[#F1E8FF] shadow-[0px_4px_22px_rgba(85,27,245,0.06)]'
                 : 'bg-[#151224] border-purple-500/20 shadow-xl'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 xl:w-10 xl:h-10 rounded-xl ${feat.iconBg} flex items-center justify-center shrink-0 shadow-sm`}>
+            <div className="flex items-center gap-2.5 xl:gap-3">
+              <div className={`w-8 h-8 xl:w-10 xl:h-10 rounded-xl ${feat.iconBg} flex items-center justify-center shrink-0 shadow-sm`}>
                 {feat.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-[13px] xl:text-[14.5px] font-bold text-[#0F172A] dark:text-white leading-tight">
+                <h3 className="text-[12px] xl:text-[14px] font-bold text-[#0F172A] dark:text-white leading-tight">
                   {feat.title}
                 </h3>
-                <p className="text-[10.5px] xl:text-[12px] text-[#64748B] dark:text-gray-300 leading-snug mt-0.5">
+                <p className="text-[10px] xl:text-[11.5px] text-[#64748B] dark:text-gray-300 leading-snug mt-0.5">
                   {feat.desc}
                 </p>
               </div>
