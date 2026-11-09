@@ -208,7 +208,7 @@ export default function ReadyQuizzesSection() {
       }}
     >
       <div className="max-w-[1351px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center gap-10">
-        
+
         {/* Section Header matching Figma reference */}
         <div className="flex flex-col items-center text-center w-full max-w-[960px] mx-auto gap-4">
           <h2 className="flex flex-wrap items-center justify-center gap-2 text-3xl sm:text-4xl md:text-[48px] md:leading-[48px] tracking-[-1.2px] font-semibold text-[#0D0B26] dark:text-white">
@@ -220,10 +220,10 @@ export default function ReadyQuizzesSection() {
             Pick from our curated library with 10 questions per quiz. Host live multiplayer games instantly without typing questions from scratch!
           </p>
 
-          {/* Capsule Container Bar with category filter pills */}
-          <div className="w-full flex justify-center px-2 sm:px-4">
-            <div className="w-full max-w-full sm:w-auto overflow-x-auto scrollbar-none py-1.5 px-1 -mx-1">
-              <div className="flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl sm:rounded-full bg-white/85 dark:bg-[#181528]/85 border border-[#E9D5FF]/80 dark:border-purple-500/20 shadow-[0px_2px_12px_rgba(85,27,245,0.08)] backdrop-blur-md min-w-max">
+          {/* Category Filter Pills: Standalone pills on mobile (< sm), Centered capsule on desktop (sm:) */}
+          <div className="w-full flex justify-center">
+            <div className="w-full max-w-full sm:w-auto overflow-x-auto scrollbar-none py-2 px-4 sm:px-0">
+              <div className="flex items-center justify-start sm:justify-center gap-2 sm:gap-2 sm:p-1.5 sm:rounded-full sm:bg-white/85 sm:dark:bg-[#181528]/85 sm:border sm:border-[#E9D5FF]/80 sm:dark:border-purple-500/20 sm:shadow-[0px_2px_12px_rgba(85,27,245,0.08)] sm:backdrop-blur-md min-w-max">
                 {categoryPills.map((pill) => {
                   const Icon = pill.icon;
                   const isSelected = activeCategory === pill.name;
@@ -233,10 +233,10 @@ export default function ReadyQuizzesSection() {
                       key={pill.name}
                       type="button"
                       onClick={(e) => handleCategoryClick(pill.name, e)}
-                      className={`h-9 sm:h-10 px-3.5 sm:px-5 rounded-xl sm:rounded-full flex items-center gap-2 text-xs sm:text-sm transition-all duration-200 cursor-pointer shrink-0 whitespace-nowrap select-none ${
+                      className={`h-9 sm:h-10 px-4 sm:px-5 rounded-full flex items-center gap-2 text-xs sm:text-sm transition-all duration-200 cursor-pointer shrink-0 whitespace-nowrap select-none ${
                         isSelected
                           ? 'bg-[#551BF5] text-white font-bold shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25),0px_2px_4px_-2px_rgba(168,85,247,0.25)] scale-[1.02]'
-                          : 'bg-white/80 dark:bg-white/10 border border-slate-200/80 dark:border-white/10 text-[#334155] dark:text-slate-200 font-semibold hover:bg-white dark:hover:bg-white/20'
+                          : 'bg-white dark:bg-[#181528] border border-[#E9D5FF] dark:border-purple-800/40 text-[#334155] dark:text-slate-200 font-semibold shadow-xs hover:border-[#551BF5]/40 hover:bg-white'
                       }`}
                     >
                       <Icon
@@ -270,11 +270,10 @@ export default function ReadyQuizzesSection() {
               return (
                 <article
                   key={quiz._id || index}
-                  className={`w-[84vw] max-w-[310px] sm:w-[320px] lg:w-full shrink-0 lg:shrink snap-center lg:snap-align-none rounded-[24px] overflow-hidden flex flex-col justify-between border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
-                    isLight
-                      ? 'bg-white border-[#F3E8FF]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
-                      : 'bg-[#151224] border-purple-500/20 shadow-lg'
-                  }`}
+                  className={`w-[84vw] max-w-[310px] sm:w-[320px] lg:w-full shrink-0 lg:shrink snap-center lg:snap-align-none rounded-[24px] overflow-hidden flex flex-col justify-between border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${isLight
+                    ? 'bg-white border-[#F3E8FF]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
+                    : 'bg-[#151224] border-purple-500/20 shadow-lg'
+                    }`}
                 >
                   {/* Top: Artwork Banner & Content */}
                   <div className="flex flex-col">
@@ -382,11 +381,10 @@ export default function ReadyQuizzesSection() {
                     type="button"
                     onClick={() => scrollToIndex(idx)}
                     aria-label={`Slide ${idx + 1}`}
-                    className={`transition-all duration-300 rounded-full cursor-pointer ${
-                      activeIndex === idx
-                        ? 'w-6 h-2 bg-[#551BF5]'
-                        : 'w-2 h-2 bg-purple-200 dark:bg-purple-900/60 hover:bg-purple-300'
-                    }`}
+                    className={`transition-all duration-300 rounded-full cursor-pointer ${activeIndex === idx
+                      ? 'w-6 h-2 bg-[#551BF5]'
+                      : 'w-2 h-2 bg-purple-200 dark:bg-purple-900/60 hover:bg-purple-300'
+                      }`}
                   />
                 ))}
               </div>
