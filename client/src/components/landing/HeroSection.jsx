@@ -97,56 +97,58 @@ export default function HeroSection() {
             className="w-full max-w-[592px] text-left space-y-4 sm:space-y-5"
           >
             {/* Heading 1 */}
-            <h1 className="font-['Inter'] font-bold text-3xl sm:text-4xl lg:text-[48px] xl:text-[54px] lg:leading-[50px] xl:leading-[54px] tracking-[-1.35px] text-[#1E1B4B]">
-              Create, Host & Play <br />
+            <h1 className="font-['Inter'] font-bold text-[28px] sm:text-4xl lg:text-[48px] xl:text-[54px] leading-[34px] sm:leading-[44px] lg:leading-[50px] xl:leading-[54px] tracking-[-1px] sm:tracking-[-1.35px] text-[#1E1B4B]">
+              Create, Host & Play <br className="hidden sm:inline" />{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#551BF5] via-[#483ED5] to-[#2563EB]">
                 Interactive Quizzes
-              </span> <br />
+              </span>{' '}
+              <br className="hidden sm:inline" />
               in Real-Time
             </h1>
 
             {/* Subtitle */}
-            <p className="font-['Inter'] font-normal text-sm sm:text-base lg:text-[18px] leading-[26px] sm:leading-[28px] text-[#475569] max-w-[576px]">
+            <p className="font-['Inter'] font-normal text-xs sm:text-base lg:text-[18px] leading-[20px] sm:leading-[28px] text-[#475569] max-w-[576px]">
               Create engaging quizzes, invite players instantly, compete live, track performance, and make learning fun.
             </p>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5 pt-2 filter drop-shadow-[0px_2px_13px_rgba(0,0,0,0.1)]">
-              <div className="grid grid-cols-2 gap-2.5 sm:flex sm:items-center sm:gap-3.5">
-                {/* Button 1: Create Quiz */}
-                <Link
-                  to="/quiz/create"
-                  className="h-11 sm:h-12 px-4 sm:px-7 rounded-[16px] text-white font-['Inter'] font-bold text-xs sm:text-base tracking-[0.4px] flex items-center justify-center gap-1.5 sm:gap-2 hover:scale-105 active:scale-95 transition-all shadow-[0px_10px_22px_-4px_rgba(85,27,245,0.4),inset_0px_1px_0px_rgba(255,255,255,0.35)] shrink-0"
-                  style={{ background: 'linear-gradient(105.23deg, #551BF5 0%, #6C38FF 50%, #7A42F8 100%)' }}
-                >
-                  <span>Create Quiz</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5 pt-1 sm:pt-2 filter drop-shadow-[0px_2px_13px_rgba(0,0,0,0.08)]">
+              {/* Button 1: Create Quiz (Primary CTA - Full width on mobile, auto on desktop) */}
+              <Link
+                to="/quiz/create"
+                className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-7 rounded-[16px] text-white font-['Inter'] font-bold text-sm sm:text-base tracking-[0.4px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0px_10px_22px_-4px_rgba(85,27,245,0.4),inset_0px_1px_0px_rgba(255,255,255,0.35)] shrink-0"
+                style={{ background: 'linear-gradient(105.23deg, #551BF5 0%, #6C38FF 50%, #7A42F8 100%)' }}
+              >
+                <span>Create Quiz</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
 
+              {/* Secondary Buttons Row on Mobile: Join Game & Try Demo */}
+              <div className="grid grid-cols-2 gap-2.5 sm:flex sm:items-center sm:gap-3.5">
                 {/* Button 2: Join Game */}
                 <Link
                   to="/join"
-                  className="h-11 sm:h-12 px-4 sm:px-6 rounded-[16px] bg-white border border-[#E9D5FF] text-[#1E1B4B] font-['Inter'] font-semibold text-xs sm:text-base tracking-[0.4px] flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-purple-50/50 hover:border-[#D8B4FE] hover:scale-105 active:scale-95 transition-all shadow-[0px_1px_2px_rgba(0,0,0,0.05)] shrink-0"
+                  className="h-11 sm:h-12 px-3 sm:px-6 rounded-[16px] bg-white border border-[#E9D5FF] text-[#1E1B4B] font-['Inter'] font-semibold text-xs sm:text-base tracking-[0.3px] flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-purple-50/50 hover:border-[#D8B4FE] hover:scale-[1.02] active:scale-95 transition-all shadow-[0px_1px_2px_rgba(0,0,0,0.05)] shrink-0"
                 >
-                  <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-[#551BF5] text-[#551BF5]" />
+                  <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-[#551BF5] text-[#551BF5] shrink-0" />
                   <span>Join Game</span>
                 </Link>
-              </div>
 
-              {/* Button 3: Try Demo */}
-              <button
-                type="button"
-                onClick={() => {
-                  const el = document.getElementById('interactive-demo');
-                  if (el) {
-                    el.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                className="h-11 sm:h-12 px-5 sm:px-6 rounded-[16px] bg-white/90 border border-[#E2E8F0] backdrop-blur-[12px] text-[#334155] font-['Inter'] font-semibold text-xs sm:text-base tracking-[0.4px] flex items-center justify-center gap-2 hover:bg-white hover:border-[#CBD5E1] hover:scale-105 active:scale-95 transition-all shadow-[0px_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
-              >
-                <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-[#F59E0B] text-[#F59E0B]" />
-                <span>Try Demo</span>
-              </button>
+                {/* Button 3: Try Demo */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById('interactive-demo');
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="h-11 sm:h-12 px-3 sm:px-6 rounded-[16px] bg-white/90 border border-[#E2E8F0] backdrop-blur-[12px] text-[#334155] font-['Inter'] font-semibold text-xs sm:text-base tracking-[0.3px] flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-white hover:border-[#CBD5E1] hover:scale-[1.02] active:scale-95 transition-all shadow-[0px_1px_2px_rgba(0,0,0,0.05)] cursor-pointer shrink-0"
+                >
+                  <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-[#F59E0B] text-[#F59E0B] shrink-0" />
+                  <span>Try Demo</span>
+                </button>
+              </div>
             </div>
           </motion.div>
 
@@ -155,12 +157,12 @@ export default function HeroSection() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="lg:hidden w-full flex items-center justify-center py-4 mt-2 sm:mt-4"
+            className="lg:hidden w-full flex items-center justify-center py-2 sm:py-4 mt-2 sm:mt-4"
           >
             <img 
               src="/hero-mobile-device.png" 
               alt="Interactive Quiz Platform Interface" 
-              className="w-full max-w-[480px] sm:max-w-[560px] object-contain drop-shadow-[0_15px_35px_rgba(85,27,245,0.14)] select-none pointer-events-none" 
+              className="w-full max-w-[280px] sm:max-w-[420px] object-contain drop-shadow-[0_12px_28px_rgba(85,27,245,0.14)] select-none pointer-events-none" 
             />
           </motion.div>
         </div>
@@ -170,7 +172,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="w-full max-w-[1287px] mx-auto mt-6 sm:mt-8 bg-white/95 border border-[rgba(243,232,255,0.9)] shadow-[0px_1px_29px_rgba(0,0,0,0.08),0px_20px_25px_-5px_rgba(168,85,247,0.1),0px_8px_10px_-6px_rgba(168,85,247,0.08)] rounded-[24px] sm:rounded-[32px] p-2.5 sm:p-4 backdrop-blur-[12px]"
+          className="w-full max-w-[1287px] mx-auto mt-4 sm:mt-8 bg-white/95 border border-[rgba(243,232,255,0.9)] shadow-[0px_1px_29px_rgba(0,0,0,0.08),0px_20px_25px_-5px_rgba(168,85,247,0.1),0px_8px_10px_-6px_rgba(168,85,247,0.08)] rounded-[20px] sm:rounded-[32px] p-2 sm:p-4 backdrop-blur-[12px]"
         >
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-0 items-center">
             {/* Stat 1: Total Quizzes Hosted */}
