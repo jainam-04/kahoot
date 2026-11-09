@@ -20,7 +20,7 @@ const faqs = [
   },
   {
     q: 'Can schools and educational institutions purchase subscriptions?',
-    a: 'Yes! Our Enterprise plan is built for institutions with multi-teacher management, central admin dashboards, LMS integration, and custom invoicing options.',
+    a: 'Yes! Schools and educators can use Gubbi to create interactive quizzes, host live students with a simple 6-digit PIN, display real-time leaderboards, and export detailed performance reports in PDF and Excel. For institutional access or custom requirements, contact us at info@fouriseindia.com.',
   },
   {
     q: 'Is payment and user data secure?',
