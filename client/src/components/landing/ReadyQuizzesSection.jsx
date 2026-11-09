@@ -1,12 +1,25 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Sparkles, BookOpen, Clock } from 'lucide-react';
+import {
+  Play,
+  LayoutGrid,
+  FlaskConical,
+  BookOpen,
+  Code,
+  Calculator,
+  Clock
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { createQuiz } from '../../services/quizService';
 import { createGame } from '../../services/gameService';
 import { useTheme } from '../../context/ThemeContext';
 import { ALL_CURATED_QUIZZES, FEATURED_PRESET_QUIZZES } from '../../data/curatedQuizzes';
+
+import scienceImg from '../../assets/quizzes/science.jpg';
+import gkImg from '../../assets/quizzes/gk.jpg';
+import programmingImg from '../../assets/quizzes/programming.jpg';
+import mathImg from '../../assets/quizzes/math.jpg';
 
 export default function ReadyQuizzesSection() {
   const navigate = useNavigate();
@@ -16,14 +29,75 @@ export default function ReadyQuizzesSection() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [hostingId, setHostingId] = useState(null);
 
-  const categories = ['All', 'Science', 'General Knowledge', 'Programming', 'Mathematics'];
+  const categoryPills = [
+    { name: 'All', icon: LayoutGrid, iconColor: '#FFFFFF' },
+    { name: 'Science', icon: FlaskConical, iconColor: '#10B981' },
+    { name: 'General Knowledge', icon: BookOpen, iconColor: '#2563EB' },
+    { name: 'Programming', icon: Code, iconColor: '#551BF5' },
+    { name: 'Mathematics', icon: Calculator, iconColor: '#F59E0B' },
+  ];
 
-  // On Home screen: Show 4 featured quizzes when 'All' is selected, or 2-3 for specific category
+  // Show the top 4 curated featured presets on 'All', or filter by category
   const filteredQuizzes = activeCategory === 'All'
     ? FEATURED_PRESET_QUIZZES
     : ALL_CURATED_QUIZZES.filter(q => q.category.toLowerCase() === activeCategory.toLowerCase());
 
-  // Action: Launch / Host Quiz
+  // Determine metadata, illustration banner, and category styling
+  const getQuizMeta = (quiz) => {
+    const cat = (quiz.category || '').toLowerCase();
+    if (cat.includes('science')) {
+      return {
+        image: scienceImg,
+        bgColor: '#E6FAF7',
+        categoryIcon: FlaskConical,
+        categoryLabel: 'SCIENCE',
+      };
+    }
+    if (cat.includes('general') || cat.includes('knowledge') || cat.includes('history') || cat.includes('pop')) {
+      return {
+        image: gkImg,
+        bgColor: '#FFF7EA',
+        categoryIcon: BookOpen,
+        categoryLabel: 'GENERAL KNOWLEDGE',
+      };
+    }
+    if (cat.includes('program') || cat.includes('code') || cat.includes('tech') || cat.includes('web')) {
+      return {
+        image: programmingImg,
+        bgColor: '#F2EDFE',
+        categoryIcon: Code,
+        categoryLabel: 'PROGRAMMING',
+      };
+    }
+    return {
+      image: mathImg,
+      bgColor: '#EBF5FE',
+      categoryIcon: Calculator,
+      categoryLabel: 'MATHEMATICS',
+    };
+  };
+
+  const getDifficultyBadge = (difficulty) => {
+    const diff = (difficulty || 'Medium').toLowerCase();
+    if (diff === 'easy') {
+      return {
+        label: 'EASY',
+        className: 'bg-[#E8FBF4] text-[#0D9488] border-[#A7F3D0]',
+      };
+    }
+    if (diff === 'hard') {
+      return {
+        label: 'HARD',
+        className: 'bg-[#FDF2F8] text-[#DB2777] border-[#FBCFE8]',
+      };
+    }
+    return {
+      label: 'MEDIUM',
+      className: 'bg-[#FFF3EB] text-[#D95D1E] border-[#FED7AA]',
+    };
+  };
+
+  // Launch live multiplayer session lobby
   const handleUseQuiz = async (quiz) => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -38,13 +112,13 @@ export default function ReadyQuizzesSection() {
     try {
       let targetQuizId = quiz._id;
 
-      // If it's a predefined preset, clone into the host's account first
+      // Clone preset quiz into host account if required
       if (quiz.isPreset) {
         const createRes = await createQuiz({
           title: quiz.title,
           category: quiz.category,
           description: quiz.description,
-          questions: quiz.questions
+          questions: quiz.questions,
         });
         if (createRes.success && createRes.quiz) {
           targetQuizId = createRes.quiz._id;
@@ -55,7 +129,6 @@ export default function ReadyQuizzesSection() {
         }
       }
 
-      // Initialize game session lobby
       const gameRes = await createGame(targetQuizId);
       if (gameRes.success && gameRes.game) {
         toast.success(`Quiz Lobby Active! PIN: ${gameRes.game.pin}`, { id: 'use-quiz' });
@@ -72,141 +145,164 @@ export default function ReadyQuizzesSection() {
   };
 
   return (
-    <section id="ready-quizzes" className="py-16 sm:py-24 relative overflow-hidden">
-      {/* Background glow accents */}
-      <div className="absolute top-1/2 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
-      <div className="absolute top-1/3 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10">
+    <section
+      id="ready-quizzes"
+      className="py-16 md:py-24 relative overflow-hidden transition-colors"
+      style={{
+        background: isLight
+          ? 'linear-gradient(180deg, #F5F2FE 0%, #EFEBFC 45%, #F8F6FF 100%)'
+          : 'linear-gradient(180deg, #0F0D1C 0%, #16122E 45%, #0D0B1C 100%)',
+      }}
+    >
+      <div className="max-w-[1351px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center gap-10">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-black uppercase tracking-wider">
-            <Sparkles className="h-3.5 w-3.5 text-yellow-400 animate-pulse" />
-            <span>Featured Ready Library</span>
-          </div>
-
-          <h2 className={`font-outfit text-3xl sm:text-4xl md:text-5xl font-black tracking-tight ${
-            isLight ? 'text-gray-900' : 'text-white'
-          }`}>
-            Ready-to-Use <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600">Quizzes</span>
+        {/* Section Header matching Figma reference */}
+        <div className="flex flex-col items-center text-center max-w-[768px] mx-auto gap-4">
+          <h2 className="flex flex-wrap items-center justify-center gap-2 text-3xl sm:text-4xl md:text-[48px] md:leading-[48px] tracking-[-1.2px] font-semibold text-[#0D0B26] dark:text-white">
+            <span>Ready to Use</span>
+            <span className="font-bold text-[#551BF5]">Quizzes</span>
           </h2>
 
-          <p className={`text-sm sm:text-base leading-relaxed ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+          <p className="text-sm sm:text-base leading-6 text-[#475569] dark:text-gray-300 max-w-[672px] text-center">
             Pick from our curated library with 10 questions per quiz. Host live multiplayer games instantly without typing questions from scratch!
           </p>
 
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all duration-200 cursor-pointer ${
-                  activeCategory === cat
-                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/25 scale-105'
-                    : isLight
-                    ? 'bg-white border border-gray-200 text-gray-700 hover:bg-purple-50 hover:text-purple-700 shadow-sm'
-                    : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+          {/* Capsule Container Bar with category filter pills */}
+          <div className="mt-2 p-2 flex flex-wrap items-center justify-center gap-2 rounded-full bg-white/70 dark:bg-[#181528]/80 border border-[#E9D5FF]/70 dark:border-purple-500/20 shadow-[0px_1px_12px_rgba(0,0,0,0.12)] backdrop-blur-md">
+            {categoryPills.map((pill) => {
+              const Icon = pill.icon;
+              const isSelected = activeCategory === pill.name;
+
+              return (
+                <button
+                  key={pill.name}
+                  type="button"
+                  onClick={() => setActiveCategory(pill.name)}
+                  className={`h-10 px-5 sm:px-6 rounded-full flex items-center gap-2 text-sm transition-all duration-200 cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#551BF5] text-white font-bold shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25),0px_2px_4px_-2px_rgba(168,85,247,0.25)] scale-[1.02]'
+                      : 'bg-white/80 dark:bg-white/10 border border-slate-200/80 dark:border-white/10 text-[#334155] dark:text-slate-200 font-semibold hover:bg-white dark:hover:bg-white/20'
+                  }`}
+                >
+                  <Icon
+                    className="w-4 h-4 shrink-0 transition-colors"
+                    style={{ color: isSelected ? '#FFFFFF' : pill.iconColor }}
+                  />
+                  <span>{pill.name}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Quiz Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* 4 Curated Quiz Cards Grid matching reference */}
+        <div className="w-full max-w-[1243px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 filter drop-shadow-[0px_1px_7px_rgba(0,0,0,0.13)]">
           <AnimatePresence mode="popLayout">
             {filteredQuizzes.map((quiz, index) => {
-              const IconComponent = quiz.icon || Sparkles;
+              const meta = getQuizMeta(quiz);
+              const badge = getDifficultyBadge(quiz.difficulty);
+              const CategoryIcon = meta.categoryIcon;
               const isHosting = hostingId === quiz._id;
 
               return (
-                <motion.div
+                <motion.article
                   key={quiz._id || index}
                   layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.25, delay: index * 0.05 }}
-                  className={`rounded-3xl border p-6 flex flex-col justify-between relative overflow-hidden group transition-all duration-300 hover:-translate-y-1 ${
+                  className={`w-full rounded-[24px] overflow-hidden flex flex-col justify-between border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
                     isLight
-                      ? 'bg-white border-gray-200/80 hover:border-purple-300 hover:shadow-xl'
-                      : 'bg-gradient-to-b from-[#13111c] to-[#0d0c14] border-white/10 hover:border-purple-500/40 hover:shadow-2xl hover:shadow-purple-950/30'
+                      ? 'bg-white border-[#F3E8FF]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
+                      : 'bg-[#151224] border-purple-500/20 shadow-lg'
                   }`}
                 >
-                  {/* Top Badge & Category */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${quiz.gradient} flex items-center justify-center text-white shadow-md`}>
-                        <IconComponent className="w-5 h-5" />
-                      </div>
-
-                      <span className={`text-[10px] uppercase font-black px-2.5 py-1 rounded-full border ${
-                        quiz.difficulty === 'Easy'
-                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                          : quiz.difficulty === 'Hard'
-                          ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
-                          : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
-                      }`}>
-                        {quiz.difficulty || 'Medium'}
+                  {/* Top: Artwork Banner & Content */}
+                  <div className="flex flex-col">
+                    {/* Artwork Banner with 144px height */}
+                    <div
+                      className="relative w-full h-[144px] flex items-center justify-center overflow-hidden"
+                      style={{ backgroundColor: meta.bgColor }}
+                    >
+                      <img
+                        src={meta.image}
+                        alt={quiz.title}
+                        className="w-full h-full object-contain p-2 transition-transform duration-300 hover:scale-105"
+                      />
+                      {/* Difficulty Badge top right */}
+                      <span
+                        className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-[0.25px] border shadow-sm ${badge.className}`}
+                      >
+                        {badge.label}
                       </span>
                     </div>
 
-                    {/* Title & Description */}
-                    <div>
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-500 block mb-1">
-                        {quiz.category}
-                      </span>
-                      <h3 className={`font-outfit text-base font-bold line-clamp-2 ${
-                        isLight ? 'text-gray-900 group-hover:text-purple-700' : 'text-white group-hover:text-purple-300'
-                      }`}>
+                    {/* Content Body */}
+                    <div className="p-5 flex flex-col gap-2">
+                      {/* Category Label */}
+                      <div className="flex items-center gap-1.5">
+                        <CategoryIcon className="w-3.5 h-3.5 text-[#551BF5] shrink-0" />
+                        <span className="text-[12px] font-black uppercase tracking-[0.6px] text-[#551BF5]">
+                          {meta.categoryLabel}
+                        </span>
+                      </div>
+
+                      {/* Heading 3 - Title */}
+                      <h3
+                        className="text-[16px] leading-[22px] font-bold text-[#0F172A] dark:text-white truncate"
+                        title={quiz.title}
+                      >
                         {quiz.title}
                       </h3>
-                      <p className={`text-xs mt-2 line-clamp-2 leading-relaxed ${
-                        isLight ? 'text-gray-600' : 'text-gray-400'
-                      }`}>
+
+                      {/* Description */}
+                      <p className="text-[14px] leading-[20px] text-[#64748B] dark:text-gray-300 line-clamp-2 h-[40px]">
                         {quiz.description}
                       </p>
                     </div>
                   </div>
 
-                  {/* Footer Metadata & Action Button */}
-                  <div className="pt-5 mt-4 border-t space-y-3" style={{ borderColor: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)' }}>
-                    <div className="flex items-center justify-between text-xs font-semibold text-muted">
-                      <span className="flex items-center gap-1.5 font-bold">
-                        <BookOpen className="w-3.5 h-3.5 text-purple-500" />
-                        <span>{quiz.questionsCount} Qs</span>
-                      </span>
-                      <span className="flex items-center gap-1.5 font-bold">
-                        <Clock className="w-3.5 h-3.5 text-indigo-500" />
+                  {/* Bottom: Meta Specs row & Action Button */}
+                  <div className="px-5 pb-5 pt-0 flex flex-col gap-3">
+                    {/* Meta Specs row */}
+                    <div className="pt-2.5 pb-2.5 border-t border-[#F1F5F9] dark:border-white/10 flex items-center justify-between text-[12px] font-semibold text-[#334155] dark:text-gray-300">
+                      <div className="flex items-center gap-1.5">
+                        <BookOpen className="w-4 h-4 text-[#551BF5] shrink-0" />
+                        <span>{quiz.questionsCount || 10} Qs</span>
+                      </div>
+
+                      <span className="text-[#E2E8F0] dark:text-gray-600 font-normal">|</span>
+
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-4 h-4 text-[#551BF5] shrink-0" />
                         <span>~5 mins</span>
-                      </span>
+                      </div>
                     </div>
 
+                    {/* Action Button */}
                     <button
                       type="button"
                       onClick={() => handleUseQuiz(quiz)}
                       disabled={isHosting}
-                      className="w-full btn-premium py-2.5 px-4 rounded-xl text-xs font-black text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:brightness-110 shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+                      className="w-full h-10 px-4 rounded-xl text-[14px] font-bold text-white bg-[#551BF5] hover:bg-[#4715d4] active:scale-[0.98] shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
                     >
                       {isHosting ? (
                         <span>Launching Lobby...</span>
                       ) : (
                         <>
-                          <Play className="w-3.5 h-3.5 fill-current" />
+                          <Play className="w-3.5 h-3.5 fill-white text-white" />
                           <span>Use Quiz & Host</span>
                         </>
                       )}
                     </button>
                   </div>
-                </motion.div>
+                </motion.article>
               );
             })}
           </AnimatePresence>
         </div>
+
       </div>
     </section>
   );
