@@ -535,7 +535,7 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 p-4 sm:p-5 rounded-[20px] bg-white border border-[#F1F5F9] shadow-[0px_4px_16px_rgba(85,27,245,0.06)] text-left"
+                  className="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 p-3.5 sm:p-5 rounded-[18px] sm:rounded-[20px] bg-white border border-[#F1F5F9] shadow-[0px_4px_16px_rgba(85,27,245,0.06)] text-left overflow-hidden w-full"
                 >
                   <div className="flex items-center gap-3 w-full sm:w-auto">
                     {isTimedOut ? (
@@ -552,38 +552,38 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
                       </div>
                     )}
 
-                    <div>
-                      <p className="font-['Inter'] font-extrabold text-sm sm:text-base text-[#0F172A]">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-['Inter'] font-extrabold text-sm sm:text-base text-[#0F172A] leading-snug">
                         {isTimedOut
                           ? '⏰ Time is up! 30 seconds elapsed.'
                           : currentQ.options[selectedOption].isCorrect
                           ? `🎉 Correct! Earned +${earnedPts} pts!`
                           : `✕ Incorrect! Correct: ${currentQ.options.find((o) => o.isCorrect).text}`}
                       </p>
-                      <p className="font-['Inter'] text-xs text-[#64748B]">
+                      <p className="font-['Inter'] text-xs text-[#64748B] mt-0.5">
                         {streak > 1 ? `🔥 ${streak}x Answer Streak Active!` : 'Choose an action below to proceed.'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end shrink-0">
+                  <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-2.5 w-full sm:w-auto justify-end shrink-0 pt-1 sm:pt-0">
                     <button
                       type="button"
                       onClick={() => setShowIntermediateLeaderboard(true)}
-                      className="h-10 px-4 rounded-[12px] bg-amber-50 hover:bg-amber-100 border border-amber-200 text-[#B45309] font-['Inter'] font-bold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer transition-all"
+                      className="h-10 px-2.5 sm:px-4 rounded-[12px] bg-amber-50 hover:bg-amber-100 active:scale-95 border border-amber-200 text-[#B45309] font-['Inter'] font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer transition-all whitespace-nowrap"
                     >
-                      <Trophy className="h-4 w-4 text-[#F59E0B]" />
+                      <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#F59E0B] shrink-0" />
                       <span>Leaderboard</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={handleNextQuestion}
-                      className="h-10 px-5 rounded-[12px] text-white font-['Inter'] font-bold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer hover:opacity-95 shadow-[0px_4px_10px_rgba(85,27,245,0.3)] transition-all"
+                      className="h-10 px-3 sm:px-5 rounded-[12px] text-white font-['Inter'] font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer hover:opacity-95 active:scale-95 shadow-[0px_4px_10px_rgba(85,27,245,0.3)] transition-all whitespace-nowrap"
                       style={{ background: 'linear-gradient(105.23deg, #551BF5 0%, #6C38FF 50%, #7A42F8 100%)' }}
                     >
-                      <span>{currentQIndex < sampleQuestions.length - 1 ? 'Next Question' : 'Show Final Standings'}</span>
-                      <ArrowRight className="h-4 w-4" />
+                      <span>{currentQIndex < sampleQuestions.length - 1 ? 'Next Question' : 'Final Results'}</span>
+                      <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                     </button>
                   </div>
                 </motion.div>

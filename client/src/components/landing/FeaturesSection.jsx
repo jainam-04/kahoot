@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import featuresSectionBg from '../../assets/features-section-bg.jpg';
+import featuresLaptopMobile from '../../assets/features-laptop-mobile.jpg';
 
 const leftFeatures = [
   {
@@ -276,12 +277,12 @@ export default function FeaturesSection() {
           <div className="w-12 h-1 bg-[#551BF5] rounded-full" />
         </div>
 
-        {/* Centerpiece 3D illustration */}
-        <div className="w-full max-w-[480px] rounded-2xl overflow-hidden shadow-lg border border-purple-100/60">
+        {/* Centerpiece 3D Open Laptop - Seamless & Open (No Boxed Container) */}
+        <div className="w-full max-w-[340px] sm:max-w-[420px] mx-auto relative select-none pointer-events-none -my-2 flex items-center justify-center">
           <img
-            src={featuresSectionBg}
-            alt="Gubbi Dashboard Preview"
-            className="w-full h-auto object-cover select-none"
+            src={featuresLaptopMobile}
+            alt="Gubbi Features Dashboard Open Laptop"
+            className="w-full h-auto object-contain drop-shadow-[0_16px_32px_rgba(85,27,245,0.14)]"
           />
         </div>
 
