@@ -91,10 +91,11 @@ function AnimatedRoutes() {
     '/admin'
   ].some(path => location.pathname.startsWith(path));
 
-  // Footer is ONLY displayed on the homepage ('/') and hidden when logged in to an account
-  const token = localStorage.getItem('token');
+  // Footer is displayed on the homepage and all public info/policy pages, hidden during gameplay
   const isHomePage = location.pathname === '/';
-  const shouldShowFooter = !isGameplayView && isHomePage && !token;
+  const publicPages = ['/about', '/about-kahoot', '/faq', '/faqs', '/privacy', '/privacy-policy', '/terms', '/terms-and-conditions', '/refund', '/refund-policy'];
+  const isPublicPage = publicPages.some(p => location.pathname === p || location.pathname.startsWith(p + '/'));
+  const shouldShowFooter = !isGameplayView && (isHomePage || isPublicPage);
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-200">
