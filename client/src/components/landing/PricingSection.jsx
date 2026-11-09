@@ -79,9 +79,9 @@ export default function PricingSection() {
   return (
     <section 
       id="pricing" 
-      className="relative w-full py-12 sm:py-16 lg:py-20 border-t border-[#F1F5F9] scroll-mt-20 overflow-hidden"
+      className="relative w-full py-12 sm:py-16 lg:py-20 scroll-mt-20 overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, rgba(245, 243, 255, 0.5) 0%, #FFFFFF 50%, #FFFFFF 100%)'
+        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 40%, #FFFFFF 100%)'
       }}
     >
       <div className="max-w-[1349px] mx-auto px-4 sm:px-8 w-full flex flex-col items-center">

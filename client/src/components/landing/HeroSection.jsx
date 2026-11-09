@@ -63,7 +63,10 @@ export default function HeroSection() {
   return (
     <section 
       id="hero" 
-      className="relative pt-4 sm:pt-6 lg:pt-8 pb-6 sm:pb-10 lg:pb-16 overflow-hidden px-4 sm:px-8 bg-[#FAF7FE] min-h-0 lg:min-h-[680px] flex flex-col justify-between"
+      className="relative pt-4 sm:pt-6 lg:pt-8 pb-8 sm:pb-12 lg:pb-16 overflow-hidden px-4 sm:px-8 min-h-0 lg:min-h-[680px] flex flex-col justify-between"
+      style={{
+        background: 'linear-gradient(180deg, #FAF7FE 0%, #FAF8FF 60%, #FFFFFF 100%)'
+      }}
     >
       {/* Background device showcase graphic integrated directly into desktop hero background */}
       <div 

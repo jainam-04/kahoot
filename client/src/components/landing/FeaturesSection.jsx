@@ -63,8 +63,8 @@ export default function FeaturesSection() {
       className="w-full relative overflow-hidden transition-colors lg:h-[calc(100vh-81px)] lg:max-h-[calc(100vh-81px)] lg:flex lg:flex-col lg:justify-between py-6 lg:py-5 xl:py-7 scroll-mt-20"
       style={{
         background: isLight
-          ? 'linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 40%, #F5F0FF 100%)'
-          : 'linear-gradient(180deg, #0D0B1C 0%, #120F26 50%, #090814 100%)',
+          ? 'linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 40%, #FAF8FF 75%, #FFFFFF 100%)'
+          : 'linear-gradient(180deg, #0B0914 0%, #120F26 50%, #0B0914 100%)',
       }}
     >
       {/* Full-bleed organic corner waves from Figma design */}

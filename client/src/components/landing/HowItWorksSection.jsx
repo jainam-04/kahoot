@@ -245,7 +245,7 @@ export default function HowItWorksSection() {
       id="how-it-works"
       className="py-12 sm:py-20 relative overflow-hidden transition-colors"
       style={{
-        background: isLight ? '#FFFFFF' : 'transparent',
+        background: isLight ? '#FFFFFF' : '#0B0914',
       }}
     >
       {/* Ambient soft backdrop glow matching Figma specs */}

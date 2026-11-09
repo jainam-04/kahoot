@@ -8,33 +8,40 @@ export default function CTASection() {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   return (
-    <section id="cta" className="relative mx-auto max-w-[1280px] px-3 sm:px-6 lg:px-8 py-8 sm:py-16 lg:py-24">
-      {/* Ambient soft purple and cyan glow blooms */}
-      <div
-        className="absolute -top-16 -left-16 w-96 h-96 rounded-full pointer-events-none"
-        style={{
-          background: 'rgba(243, 232, 255, 0.45)',
-          filter: 'blur(64px)',
-        }}
-      />
-      <div
-        className="absolute -bottom-16 -right-16 w-96 h-96 rounded-full pointer-events-none"
-        style={{
-          background: 'rgba(239, 246, 255, 0.7)',
-          filter: 'blur(64px)',
-        }}
-      />
+    <section 
+      id="cta" 
+      className="relative w-full py-10 sm:py-16 lg:py-20 overflow-hidden"
+      style={{
+        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 50%, #FFFFFF 100%)'
+      }}
+    >
+      <div className="relative mx-auto max-w-[1280px] px-3 sm:px-6 lg:px-8">
+        {/* Ambient soft purple and cyan glow blooms */}
+        <div
+          className="absolute -top-16 -left-16 w-96 h-96 rounded-full pointer-events-none"
+          style={{
+            background: 'rgba(243, 232, 255, 0.45)',
+            filter: 'blur(64px)',
+          }}
+        />
+        <div
+          className="absolute -bottom-16 -right-16 w-96 h-96 rounded-full pointer-events-none"
+          style={{
+            background: 'rgba(239, 246, 255, 0.7)',
+            filter: 'blur(64px)',
+          }}
+        />
 
-      <motion.div
-        initial={{ opacity: 0, y: 25 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="relative rounded-[24px] sm:rounded-[32px] p-5 sm:p-10 lg:p-14 overflow-hidden border border-[#F3E8FF] shadow-[0px_20px_25px_-5px_rgba(168,85,247,0.05),0px_8px_10px_-6px_rgba(168,85,247,0.05)]"
-        style={{
-          background: 'radial-gradient(91.8% 185.29% at 85% 30%, #F0E9FF 0%, #F8F5FF 50%, #FFFFFF 100%)',
-        }}
-      >
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative rounded-[24px] sm:rounded-[32px] p-5 sm:p-10 lg:p-14 overflow-hidden border border-[#F3E8FF] shadow-[0px_20px_25px_-5px_rgba(168,85,247,0.05),0px_8px_10px_-6px_rgba(168,85,247,0.05)]"
+          style={{
+            background: 'radial-gradient(91.8% 185.29% at 85% 30%, #F0E9FF 0%, #F8F5FF 50%, #FFFFFF 100%)',
+          }}
+        >
         <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-12">
           {/* Left Column Content */}
           <div className="flex-1 max-w-xl flex flex-col items-center lg:items-start text-center lg:text-left gap-3 sm:gap-4 w-full">
@@ -133,6 +140,7 @@ export default function CTASection() {
           </div>
         </div>
       </motion.div>
+      </div>
 
       <QuickRegisterModal
         isOpen={showRegisterModal}
