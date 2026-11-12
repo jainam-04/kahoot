@@ -24,6 +24,11 @@ export default function AIQuizAssistantModal({
   const [difficulty, setDifficulty] = useState('medium');
   const [selectedIndices, setSelectedIndices] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isDiffOpen, setIsDiffOpen] = useState(false);
+  const [isCountOpen, setIsCountOpen] = useState(false);
+
+  const diffRef = useRef(null);
+  const countRef = useRef(null);
 
   // Chat conversation state
   const [messages, setMessages] = useState([
@@ -55,6 +60,53 @@ export default function AIQuizAssistantModal({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
+  // Close custom dropdowns on click/touch outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (diffRef.current && !diffRef.current.contains(e.target)) {
+        setIsDiffOpen(false);
+      }
+      if (countRef.current && !countRef.current.contains(e.target)) {
+        setIsCountOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
+
+  const difficultyOptions = [
+    {
+      value: 'easy',
+      label: 'Easy',
+      desc: 'Quick & casual questions',
+      dotColor: 'bg-emerald-500',
+    },
+    {
+      value: 'medium',
+      label: 'Medium',
+      desc: 'Balanced trivia challenge',
+      dotColor: 'bg-amber-500',
+    },
+    {
+      value: 'hard',
+      label: 'Hard',
+      desc: 'Deep & tricky mastery',
+      dotColor: 'bg-rose-500',
+    }
+  ];
+
+  const countOptions = [
+    { value: 3, label: '3 Questions', desc: 'Fast Blitz' },
+    { value: 5, label: '5 Questions', desc: 'Standard set (Recommended)' },
+    { value: 8, label: '8 Questions', desc: 'Extended test' },
+    { value: 10, label: '10 Questions', desc: 'Full challenge' },
+    { value: 15, label: '15 Questions', desc: 'Comprehensive match' }
+  ];
+
   const promptSuggestions = [
     { label: '🪐 Solar System & Planets', prompt: 'Quiz on the Solar System and planets' },
     { label: '💻 React & JavaScript', prompt: 'Quiz on modern React and JavaScript fundamentals' },
@@ -83,6 +135,8 @@ export default function AIQuizAssistantModal({
 
     setMessages(prev => [...prev, newUserMessage]);
     setPrompt('');
+    setIsDiffOpen(false);
+    setIsCountOpen(false);
     setIsLoading(true);
 
     try {
@@ -440,46 +494,135 @@ export default function AIQuizAssistantModal({
             {/* Compact Single-Row Quick Parameters Bar */}
             <div className="flex items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-1.5">
-                {/* Question Count Dropdown Pill */}
-                <div className="relative inline-flex items-center shrink-0">
-                  <select
-                    value={questionCount}
-                    onChange={(e) => setQuestionCount(Number(e.target.value))}
-                    aria-label="Question Count"
-                    className={`appearance-none text-[11px] sm:text-xs font-black pl-2 pr-5 py-1 rounded-lg border transition-all cursor-pointer ${
+                {/* Custom Question Count Dropdown Pill */}
+                <div className="relative shrink-0" ref={countRef}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCountOpen(prev => !prev);
+                      setIsDiffOpen(false);
+                    }}
+                    className={`px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer shadow-2xs ${
                       isLight
-                        ? 'bg-gray-100 hover:bg-gray-200 border-gray-200 text-gray-800'
+                        ? 'bg-gray-100 hover:bg-gray-200/80 border-gray-200 text-gray-800'
                         : 'bg-white/5 hover:bg-white/10 border-white/10 text-gray-200'
                     }`}
+                    aria-label="Question Count"
                   >
-                    <option value={3} className={isLight ? 'bg-white text-gray-900' : 'bg-[#181824] text-white'}>3 Qs</option>
-                    <option value={5} className={isLight ? 'bg-white text-gray-900' : 'bg-[#181824] text-white'}>5 Qs</option>
-                    <option value={8} className={isLight ? 'bg-white text-gray-900' : 'bg-[#181824] text-white'}>8 Qs</option>
-                    <option value={10} className={isLight ? 'bg-white text-gray-900' : 'bg-[#181824] text-white'}>10 Qs</option>
-                    <option value={15} className={isLight ? 'bg-white text-gray-900' : 'bg-[#181824] text-white'}>15 Qs</option>
-                  </select>
-                  <ChevronDown className="h-3 w-3 absolute right-1.5 pointer-events-none text-gray-400" />
+                    <Layers className="h-3 w-3 text-secondary" />
+                    <span>{questionCount} Qs</span>
+                    <ChevronDown className={`h-3 w-3 transition-transform duration-150 ${isCountOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* Popover Dropdown (Opens upwards above input) */}
+                  {isCountOpen && (
+                    <div className={`absolute bottom-full mb-2 left-0 z-50 w-52 rounded-2xl p-1.5 border shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
+                      isLight
+                        ? 'bg-white/95 border-gray-200 text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.14)]'
+                        : 'bg-[#181826]/95 border-white/10 text-gray-200 shadow-[0_12px_30px_rgba(0,0,0,0.6)]'
+                    }`}>
+                      <div className="px-2.5 py-1 text-[9.5px] font-black uppercase tracking-wider text-gray-400">
+                        Number of Questions
+                      </div>
+                      <div className="space-y-0.5 mt-0.5">
+                        {countOptions.map(opt => {
+                          const isSelected = questionCount === opt.value;
+                          return (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => {
+                                setQuestionCount(opt.value);
+                                setIsCountOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                                isSelected
+                                  ? isLight ? 'bg-purple-50 text-purple-900 font-bold' : 'bg-purple-900/30 text-purple-200 font-bold'
+                                  : isLight ? 'hover:bg-gray-100/80 text-gray-700' : 'hover:bg-white/5 text-gray-300'
+                              }`}
+                            >
+                              <div>
+                                <div className="text-xs leading-none font-bold">{opt.label}</div>
+                                <div className="text-[10px] text-gray-400 mt-1 leading-none">{opt.desc}</div>
+                              </div>
+                              {isSelected && (
+                                <Check className="w-3.5 h-3.5 text-secondary shrink-0" />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* Difficulty Dropdown Pill */}
-                <div className="relative inline-flex items-center shrink-0">
-                  <select
-                    value={difficulty}
-                    onChange={(e) => setDifficulty(e.target.value)}
-                    aria-label="Difficulty"
-                    className={`appearance-none text-[11px] sm:text-xs font-black pl-2 pr-5 py-1 rounded-lg border transition-all cursor-pointer capitalize ${
+                {/* Custom Difficulty Dropdown Pill */}
+                <div className="relative shrink-0" ref={diffRef}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsDiffOpen(prev => !prev);
+                      setIsCountOpen(false);
+                    }}
+                    className={`px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer shadow-2xs ${
                       difficulty === 'easy'
-                        ? isLight ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                        ? isLight ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100' : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/25'
                         : difficulty === 'medium'
-                          ? isLight ? 'bg-amber-50 text-amber-700 border-amber-300' : 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30'
-                          : isLight ? 'bg-rose-50 text-rose-700 border-rose-300' : 'bg-red-500/15 text-red-400 border-red-500/30'
+                          ? isLight ? 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100' : 'bg-yellow-500/15 text-yellow-300 border-yellow-500/30 hover:bg-yellow-500/25'
+                          : isLight ? 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100' : 'bg-rose-500/15 text-rose-300 border-rose-500/30 hover:bg-rose-500/25'
                     }`}
+                    aria-label="Difficulty"
                   >
-                    <option value="easy" className={isLight ? 'bg-white text-gray-900' : 'bg-[#181824] text-white'}>Easy</option>
-                    <option value="medium" className={isLight ? 'bg-white text-gray-900' : 'bg-[#181824] text-white'}>Medium</option>
-                    <option value="hard" className={isLight ? 'bg-white text-gray-900' : 'bg-[#181824] text-white'}>Hard</option>
-                  </select>
-                  <ChevronDown className="h-3 w-3 absolute right-1.5 pointer-events-none opacity-60" />
+                    <span className={`w-2 h-2 rounded-full ${
+                      difficulty === 'easy' ? 'bg-emerald-500' : difficulty === 'medium' ? 'bg-amber-500' : 'bg-rose-500'
+                    }`} />
+                    <span className="capitalize">{difficulty}</span>
+                    <ChevronDown className={`h-3 w-3 transition-transform duration-150 ${isDiffOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* Popover Dropdown (Opens upwards above input) */}
+                  {isDiffOpen && (
+                    <div className={`absolute bottom-full mb-2 left-0 z-50 w-52 rounded-2xl p-1.5 border shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
+                      isLight
+                        ? 'bg-white/95 border-gray-200 text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.14)]'
+                        : 'bg-[#181826]/95 border-white/10 text-gray-200 shadow-[0_12px_30px_rgba(0,0,0,0.6)]'
+                    }`}>
+                      <div className="px-2.5 py-1 text-[9.5px] font-black uppercase tracking-wider text-gray-400">
+                        Quiz Difficulty
+                      </div>
+                      <div className="space-y-0.5 mt-0.5">
+                        {difficultyOptions.map(opt => {
+                          const isSelected = difficulty === opt.value;
+                          return (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => {
+                                setDifficulty(opt.value);
+                                setIsDiffOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                                isSelected
+                                  ? isLight ? 'bg-purple-50 text-purple-900 font-bold' : 'bg-purple-900/30 text-purple-200 font-bold'
+                                  : isLight ? 'hover:bg-gray-100/80 text-gray-700' : 'hover:bg-white/5 text-gray-300'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className={`w-2.5 h-2.5 rounded-full ${opt.dotColor}`} />
+                                <div>
+                                  <div className="text-xs leading-none font-bold">{opt.label}</div>
+                                  <div className="text-[10px] text-gray-400 mt-1 leading-none">{opt.desc}</div>
+                                </div>
+                              </div>
+                              {isSelected && (
+                                <Check className="w-3.5 h-3.5 text-secondary shrink-0" />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
