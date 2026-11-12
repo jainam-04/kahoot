@@ -1173,7 +1173,13 @@ export default function CreateQuiz() {
                 </div>
 
                 {/* Mockup Preview Window */}
-                <div className="relative rounded-xl border border-[#E2E8F0]/80 p-2.5 sm:p-3.5 overflow-hidden min-h-[290px] flex flex-col justify-between shadow-inner bg-gradient-to-br from-[#F5F3FF] via-[#F0F4FF] to-[#EEF2FF]">
+                <div
+                  className={`relative overflow-hidden transition-all duration-300 flex flex-col justify-between shadow-inner bg-gradient-to-br from-[#F5F3FF] via-[#F0F4FF] to-[#EEF2FF] ${
+                    previewDevice === 'mobile'
+                      ? 'w-full max-w-[245px] sm:max-w-[260px] mx-auto rounded-[24px] border-[4px] border-[#334155] shadow-xl p-2.5 min-h-[310px]'
+                      : 'w-full rounded-xl border border-[#CBD5E1] shadow-md p-2.5 sm:p-3 min-h-[290px]'
+                  }`}
+                >
                   {/* Optional Background image layer */}
                   {bgSettings.url && (
                     <div
@@ -1200,93 +1206,185 @@ export default function CreateQuiz() {
                   <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#E9D5FF]/40 rounded-full blur-2xl pointer-events-none" />
                   <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-[#BAE6FD]/40 rounded-full blur-2xl pointer-events-none" />
 
+                  {/* Device Specific Header / Chrome */}
+                  {previewDevice === 'mobile' ? (
+                    /* Mobile Phone Speaker Notch */
+                    <div className="relative z-10 w-14 h-2 bg-[#1E293B] rounded-full mx-auto mb-1.5 shrink-0 flex items-center justify-center shadow-xs">
+                      <div className="w-2.5 h-1 bg-[#475569] rounded-full" />
+                    </div>
+                  ) : (
+                    /* Desktop Browser Header Bar (Traffic lights + Live URL + PIN) */
+                    <div className="relative z-10 flex items-center justify-between pb-1.5 mb-1.5 border-b border-slate-300/60 shrink-0">
+                      <div className="flex items-center gap-1 shrink-0">
+                        <div className="w-2 h-2 rounded-full bg-[#EF4444]" />
+                        <div className="w-2 h-2 rounded-full bg-[#F59E0B]" />
+                        <div className="w-2 h-2 rounded-full bg-[#10B981]" />
+                      </div>
+                      <div className="text-[9px] font-semibold text-[#64748B] bg-white/90 px-2 py-0.5 rounded border border-[#E2E8F0] shadow-2xs">
+                        gubbi.live/play
+                      </div>
+                      <div className="text-[9px] font-bold text-[#7C3AED] bg-[#F5F3FF] px-1.5 py-0.5 rounded border border-[#DDD6FE]">
+                        PIN: 482 910
+                      </div>
+                    </div>
+                  )}
+
                   {/* Top Question Card */}
-                  <div className="relative z-10 rounded-xl bg-white/95 backdrop-blur-xs border border-[#F1F5F9] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-2.5 sm:p-3 space-y-1.5">
+                  <div className="relative z-10 rounded-xl bg-white/95 backdrop-blur-xs border border-[#F1F5F9] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-2 sm:p-2.5 space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 rounded-md bg-[#FAF5FF] border border-[#F3E8FF] text-[9px] sm:text-[9.5px] font-bold text-[#9333EA] uppercase tracking-wider truncate max-w-[140px]">
+                      <span className="px-1.5 py-0.5 rounded bg-[#FAF5FF] border border-[#F3E8FF] text-[8.5px] sm:text-[9px] font-bold text-[#9333EA] uppercase tracking-wider truncate max-w-[130px]">
                         {currentCategory || 'GENERAL KNOWLEDGE'}
                       </span>
-                      <div className="flex items-center gap-1 text-[9.5px] sm:text-[10px] font-medium text-[#94A3B8] shrink-0">
-                        <Clock className="w-3 h-3 text-[#94A3B8]" />
+                      <div className="flex items-center gap-1 text-[9px] sm:text-[9.5px] font-semibold text-[#64748B] shrink-0">
+                        <Clock className="w-3 h-3 text-[#7C3AED]" />
                         <span>00:{String(activeQuestion.timeLimit || 20).padStart(2, '0')}</span>
                       </div>
                     </div>
 
-                    <h3 className="text-xs sm:text-[13px] font-extrabold text-[#1E293B] leading-snug line-clamp-2 sm:line-clamp-3">
+                    <h3 className="text-xs sm:text-[13px] font-extrabold text-[#1E293B] leading-snug line-clamp-2">
                       {activeQuestion.questionText || 'What is the correct answer to this challenge?'}
                     </h3>
                   </div>
 
-                  {/* 4 Colored Answer Option Pills */}
-                  <div className="relative z-10 flex flex-col gap-1.5 mt-2">
-                    {/* Option 1: Red / Coral */}
-                    <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#FFF1F2] border border-[#FECDD3] text-left">
-                      <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
-                        <span className="text-[#EF4444] text-[9.5px] font-bold shrink-0">▲</span>
-                        <span className="text-[10.5px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
-                          {activeQuestion.options?.[0] || 'Option A'}
-                        </span>
+                  {/* Answer Options: Mobile (1-Column Stack) vs Desktop (2x2 Grid) */}
+                  {previewDevice === 'mobile' ? (
+                    <div className="relative z-10 flex flex-col gap-1.5 my-1.5">
+                      {/* Option 1: Red */}
+                      <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#FFF1F2] border border-[#FECDD3] text-left">
+                        <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                          <span className="text-[#EF4444] text-[9.5px] font-bold shrink-0">▲</span>
+                          <span className="text-[10px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
+                            {activeQuestion.options?.[0] || 'Option A'}
+                          </span>
+                        </div>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          Number(activeQuestion.correctAnswer) === 0 ? 'border-[#FB7185] bg-[#FB7185]' : 'border-[#FB7185] bg-white'
+                        }`}>
+                          {Number(activeQuestion.correctAnswer) === 0 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </div>
                       </div>
-                      <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        Number(activeQuestion.correctAnswer) === 0
-                          ? 'border-[#FB7185] bg-[#FB7185]'
-                          : 'border-[#FB7185] bg-white'
-                      }`}>
-                        {Number(activeQuestion.correctAnswer) === 0 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                      </div>
-                    </div>
 
-                    {/* Option 2: Blue */}
-                    <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-left">
-                      <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
-                        <span className="text-[#3B82F6] text-[9.5px] font-bold shrink-0">◆</span>
-                        <span className="text-[10.5px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
-                          {activeQuestion.options?.[1] || 'Option B'}
-                        </span>
+                      {/* Option 2: Blue */}
+                      <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-left">
+                        <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                          <span className="text-[#3B82F6] text-[9.5px] font-bold shrink-0">◆</span>
+                          <span className="text-[10px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
+                            {activeQuestion.options?.[1] || 'Option B'}
+                          </span>
+                        </div>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          Number(activeQuestion.correctAnswer) === 1 ? 'border-[#38BDF8] bg-[#38BDF8]' : 'border-[#38BDF8] bg-white'
+                        }`}>
+                          {Number(activeQuestion.correctAnswer) === 1 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </div>
                       </div>
-                      <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        Number(activeQuestion.correctAnswer) === 1
-                          ? 'border-[#38BDF8] bg-[#38BDF8]'
-                          : 'border-[#38BDF8] bg-white'
-                      }`}>
-                        {Number(activeQuestion.correctAnswer) === 1 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                      </div>
-                    </div>
 
-                    {/* Option 3: Amber / Yellow */}
-                    <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-left">
-                      <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
-                        <span className="text-[#F59E0B] text-[9.5px] font-bold shrink-0">●</span>
-                        <span className="text-[10.5px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
-                          {activeQuestion.options?.[2] || 'Option C'}
-                        </span>
+                      {/* Option 3: Amber */}
+                      <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-left">
+                        <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                          <span className="text-[#F59E0B] text-[9.5px] font-bold shrink-0">●</span>
+                          <span className="text-[10px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
+                            {activeQuestion.options?.[2] || 'Option C'}
+                          </span>
+                        </div>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          Number(activeQuestion.correctAnswer) === 2 ? 'border-[#FBBF24] bg-[#FBBF24]' : 'border-[#FBBF24] bg-white'
+                        }`}>
+                          {Number(activeQuestion.correctAnswer) === 2 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </div>
                       </div>
-                      <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        Number(activeQuestion.correctAnswer) === 2
-                          ? 'border-[#FBBF24] bg-[#FBBF24]'
-                          : 'border-[#FBBF24] bg-white'
-                      }`}>
-                        {Number(activeQuestion.correctAnswer) === 2 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                      </div>
-                    </div>
 
-                    {/* Option 4: Green / Emerald */}
-                    <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#F0FDF4] border border-[#BBF7D0] text-left">
-                      <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
-                        <span className="text-[#10B981] text-[9.5px] font-bold shrink-0">■</span>
-                        <span className="text-[10.5px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
-                          {activeQuestion.options?.[3] || 'Option D'}
-                        </span>
-                      </div>
-                      <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        Number(activeQuestion.correctAnswer) === 3
-                          ? 'border-[#34D399] bg-[#34D399]'
-                          : 'border-[#34D399] bg-white'
-                      }`}>
-                        {Number(activeQuestion.correctAnswer) === 3 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      {/* Option 4: Green */}
+                      <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#F0FDF4] border border-[#BBF7D0] text-left">
+                        <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                          <span className="text-[#10B981] text-[9.5px] font-bold shrink-0">■</span>
+                          <span className="text-[10px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
+                            {activeQuestion.options?.[3] || 'Option D'}
+                          </span>
+                        </div>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          Number(activeQuestion.correctAnswer) === 3 ? 'border-[#34D399] bg-[#34D399]' : 'border-[#34D399] bg-white'
+                        }`}>
+                          {Number(activeQuestion.correctAnswer) === 3 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    /* Desktop 2x2 Grid Layout */
+                    <div className="relative z-10 grid grid-cols-2 gap-1.5 sm:gap-2 my-1.5">
+                      {/* Option 1: Red (Top-Left) */}
+                      <div className="flex items-center justify-between p-2 rounded-xl bg-[#FFF1F2] border border-[#FECDD3] text-left shadow-2xs">
+                        <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                          <span className="text-[#EF4444] text-[11px] font-black shrink-0">▲</span>
+                          <span className="text-[10px] sm:text-[11px] font-bold text-[#1E293B] truncate">
+                            {activeQuestion.options?.[0] || 'Option A'}
+                          </span>
+                        </div>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          Number(activeQuestion.correctAnswer) === 0 ? 'border-[#FB7185] bg-[#FB7185]' : 'border-[#FB7185] bg-white'
+                        }`}>
+                          {Number(activeQuestion.correctAnswer) === 0 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </div>
+                      </div>
+
+                      {/* Option 2: Blue (Top-Right) */}
+                      <div className="flex items-center justify-between p-2 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-left shadow-2xs">
+                        <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                          <span className="text-[#3B82F6] text-[11px] font-black shrink-0">◆</span>
+                          <span className="text-[10px] sm:text-[11px] font-bold text-[#1E293B] truncate">
+                            {activeQuestion.options?.[1] || 'Option B'}
+                          </span>
+                        </div>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          Number(activeQuestion.correctAnswer) === 1 ? 'border-[#38BDF8] bg-[#38BDF8]' : 'border-[#38BDF8] bg-white'
+                        }`}>
+                          {Number(activeQuestion.correctAnswer) === 1 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </div>
+                      </div>
+
+                      {/* Option 3: Amber (Bottom-Left) */}
+                      <div className="flex items-center justify-between p-2 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-left shadow-2xs">
+                        <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                          <span className="text-[#F59E0B] text-[11px] font-black shrink-0">●</span>
+                          <span className="text-[10px] sm:text-[11px] font-bold text-[#1E293B] truncate">
+                            {activeQuestion.options?.[2] || 'Option C'}
+                          </span>
+                        </div>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          Number(activeQuestion.correctAnswer) === 2 ? 'border-[#FBBF24] bg-[#FBBF24]' : 'border-[#FBBF24] bg-white'
+                        }`}>
+                          {Number(activeQuestion.correctAnswer) === 2 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </div>
+                      </div>
+
+                      {/* Option 4: Green (Bottom-Right) */}
+                      <div className="flex items-center justify-between p-2 rounded-xl bg-[#F0FDF4] border border-[#BBF7D0] text-left shadow-2xs">
+                        <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                          <span className="text-[#10B981] text-[11px] font-black shrink-0">■</span>
+                          <span className="text-[10px] sm:text-[11px] font-bold text-[#1E293B] truncate">
+                            {activeQuestion.options?.[3] || 'Option D'}
+                          </span>
+                        </div>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          Number(activeQuestion.correctAnswer) === 3 ? 'border-[#34D399] bg-[#34D399]' : 'border-[#34D399] bg-white'
+                        }`}>
+                          {Number(activeQuestion.correctAnswer) === 3 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Device Bottom Indicator */}
+                  {previewDevice === 'mobile' ? (
+                    /* Mobile Home Indicator */
+                    <div className="relative z-10 w-16 h-1 bg-[#334155]/40 rounded-full mx-auto mt-1 shrink-0" />
+                  ) : (
+                    /* Desktop Host Bar Footer */
+                    <div className="relative z-10 flex items-center justify-between text-[8.5px] font-semibold text-[#64748B] pt-1 border-t border-slate-200/50">
+                      <span>Waiting for players...</span>
+                      <span className="text-[#7C3AED] font-bold">1/1 Questions</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
