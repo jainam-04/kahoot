@@ -495,105 +495,117 @@ export default function CreateQuiz() {
 
         {/* ─── 1. LEFT SIDEBAR (230px, Fixed Desktop, Drawer Mobile) ─── */}
         <aside
-          className={`fixed top-0 bottom-0 left-0 z-50 w-[230px] bg-[#FDFDFE] border-r border-[#ECEFF5] shadow-[1px_0px_4px_rgba(0,0,0,0.06)] flex flex-col justify-between transition-transform duration-300 lg:translate-x-0 ${
+          className={`fixed top-0 bottom-0 left-0 z-50 w-[230px] bg-[#FDFDFE] border-r border-[#ECEFF5] shadow-[1px_0px_4px_rgba(0,0,0,0.06)] flex flex-col overflow-y-auto transition-transform duration-300 lg:translate-x-0 ${
             isMobileNavOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
-          {/* Top Brand & Navigation Area */}
-          <div className="px-4 pt-5 pb-4 flex flex-col items-start gap-4 flex-1 overflow-y-auto">
-            {/* Mascot Brand Logo */}
-            <div className="w-full flex items-center justify-between pb-3 border-b border-[#F1F5F9]/80">
-              <Link to="/dashboard" className="flex items-center gap-2 group">
-                <Logo className="h-9 w-auto object-contain transition-transform group-hover:scale-105" />
-              </Link>
-              {/* Close Drawer Button on Mobile */}
-              <button
-                type="button"
-                onClick={() => setIsMobileNavOpen(false)}
-                className="lg:hidden p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+          <div className="flex flex-col justify-between min-h-full">
+            {/* Top Brand & Navigation Area */}
+            <div className="px-4 pt-5 pb-3 flex flex-col items-start gap-3">
+              {/* Mascot Brand Logo */}
+              <div className="w-full flex items-center justify-between pb-3 border-b border-[#F1F5F9]/80">
+                <Link to="/dashboard" className="flex items-center gap-2 group" onClick={() => setIsMobileNavOpen(false)}>
+                  <Logo className="h-9 w-auto object-contain transition-transform group-hover:scale-105" />
+                </Link>
+                {/* Close Drawer Button on Mobile */}
+                <button
+                  type="button"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="lg:hidden p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Main Navigation Menu */}
+              <nav className="w-full flex flex-col gap-1.5 mt-1">
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
+                >
+                  <LayoutDashboard className="w-5 h-5 text-[#94A3B8]" />
+                  <span>Dashboard</span>
+                </Link>
+
+                <Link
+                  to="/quiz/my"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
+                >
+                  <BookOpen className="w-5 h-5 text-[#94A3B8]" />
+                  <span>My Quizzes</span>
+                </Link>
+
+                {/* Active: Create Quiz */}
+                <Link
+                  to="/quiz/create"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]"
+                >
+                  <PlusCircle className="w-5 h-5 text-white" />
+                  <span>Create Quiz</span>
+                </Link>
+
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
+                >
+                  <BarChart2 className="w-5 h-5 text-[#94A3B8]" />
+                  <span>Reports</span>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileNavOpen(false);
+                    setActiveModal('profile');
+                  }}
+                  className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors text-left cursor-pointer"
+                >
+                  <Settings className="w-5 h-5 text-[#94A3B8]" />
+                  <span>Settings</span>
+                </button>
+              </nav>
             </div>
 
-            {/* Main Navigation Menu */}
-            <nav className="w-full flex flex-col gap-2 mt-2">
-              <Link
-                to="/dashboard"
-                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
-              >
-                <LayoutDashboard className="w-5 h-5 text-[#94A3B8]" />
-                <span>Dashboard</span>
-              </Link>
+            {/* Bottom Pinned Controls (Upgrade Promo & Logout) */}
+            <div className="px-4 pb-5 pt-2 flex flex-col gap-3 mt-auto shrink-0">
+              {/* Promo Card */}
+              <div className="rounded-2xl p-3.5 bg-gradient-to-br from-[#FAF7FF] via-[#F4EEFF] to-[#EDE5FF] border border-[#E9DCFF] shadow-xs text-left flex flex-col gap-2">
+                <div className="w-8 h-8 rounded-xl bg-white border border-[#E9D5FF]/60 shadow-xs flex items-center justify-center">
+                  <Crown className="w-4 h-4 text-[#F59E0B]" />
+                </div>
+                <div>
+                  <h4 className="text-[13px] font-bold text-[#0F172A] tracking-tight">Upgrade to Gubbi Pro</h4>
+                  <p className="text-[11px] text-[#64748B] mt-0.5 leading-snug">
+                    Unlock unlimited quizzes & rooms.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileNavOpen(false);
+                    setActiveModal('upgrade');
+                  }}
+                  className="w-full py-2 px-3 rounded-xl bg-[#6C38FF] hover:bg-[#5b2bd9] text-white font-semibold text-[11.5px] shadow-[0px_4px_16px_rgba(108,56,255,0.28)] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>Upgrade Now</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
 
-              <Link
-                to="/quiz/my"
-                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
-              >
-                <BookOpen className="w-5 h-5 text-[#94A3B8]" />
-                <span>My Quizzes</span>
-              </Link>
-
-              {/* Active: Create Quiz */}
-              <Link
-                to="/quiz/create"
-                className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]"
-              >
-                <PlusCircle className="w-5 h-5 text-white" />
-                <span>Create Quiz</span>
-              </Link>
-
-              <Link
-                to="/dashboard"
-                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
-              >
-                <BarChart2 className="w-5 h-5 text-[#94A3B8]" />
-                <span>Reports</span>
-              </Link>
-
+              {/* Logout Button */}
               <button
                 type="button"
-                onClick={() => setActiveModal('profile')}
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors text-left cursor-pointer"
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-[#EF4444] font-semibold text-[13px] hover:bg-[#FEE2E2] transition-colors cursor-pointer justify-center"
               >
-                <Settings className="w-5 h-5 text-[#94A3B8]" />
-                <span>Settings</span>
-              </button>
-            </nav>
-          </div>
-
-          {/* Bottom Pinned Controls (Upgrade Promo & Logout) */}
-          <div className="px-4 pb-5 pt-2 flex flex-col gap-3">
-            {/* Promo Card */}
-            <div className="rounded-2xl p-3.5 bg-gradient-to-br from-[#FAF7FF] via-[#F4EEFF] to-[#EDE5FF] border border-[#E9DCFF] shadow-xs text-left flex flex-col gap-2">
-              <div className="w-8 h-8 rounded-xl bg-white border border-[#E9D5FF]/60 shadow-xs flex items-center justify-center">
-                <Crown className="w-4 h-4 text-[#F59E0B]" />
-              </div>
-              <div>
-                <h4 className="text-[13px] font-bold text-[#0F172A] tracking-tight">Upgrade to Gubbi Pro</h4>
-                <p className="text-[11px] text-[#64748B] mt-0.5 leading-snug">
-                  Unlock unlimited quizzes & rooms.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActiveModal('upgrade')}
-                className="w-full py-2 px-3 rounded-xl bg-[#6C38FF] hover:bg-[#5b2bd9] text-white font-semibold text-[11.5px] shadow-[0px_4px_16px_rgba(108,56,255,0.28)] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>Upgrade Now</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <LogOut className="w-4 h-4 text-[#EF4444]" />
+                <span>Logout</span>
               </button>
             </div>
-
-            {/* Logout Button */}
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-[#EF4444] font-semibold text-[13px] hover:bg-[#FEE2E2] transition-colors cursor-pointer justify-center"
-            >
-              <LogOut className="w-4 h-4 text-[#EF4444]" />
-              <span>Logout</span>
-            </button>
           </div>
         </aside>
 

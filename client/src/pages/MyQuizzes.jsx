@@ -277,128 +277,144 @@ export default function MyQuizzes() {
         <aside 
           className={`
             fixed top-0 bottom-0 left-0 z-50 w-[230px] bg-[#FDFDFE] border-r border-[#ECEFF5]
-            shadow-[1px_0px_4px_rgba(0,0,0,0.06)] flex flex-col justify-between transition-transform duration-300
+            shadow-[1px_0px_4px_rgba(0,0,0,0.06)] flex flex-col overflow-y-auto transition-transform duration-300
             ${isMobileNavOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           `}
         >
-          {/* Top Brand & Navigation Area */}
-          <div className="flex flex-col p-4 pt-5 gap-4 overflow-y-auto">
-            {/* Mascot Logo Brand */}
-            <div className="pb-4 border-b border-[#F1F5F9]/80 flex items-center justify-between">
-              <Link 
-                to="/dashboard" 
-                className="flex items-center justify-center w-full px-2 transition-transform hover:scale-105 active:scale-95"
-              >
-                <img 
-                  src="/gubbi-logo-transparent.png" 
-                  alt="Gubbi Mascot Logo" 
-                  className="h-12 w-auto object-contain drop-shadow-sm" 
-                  onError={(e) => { e.currentTarget.src = '/gubbi-bird.png'; }}
-                />
-              </Link>
-              <button 
-                onClick={() => setIsMobileNavOpen(false)}
-                className="lg:hidden p-1 rounded-lg text-slate-400 hover:text-slate-700"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Main Navigation Menu */}
-            <nav className="flex flex-col gap-2 pt-1">
-              {/* Link - Dashboard */}
-              <Link
-                to="/dashboard"
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all"
-              >
-                <LayoutDashboard className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
-                <span>Dashboard</span>
-              </Link>
-
-              {/* Link - My Quizzes (ACTIVE IN FIGMA) */}
-              <Link
-                to="/quiz/my"
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#6222F5] text-white font-medium text-[15px] leading-[22px] shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] transition-all"
-              >
-                <Layers className="w-5 h-5 text-white shrink-0 stroke-[2]" />
-                <span>My Quizzes</span>
-              </Link>
-
-              {/* Link - Create Quiz */}
-              <Link
-                to="/quiz/create"
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all"
-              >
-                <PlusCircle className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
-                <span>Create Quiz</span>
-              </Link>
-
-              {/* Link - Question Bank */}
-              <Link
-                to="/dashboard#predefined-quizzes-section"
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all text-left"
-              >
-                <HelpCircle className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
-                <span>Question Bank</span>
-              </Link>
-
-              {/* Link - Reports */}
-              <button
-                type="button"
-                onClick={() => navigate('/dashboard')}
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all text-left"
-              >
-                <BarChart2 className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
-                <span>Reports</span>
-              </button>
-
-              {/* Link - Settings */}
-              <button
-                type="button"
-                onClick={() => setActiveModal('profile')}
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all text-left"
-              >
-                <Settings className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
-                <span>Settings</span>
-              </button>
-            </nav>
-          </div>
-
-          {/* Bottom Area: Promo Banner & Logout */}
-          <div className="p-4 pt-0 space-y-3">
-            {/* Bottom Promo Banner */}
-            <div className="w-full rounded-2xl bg-gradient-to-br from-[#FAF7FF] via-[#F4EEFF] to-[#EDE5FF] border border-[#E9DCFF] p-4 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex flex-col justify-between">
-              <div className="space-y-1.5">
-                <div className="w-9 h-9 rounded-xl bg-white border border-[#E9D5FF]/60 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center">
-                  <Crown className="w-5 h-5 text-[#F59E0B] fill-[#F59E0B]" />
-                </div>
-                <h4 className="font-bold text-[14.5px] text-[#0F172A] tracking-tight leading-snug pt-1">
-                  Upgrade to Gubbi Pro
-                </h4>
-                <p className="text-[11.5px] text-[#64748B] leading-[18px]">
-                  Unlock unlimited quizzes &amp; multiplayer rooms.
-                </p>
+          <div className="flex flex-col justify-between min-h-full">
+            {/* Top Brand & Navigation Area */}
+            <div className="flex flex-col p-4 pt-5 gap-3">
+              {/* Mascot Logo Brand */}
+              <div className="pb-3 border-b border-[#F1F5F9]/80 flex items-center justify-between">
+                <Link 
+                  to="/dashboard" 
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="flex items-center justify-center w-full px-2 transition-transform hover:scale-105 active:scale-95"
+                >
+                  <img 
+                    src="/gubbi-logo-transparent.png" 
+                    alt="Gubbi Mascot Logo" 
+                    className="h-12 w-auto object-contain drop-shadow-sm" 
+                    onError={(e) => { e.currentTarget.src = '/gubbi-bird.png'; }}
+                  />
+                </Link>
+                <button 
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="lg:hidden p-1 rounded-lg text-slate-400 hover:text-slate-700"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setActiveModal('upgrade')}
-                className="mt-3.5 w-full h-[35px] bg-[#6C38FF] hover:bg-[#5827e8] text-white font-semibold text-[12.5px] rounded-xl shadow-[0px_4px_16px_rgba(108,56,255,0.28)] flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
-              >
-                <span>Upgrade Now</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              {/* Main Navigation Menu */}
+              <nav className="flex flex-col gap-1.5 pt-1">
+                {/* Link - Dashboard */}
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all"
+                >
+                  <LayoutDashboard className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
+                  <span>Dashboard</span>
+                </Link>
+
+                {/* Link - My Quizzes (ACTIVE IN FIGMA) */}
+                <Link
+                  to="/quiz/my"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#6222F5] text-white font-medium text-[15px] leading-[22px] shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] transition-all"
+                >
+                  <Layers className="w-5 h-5 text-white shrink-0 stroke-[2]" />
+                  <span>My Quizzes</span>
+                </Link>
+
+                {/* Link - Create Quiz */}
+                <Link
+                  to="/quiz/create"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all"
+                >
+                  <PlusCircle className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
+                  <span>Create Quiz</span>
+                </Link>
+
+                {/* Link - Question Bank */}
+                <Link
+                  to="/dashboard#predefined-quizzes-section"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all text-left"
+                >
+                  <HelpCircle className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
+                  <span>Question Bank</span>
+                </Link>
+
+                {/* Link - Reports */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileNavOpen(false);
+                    navigate('/dashboard');
+                  }}
+                  className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all text-left"
+                >
+                  <BarChart2 className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
+                  <span>Reports</span>
+                </button>
+
+                {/* Link - Settings */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileNavOpen(false);
+                    setActiveModal('profile');
+                  }}
+                  className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all text-left"
+                >
+                  <Settings className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
+                  <span>Settings</span>
+                </button>
+              </nav>
             </div>
 
-            {/* Logout Button */}
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="w-full h-[43px] px-3.5 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-[#EF4444] font-semibold text-[13.5px] flex items-center gap-3 transition-colors hover:bg-[#FEE2E2] active:scale-95 cursor-pointer"
-            >
-              <LogOut className="w-5 h-5 text-[#EF4444] stroke-[1.8]" />
-              <span>Logout</span>
-            </button>
+            {/* Bottom Area: Promo Banner & Logout */}
+            <div className="p-4 pb-5 pt-2 space-y-3 mt-auto shrink-0">
+              {/* Bottom Promo Banner */}
+              <div className="w-full rounded-2xl bg-gradient-to-br from-[#FAF7FF] via-[#F4EEFF] to-[#EDE5FF] border border-[#E9DCFF] p-4 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex flex-col justify-between">
+                <div className="space-y-1.5">
+                  <div className="w-9 h-9 rounded-xl bg-white border border-[#E9D5FF]/60 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center">
+                    <Crown className="w-5 h-5 text-[#F59E0B] fill-[#F59E0B]" />
+                  </div>
+                  <h4 className="font-bold text-[14.5px] text-[#0F172A] tracking-tight leading-snug pt-1">
+                    Upgrade to Gubbi Pro
+                  </h4>
+                  <p className="text-[11.5px] text-[#64748B] leading-[18px]">
+                    Unlock unlimited quizzes &amp; multiplayer rooms.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileNavOpen(false);
+                    setActiveModal('upgrade');
+                  }}
+                  className="mt-3.5 w-full h-[35px] bg-[#6C38FF] hover:bg-[#5827e8] text-white font-semibold text-[12.5px] rounded-xl shadow-[0px_4px_16px_rgba(108,56,255,0.28)] flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                >
+                  <span>Upgrade Now</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Logout Button */}
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full h-[43px] px-3.5 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-[#EF4444] font-semibold text-[13.5px] flex items-center gap-3 transition-colors hover:bg-[#FEE2E2] active:scale-95 cursor-pointer"
+              >
+                <LogOut className="w-5 h-5 text-[#EF4444] stroke-[1.8]" />
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
         </aside>
 
