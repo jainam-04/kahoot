@@ -14,6 +14,7 @@ import Logo from '../components/Logo';
 import HostProfileModal from '../components/HostProfileModal';
 import DeleteAccountModal from '../components/DeleteAccountModal';
 import PlanComparisonTable from '../components/PlanComparisonTable';
+import AppSidebar from '../components/AppSidebar';
 import { getMyQuizzes, createQuiz, deleteQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
@@ -305,174 +306,26 @@ export default function Dashboard() {
 
   return (
     <AnimatedPage>
-      <div className="min-h-screen bg-[#FFFFFF] text-[#0F172A] flex relative font-['Inter',sans-serif] selection:bg-[#6222F5]/20">
+      <div className="relative min-h-screen bg-[#FDFDFE] text-[#1E293B] font-['Inter',sans-serif] selection:bg-[#6222F5]/20 selection:text-[#6222F5] overflow-x-hidden">
         
-        {/* MOBILE BACKDROP OVERLAY */}
-        {isMobileNavOpen && (
-          <div 
-            role="button"
-            tabIndex={0}
-            aria-label="Close navigation overlay"
-            onClick={() => {
-              setIsMobileNavOpen(false);
-              setIsProfileDropdownOpen(false);
-              setIsNotificationsOpen(false);
-            }}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              setIsMobileNavOpen(false);
-              setIsProfileDropdownOpen(false);
-              setIsNotificationsOpen(false);
-            }}
-            className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-xs lg:hidden cursor-pointer"
-          />
-        )}
-
-        {/* ========================================================================= */}
-        {/* ASIDE - LEFTSIDEBAR (Exact Figma Design: 230px, #FDFDFE, #ECEFF5 Border) */}
-        {/* ========================================================================= */}
-        <aside 
-          className={`fixed top-0 bottom-0 left-0 z-[70] w-[230px] bg-[#FDFDFE] border-r border-[#ECEFF5] shadow-[1px_0px_4px_rgba(0,0,0,0.06)] flex flex-col overflow-y-auto transition-transform duration-300 lg:translate-x-0 ${
-            isMobileNavOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
-        >
-          <div className="flex flex-col justify-between min-h-full">
-            {/* Top Brand & Navigation Area */}
-            <div className="px-4 pt-5 pb-3 flex flex-col items-start gap-3">
-              {/* Mascot Brand Logo */}
-              <div className="w-full flex items-center justify-between pb-3 border-b border-[#F1F5F9]/80">
-                <Link to="/dashboard" className="flex items-center gap-2 group" onClick={() => setIsMobileNavOpen(false)}>
-                  <Logo className="h-9 w-auto object-contain transition-transform group-hover:scale-105" />
-                </Link>
-                {/* Close Drawer Button on Mobile */}
-                <button
-                  type="button"
-                  onClick={() => setIsMobileNavOpen(false)}
-                  className="lg:hidden p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
-                  aria-label="Close menu"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Main Navigation Menu */}
-              <nav className="w-full flex flex-col gap-1.5 mt-1">
-                {/* Link - Dashboard (Active) */}
-                <Link
-                  to="/dashboard"
-                  onClick={() => setIsMobileNavOpen(false)}
-                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]"
-                >
-                  <LayoutDashboard className="w-5 h-5 text-white" />
-                  <span>Dashboard</span>
-                </Link>
-
-                {/* Link - My Quizzes */}
-                <Link
-                  to="/quiz/my"
-                  onClick={() => setIsMobileNavOpen(false)}
-                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
-                >
-                  <BookOpen className="w-5 h-5 text-[#94A3B8]" />
-                  <span>My Quizzes</span>
-                </Link>
-
-                {/* Link - Create Quiz */}
-                <Link
-                  to="/quiz/create"
-                  onClick={() => setIsMobileNavOpen(false)}
-                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
-                >
-                  <PlusCircle className="w-5 h-5 text-[#94A3B8]" />
-                  <span>Create Quiz</span>
-                </Link>
-
-                {/* Link - Question Bank */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileNavOpen(false);
-                    setActivePresetCategory('All');
-                    const el = document.getElementById('predefined-quizzes-section');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors text-left cursor-pointer"
-                >
-                  <HelpCircle className="w-5 h-5 text-[#94A3B8]" />
-                  <span>Question Bank</span>
-                </button>
-
-                {/* Link - Reports */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileNavOpen(false);
-                    setActiveModal('sessions');
-                  }}
-                  className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors text-left cursor-pointer"
-                >
-                  <BarChart2 className="w-5 h-5 text-[#94A3B8]" />
-                  <span>Reports</span>
-                </button>
-
-                {/* Link - Settings */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileNavOpen(false);
-                    setActiveModal('profile');
-                  }}
-                  className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors text-left cursor-pointer"
-                >
-                  <Settings className="w-5 h-5 text-[#94A3B8]" />
-                  <span>Settings</span>
-                </button>
-              </nav>
-            </div>
-
-            {/* Bottom Pinned Controls (Upgrade Promo & Logout) */}
-            <div className="px-4 pb-5 pt-2 flex flex-col gap-3 mt-auto shrink-0">
-              {/* Promo Card */}
-              <div className="rounded-2xl p-3.5 bg-gradient-to-br from-[#FAF7FF] via-[#F4EEFF] to-[#EDE5FF] border border-[#E9DCFF] shadow-xs text-left flex flex-col gap-2">
-                <div className="w-8 h-8 rounded-xl bg-white border border-[#E9D5FF]/60 shadow-xs flex items-center justify-center">
-                  <Crown className="w-4 h-4 text-[#F59E0B]" />
-                </div>
-                <div>
-                  <h4 className="text-[13px] font-bold text-[#0F172A] tracking-tight">Upgrade to Gubbi Pro</h4>
-                  <p className="text-[11px] text-[#64748B] mt-0.5 leading-snug">
-                    Unlock unlimited quizzes &amp; rooms.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileNavOpen(false);
-                    setActiveModal('upgrade');
-                  }}
-                  className="w-full py-2 px-3 rounded-xl bg-[#6C38FF] hover:bg-[#5b2bd9] text-white font-semibold text-[11.5px] shadow-[0px_4px_16px_rgba(108,56,255,0.28)] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <span>Upgrade Now</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Logout Button */}
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-[#EF4444] font-semibold text-[13px] hover:bg-[#FEE2E2] transition-colors cursor-pointer justify-center"
-              >
-                <LogOut className="w-4 h-4 text-[#EF4444]" />
-                <span>Logout</span>
-              </button>
-            </div>
-          </div>
-        </aside>
+        {/* ─── 1. LEFT SIDEBAR (230px, Fixed Desktop, Drawer Mobile) ─── */}
+        <AppSidebar
+          isOpen={isMobileNavOpen}
+          onClose={() => {
+            setIsMobileNavOpen(false);
+            setIsProfileDropdownOpen(false);
+            setIsNotificationsOpen(false);
+          }}
+          onOpenProfile={() => setActiveModal('profile')}
+          onOpenUpgrade={() => setActiveModal('upgrade')}
+          onOpenSessions={() => setActiveModal('sessions')}
+          activeNav="dashboard"
+        />
 
         {/* ========================================================================= */}
         {/* MAIN CONTENT WRAPPER (TopHeader + DashboardBody) */}
         {/* ========================================================================= */}
-        <div className="flex-1 flex flex-col min-w-0 lg:pl-[230px] bg-[#FFFFFF]">
+        <div className="lg:pl-[230px] flex flex-col min-h-screen">
           
           {/* TOP HEADER (Clean, Mobile Friendly, Notification Removed) */}
           <header className="sticky top-0 z-30 h-14 sm:h-[70px] bg-white/90 backdrop-blur-md border-b border-[#EEF0F6] px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
