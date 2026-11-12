@@ -74,8 +74,25 @@ export default function CreateQuiz() {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
+
+  // Lock background scrolling and dismiss dropdowns when mobile sidebar is open
+  useEffect(() => {
+    if (isMobileNavOpen) {
+      document.body.style.overflow = 'hidden';
+      setIsProfileDropdownOpen(false);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileNavOpen]);
 
   const handleLogout = () => {
     clearAuthSession();
@@ -495,7 +512,7 @@ export default function CreateQuiz() {
 
         {/* ─── 1. LEFT SIDEBAR (230px, Fixed Desktop, Drawer Mobile) ─── */}
         <aside
-          className={`fixed top-0 bottom-0 left-0 z-50 w-[230px] bg-[#FDFDFE] border-r border-[#ECEFF5] shadow-[1px_0px_4px_rgba(0,0,0,0.06)] flex flex-col overflow-y-auto transition-transform duration-300 lg:translate-x-0 ${
+          className={`fixed top-0 bottom-0 left-0 z-[70] w-[230px] bg-[#FDFDFE] border-r border-[#ECEFF5] shadow-[1px_0px_4px_rgba(0,0,0,0.06)] flex flex-col overflow-y-auto transition-transform duration-300 lg:translate-x-0 ${
             isMobileNavOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
@@ -612,8 +629,19 @@ export default function CreateQuiz() {
         {/* Backdrop for mobile sidebar drawer */}
         {isMobileNavOpen && (
           <div
-            onClick={() => setIsMobileNavOpen(false)}
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs lg:hidden"
+            role="button"
+            tabIndex={0}
+            aria-label="Close navigation overlay"
+            onClick={() => {
+              setIsMobileNavOpen(false);
+              setIsProfileDropdownOpen(false);
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              setIsMobileNavOpen(false);
+              setIsProfileDropdownOpen(false);
+            }}
+            className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-xs lg:hidden cursor-pointer"
           />
         )}
 
@@ -626,7 +654,10 @@ export default function CreateQuiz() {
             <div className="flex items-center gap-2.5 sm:gap-3">
               <button
                 type="button"
-                onClick={() => setIsMobileNavOpen(true)}
+                onClick={() => {
+                  setIsProfileDropdownOpen(false);
+                  setIsMobileNavOpen(true);
+                }}
                 className="lg:hidden p-1.5 sm:p-2 rounded-xl border border-[#E2E8F0] text-[#475569] hover:bg-[#F8FAFC] cursor-pointer"
                 aria-label="Open Navigation Menu"
               >

@@ -64,8 +64,27 @@ export default function MyQuizzes() {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
+
+  // Lock background scrolling and dismiss dropdowns when mobile sidebar is open
+  useEffect(() => {
+    if (isMobileNavOpen) {
+      document.body.style.overflow = 'hidden';
+      setIsProfileDropdownOpen(false);
+      setIsNotificationsOpen(false);
+      setOpenCardMenuId(null);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileNavOpen]);
 
   const handleLogout = () => {
     clearAuthSession();
@@ -266,8 +285,23 @@ export default function MyQuizzes() {
         {/* MOBILE BACKDROP OVERLAY */}
         {isMobileNavOpen && (
           <div 
-            onClick={() => setIsMobileNavOpen(false)}
-            className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden transition-opacity"
+            role="button"
+            tabIndex={0}
+            aria-label="Close navigation overlay"
+            onClick={() => {
+              setIsMobileNavOpen(false);
+              setIsProfileDropdownOpen(false);
+              setIsNotificationsOpen(false);
+              setOpenCardMenuId(null);
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              setIsMobileNavOpen(false);
+              setIsProfileDropdownOpen(false);
+              setIsNotificationsOpen(false);
+              setOpenCardMenuId(null);
+            }}
+            className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-xs lg:hidden cursor-pointer"
           />
         )}
 
@@ -276,7 +310,7 @@ export default function MyQuizzes() {
         {/* ========================================================================= */}
         <aside 
           className={`
-            fixed top-0 bottom-0 left-0 z-50 w-[230px] bg-[#FDFDFE] border-r border-[#ECEFF5]
+            fixed top-0 bottom-0 left-0 z-[70] w-[230px] bg-[#FDFDFE] border-r border-[#ECEFF5]
             shadow-[1px_0px_4px_rgba(0,0,0,0.06)] flex flex-col overflow-y-auto transition-transform duration-300
             ${isMobileNavOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           `}
@@ -430,7 +464,12 @@ export default function MyQuizzes() {
             <div className="flex items-center gap-3 flex-1 max-w-[620px]">
               <button 
                 type="button"
-                onClick={() => setIsMobileNavOpen(true)}
+                onClick={() => {
+                  setIsProfileDropdownOpen(false);
+                  setIsNotificationsOpen(false);
+                  setOpenCardMenuId(null);
+                  setIsMobileNavOpen(true);
+                }}
                 className="lg:hidden p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
                 aria-label="Open navigation menu"
               >
