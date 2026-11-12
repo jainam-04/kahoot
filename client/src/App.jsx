@@ -90,7 +90,9 @@ function AnimatedRoutes() {
     '/final-result',
     '/admin',
     '/dashboard',
-    '/quiz/my'
+    '/quiz/my',
+    '/quiz/create',
+    '/quiz/edit'
   ].some(path => location.pathname.startsWith(path));
 
   // Footer is displayed on the homepage and all public info/policy pages, hidden during gameplay
