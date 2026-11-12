@@ -1151,7 +1151,7 @@ export default function CreateQuiz() {
                       </div>
                     </div>
 
-                    <h3 className="text-xs sm:text-[13px] font-extrabold text-[#1E293B] leading-snug line-clamp-2">
+                    <h3 className="text-xs sm:text-[13px] font-extrabold text-[#1E293B] leading-snug line-clamp-4">
                       {activeQuestion.questionText || 'What is the correct answer to this challenge?'}
                     </h3>
                   </div>
@@ -1347,12 +1347,12 @@ export default function CreateQuiz() {
                               <span className="w-1 h-1 rounded-full bg-[#C084FC]" />
                             </div>
                           </div>
-                          <div className="truncate min-w-0">
+                          <div className="truncate min-w-0 flex-1">
                             <span className={`text-xs font-bold block truncate ${isActive ? 'text-[#6D28D9]' : 'text-[#334155]'}`}>
                               Question {idx + 1}
                             </span>
                             {previewText && (
-                              <span className="text-[10px] text-[#94A3B8] truncate block max-w-[140px] sm:max-w-[180px]">
+                              <span className="text-[10px] text-[#94A3B8] truncate block">
                                 {previewText}
                               </span>
                             )}
@@ -1432,20 +1432,20 @@ export default function CreateQuiz() {
                   </div>
                 </div>
 
-                {/* Question Title / Prompt Input */}
+                {/* Question Title / Prompt Input (Multi-line textarea so full question is always readable) */}
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-[#1E293B] block">
                     Question Title / Text <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <div className="absolute left-3 top-3 pointer-events-none">
                       <HelpCircle className="w-4 h-4 text-[#9333EA]" />
                     </div>
-                    <input
-                      type="text"
+                    <textarea
+                      rows={2}
                       placeholder="e.g. What is the capital of France?"
                       {...register(`questions.${safeActiveIndex}.questionText`, { required: 'Question prompt is required' })}
-                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs text-[#1E293B] placeholder-[#C084FC] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30 font-medium"
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs sm:text-[13px] text-[#1E293B] placeholder-[#C084FC] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30 font-medium leading-relaxed resize-y min-h-[58px]"
                     />
                   </div>
                 </div>
