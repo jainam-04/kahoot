@@ -9,7 +9,7 @@ import {
   Plus, Play, Trash2, Copy, Clock, X, Check, Sparkles,
   FileSpreadsheet, Save, Image, Upload, Sliders, HelpCircle,
   Building2, Grid, Monitor, Smartphone, Menu,
-  Palette, User
+  Palette, User, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -1691,6 +1691,57 @@ export default function CreateQuiz() {
                     </div>
                   </div>
                 )}
+
+                {/* Question Navigation Controls (Previous / Next / Add Question) */}
+                <div className="pt-3 mt-1 border-t border-[#F1F5F9] flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    disabled={safeActiveIndex === 0}
+                    onClick={() => {
+                      if (safeActiveIndex > 0) {
+                        setActiveQuestionIndex(safeActiveIndex - 1);
+                      }
+                    }}
+                    className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-[#E2E8F0] bg-white text-xs font-semibold text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-2xs active:scale-95"
+                    title="Previous Question"
+                    aria-label="Previous Question"
+                  >
+                    <ChevronLeft className="w-4 h-4 text-[#64748B]" />
+                    <span>Previous</span>
+                  </button>
+
+                  <div className="flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full bg-[#FAF5FF] border border-[#E9D5FF] text-[11px] sm:text-[11.5px] font-bold text-[#6D28D9] shrink-0">
+                    <span>Question {safeActiveIndex + 1} of {fields.length}</span>
+                  </div>
+
+                  {safeActiveIndex < fields.length - 1 ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (safeActiveIndex < fields.length - 1) {
+                          setActiveQuestionIndex(safeActiveIndex + 1);
+                        }
+                      }}
+                      className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-[#6222F5] hover:bg-[#5218d6] text-white text-xs font-semibold shadow-[0px_4px_12px_rgba(98,34,245,0.25)] transition-all cursor-pointer active:scale-95"
+                      title="Next Question"
+                      aria-label="Next Question"
+                    >
+                      <span>Next</span>
+                      <ChevronRight className="w-4 h-4 text-white" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleAddQuestion}
+                      className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-[#6222F5] hover:bg-[#5218d6] text-white text-xs font-semibold shadow-[0px_4px_12px_rgba(98,34,245,0.25)] transition-all cursor-pointer active:scale-95"
+                      title="Add Another Question"
+                      aria-label="Add Question"
+                    >
+                      <Plus className="w-4 h-4 text-white" />
+                      <span>Add Question</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
             </div>
