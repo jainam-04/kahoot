@@ -887,18 +887,20 @@ export default function CreateQuiz() {
                 </div>
 
                 {/* Master Toggle Pill: Same background for all questions */}
-                <div className="flex items-center justify-between px-3 py-1.5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0]/80">
-                  <span className="text-[10.5px] sm:text-[11px] font-semibold text-[#334155] truncate pr-2">Same background for all questions</span>
+                <div className="flex items-center justify-between px-3.5 py-1.5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0]/80">
+                  <span className="text-[11px] font-semibold text-[#334155]">Same background for all questions</span>
                   <button
                     type="button"
+                    role="switch"
+                    aria-checked={useSameBgForAll}
                     onClick={() => setUseSameBgForAll(!useSameBgForAll)}
-                    className={`relative inline-flex h-4 w-7.5 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    className={`relative inline-flex items-center w-[36px] h-[20px] p-[2px] shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
                       useSameBgForAll ? 'bg-[#7C3AED]' : 'bg-[#CBD5E1]'
                     }`}
                   >
                     <span
-                      className={`pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                        useSameBgForAll ? 'translate-x-3.5' : 'translate-x-0'
+                      className={`pointer-events-none inline-block w-[16px] h-[16px] transform rounded-full bg-white shadow-xs transition-transform duration-200 ease-in-out ${
+                        useSameBgForAll ? 'translate-x-[16px]' : 'translate-x-0'
                       }`}
                     />
                   </button>
