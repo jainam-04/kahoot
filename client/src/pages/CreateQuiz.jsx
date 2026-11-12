@@ -5,11 +5,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, BookOpen, PlusCircle, Settings, BarChart2,
-  LogOut, Crown, ArrowRight, ArrowLeft, Search, Bell, ChevronDown,
+  LogOut, Crown, ArrowRight, ArrowLeft, Search, ChevronDown,
   Plus, Play, Trash2, Copy, Clock, X, Check, Sparkles,
   FileSpreadsheet, Save, Image, Upload, Sliders, HelpCircle,
-  CheckCircle2, Building2, Grid, Monitor, Smartphone, Menu,
-  Palette, User, ExternalLink
+  Building2, Grid, Monitor, Smartphone, Menu,
+  Palette, User
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -29,7 +29,6 @@ export default function CreateQuiz() {
   const [user, setUser] = useState(() => getStoredUser());
   const [activeModal, setActiveModal] = useState(null); // 'profile' | 'upgrade' | null
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
   const [showPexelsModal, setShowPexelsModal] = useState(false);
@@ -49,7 +48,6 @@ export default function CreateQuiz() {
   const fileInputRef = useRef(null);
   const excelInputRef = useRef(null);
   const profileDropdownRef = useRef(null);
-  const notifDropdownRef = useRef(null);
 
   // Sync stored user profile across storage and custom events
   useEffect(() => {
@@ -68,14 +66,11 @@ export default function CreateQuiz() {
     };
   }, []);
 
-  // Close dropdowns on outside click
+  // Close profile dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
         setIsProfileDropdownOpen(false);
-      }
-      if (notifDropdownRef.current && !notifDropdownRef.current.contains(event.target)) {
-        setIsNotificationsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -152,7 +147,6 @@ export default function CreateQuiz() {
     name: 'questions',
   });
 
-  const watchAllFields = watch();
   const currentQuestions = watch('questions') || [];
   const currentCategory = watch('category');
   const currentRawBg = watch('backgroundImage');
@@ -497,7 +491,7 @@ export default function CreateQuiz() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-screen bg-[#FDFDFE] text-[#1E293B] font-['Inter',sans-serif] selection:bg-[#6222F5]/20 selection:text-[#6222F5]">
+      <div className="relative min-h-screen bg-[#FDFDFE] text-[#1E293B] font-['Inter',sans-serif] selection:bg-[#6222F5]/20 selection:text-[#6222F5] overflow-x-hidden">
 
         {/* ─── 1. LEFT SIDEBAR (230px, Fixed Desktop, Drawer Mobile) ─── */}
         <aside
@@ -510,13 +504,13 @@ export default function CreateQuiz() {
             {/* Mascot Brand Logo */}
             <div className="w-full flex items-center justify-between pb-3 border-b border-[#F1F5F9]/80">
               <Link to="/dashboard" className="flex items-center gap-2 group">
-                <Logo className="h-10 w-auto object-contain transition-transform group-hover:scale-105" />
+                <Logo className="h-9 w-auto object-contain transition-transform group-hover:scale-105" />
               </Link>
               {/* Close Drawer Button on Mobile */}
               <button
                 type="button"
                 onClick={() => setIsMobileNavOpen(false)}
-                className="lg:hidden p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9]"
+                className="lg:hidden p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -560,7 +554,7 @@ export default function CreateQuiz() {
               <button
                 type="button"
                 onClick={() => setActiveModal('profile')}
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors text-left"
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors text-left cursor-pointer"
               >
                 <Settings className="w-5 h-5 text-[#94A3B8]" />
                 <span>Settings</span>
@@ -571,20 +565,20 @@ export default function CreateQuiz() {
           {/* Bottom Pinned Controls (Upgrade Promo & Logout) */}
           <div className="px-4 pb-5 pt-2 flex flex-col gap-3">
             {/* Promo Card */}
-            <div className="rounded-2xl p-4 bg-gradient-to-br from-[#FAF7FF] via-[#F4EEFF] to-[#EDE5FF] border border-[#E9DCFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] text-left flex flex-col gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-white border border-[#E9D5FF]/60 shadow-sm flex items-center justify-center">
-                <Crown className="w-5 h-5 text-[#F59E0B]" />
+            <div className="rounded-2xl p-3.5 bg-gradient-to-br from-[#FAF7FF] via-[#F4EEFF] to-[#EDE5FF] border border-[#E9DCFF] shadow-xs text-left flex flex-col gap-2">
+              <div className="w-8 h-8 rounded-xl bg-white border border-[#E9D5FF]/60 shadow-xs flex items-center justify-center">
+                <Crown className="w-4 h-4 text-[#F59E0B]" />
               </div>
               <div>
-                <h4 className="text-[14px] font-bold text-[#0F172A] tracking-tight">Upgrade to Gubbi Pro</h4>
+                <h4 className="text-[13px] font-bold text-[#0F172A] tracking-tight">Upgrade to Gubbi Pro</h4>
                 <p className="text-[11px] text-[#64748B] mt-0.5 leading-snug">
-                  Unlock unlimited quizzes & multiplayer rooms.
+                  Unlock unlimited quizzes & rooms.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setActiveModal('upgrade')}
-                className="w-full py-2 px-3 rounded-xl bg-[#6C38FF] hover:bg-[#5b2bd9] text-white font-semibold text-[12px] shadow-[0px_4px_16px_rgba(108,56,255,0.28)] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full py-2 px-3 rounded-xl bg-[#6C38FF] hover:bg-[#5b2bd9] text-white font-semibold text-[11.5px] shadow-[0px_4px_16px_rgba(108,56,255,0.28)] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <span>Upgrade Now</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -595,7 +589,7 @@ export default function CreateQuiz() {
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-[#EF4444] font-semibold text-[13.5px] hover:bg-[#FEE2E2] transition-colors cursor-pointer justify-center"
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-[#EF4444] font-semibold text-[13px] hover:bg-[#FEE2E2] transition-colors cursor-pointer justify-center"
             >
               <LogOut className="w-4 h-4 text-[#EF4444]" />
               <span>Logout</span>
@@ -614,82 +608,56 @@ export default function CreateQuiz() {
         {/* ─── 2. MAIN CONTENT AREA (Offset by 230px on Desktop) ─── */}
         <div className="lg:pl-[230px] flex flex-col min-h-screen">
 
-          {/* ─── TOP HEADER (74px Glassmorphism Bar) ─── */}
-          <header className="sticky top-0 z-30 h-[74px] bg-white/80 backdrop-blur-md border-b border-[#EEF0F6] px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
-            {/* Left Hamburger (Mobile) + Global Search Input */}
-            <div className="flex items-center gap-3 flex-1 max-w-[620px]">
+          {/* ─── TOP HEADER (Clean, Mobile Friendly, Notification Removed) ─── */}
+          <header className="sticky top-0 z-30 h-14 sm:h-[70px] bg-white/90 backdrop-blur-md border-b border-[#EEF0F6] px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
+            {/* Left Hamburger + Mobile Brand Logo */}
+            <div className="flex items-center gap-2.5 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setIsMobileNavOpen(true)}
-                className="lg:hidden p-2 rounded-xl border border-[#E2E8F0] text-[#475569] hover:bg-[#F8FAFC]"
+                className="lg:hidden p-1.5 sm:p-2 rounded-xl border border-[#E2E8F0] text-[#475569] hover:bg-[#F8FAFC] cursor-pointer"
                 aria-label="Open Navigation Menu"
               >
                 <Menu className="w-5 h-5" />
               </button>
 
+              <div className="lg:hidden flex items-center">
+                <Logo className="h-7 sm:h-8 w-auto object-contain" />
+              </div>
+            </div>
+
+            {/* Desktop Global Search Bar (Hidden on phone screens to prevent squishing) */}
+            <div className="hidden sm:block flex-1 max-w-[540px] mx-auto">
               <div className="relative w-full">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
                 <input
                   type="text"
                   placeholder="Search quizzes, topics, or participants..."
-                  className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#FAF9FD] border border-[#E9EAF2] text-[13.5px] font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:border-[#6222F5] focus:ring-2 focus:ring-[#6222F5]/10 transition-all"
+                  className="w-full pl-10 pr-4 py-2 rounded-full bg-[#FAF9FD] border border-[#E9EAF2] text-xs font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/20"
                 />
               </div>
             </div>
 
-            {/* Right Controls: Notifications & Profile Pill */}
-            <div className="flex items-center gap-3">
-              {/* Notifications Button */}
-              <div className="relative" ref={notifDropdownRef}>
-                <button
-                  type="button"
-                  onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                  className="relative w-10 h-10 rounded-full border border-[#E7E9F2] bg-white hover:bg-[#F8FAFC] flex items-center justify-center text-[#475569] transition-colors cursor-pointer"
-                  aria-label="Notifications"
-                >
-                  <Bell className="w-4 h-4 text-[#475569]" />
-                  <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#EF4444] border-2 border-white ring-1 ring-red-400" />
-                </button>
-
-                {/* Notifications Dropdown */}
-                {isNotificationsOpen && (
-                  <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white border border-[#EEF0F6] shadow-xl p-4 z-50 text-left animate-in fade-in zoom-in-95 duration-150">
-                    <div className="flex items-center justify-between pb-2 border-b border-[#F1F5F9]">
-                      <h4 className="text-sm font-bold text-[#0F172A]">Notifications</h4>
-                      <span className="text-[11px] font-medium text-[#6222F5] cursor-pointer">Mark all read</span>
-                    </div>
-                    <div className="py-3 flex flex-col gap-2.5">
-                      <div className="p-2.5 rounded-xl bg-[#FAF5FF] border border-[#F3E8FF] flex items-start gap-2.5">
-                        <Sparkles className="w-4 h-4 text-[#9333EA] shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-xs font-semibold text-[#1E293B]">Design Mode Ready</p>
-                          <p className="text-[11px] text-[#64748B]">You are creating a new quiz! Use the AI Assistant to generate questions in seconds.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* User Profile Pill */}
+            {/* Right Controls: User Profile Pill ONLY (Notification completely removed) */}
+            <div className="flex items-center gap-2 shrink-0">
               <div className="relative" ref={profileDropdownRef}>
                 <button
                   type="button"
                   onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                  className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-[#E7E9F2] bg-white hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 p-1 sm:px-3 sm:py-1 rounded-full border border-[#E7E9F2] bg-white hover:bg-[#F8FAFC] transition-colors cursor-pointer"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#6C38FF] text-white font-semibold text-xs flex items-center justify-center shadow-xs">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#6C38FF] text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
                     {user?.name ? user.name[0]?.toUpperCase() : 'M'}
                   </div>
-                  <span className="text-[13.5px] font-semibold text-[#1E293B] max-w-[100px] truncate hidden sm:inline">
+                  <span className="text-xs font-semibold text-[#1E293B] max-w-[90px] truncate hidden md:inline">
                     {user?.name || 'Mohsin'}
                   </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8]" />
+                  <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] hidden sm:inline" />
                 </button>
 
                 {/* Profile Dropdown */}
                 {isProfileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-[#EEF0F6] shadow-xl p-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white border border-[#EEF0F6] shadow-xl p-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150">
                     <div className="px-3 py-2 border-b border-[#F1F5F9]">
                       <p className="text-xs font-bold text-[#0F172A] truncate">{user?.name || 'Mohsin'}</p>
                       <p className="text-[11px] text-[#64748B] truncate">{user?.email || 'mohsin@example.com'}</p>
@@ -701,7 +669,7 @@ export default function CreateQuiz() {
                           setIsProfileDropdownOpen(false);
                           setActiveModal('profile');
                         }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors cursor-pointer"
                       >
                         <User className="w-4 h-4 text-[#94A3B8]" />
                         <span>Profile & Stats</span>
@@ -712,7 +680,7 @@ export default function CreateQuiz() {
                           setIsProfileDropdownOpen(false);
                           setActiveModal('upgrade');
                         }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#6C38FF] hover:bg-[#FAF5FF] transition-colors"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#6C38FF] hover:bg-[#FAF5FF] transition-colors cursor-pointer"
                       >
                         <Crown className="w-4 h-4 text-[#F59E0B]" />
                         <span>Subscription Plans</span>
@@ -722,7 +690,7 @@ export default function CreateQuiz() {
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
                       >
                         <LogOut className="w-4 h-4 text-[#EF4444]" />
                         <span>Sign Out</span>
@@ -735,37 +703,37 @@ export default function CreateQuiz() {
           </header>
 
           {/* ─── FORM & PAGE BODY ─── */}
-          <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-[1340px] w-full mx-auto space-y-6">
+          <main className="flex-1 px-3 sm:px-6 lg:px-8 py-4 sm:py-6 max-w-[1340px] w-full mx-auto space-y-4 sm:space-y-6">
 
-            {/* ─── PAGE TITLE & ACTION TOOLBAR ─── */}
-            <div className="rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 text-left">
+            {/* ─── PAGE TITLE & ACTION TOOLBAR (Perfect 2x2 grid on mobile) ─── */}
+            <div className="rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-3.5 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3.5 text-left">
               {/* Left branding & back button */}
-              <div className="flex items-center gap-3.5">
+              <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => navigate('/quiz/my')}
-                  className="w-10 h-10 rounded-xl bg-white border border-[#E2E8F0] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-all cursor-pointer shrink-0"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white border border-[#E2E8F0] shadow-xs flex items-center justify-center text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-all cursor-pointer shrink-0"
                   aria-label="Go Back"
                 >
-                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-extrabold text-[#0F172A] tracking-tight">Create Quiz</h1>
-                  <p className="text-xs text-[#64748B] mt-0.5">Design customized questions and timers.</p>
+                <div className="min-w-0">
+                  <h1 className="text-lg sm:text-2xl font-extrabold text-[#0F172A] tracking-tight truncate">Create Quiz</h1>
+                  <p className="text-[11px] sm:text-xs text-[#64748B] truncate">Design customized questions and timers.</p>
                 </div>
               </div>
 
-              {/* Right Action Buttons */}
-              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              {/* Right Action Buttons: 2x2 Clean Grid on mobile, inline flex on desktop */}
+              <div className="grid grid-cols-2 gap-2 w-full md:w-auto md:flex md:flex-wrap md:items-center">
                 {/* 1. AI Assistant */}
                 <button
                   type="button"
                   onClick={() => setShowAIModal(true)}
-                  className="px-3.5 sm:px-4 py-2.5 rounded-2xl text-white font-bold text-xs shadow-[0px_10px_25px_-3px_rgba(108,40,254,0.35)] flex items-center gap-2 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full md:w-auto justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-white font-bold text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
                   style={{ background: 'linear-gradient(90deg, #6C28FE 0%, #4F46E5 50%, #D946EF 100%)' }}
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-                  <span>AI Assistant</span>
+                  <Sparkles className="w-3.5 h-3.5 text-yellow-300 shrink-0" />
+                  <span className="truncate">AI Assistant</span>
                 </button>
 
                 {/* 2. Import CSV */}
@@ -779,10 +747,10 @@ export default function CreateQuiz() {
                 <button
                   type="button"
                   onClick={() => excelInputRef.current?.click()}
-                  className="px-3.5 sm:px-4 py-2.5 rounded-2xl bg-[#F8F9FE] border border-[#E9D5FF]/80 text-[#6C28FE] font-bold text-xs hover:bg-[#F1F3FE] shadow-xs flex items-center gap-2 cursor-pointer transition-colors"
+                  className="w-full md:w-auto justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-[#F8F9FE] border border-[#E9D5FF]/80 text-[#6C28FE] font-bold text-xs hover:bg-[#F1F3FE] shadow-xs flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
-                  <FileSpreadsheet className="w-3.5 h-3.5 text-[#7C3AED]" />
-                  <span>Import CSV</span>
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-[#7C3AED] shrink-0" />
+                  <span className="truncate">Import CSV</span>
                 </button>
 
                 {/* 3. Save Draft */}
@@ -790,10 +758,10 @@ export default function CreateQuiz() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={handleSubmit((data) => onSubmit(data, 'draft', false), onInvalid)}
-                  className="px-3.5 sm:px-4 py-2.5 rounded-2xl bg-white border border-[#E9D5FF] text-[#6C28FE] font-bold text-xs shadow-[0px_8px_30px_rgba(108,40,254,0.06)] hover:bg-[#FAF5FF] flex items-center gap-2 cursor-pointer transition-all"
+                  className="w-full md:w-auto justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white border border-[#E9D5FF] text-[#6C28FE] font-bold text-xs shadow-xs hover:bg-[#FAF5FF] flex items-center gap-1.5 cursor-pointer transition-all"
                 >
-                  <Save className="w-3.5 h-3.5 text-[#7C3AED]" />
-                  <span>Save Draft</span>
+                  <Save className="w-3.5 h-3.5 text-[#7C3AED] shrink-0" />
+                  <span className="truncate">Save Draft</span>
                 </button>
 
                 {/* 4. Publish & Launch */}
@@ -801,45 +769,44 @@ export default function CreateQuiz() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={handleSubmit((data) => onSubmit(data, 'published', true), onInvalid)}
-                  className="px-4 sm:px-5 py-2.5 rounded-2xl text-white font-bold text-xs shadow-[0px_10px_25px_-3px_rgba(108,40,254,0.35)] flex items-center gap-2 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full md:w-auto justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-white font-bold text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
                   style={{ background: 'linear-gradient(90deg, #6C28FE 0%, #4F46E5 50%, #6640E8 100%)' }}
                 >
-                  <Play className="w-3.5 h-3.5 fill-white" />
-                  <span>Publish & Launch</span>
+                  <Play className="w-3.5 h-3.5 fill-white shrink-0" />
+                  <span className="truncate">Publish & Launch</span>
                 </button>
               </div>
             </div>
 
-            {/* ─── UPPER SECTION: 3-PANEL ROW (Quiz Details, Background Settings, Live Preview) ─── */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* ─── UPPER SECTION: 3-PANEL ROW ─── */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
 
               {/* ─ COLUMN 1: QUIZ DETAILS PANEL (lg:col-span-3) ─ */}
-              <div className="lg:col-span-3 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-5 text-left flex flex-col gap-5">
+              <div className="lg:col-span-3 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-4 sm:p-5 text-left flex flex-col gap-4">
                 {/* Panel Header */}
-                <div className="flex items-center gap-2.5 pb-1">
-                  <div className="w-8 h-8 rounded-xl bg-[#F0F9FF] flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-2.5 pb-0.5">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F0F9FF] flex items-center justify-center shrink-0">
                     <Sliders className="w-4 h-4 text-[#0284C7]" />
                   </div>
-                  <h2 className="text-[16px] font-bold text-[#0F172A] tracking-tight">Quiz Details</h2>
+                  <h2 className="text-[15px] sm:text-[16px] font-bold text-[#0F172A] tracking-tight">Quiz Details</h2>
                 </div>
 
                 {/* Form Fields */}
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3.5">
                   {/* Title */}
-                  <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-[#1E293B] block">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-[#1E293B] block">
                       Quiz Title <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <Search className="hidden" />
-                      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         <BookOpen className="w-4 h-4 text-[#9333EA]" />
                       </div>
                       <input
                         type="text"
                         placeholder="Enter quiz title"
                         {...register('title', { required: 'Quiz title is required' })}
-                        className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] placeholder-[#C084FC]/90 focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30"
+                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] placeholder-[#C084FC]/80 focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30"
                       />
                     </div>
                     {errors.title && (
@@ -848,29 +815,29 @@ export default function CreateQuiz() {
                   </div>
 
                   {/* Category Dropdown */}
-                  <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-[#1E293B] block">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-[#1E293B] block">
                       Category <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         <Grid className="w-4 h-4 text-[#9333EA]" />
                       </div>
                       <select
                         {...register('category')}
-                        className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30 appearance-none cursor-pointer"
+                        className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30 appearance-none cursor-pointer"
                       >
                         {CATEGORIES.map(cat => (
                           <option key={cat.value} value={cat.value}>{cat.label}</option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] pointer-events-none" />
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] pointer-events-none" />
                     </div>
                   </div>
 
                   {/* Description */}
-                  <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-[#1E293B] block">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-[#1E293B] block">
                       Description (Optional)
                     </label>
                     <div className="relative">
@@ -878,28 +845,28 @@ export default function CreateQuiz() {
                         rows={3}
                         placeholder="Describe your quiz (optional)"
                         {...register('description')}
-                        className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] placeholder-[#C084FC]/90 focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30 resize-none"
+                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] placeholder-[#C084FC]/80 focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30 resize-none"
                       />
-                      <div className="absolute left-3.5 top-3 pointer-events-none">
+                      <div className="absolute left-3 top-2.5 pointer-events-none">
                         <HelpCircle className="w-4 h-4 text-[#9333EA]" />
                       </div>
                     </div>
                   </div>
 
                   {/* School / College / Organization */}
-                  <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-[#1E293B] block">
-                      School / College / Organization (Optional)
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-[#1E293B] block">
+                      Organization (Optional)
                     </label>
                     <div className="relative">
-                      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         <Building2 className="w-4 h-4 text-[#9333EA]" />
                       </div>
                       <input
                         type="text"
-                        placeholder="Enter school or organization name"
+                        placeholder="Enter school or organization"
                         {...register('organizationName')}
-                        className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] placeholder-[#C084FC]/90 focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30"
+                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] placeholder-[#C084FC]/80 focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30"
                       />
                     </div>
                   </div>
@@ -907,30 +874,30 @@ export default function CreateQuiz() {
               </div>
 
               {/* ─ COLUMN 2: QUIZ BACKGROUND SETTINGS (lg:col-span-5) ─ */}
-              <div className="lg:col-span-5 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-5 text-left flex flex-col gap-4">
+              <div className="lg:col-span-5 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-4 sm:p-5 text-left flex flex-col gap-3.5">
                 {/* Header */}
-                <div className="flex items-center gap-2.5 pb-1">
-                  <div className="w-8 h-8 rounded-xl bg-[#F0F9FF] flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-2.5 pb-0.5">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F0F9FF] flex items-center justify-center shrink-0">
                     <Image className="w-4 h-4 text-[#0284C7]" />
                   </div>
-                  <div>
-                    <h2 className="text-[16px] font-bold text-[#0F172A] tracking-tight">Quiz Background Settings</h2>
-                    <p className="text-[11px] font-medium text-[#64748B]">Configure global and question-specific visual styling.</p>
+                  <div className="min-w-0">
+                    <h2 className="text-[15px] sm:text-[16px] font-bold text-[#0F172A] tracking-tight truncate">Background Settings</h2>
+                    <p className="text-[10px] sm:text-[11px] font-medium text-[#64748B] truncate">Configure visual backgrounds and styling.</p>
                   </div>
                 </div>
 
                 {/* Master Toggle Pill: Same background for all questions */}
-                <div className="flex items-center justify-between px-3.5 py-1.5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0]/80">
-                  <span className="text-[11px] font-semibold text-[#334155]">Same background for all questions</span>
+                <div className="flex items-center justify-between px-3 py-1.5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0]/80">
+                  <span className="text-[10.5px] sm:text-[11px] font-semibold text-[#334155] truncate pr-2">Same background for all questions</span>
                   <button
                     type="button"
                     onClick={() => setUseSameBgForAll(!useSameBgForAll)}
-                    className={`relative inline-flex h-4.5 w-8 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    className={`relative inline-flex h-4 w-7.5 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
                       useSameBgForAll ? 'bg-[#7C3AED]' : 'bg-[#CBD5E1]'
                     }`}
                   >
                     <span
-                      className={`pointer-events-none inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      className={`pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
                         useSameBgForAll ? 'translate-x-3.5' : 'translate-x-0'
                       }`}
                     />
@@ -938,27 +905,27 @@ export default function CreateQuiz() {
                 </div>
 
                 {/* Tab Buttons */}
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setActiveBgTab('upload')}
-                    className={`py-2 px-3 rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    className={`py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl font-semibold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                       activeBgTab === 'upload'
                         ? 'bg-[#7C3AED] text-white shadow-xs'
                         : 'bg-white border border-[#E9D5FF] text-[#334155] hover:bg-[#FAF5FF]'
                     }`}
                   >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Upload Background</span>
+                    <Upload className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">Upload Image</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setShowPexelsModal(true)}
-                    className="py-2 px-3 rounded-xl font-semibold text-xs bg-white border border-[#E9D5FF] text-[#334155] hover:bg-[#FAF5FF] flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    className="py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl font-semibold text-[11px] sm:text-xs bg-white border border-[#E9D5FF] text-[#334155] hover:bg-[#FAF5FF] flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-[#9333EA]" />
-                    <span>Pexels Library</span>
+                    <Sparkles className="w-3.5 h-3.5 text-[#9333EA] shrink-0" />
+                    <span className="truncate">Pexels Library</span>
                   </button>
                 </div>
 
@@ -975,36 +942,36 @@ export default function CreateQuiz() {
                   onDragOver={(e) => { e.preventDefault(); setBgDragActive(true); }}
                   onDragLeave={() => setBgDragActive(false)}
                   onDrop={handleDrop}
-                  className={`rounded-2xl border-2 border-dashed p-4 flex flex-col items-center justify-center text-center transition-all min-h-[135px] ${
+                  className={`rounded-2xl border-2 border-dashed p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all min-h-[110px] sm:min-h-[130px] ${
                     bgDragActive
                       ? 'border-[#7C3AED] bg-[#FAF5FF]'
                       : 'border-[#E9D5FF] bg-[#FCFBFE]'
                   }`}
                 >
                   {bgSettings.url ? (
-                    <div className="w-full flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
+                    <div className="w-full flex items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2.5 min-w-0">
                         <div
-                          className="w-14 h-12 rounded-xl bg-cover bg-center border border-[#E2E8F0] shadow-xs shrink-0"
+                          className="w-12 h-10 sm:w-14 sm:h-12 rounded-xl bg-cover bg-center border border-[#E2E8F0] shadow-xs shrink-0"
                           style={{ backgroundImage: `url(${bgSettings.url})` }}
                         />
-                        <div className="text-left">
-                          <span className="text-[11px] font-bold text-[#1E293B] block">Custom Image Loaded</span>
-                          <span className="text-[10px] text-[#64748B]">Ready for live quiz presentation</span>
+                        <div className="text-left min-w-0">
+                          <span className="text-[11px] font-bold text-[#1E293B] block truncate">Custom Image Loaded</span>
+                          <span className="text-[10px] text-[#64748B] block truncate">Ready for live rooms</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="px-2.5 py-1.5 rounded-lg bg-[#FAF5FF] border border-[#E9D5FF] text-[#7C3AED] font-semibold text-[11px] hover:bg-[#F3E8FF] cursor-pointer"
+                          className="px-2 py-1 rounded-lg bg-[#FAF5FF] border border-[#E9D5FF] text-[#7C3AED] font-semibold text-[10.5px] hover:bg-[#F3E8FF] cursor-pointer"
                         >
                           Change
                         </button>
                         <button
                           type="button"
                           onClick={() => updateBgSettings({ url: '' })}
-                          className="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 cursor-pointer"
+                          className="p-1 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 cursor-pointer"
                           title="Remove image"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -1012,18 +979,18 @@ export default function CreateQuiz() {
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-1.5">
-                      <div className="w-9 h-9 rounded-full bg-[#FAF5FF] flex items-center justify-center mx-auto text-[#7C3AED]">
-                        <Image className="w-5 h-5" />
+                    <div className="space-y-1">
+                      <div className="w-8 h-8 rounded-full bg-[#FAF5FF] flex items-center justify-center mx-auto text-[#7C3AED]">
+                        <Image className="w-4 h-4" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-[#1E293B]">Drag and drop your image here</p>
-                        <p className="text-[10px] text-[#94A3B8]">Supports JPG, PNG, or WebP formats</p>
+                        <p className="text-xs font-bold text-[#1E293B]">Drag and drop your image</p>
+                        <p className="text-[10px] text-[#94A3B8]">Supports JPG, PNG, or WebP</p>
                       </div>
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="mt-1 px-3.5 py-1.5 rounded-lg bg-[#7C3AED] text-white font-semibold text-[11px] hover:bg-[#6D28D9] shadow-xs cursor-pointer transition-colors"
+                        className="mt-1 px-3 py-1 rounded-lg bg-[#7C3AED] text-white font-semibold text-[10.5px] hover:bg-[#6D28D9] shadow-xs cursor-pointer transition-colors"
                       >
                         Choose File
                       </button>
@@ -1032,12 +999,12 @@ export default function CreateQuiz() {
                 </div>
 
                 {/* Sliders & Dropdown Controls */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
                   {/* Left Column: Sliders */}
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-2.5">
                     {/* Blur Slider */}
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center text-[11px] font-semibold text-[#334155]">
+                    <div className="space-y-0.5">
+                      <div className="flex justify-between items-center text-[10.5px] font-semibold text-[#334155]">
                         <span>Blur Intensity</span>
                         <span className="text-[#7C3AED] font-bold">{bgSettings.blur} px</span>
                       </div>
@@ -1053,8 +1020,8 @@ export default function CreateQuiz() {
                     </div>
 
                     {/* Brightness Slider */}
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center text-[11px] font-semibold text-[#334155]">
+                    <div className="space-y-0.5">
+                      <div className="flex justify-between items-center text-[10.5px] font-semibold text-[#334155]">
                         <span>Brightness</span>
                         <span className="text-[#7C3AED] font-bold">{bgSettings.brightness}%</span>
                       </div>
@@ -1070,8 +1037,8 @@ export default function CreateQuiz() {
                     </div>
 
                     {/* Overlay Opacity Slider */}
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center text-[11px] font-semibold text-[#334155]">
+                    <div className="space-y-0.5">
+                      <div className="flex justify-between items-center text-[10.5px] font-semibold text-[#334155]">
                         <span>Overlay Opacity</span>
                         <span className="text-[#7C3AED] font-bold">{bgSettings.overlayOpacity}%</span>
                       </div>
@@ -1088,29 +1055,29 @@ export default function CreateQuiz() {
                   </div>
 
                   {/* Right Column: Dropdowns & Toggles */}
-                  <div className="flex flex-col gap-2.5">
+                  <div className="flex flex-col gap-2">
                     <div className="grid grid-cols-2 gap-2">
                       {/* FIT */}
-                      <div className="space-y-1">
+                      <div className="space-y-0.5">
                         <label className="text-[9px] font-bold text-[#94A3B8] uppercase tracking-wider block">FIT</label>
                         <select
                           value={bgSettings.fit}
                           onChange={(e) => updateBgSettings({ fit: e.target.value })}
-                          className="w-full py-1.5 px-2 rounded-lg bg-white border border-[#E2E8F0] text-[11px] font-medium text-[#1E293B] focus:outline-none focus:border-[#7C3AED]"
+                          className="w-full py-1 px-1.5 rounded-lg bg-white border border-[#E2E8F0] text-[10.5px] font-medium text-[#1E293B] focus:outline-none focus:border-[#7C3AED]"
                         >
-                          <option value="cover">Cover (Default)</option>
+                          <option value="cover">Cover</option>
                           <option value="contain">Contain</option>
                           <option value="fill">Fill</option>
                         </select>
                       </div>
 
                       {/* POSITION */}
-                      <div className="space-y-1">
+                      <div className="space-y-0.5">
                         <label className="text-[9px] font-bold text-[#94A3B8] uppercase tracking-wider block">POSITION</label>
                         <select
                           value={bgSettings.position}
                           onChange={(e) => updateBgSettings({ position: e.target.value })}
-                          className="w-full py-1.5 px-2 rounded-lg bg-white border border-[#E2E8F0] text-[11px] font-medium text-[#1E293B] focus:outline-none focus:border-[#7C3AED]"
+                          className="w-full py-1 px-1.5 rounded-lg bg-white border border-[#E2E8F0] text-[10.5px] font-medium text-[#1E293B] focus:outline-none focus:border-[#7C3AED]"
                         >
                           <option value="center">Center</option>
                           <option value="top">Top</option>
@@ -1121,14 +1088,14 @@ export default function CreateQuiz() {
 
                     <div className="grid grid-cols-2 gap-2 items-end">
                       {/* GRADIENT */}
-                      <div className="space-y-1">
+                      <div className="space-y-0.5">
                         <label className="text-[9px] font-bold text-[#94A3B8] uppercase tracking-wider block">GRADIENT</label>
                         <select
                           value={bgSettings.gradient}
                           onChange={(e) => updateBgSettings({ gradient: e.target.value })}
-                          className="w-full py-1.5 px-2 rounded-lg bg-white border border-[#E2E8F0] text-[11px] font-medium text-[#1E293B] focus:outline-none focus:border-[#7C3AED]"
+                          className="w-full py-1 px-1.5 rounded-lg bg-white border border-[#E2E8F0] text-[10.5px] font-medium text-[#1E293B] focus:outline-none focus:border-[#7C3AED]"
                         >
-                          <option value="none">No Gradient</option>
+                          <option value="none">None</option>
                           <option value="subtle">Subtle Dark</option>
                           <option value="vibrant">Vibrant Dark</option>
                           <option value="purple">Purple Vignette</option>
@@ -1139,17 +1106,17 @@ export default function CreateQuiz() {
                       <button
                         type="button"
                         onClick={() => updateBgSettings({ lightOverlay: !bgSettings.lightOverlay })}
-                        className={`py-1.5 px-2 rounded-lg border flex items-center justify-between text-[10px] font-semibold cursor-pointer transition-colors ${
+                        className={`py-1 px-2 rounded-lg border flex items-center justify-between text-[10px] font-semibold cursor-pointer transition-colors ${
                           bgSettings.lightOverlay
                             ? 'bg-[#FAF5FF] border-[#E9D5FF] text-[#6D28D9]'
                             : 'bg-[#F1F5F9] border-[#E2E8F0] text-[#475569]'
                         }`}
                       >
-                        <span>Light Overlay</span>
-                        <div className={`w-4 h-4 rounded flex items-center justify-center text-white ${
+                        <span className="truncate mr-1">Overlay</span>
+                        <div className={`w-3.5 h-3.5 rounded flex items-center justify-center text-white shrink-0 ${
                           bgSettings.lightOverlay ? 'bg-[#7C3AED]' : 'border border-[#CBD5E1] bg-white'
                         }`}>
-                          {bgSettings.lightOverlay && <Check className="w-3 h-3 stroke-[3]" />}
+                          {bgSettings.lightOverlay && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                         </div>
                       </button>
                     </div>
@@ -1158,15 +1125,15 @@ export default function CreateQuiz() {
               </div>
 
               {/* ─ COLUMN 3: LIVE QUIZ PREVIEW PANEL (lg:col-span-4) ─ */}
-              <div className="lg:col-span-4 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-5 text-left flex flex-col gap-3">
+              <div className="lg:col-span-4 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-4 sm:p-5 text-left flex flex-col gap-3">
                 {/* Header & Device Switcher */}
                 <div className="flex items-center justify-between">
-                  <h2 className="text-[14px] font-bold text-[#0F172A] tracking-tight">Live Quiz Preview</h2>
+                  <h2 className="text-[13px] sm:text-[14px] font-bold text-[#0F172A] tracking-tight">Live Quiz Preview</h2>
                   <div className="flex items-center bg-[#F1F5F9] border border-[#E2E8F0] rounded-lg p-0.5">
                     <button
                       type="button"
                       onClick={() => setPreviewDevice('mobile')}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                      className={`px-2 py-0.5 rounded-md text-[10.5px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
                         previewDevice === 'mobile'
                           ? 'bg-[#7C3AED] text-white shadow-xs'
                           : 'text-[#64748B] hover:text-[#0F172A]'
@@ -1178,7 +1145,7 @@ export default function CreateQuiz() {
                     <button
                       type="button"
                       onClick={() => setPreviewDevice('desktop')}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                      className={`px-2 py-0.5 rounded-md text-[10.5px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
                         previewDevice === 'desktop'
                           ? 'bg-[#7C3AED] text-white shadow-xs'
                           : 'text-[#64748B] hover:text-[#0F172A]'
@@ -1191,7 +1158,7 @@ export default function CreateQuiz() {
                 </div>
 
                 {/* Mockup Preview Window */}
-                <div className="relative rounded-xl border border-[#E2E8F0]/80 p-3.5 overflow-hidden min-h-[310px] flex flex-col justify-between shadow-inner bg-gradient-to-br from-[#F5F3FF] via-[#F0F4FF] to-[#EEF2FF]">
+                <div className="relative rounded-xl border border-[#E2E8F0]/80 p-2.5 sm:p-3.5 overflow-hidden min-h-[290px] flex flex-col justify-between shadow-inner bg-gradient-to-br from-[#F5F3FF] via-[#F0F4FF] to-[#EEF2FF]">
                   {/* Optional Background image layer */}
                   {bgSettings.url && (
                     <div
@@ -1215,23 +1182,23 @@ export default function CreateQuiz() {
                   )}
 
                   {/* Ambient subtle glow lights */}
-                  <div className="absolute -top-12 -right-12 w-36 h-36 bg-[#E9D5FF]/40 rounded-full blur-2xl pointer-events-none" />
-                  <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[#BAE6FD]/40 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#E9D5FF]/40 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-[#BAE6FD]/40 rounded-full blur-2xl pointer-events-none" />
 
                   {/* Top Question Card */}
-                  <div className="relative z-10 rounded-xl bg-white/95 backdrop-blur-xs border border-[#F1F5F9] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-3 space-y-2">
+                  <div className="relative z-10 rounded-xl bg-white/95 backdrop-blur-xs border border-[#F1F5F9] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-2.5 sm:p-3 space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 rounded-md bg-[#FAF5FF] border border-[#F3E8FF] text-[9.5px] font-bold text-[#9333EA] uppercase tracking-wider">
-                        {currentCategory || 'WEB DEVELOPMENT'}
+                      <span className="px-2 py-0.5 rounded-md bg-[#FAF5FF] border border-[#F3E8FF] text-[9px] sm:text-[9.5px] font-bold text-[#9333EA] uppercase tracking-wider truncate max-w-[140px]">
+                        {currentCategory || 'GENERAL KNOWLEDGE'}
                       </span>
-                      <div className="flex items-center gap-1 text-[10px] font-medium text-[#94A3B8]">
+                      <div className="flex items-center gap-1 text-[9.5px] sm:text-[10px] font-medium text-[#94A3B8] shrink-0">
                         <Clock className="w-3 h-3 text-[#94A3B8]" />
                         <span>00:{String(activeQuestion.timeLimit || 20).padStart(2, '0')}</span>
                       </div>
                     </div>
 
-                    <h3 className="text-[13px] font-extrabold text-[#1E293B] leading-tight line-clamp-3">
-                      {activeQuestion.questionText || 'What does HTML stand for, powering structure across all web browsers?'}
+                    <h3 className="text-xs sm:text-[13px] font-extrabold text-[#1E293B] leading-snug line-clamp-2 sm:line-clamp-3">
+                      {activeQuestion.questionText || 'What is the correct answer to this challenge?'}
                     </h3>
                   </div>
 
@@ -1239,10 +1206,10 @@ export default function CreateQuiz() {
                   <div className="relative z-10 flex flex-col gap-1.5 mt-2">
                     {/* Option 1: Red / Coral */}
                     <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#FFF1F2] border border-[#FECDD3] text-left">
-                      <div className="flex items-center gap-2 truncate">
-                        <span className="text-[#EF4444] text-[10px] font-bold">▲</span>
-                        <span className="text-[11px] font-semibold text-[#1E293B] truncate">
-                          {activeQuestion.options?.[0] || 'HyperText Markup Language'}
+                      <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                        <span className="text-[#EF4444] text-[9.5px] font-bold shrink-0">▲</span>
+                        <span className="text-[10.5px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
+                          {activeQuestion.options?.[0] || 'Option A'}
                         </span>
                       </div>
                       <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -1256,10 +1223,10 @@ export default function CreateQuiz() {
 
                     {/* Option 2: Blue */}
                     <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-left">
-                      <div className="flex items-center gap-2 truncate">
-                        <span className="text-[#3B82F6] text-[10px] font-bold">◆</span>
-                        <span className="text-[11px] font-semibold text-[#1E293B] truncate">
-                          {activeQuestion.options?.[1] || 'High Tech Markup Language'}
+                      <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                        <span className="text-[#3B82F6] text-[9.5px] font-bold shrink-0">◆</span>
+                        <span className="text-[10.5px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
+                          {activeQuestion.options?.[1] || 'Option B'}
                         </span>
                       </div>
                       <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -1273,10 +1240,10 @@ export default function CreateQuiz() {
 
                     {/* Option 3: Amber / Yellow */}
                     <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-left">
-                      <div className="flex items-center gap-2 truncate">
-                        <span className="text-[#F59E0B] text-[10px] font-bold">●</span>
-                        <span className="text-[11px] font-semibold text-[#1E293B] truncate">
-                          {activeQuestion.options?.[2] || 'Hyperlink Text Management'}
+                      <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                        <span className="text-[#F59E0B] text-[9.5px] font-bold shrink-0">●</span>
+                        <span className="text-[10.5px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
+                          {activeQuestion.options?.[2] || 'Option C'}
                         </span>
                       </div>
                       <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -1290,10 +1257,10 @@ export default function CreateQuiz() {
 
                     {/* Option 4: Green / Emerald */}
                     <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#F0FDF4] border border-[#BBF7D0] text-left">
-                      <div className="flex items-center gap-2 truncate">
-                        <span className="text-[#10B981] text-[10px] font-bold">■</span>
-                        <span className="text-[11px] font-semibold text-[#1E293B] truncate">
-                          {activeQuestion.options?.[3] || 'Home Tool Markup Language'}
+                      <div className="flex items-center gap-1.5 truncate min-w-0 pr-1">
+                        <span className="text-[#10B981] text-[9.5px] font-bold shrink-0">■</span>
+                        <span className="text-[10.5px] sm:text-[11px] font-semibold text-[#1E293B] truncate">
+                          {activeQuestion.options?.[3] || 'Option D'}
                         </span>
                       </div>
                       <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -1311,13 +1278,13 @@ export default function CreateQuiz() {
             </div>
 
             {/* ─── LOWER SECTION: QUESTIONS LIST SIDEBAR & QUESTION EDITOR MAIN AREA ─── */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
 
               {/* ─ LEFT SUB-PANEL: QUESTIONS LIST SIDEBAR (lg:col-span-4) ─ */}
-              <div className="lg:col-span-4 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-5 text-left flex flex-col gap-4">
+              <div className="lg:col-span-4 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-4 sm:p-5 text-left flex flex-col gap-3">
                 {/* Header */}
-                <div className="flex items-center gap-2.5 pb-1">
-                  <div className="w-8 h-8 rounded-xl bg-[#F0F9FF] flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-2.5 pb-0.5">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F0F9FF] flex items-center justify-center shrink-0">
                     <Grid className="w-4 h-4 text-[#0284C7]" />
                   </div>
                   <h2 className="text-[14px] font-bold text-[#0F172A] tracking-tight">
@@ -1326,7 +1293,7 @@ export default function CreateQuiz() {
                 </div>
 
                 {/* Draggable/Selectable Questions List */}
-                <div className="flex flex-col gap-2 max-h-[290px] overflow-y-auto pr-1">
+                <div className="flex flex-col gap-2 max-h-[220px] sm:max-h-[290px] overflow-y-auto pr-0.5">
                   {fields.map((field, idx) => {
                     const isActive = idx === safeActiveIndex;
                     const previewText = currentQuestions[idx]?.questionText?.trim();
@@ -1335,15 +1302,15 @@ export default function CreateQuiz() {
                       <div
                         key={field.id}
                         onClick={() => setActiveQuestionIndex(idx)}
-                        className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer ${
+                        className={`flex items-center justify-between p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer ${
                           isActive
                             ? 'bg-[#F3EFFF] border-[#E9D5FF]/90 shadow-xs'
                             : 'bg-white border-[#E2E8F0] hover:bg-[#FAF9FD]'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex items-center gap-2 min-w-0">
                           {/* Grip Icon */}
-                          <div className="flex flex-col gap-0.5 text-[#C084FC]">
+                          <div className="flex flex-col gap-0.5 text-[#C084FC] shrink-0">
                             <div className="flex gap-0.5">
                               <span className="w-1 h-1 rounded-full bg-[#C084FC]" />
                               <span className="w-1 h-1 rounded-full bg-[#C084FC]" />
@@ -1357,12 +1324,12 @@ export default function CreateQuiz() {
                               <span className="w-1 h-1 rounded-full bg-[#C084FC]" />
                             </div>
                           </div>
-                          <div className="truncate">
-                            <span className={`text-xs font-bold block ${isActive ? 'text-[#6D28D9]' : 'text-[#334155]'}`}>
+                          <div className="truncate min-w-0">
+                            <span className={`text-xs font-bold block truncate ${isActive ? 'text-[#6D28D9]' : 'text-[#334155]'}`}>
                               Question {idx + 1}
                             </span>
                             {previewText && (
-                              <span className="text-[10px] text-[#94A3B8] truncate block max-w-[170px]">
+                              <span className="text-[10px] text-[#94A3B8] truncate block max-w-[140px] sm:max-w-[180px]">
                                 {previewText}
                               </span>
                             )}
@@ -1370,7 +1337,7 @@ export default function CreateQuiz() {
                         </div>
 
                         {/* Active check / question timer info */}
-                        <span className="text-[10px] font-semibold text-[#94A3B8] px-2 py-0.5 rounded bg-white/70">
+                        <span className="text-[10px] font-semibold text-[#94A3B8] px-2 py-0.5 rounded bg-white/70 shrink-0">
                           {currentQuestions[idx]?.timeLimit || 20}s
                         </span>
                       </div>
@@ -1390,11 +1357,11 @@ export default function CreateQuiz() {
               </div>
 
               {/* ─ RIGHT SUB-PANEL: QUESTION EDITOR MAIN AREA (lg:col-span-8) ─ */}
-              <div className="lg:col-span-8 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-5 sm:p-6 text-left flex flex-col gap-5">
+              <div className="lg:col-span-8 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-4 sm:p-6 text-left flex flex-col gap-4">
                 {/* Header row: Question title, type selector pill & clone/delete actions */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#F1F5F9]">
-                  <div className="flex items-center gap-3">
-                    <div className="flex flex-col gap-0.5 text-[#94A3B8]">
+                <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2.5 border-b border-[#F1F5F9]">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                    <div className="flex flex-col gap-0.5 text-[#94A3B8] shrink-0">
                       <div className="flex gap-0.5">
                         <span className="w-1 h-1 rounded-full bg-[#94A3B8]" />
                         <span className="w-1 h-1 rounded-full bg-[#94A3B8]" />
@@ -1408,66 +1375,66 @@ export default function CreateQuiz() {
                         <span className="w-1 h-1 rounded-full bg-[#94A3B8]" />
                       </div>
                     </div>
-                    <h2 className="text-[16px] font-bold text-[#0F172A] tracking-tight">
+                    <h2 className="text-[15px] sm:text-[16px] font-bold text-[#0F172A] tracking-tight">
                       Question {safeActiveIndex + 1}
                     </h2>
 
                     {/* Question Type Pill */}
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF5FF]/80 border border-[#E9D5FF] text-[12px] font-semibold text-[#6D28D9]">
+                    <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#FAF5FF]/80 border border-[#E9D5FF] text-[11px] sm:text-[12px] font-semibold text-[#6D28D9]">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]" />
                       <span>Multiple Choice</span>
-                      <ChevronDown className="w-3.5 h-3.5 text-[#9333EA] ml-0.5" />
+                      <ChevronDown className="w-3 h-3 text-[#9333EA] ml-0.5" />
                     </div>
                   </div>
 
                   {/* Actions: Duplicate & Delete */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <button
                       type="button"
                       onClick={handleDuplicateActiveQuestion}
-                      className="p-2 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-[#475569] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+                      className="p-1.5 sm:p-2 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-[#475569] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
                       title="Duplicate Question"
                     >
-                      <Copy className="w-4 h-4" />
+                      <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                     <button
                       type="button"
                       onClick={handleDeleteActiveQuestion}
                       disabled={fields.length <= 1}
-                      className="p-2 rounded-xl bg-[#FFF1F2] border border-[#FFE4E6] text-[#F43F5E] hover:bg-[#FEE2E2] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                      className="p-1.5 sm:p-2 rounded-xl bg-[#FFF1F2] border border-[#FFE4E6] text-[#F43F5E] hover:bg-[#FEE2E2] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                       title="Delete Question"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 </div>
 
                 {/* Question Title / Prompt Input */}
-                <div className="space-y-1.5">
-                  <label className="text-[12px] font-bold text-[#1E293B] block">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-[#1E293B] block">
                     Question Title / Text <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
                       <HelpCircle className="w-4 h-4 text-[#9333EA]" />
                     </div>
                     <input
                       type="text"
                       placeholder="e.g. What is the capital of France?"
                       {...register(`questions.${safeActiveIndex}.questionText`, { required: 'Question prompt is required' })}
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs text-[#1E293B] placeholder-[#C084FC] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30 font-medium"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs text-[#1E293B] placeholder-[#C084FC] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30 font-medium"
                     />
                   </div>
                 </div>
 
-                {/* Answer Options Section (2x2 Grid) */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-[12px] font-bold text-[#1E293B]">Answer Options</h3>
-                    <span className="text-[11px] text-[#64748B]">(Select the correct option circle)</span>
+                {/* Answer Options Section (2x2 Grid on desktop, 1 col on mobile) */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-xs font-bold text-[#1E293B]">Answer Options</h3>
+                    <span className="text-[10.5px] text-[#64748B]">(Select correct option circle)</span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {[0, 1, 2, 3].map((optIdx) => {
                       const letter = ['A', 'B', 'C', 'D'][optIdx];
                       const isCorrect = Number(watch(`questions.${safeActiveIndex}.correctAnswer`)) === optIdx;
@@ -1475,14 +1442,14 @@ export default function CreateQuiz() {
                       return (
                         <div
                           key={optIdx}
-                          className={`flex items-center gap-2.5 p-2 rounded-xl border transition-all ${
+                          className={`flex items-center gap-2 p-1.5 sm:p-2 rounded-xl border transition-all ${
                             isCorrect
                               ? 'bg-[#F3EFFF] border-[#7C3AED] shadow-[0px_0px_10px_rgba(124,58,237,0.12)]'
                               : 'bg-[#FCFCFF] border-[#E9D5FF]/80 focus-within:border-[#7C3AED]'
                           }`}
                         >
                           {/* Letter Badge */}
-                          <div className="w-7 h-7 rounded-lg bg-[#F3E8FF]/70 text-[#6D28D9] font-bold text-xs flex items-center justify-center shrink-0">
+                          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#F3E8FF]/70 text-[#6D28D9] font-bold text-xs flex items-center justify-center shrink-0">
                             {letter}
                           </div>
 
@@ -1491,21 +1458,21 @@ export default function CreateQuiz() {
                             type="text"
                             placeholder={`Option ${letter}`}
                             {...register(`questions.${safeActiveIndex}.options.${optIdx}`, { required: 'Option is required' })}
-                            className="flex-1 bg-transparent border-none text-xs text-[#1E293B] placeholder-[#94A3B8] focus:outline-none font-medium"
+                            className="flex-1 bg-transparent border-none text-xs text-[#1E293B] placeholder-[#94A3B8] focus:outline-none font-medium min-w-0"
                           />
 
                           {/* Radio Selector to Mark Correct */}
                           <button
                             type="button"
                             onClick={() => setValue(`questions.${safeActiveIndex}.correctAnswer`, optIdx, { shouldDirty: true })}
-                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer shrink-0 ${
+                            className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer shrink-0 ${
                               isCorrect
                                 ? 'border-[#7C3AED] bg-[#7C3AED] text-white'
                                 : 'border-[#CBD5E1] bg-white hover:border-[#7C3AED]'
                             }`}
                             title={`Mark Option ${letter} as correct`}
                           >
-                            {isCorrect && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                            {isCorrect && <Check className="w-3 h-3 stroke-[3]" />}
                           </button>
                         </div>
                       );
@@ -1514,13 +1481,13 @@ export default function CreateQuiz() {
                 </div>
 
                 {/* Question Timer Limit Slider */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#1E293B] shrink-0">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#1E293B] shrink-0">
                     <Clock className="w-4 h-4 text-[#7E22CE]" />
                     <span>Question Timer Limit</span>
                   </div>
 
-                  <div className="flex items-center gap-3 flex-1 max-w-[500px]">
+                  <div className="flex items-center gap-2.5 flex-1 max-w-[420px]">
                     <input
                       type="range"
                       min="5"
@@ -1529,7 +1496,7 @@ export default function CreateQuiz() {
                       {...register(`questions.${safeActiveIndex}.timeLimit`)}
                       className="w-full h-1.5 bg-[#E2E8F0] rounded-full accent-[#7C3AED] cursor-pointer"
                     />
-                    <div className="px-3 py-1 rounded-lg bg-[#FAF5FF] border border-[#E9D5FF] text-[#6D28D9] font-bold text-xs shrink-0">
+                    <div className="px-2.5 py-0.5 rounded-lg bg-[#FAF5FF] border border-[#E9D5FF] text-[#6D28D9] font-bold text-xs shrink-0">
                       {watch(`questions.${safeActiveIndex}.timeLimit`) || 20}s
                     </div>
                   </div>
@@ -1537,23 +1504,23 @@ export default function CreateQuiz() {
 
                 {/* Question-Specific Background Customizer (when useSameBgForAll is false) */}
                 {!useSameBgForAll && (
-                  <div className="pt-3 border-t border-[#F1F5F9] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FAF5FF]/50 p-3 rounded-xl border border-[#E9D5FF]/60">
+                  <div className="pt-2.5 border-t border-[#F1F5F9] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-[#FAF5FF]/50 p-2.5 rounded-xl border border-[#E9D5FF]/60">
                     <div>
                       <span className="text-xs font-bold text-[#1E293B] block">Unique Question Background</span>
-                      <span className="text-[11px] text-[#64748B]">
+                      <span className="text-[10px] sm:text-[11px] text-[#64748B]">
                         {watch(`questions.${safeActiveIndex}.backgroundImage`)
                           ? 'Custom background active for this question'
                           : 'Currently using global background fallback'}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => setBgModalTarget(safeActiveIndex)}
-                        className="px-3 py-1.5 rounded-xl bg-[#7C3AED] text-white text-xs font-semibold hover:bg-[#6D28D9] flex items-center gap-1.5 cursor-pointer"
+                        className="px-2.5 py-1.5 rounded-xl bg-[#7C3AED] text-white text-xs font-semibold hover:bg-[#6D28D9] flex items-center gap-1 cursor-pointer"
                       >
                         <Palette className="w-3.5 h-3.5" />
-                        <span>Customize Background</span>
+                        <span>Customize</span>
                       </button>
                       {watch(`questions.${safeActiveIndex}.backgroundImage`) && (
                         <button
@@ -1590,24 +1557,24 @@ export default function CreateQuiz() {
 
         {/* 2. PEXELS / PRESET LIBRARY MODAL */}
         {showPexelsModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-            <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#E2E8F0] overflow-y-auto space-y-5 text-left relative">
-              <div className="flex items-center justify-between pb-3 border-b border-[#F1F5F9]">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200">
+            <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl p-4 sm:p-7 shadow-2xl border border-[#E2E8F0] overflow-y-auto space-y-4 text-left relative">
+              <div className="flex items-center justify-between pb-2.5 border-b border-[#F1F5F9]">
                 <div>
-                  <h3 className="text-xl font-bold text-[#0F172A] flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-[#7C3AED]" />
-                    <span>Pexels & High-Resolution Background Library</span>
+                  <h3 className="text-lg sm:text-xl font-bold text-[#0F172A] flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#7C3AED]" />
+                    <span>Pexels & High-Resolution Backgrounds</span>
                   </h3>
-                  <p className="text-xs text-[#64748B] mt-0.5">
-                    Browse curated 4K & HD background photos to enhance your live interactive quizzes.
+                  <p className="text-[11px] text-[#64748B] mt-0.5">
+                    Browse curated HD background photos to enhance your live interactive quizzes.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowPexelsModal(false)}
-                  className="w-9 h-9 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
+                  className="w-8 h-8 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
@@ -1627,23 +1594,23 @@ export default function CreateQuiz() {
 
         {/* 3. QUESTION BACKGROUND CUSTOMIZER MODAL */}
         {bgModalTarget !== null && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-            <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#E2E8F0] overflow-y-auto space-y-5 text-left relative">
-              <div className="flex items-center justify-between pb-3 border-b border-[#F1F5F9]">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200">
+            <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl p-4 sm:p-7 shadow-2xl border border-[#E2E8F0] overflow-y-auto space-y-4 text-left relative">
+              <div className="flex items-center justify-between pb-2.5 border-b border-[#F1F5F9]">
                 <div>
-                  <h3 className="text-xl font-bold text-[#0F172A]">
+                  <h3 className="text-lg sm:text-xl font-bold text-[#0F172A]">
                     Customize Question {bgModalTarget + 1} Background
                   </h3>
-                  <p className="text-xs text-[#64748B] mt-0.5">
+                  <p className="text-[11px] text-[#64748B] mt-0.5">
                     Set a distinct visual background, filter or image specifically for this question.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setBgModalTarget(null)}
-                  className="w-9 h-9 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
+                  className="w-8 h-8 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
@@ -1653,16 +1620,16 @@ export default function CreateQuiz() {
                 showPreview={false}
               />
 
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-[#F1F5F9]">
+              <div className="flex justify-end gap-2 pt-2.5 border-t border-[#F1F5F9]">
                 <button
                   type="button"
                   onClick={() => {
                     setValue(`questions.${bgModalTarget}.backgroundImage`, watch('backgroundImage'), { shouldDirty: true });
                     toast.success('Copied global background to question!');
                   }}
-                  className="px-4 py-2 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-semibold text-[#475569] hover:bg-[#F1F5F9] cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-semibold text-[#475569] hover:bg-[#F1F5F9] cursor-pointer"
                 >
-                  Copy Global Background
+                  Copy Global
                 </button>
                 <button
                   type="button"
@@ -1670,14 +1637,14 @@ export default function CreateQuiz() {
                     setValue(`questions.${bgModalTarget}.backgroundImage`, '', { shouldDirty: true });
                     toast.success('Reset to global fallback');
                   }}
-                  className="px-4 py-2 rounded-xl bg-red-50 border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-100 cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-red-50 border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-100 cursor-pointer"
                 >
-                  Clear Custom Background
+                  Clear Custom
                 </button>
                 <button
                   type="button"
                   onClick={() => setBgModalTarget(null)}
-                  className="px-5 py-2 rounded-xl bg-[#7C3AED] text-white text-xs font-bold hover:bg-[#6D28D9] shadow-xs cursor-pointer"
+                  className="px-4 py-1.5 rounded-xl bg-[#7C3AED] text-white text-xs font-bold hover:bg-[#6D28D9] shadow-xs cursor-pointer"
                 >
                   Done
                 </button>
