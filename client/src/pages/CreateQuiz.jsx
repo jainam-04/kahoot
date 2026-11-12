@@ -894,7 +894,8 @@ export default function CreateQuiz() {
                     role="switch"
                     aria-checked={useSameBgForAll}
                     onClick={() => setUseSameBgForAll(!useSameBgForAll)}
-                    className={`relative inline-flex items-center w-[36px] h-[20px] p-[2px] shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
+                    style={{ width: '36px', height: '20px', minHeight: '20px', maxHeight: '20px' }}
+                    className={`relative inline-flex items-center w-[36px] h-[20px] p-[2px] min-h-0 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
                       useSameBgForAll ? 'bg-[#7C3AED]' : 'bg-[#CBD5E1]'
                     }`}
                   >
@@ -1444,10 +1445,11 @@ export default function CreateQuiz() {
                       return (
                         <div
                           key={optIdx}
-                          className={`flex items-center gap-2 p-1.5 sm:p-2 rounded-xl border transition-all ${
+                          onClick={() => setValue(`questions.${safeActiveIndex}.correctAnswer`, optIdx, { shouldDirty: true })}
+                          className={`flex items-center gap-2 p-2 sm:p-2.5 rounded-xl border transition-all cursor-pointer ${
                             isCorrect
                               ? 'bg-[#F3EFFF] border-[#7C3AED] shadow-[0px_0px_10px_rgba(124,58,237,0.12)]'
-                              : 'bg-[#FCFCFF] border-[#E9D5FF]/80 focus-within:border-[#7C3AED]'
+                              : 'bg-[#FCFCFF] border-[#E9D5FF]/80 hover:border-[#7C3AED]/50 focus-within:border-[#7C3AED]'
                           }`}
                         >
                           {/* Letter Badge */}
@@ -1460,21 +1462,29 @@ export default function CreateQuiz() {
                             type="text"
                             placeholder={`Option ${letter}`}
                             {...register(`questions.${safeActiveIndex}.options.${optIdx}`, { required: 'Option is required' })}
-                            className="flex-1 bg-transparent border-none text-xs text-[#1E293B] placeholder-[#94A3B8] focus:outline-none font-medium min-w-0"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none', outline: 'none' }}
+                            className="flex-1 bg-transparent border-none shadow-none outline-none option-input text-xs text-[#1E293B] placeholder-[#94A3B8] font-medium min-w-0 p-0 focus:ring-0 focus:outline-none"
                           />
 
-                          {/* Radio Selector to Mark Correct */}
+                          {/* Radio Selector to Mark Correct (Guaranteed 22px circle) */}
                           <button
                             type="button"
-                            onClick={() => setValue(`questions.${safeActiveIndex}.correctAnswer`, optIdx, { shouldDirty: true })}
-                            className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer shrink-0 ${
+                            role="radio"
+                            aria-checked={isCorrect}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setValue(`questions.${safeActiveIndex}.correctAnswer`, optIdx, { shouldDirty: true });
+                            }}
+                            style={{ width: '22px', height: '22px', minWidth: '22px', minHeight: '22px', maxHeight: '22px' }}
+                            className={`min-h-0 w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center transition-all cursor-pointer shrink-0 ${
                               isCorrect
                                 ? 'border-[#7C3AED] bg-[#7C3AED] text-white'
                                 : 'border-[#CBD5E1] bg-white hover:border-[#7C3AED]'
                             }`}
                             title={`Mark Option ${letter} as correct`}
                           >
-                            {isCorrect && <Check className="w-3 h-3 stroke-[3]" />}
+                            {isCorrect && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                           </button>
                         </div>
                       );
