@@ -35,41 +35,6 @@ export default function EditQuiz() {
   const [useSameBgForAll, setUseSameBgForAll] = useState(true);
   const [bgModalTarget, setBgModalTarget] = useState(null);
   const [formReady, setFormReady] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  const pageHeaderRef = useRef(null);
-
-  // Measure dynamic page header height and update CSS property --page-header-height
-  useEffect(() => {
-    const updatePageHeaderHeight = () => {
-      if (pageHeaderRef.current) {
-        document.documentElement.style.setProperty('--page-header-height', `${pageHeaderRef.current.offsetHeight}px`);
-      }
-    };
-    updatePageHeaderHeight();
-    const observer = new ResizeObserver(updatePageHeaderHeight);
-    if (pageHeaderRef.current) {
-      observer.observe(pageHeaderRef.current);
-    }
-    window.addEventListener('resize', updatePageHeaderHeight);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('resize', updatePageHeaderHeight);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 120) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Helper to parse background config
   const parseBgConfig = (bgStr) => {
@@ -216,10 +181,9 @@ export default function EditQuiz() {
         <div className="absolute top-[-5%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-40"></div>
         <div className="absolute bottom-[10%] right-[5%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
 
-        {/* ACTION TOOLBAR (PAGE TITLE & SAVE ACTIONS) */}
+        {/* ACTION TOOLBAR (PAGE TITLE & SAVE ACTIONS - ADJACENT IN NATURAL FLOW, NOT FLOATING) */}
         <div 
-          ref={pageHeaderRef}
-          className="fixed top-[var(--main-header-height,64px)] left-0 right-0 z-40 w-full border-b backdrop-blur-xl shadow-md transition-all duration-300 py-3 sm:py-3.5"
+          className="w-full border-b transition-colors py-4 sm:py-5"
           style={{
             backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(10, 10, 15, 0.98)',
             borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)'
@@ -245,37 +209,37 @@ export default function EditQuiz() {
               </div>
             </div>
 
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 mt-1 sm:mt-0 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={handleSubmit((data) => onSubmit(data, 'draft'), onInvalid)}
-                  disabled={updateMutation.isPending}
-                  className="btn-premium w-full sm:w-auto justify-center px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-300 bg-amber-500/20 border border-amber-500/30 hover:bg-amber-500/30 shadow-md cursor-pointer rounded-xl transition-all disabled:opacity-60"
-                  title="Save in drafts to edit later"
-                >
-                  <Save className="h-4 w-4 shrink-0" />
-                  <span className="truncate">Save as Draft</span>
-                </button>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={handleSubmit((data) => onSubmit(data, 'draft'), onInvalid)}
+                disabled={updateMutation.isPending}
+                className="btn-premium w-full sm:w-auto justify-center px-4 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-300 bg-amber-500/20 border border-amber-500/30 hover:bg-amber-500/30 shadow-md cursor-pointer rounded-xl transition-all disabled:opacity-60"
+                title="Save in drafts to edit later"
+              >
+                <Save className="h-4 w-4 shrink-0" />
+                <span className="truncate">Save as Draft</span>
+              </button>
 
-                <button
-                  type="button"
-                  onClick={handleSubmit((data) => onSubmit(data, 'published'), onInvalid)}
-                  disabled={updateMutation.isPending}
-                  className="btn-premium w-full sm:w-auto justify-center px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer disabled:opacity-60"
-                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
-                >
-                  {updateMutation.isPending
-                    ? <Loader2 className="h-4 w-4 animate-spin shrink-0" />
-                    : <Save className="h-4 w-4 shrink-0" />
-                  }
-                  <span>{updateMutation.isPending ? 'Saving...' : 'Save & Publish'}</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleSubmit((data) => onSubmit(data, 'published'), onInvalid)}
+                disabled={updateMutation.isPending}
+                className="btn-premium w-full sm:w-auto justify-center px-4 sm:px-5 py-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white shadow-md cursor-pointer disabled:opacity-60"
+                style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}
+              >
+                {updateMutation.isPending
+                  ? <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+                  : <Save className="h-4 w-4 shrink-0" />
+                }
+                <span>{updateMutation.isPending ? 'Saving...' : 'Save & Publish'}</span>
+              </button>
             </div>
           </div>
+        </div>
 
         {/* MAIN FORM CONTENT */}
-        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-[calc(var(--page-header-height,68px)+1.5rem)] pb-12 px-4 sm:px-8">
+        <div className="mx-auto max-w-5xl relative z-10 space-y-6 text-left pt-6 sm:pt-8 pb-12 px-4 sm:px-8">
 
           {/* EDITOR FORM */}
           <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
