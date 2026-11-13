@@ -6,7 +6,7 @@ import {
   Settings, LogOut, Crown, ArrowRight, Search, Bell, ChevronDown, Zap,
   Gamepad2, Coins, Users, Database, Play, Copy, Plus, X, Clock, Trophy, UserCheck,
   Pencil, ChevronRight, Sparkles, FlaskConical, Compass, Code, Calculator,
-  Menu, Check, Eye
+  Menu, Check, Eye, FileText
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -459,16 +459,16 @@ export default function Dashboard() {
               {/* Card 1: Quizzes */}
               <div className="shrink-0 w-[calc(33.333%-7px)] min-w-[108px] snap-start bg-white border border-[#EEF0F6] rounded-[20px] p-3 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col justify-between h-[110px]">
                 <div className="flex items-center justify-between z-10">
-                  <div className="w-7 h-7 rounded-xl bg-[#6C2BD9] flex items-center justify-center shadow-xs shrink-0">
-                    <Zap className="w-3.5 h-3.5 text-white fill-white" />
+                  <div className="w-8 h-8 rounded-[12px] bg-[#6C2BD9] flex items-center justify-center shadow-xs shrink-0">
+                    <FileText className="w-4 h-4 text-white stroke-[2.2]" />
                   </div>
-                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]/60 flex items-center gap-0.5">
+                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]/70 flex items-center gap-0.5">
                     <span>↗</span>
                     <span>+0%</span>
                   </span>
                 </div>
                 <div className="z-10 text-left mt-1">
-                  <span className="text-[24px] font-bold text-[#0F172A] leading-none block">
+                  <span className="text-[24px] font-extrabold text-[#0F172A] leading-none block">
                     {totalQuizzes}
                   </span>
                   <span className="text-[10px] font-bold text-[#64748B] tracking-wider uppercase block mt-1">
@@ -476,10 +476,13 @@ export default function Dashboard() {
                   </span>
                 </div>
                 {/* Subtle Watermark */}
-                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-40">
-                  <svg width="46" height="46" viewBox="0 0 76 76" fill="none">
-                    <rect x="20" y="4" width="38" height="50" rx="7" fill="#DDD6FE" />
+                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-50">
+                  <svg width="48" height="48" viewBox="0 0 76 76" fill="none" className="transform rotate-[15deg]">
+                    <rect x="20" y="4" width="38" height="50" rx="7" fill="#DDD6FE" fillOpacity="0.6" />
                     <rect x="10" y="12" width="38" height="50" rx="7" fill="#EDE9FE" />
+                    <rect x="18" y="25" width="22" height="3" rx="1.5" fill="white" />
+                    <rect x="18" y="32" width="16" height="3" rx="1.5" fill="white" />
+                    <rect x="18" y="39" width="20" height="3" rx="1.5" fill="white" />
                   </svg>
                 </div>
               </div>
@@ -490,25 +493,31 @@ export default function Dashboard() {
                 className="shrink-0 w-[calc(33.333%-7px)] min-w-[108px] snap-start bg-white border border-[#EEF0F6] rounded-[20px] p-3 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col justify-between h-[110px] cursor-pointer"
               >
                 <div className="flex items-center justify-between z-10">
-                  <div className="w-7 h-7 rounded-xl bg-[#0284C7] flex items-center justify-center shadow-xs shrink-0">
-                    <Users className="w-3.5 h-3.5 text-white stroke-[2.2]" />
+                  <div className="w-8 h-8 rounded-[12px] bg-[#0284C7] flex items-center justify-center shadow-xs shrink-0">
+                    <Gamepad2 className="w-4 h-4 text-white stroke-[2.2]" />
                   </div>
-                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#F0F9FF] text-[#0284C7] border border-[#BAE6FD]/60 flex items-center gap-1">
+                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#F0F9FF] text-[#0284C7] border border-[#BAE6FD]/70 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#0284C7] animate-pulse"></span>
                     <span>Live</span>
                   </span>
                 </div>
                 <div className="z-10 text-left mt-1">
-                  <span className="text-[24px] font-bold text-[#0F172A] leading-none block">
+                  <span className="text-[24px] font-extrabold text-[#0F172A] leading-none block">
                     {totalGamesHosted}
                   </span>
                   <span className="text-[10px] font-bold text-[#64748B] tracking-wider uppercase block mt-1">
                     SESSIONS
                   </span>
                 </div>
-                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-40">
-                  <svg width="48" height="34" viewBox="0 0 78 56" fill="none">
-                    <rect x="4" y="6" width="70" height="44" rx="22" fill="#BAE6FD" />
+                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-50">
+                  <svg width="52" height="38" viewBox="0 0 78 56" fill="none" className="transform rotate-[18deg]">
+                    <rect x="4" y="6" width="70" height="44" rx="22" fill="#BAE6FD" fillOpacity="0.8" />
+                    <path d="M24 20h4v16h-4z" fill="white" />
+                    <path d="M18 26h16v4h-16z" fill="white" />
+                    <circle cx="53" cy="24" r="2.8" fill="white" />
+                    <circle cx="60" cy="28" r="2.8" fill="white" />
+                    <circle cx="47" cy="28" r="2.8" fill="white" />
+                    <circle cx="53" cy="32" r="2.8" fill="white" />
                   </svg>
                 </div>
               </div>
@@ -519,25 +528,27 @@ export default function Dashboard() {
                 className="shrink-0 w-[calc(33.333%-7px)] min-w-[108px] snap-start bg-white border border-[#EEF0F6] rounded-[20px] p-3 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col justify-between h-[110px] cursor-pointer"
               >
                 <div className="flex items-center justify-between z-10">
-                  <div className="w-7 h-7 rounded-xl bg-[#059669] flex items-center justify-center shadow-xs shrink-0">
-                    <Database className="w-3.5 h-3.5 text-white stroke-[2.2]" />
+                  <div className="w-8 h-8 rounded-[12px] bg-[#059669] flex items-center justify-center shadow-xs shrink-0">
+                    <Users className="w-4 h-4 text-white stroke-[2.2]" />
                   </div>
-                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]/60">
+                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]/70">
                     + New
                   </span>
                 </div>
                 <div className="z-10 text-left mt-1">
-                  <span className="text-[24px] font-bold text-[#0F172A] leading-none block">
+                  <span className="text-[24px] font-extrabold text-[#0F172A] leading-none block">
                     {totalStudents}
                   </span>
                   <span className="text-[10px] font-bold text-[#64748B] tracking-wider uppercase block mt-1">
                     STUDENTS
                   </span>
                 </div>
-                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-40">
-                  <svg width="42" height="36" viewBox="0 0 64 54" fill="none">
-                    <circle cx="23" cy="19" r="9" fill="#A7F3D0" />
-                    <path d="M9 43c0-6 6-11 14-11s14 5 14 11" fill="#A7F3D0" />
+                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-50">
+                  <svg width="48" height="42" viewBox="0 0 64 54" fill="none">
+                    <circle cx="44" cy="18" r="8" fill="#A7F3D0" fillOpacity="0.6" />
+                    <path d="M33 39c0-5 5-9 11-9s11 4 11 9" fill="#A7F3D0" fillOpacity="0.6" />
+                    <circle cx="23" cy="19" r="9" fill="#A7F3D0" fillOpacity="0.9" />
+                    <path d="M9 43c0-6 6-11 14-11s14 5 14 11" fill="#A7F3D0" fillOpacity="0.9" />
                   </svg>
                 </div>
               </div>
@@ -545,25 +556,26 @@ export default function Dashboard() {
               {/* Card 4: Plays */}
               <div className="shrink-0 w-[calc(33.333%-7px)] min-w-[108px] snap-start bg-white border border-[#EEF0F6] rounded-[20px] p-3 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col justify-between h-[110px]">
                 <div className="flex items-center justify-between z-10">
-                  <div className="w-7 h-7 rounded-xl bg-[#06B6D4] flex items-center justify-center shadow-xs shrink-0">
-                    <BarChart3 className="w-3.5 h-3.5 text-white stroke-[2.2]" />
+                  <div className="w-8 h-8 rounded-[12px] bg-[#06B6D4] flex items-center justify-center shadow-xs shrink-0">
+                    <BarChart3 className="w-4 h-4 text-white stroke-[2.2]" />
                   </div>
-                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#ECFEFF] text-[#0891B2] border border-[#A5F3FC]/60">
+                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#ECFEFF] text-[#0891B2] border border-[#A5F3FC]/70">
                     ★ Plays
                   </span>
                 </div>
                 <div className="z-10 text-left mt-1">
-                  <span className="text-[24px] font-bold text-[#0F172A] leading-none block">
+                  <span className="text-[24px] font-extrabold text-[#0F172A] leading-none block">
                     {totalPlays}
                   </span>
                   <span className="text-[10px] font-bold text-[#64748B] tracking-wider uppercase block mt-1">
                     PLAYS
                   </span>
                 </div>
-                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-40">
-                  <svg width="34" height="38" viewBox="0 0 50 56" fill="none">
-                    <rect x="18" y="10" width="8" height="42" rx="4" fill="#BAE6FD" />
-                    <rect x="32" y="19" width="8" height="33" rx="4" fill="#BAE6FD" />
+                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-50">
+                  <svg width="40" height="46" viewBox="0 0 50 56" fill="none">
+                    <rect x="4" y="26" width="8" height="26" rx="4" fill="#BAE6FD" fillOpacity="0.85" />
+                    <rect x="18" y="10" width="8" height="42" rx="4" fill="#BAE6FD" fillOpacity="0.85" />
+                    <rect x="32" y="19" width="8" height="33" rx="4" fill="#BAE6FD" fillOpacity="0.85" />
                   </svg>
                 </div>
               </div>
