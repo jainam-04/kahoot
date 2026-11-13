@@ -441,21 +441,136 @@ export default function Dashboard() {
           {/* ========================================================================= */}
           {/* MAIN - DASHBOARD BODY */}
           {/* ========================================================================= */}
-          <main className="flex-1 p-5 sm:p-8 space-y-6 max-w-[1440px] w-full mx-auto">
+          <main className="flex-1 p-4 sm:p-8 space-y-4 sm:space-y-6 max-w-[1440px] w-full mx-auto">
             
             {/* Section - Welcome Banner */}
             <div className="text-left space-y-1">
-              <h1 className="text-[26px] font-bold text-[#0F172A] tracking-tight flex items-center gap-2">
+              <h1 className="text-[22px] sm:text-[26px] font-bold text-[#0F172A] tracking-tight flex items-center gap-2">
                 <span>👋</span>
                 <span>Welcome back, {userName}</span>
               </h1>
-              <p className="text-[13.5px] text-[#64748B]">
+              <p className="text-[12.5px] sm:text-[13.5px] text-[#64748B]">
                 Host instant quizzes, create custom trivia, and track performance.
               </p>
             </div>
 
-            {/* Section - StatCardsRow (Exact Match: 4 Cards in 1 Row on Desktop) */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Mobile StatCardsRow: Compact Side-by-Side Cards Matching Figma Image */}
+            <div className="sm:hidden flex items-stretch gap-2.5 overflow-x-auto pb-1.5 -mx-4 px-4 scrollbar-none snap-x">
+              {/* Card 1: Quizzes */}
+              <div className="shrink-0 w-[calc(33.333%-7px)] min-w-[108px] snap-start bg-white border border-[#EEF0F6] rounded-[20px] p-3 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col justify-between h-[110px]">
+                <div className="flex items-center justify-between z-10">
+                  <div className="w-7 h-7 rounded-xl bg-[#6C2BD9] flex items-center justify-center shadow-xs shrink-0">
+                    <Zap className="w-3.5 h-3.5 text-white fill-white" />
+                  </div>
+                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]/60 flex items-center gap-0.5">
+                    <span>↗</span>
+                    <span>+0%</span>
+                  </span>
+                </div>
+                <div className="z-10 text-left mt-1">
+                  <span className="text-[24px] font-bold text-[#0F172A] leading-none block">
+                    {totalQuizzes}
+                  </span>
+                  <span className="text-[10px] font-bold text-[#64748B] tracking-wider uppercase block mt-1">
+                    QUIZZES
+                  </span>
+                </div>
+                {/* Subtle Watermark */}
+                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-40">
+                  <svg width="46" height="46" viewBox="0 0 76 76" fill="none">
+                    <rect x="20" y="4" width="38" height="50" rx="7" fill="#DDD6FE" />
+                    <rect x="10" y="12" width="38" height="50" rx="7" fill="#EDE9FE" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Card 2: Sessions */}
+              <div 
+                onClick={() => setActiveModal('sessions')}
+                className="shrink-0 w-[calc(33.333%-7px)] min-w-[108px] snap-start bg-white border border-[#EEF0F6] rounded-[20px] p-3 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col justify-between h-[110px] cursor-pointer"
+              >
+                <div className="flex items-center justify-between z-10">
+                  <div className="w-7 h-7 rounded-xl bg-[#0284C7] flex items-center justify-center shadow-xs shrink-0">
+                    <Users className="w-3.5 h-3.5 text-white stroke-[2.2]" />
+                  </div>
+                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#F0F9FF] text-[#0284C7] border border-[#BAE6FD]/60 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#0284C7] animate-pulse"></span>
+                    <span>Live</span>
+                  </span>
+                </div>
+                <div className="z-10 text-left mt-1">
+                  <span className="text-[24px] font-bold text-[#0F172A] leading-none block">
+                    {totalGamesHosted}
+                  </span>
+                  <span className="text-[10px] font-bold text-[#64748B] tracking-wider uppercase block mt-1">
+                    SESSIONS
+                  </span>
+                </div>
+                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-40">
+                  <svg width="48" height="34" viewBox="0 0 78 56" fill="none">
+                    <rect x="4" y="6" width="70" height="44" rx="22" fill="#BAE6FD" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Card 3: Students */}
+              <div 
+                onClick={() => setActiveModal('students')}
+                className="shrink-0 w-[calc(33.333%-7px)] min-w-[108px] snap-start bg-white border border-[#EEF0F6] rounded-[20px] p-3 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col justify-between h-[110px] cursor-pointer"
+              >
+                <div className="flex items-center justify-between z-10">
+                  <div className="w-7 h-7 rounded-xl bg-[#059669] flex items-center justify-center shadow-xs shrink-0">
+                    <Database className="w-3.5 h-3.5 text-white stroke-[2.2]" />
+                  </div>
+                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]/60">
+                    + New
+                  </span>
+                </div>
+                <div className="z-10 text-left mt-1">
+                  <span className="text-[24px] font-bold text-[#0F172A] leading-none block">
+                    {totalStudents}
+                  </span>
+                  <span className="text-[10px] font-bold text-[#64748B] tracking-wider uppercase block mt-1">
+                    STUDENTS
+                  </span>
+                </div>
+                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-40">
+                  <svg width="42" height="36" viewBox="0 0 64 54" fill="none">
+                    <circle cx="23" cy="19" r="9" fill="#A7F3D0" />
+                    <path d="M9 43c0-6 6-11 14-11s14 5 14 11" fill="#A7F3D0" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Card 4: Plays */}
+              <div className="shrink-0 w-[calc(33.333%-7px)] min-w-[108px] snap-start bg-white border border-[#EEF0F6] rounded-[20px] p-3 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col justify-between h-[110px]">
+                <div className="flex items-center justify-between z-10">
+                  <div className="w-7 h-7 rounded-xl bg-[#06B6D4] flex items-center justify-center shadow-xs shrink-0">
+                    <BarChart3 className="w-3.5 h-3.5 text-white stroke-[2.2]" />
+                  </div>
+                  <span className="px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-[#ECFEFF] text-[#0891B2] border border-[#A5F3FC]/60">
+                    ★ Plays
+                  </span>
+                </div>
+                <div className="z-10 text-left mt-1">
+                  <span className="text-[24px] font-bold text-[#0F172A] leading-none block">
+                    {totalPlays}
+                  </span>
+                  <span className="text-[10px] font-bold text-[#64748B] tracking-wider uppercase block mt-1">
+                    PLAYS
+                  </span>
+                </div>
+                <div className="absolute right-0 bottom-0 pointer-events-none select-none opacity-40">
+                  <svg width="34" height="38" viewBox="0 0 50 56" fill="none">
+                    <rect x="18" y="10" width="8" height="42" rx="4" fill="#BAE6FD" />
+                    <rect x="32" y="19" width="8" height="33" rx="4" fill="#BAE6FD" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop StatCardsRow (Exact Match: 4 Cards in 1 Row on Desktop) */}
+            <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               
               {/* Metric 1: Total Quizzes */}
               <div className="bg-white border border-[#EEF0F6] rounded-[22px] px-5 py-4 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex items-center justify-between h-[100px] min-h-[100px] transition-all hover:shadow-md">
@@ -581,28 +696,28 @@ export default function Dashboard() {
             {/* ========================================================================= */}
             <section 
               id="predefined-quizzes-section"
-              className="bg-white border border-[#EEF0F6] rounded-[24px] p-6 sm:p-8 shadow-[0px_2px_15px_rgba(0,0,0,0.06)] space-y-5 text-left"
+              className="bg-white border border-[#EEF0F6] rounded-[24px] p-4 sm:p-8 shadow-[0px_2px_15px_rgba(0,0,0,0.06)] space-y-4 sm:space-y-5 text-left"
             >
               {/* Header with View All Button */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div className="flex justify-between items-center gap-2">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-[#6C38FF] fill-[#6C38FF]" />
-                    <h2 className="text-[17px] font-bold text-[#0F172A] tracking-tight">
-                      Ready-to-Use Predefined Quizzes
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-[#6C38FF] fill-[#6C38FF]" />
+                    <h2 className="text-[15px] sm:text-[17px] font-bold text-[#0F172A] tracking-tight">
+                      Ready-to-Use Quizzes
                     </h2>
                   </div>
-                  <p className="text-[13px] text-[#64748B] mt-0.5">
-                    Host instant 10-question trivia games live, or clone them directly to customize.
+                  <p className="text-[11.5px] sm:text-[13px] text-[#64748B] mt-0.5">
+                    Instant play • 10 Questions each
                   </p>
                 </div>
 
                 <Link
                   to="/quiz/my"
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[rgba(250,245,255,0.8)] border border-[#E9D5FF] text-[12.5px] font-semibold text-[#6C38FF] hover:bg-[#F3E8FF] transition-colors"
+                  className="inline-flex items-center gap-1 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[rgba(250,245,255,0.8)] border border-[#E9D5FF] text-[11.5px] sm:text-[12.5px] font-semibold text-[#6C38FF] hover:bg-[#F3E8FF] transition-colors shrink-0"
                 >
                   <span>View All</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </Link>
               </div>
 
@@ -616,7 +731,7 @@ export default function Dashboard() {
                       type="button"
                       onClick={() => setActivePresetCategory(cat)}
                       className={`
-                        px-4 py-2 rounded-full text-[14px] flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer
+                        px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[13px] sm:text-[14px] flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all cursor-pointer
                         ${isActive
                           ? 'bg-[#551BF5] text-white font-semibold shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
                           : 'bg-white border border-[#E2E8F0] text-[#334155] font-medium hover:bg-slate-50'
@@ -634,8 +749,8 @@ export default function Dashboard() {
                 })}
               </div>
 
-              {/* 4 Ready-to-Use Quiz Cards Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 pt-1">
+              {/* 4 Ready-to-Use Quiz Cards Grid: 2 Columns on Mobile, 4 Columns on XL */}
+              <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 pt-1">
                 {displayPresets.map((quiz, idx) => {
                   const cfg = getCategoryConfig(quiz.category);
                   const IconComp = cfg.icon;
@@ -646,21 +761,16 @@ export default function Dashboard() {
                   return (
                     <div
                       key={quiz._id || idx}
-                      className="bg-white border border-[#ECEFF5] rounded-[16px] p-5 shadow-[0px_2px_14px_rgba(0,0,0,0.03)] flex flex-col justify-between transition-all hover:shadow-md hover:-translate-y-0.5"
+                      className="bg-white border border-[#ECEFF5] rounded-[18px] sm:rounded-[16px] p-3 sm:p-5 shadow-[0px_2px_14px_rgba(0,0,0,0.03)] flex flex-col justify-between transition-all hover:shadow-md hover:-translate-y-0.5"
                     >
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         {/* Header Badges */}
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-7 h-7 rounded-lg ${cfg.iconBg} text-white flex items-center justify-center shrink-0`}>
-                              <IconComp className="w-4 h-4 stroke-[2]" />
-                            </div>
-                            <span className={`text-[11.5px] font-bold ${cfg.textColor} tracking-wider uppercase`}>
-                              {cfg.name}
-                            </span>
+                        <div className="flex items-center justify-between gap-1">
+                          <div className={`w-7 h-7 rounded-lg ${cfg.iconBg} text-white flex items-center justify-center shrink-0`}>
+                            <IconComp className="w-3.5 h-3.5 stroke-[2]" />
                           </div>
 
-                          <span className={`px-2 py-0.5 rounded-full text-[10.5px] font-bold border ${
+                          <span className={`px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-bold border ${
                             isEasy 
                               ? 'bg-[#ECFDF5] border-[rgba(167,243,208,0.8)] text-[#059669]'
                               : 'bg-[#FFFBEB] border-[rgba(253,230,138,0.8)] text-[#D97706]'
@@ -671,44 +781,47 @@ export default function Dashboard() {
 
                         {/* Title & Desc */}
                         <div>
-                          <h3 className="font-bold text-[14.5px] text-[#0F172A] leading-[20px] line-clamp-2 h-[40px]">
+                          <h3 className="font-bold text-[12.5px] sm:text-[14.5px] text-[#0F172A] leading-snug sm:leading-[20px] line-clamp-2 h-[34px] sm:h-[40px]">
                             {quiz.title}
                           </h3>
+                          <p className="text-[11px] text-[#64748B] line-clamp-2 mt-1 hidden xs:block">
+                            {quiz.description}
+                          </p>
                         </div>
                       </div>
 
                       {/* Card Footer: Meta Info & Actions */}
-                      <div className="mt-4 pt-3 border-t border-[#F1F5F9] space-y-3">
-                        <div className="flex items-center gap-4 text-[12px] font-medium text-[#64748B]">
-                          <span className="flex items-center gap-1.5">
-                            <BookOpen className="w-3.5 h-3.5" />
+                      <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-[#F1F5F9] space-y-2 sm:space-y-3">
+                        <div className="flex items-center gap-2 sm:gap-4 text-[10.5px] sm:text-[12px] font-medium text-[#64748B]">
+                          <span className="flex items-center gap-1">
+                            <BookOpen className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                             <span>{quiz.questionsCount || 10} Qs</span>
                           </span>
-                          <span className="flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5" />
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                             <span>~5 mins</span>
                           </span>
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2">
                           <button
                             type="button"
                             onClick={() => handleHostPreset(quiz)}
                             disabled={isHosting}
-                            className="flex-1 h-[35px] px-3 bg-[#6C38FF] hover:bg-[#5827e8] disabled:opacity-60 text-white font-semibold text-[12.5px] rounded-full shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                            className="flex-1 h-[32px] sm:h-[35px] px-2 sm:px-3 bg-[#6C38FF] hover:bg-[#5827e8] disabled:opacity-60 text-white font-semibold text-[11px] sm:text-[12.5px] rounded-xl sm:rounded-full shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center gap-1 sm:gap-1.5 transition-all active:scale-95 cursor-pointer"
                           >
-                            <Play className="w-3.5 h-3.5 fill-white" />
-                            <span>{isHosting ? 'Starting...' : 'Host Live'}</span>
+                            <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-white" />
+                            <span>{isHosting ? 'Starting...' : 'Host'}</span>
                           </button>
 
                           <button
                             type="button"
                             onClick={() => handleCloneAndEditPreset(quiz)}
-                            className="w-9 h-9 rounded-full border border-[#E2E8F0] hover:bg-slate-50 flex items-center justify-center text-[#64748B] hover:text-[#6C38FF] transition-colors cursor-pointer"
+                            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl sm:rounded-full border border-[#E2E8F0] hover:bg-slate-50 flex items-center justify-center text-[#64748B] hover:text-[#6C38FF] transition-colors cursor-pointer shrink-0"
                             title="Duplicate & customize quiz"
                           >
-                            <Copy className="w-4 h-4" />
+                            <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           </button>
                         </div>
                       </div>

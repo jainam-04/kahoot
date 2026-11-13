@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -23,6 +23,22 @@ export default function Register() {
   const [registeredUser, setRegisteredUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user?.role === 'superadmin' || user?.role === 'admin') {
+          navigate('/admin', { replace: true });
+        } else {
+          navigate('/dashboard', { replace: true });
+        }
+      } catch {
+        navigate('/dashboard', { replace: true });
+      }
+    }
+  }, [navigate]);
 
   const {
     register,

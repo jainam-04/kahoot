@@ -156,7 +156,7 @@ export default function Navbar() {
       <div className="max-w-[1351px] mx-auto w-full flex h-20 items-center justify-between px-4 sm:px-8">
         
         {/* Brand Logo - Leftmost */}
-        <Link to="/" className="flex items-center transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
+        <Link to={token ? "/dashboard" : "/"} className="flex items-center transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
           <Logo className="shrink-0" size="md" />
         </Link>
 

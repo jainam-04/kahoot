@@ -34,6 +34,7 @@ const FAQPage = lazy(() => import('./pages/FAQPage'));
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 
 import AdminRoute from './components/AdminRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { GameProvider } from './context/GameContext';
@@ -78,6 +79,23 @@ function useScrollToHash() {
   }, [location]);
 }
 
+// Automatically redirects logged-in hosts directly to their dashboard when visiting root '/'
+function RootRoute() {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user?.role === 'superadmin' || user?.role === 'admin') {
+        return <Navigate to="/admin" replace />;
+      }
+    } catch {
+      // ignore
+    }
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <LandingPage />;
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
   useScrollToHash();
@@ -112,17 +130,17 @@ function AnimatedRoutes() {
         <Suspense fallback={<PageLoader />}>
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<LandingPage />} />
+              <Route path="/" element={<RootRoute />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password/:token" element={<ResetPassword />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
-              <Route path="/quiz/create" element={<CreateQuiz />} />
-              <Route path="/quiz/edit/:id" element={<EditQuiz />} />
-              <Route path="/quiz/my" element={<MyQuizzes />} />
-              <Route path="/reports" element={<Reports />} />
+              <Route path="/quiz/create" element={<ProtectedRoute><CreateQuiz /></ProtectedRoute>} />
+              <Route path="/quiz/edit/:id" element={<ProtectedRoute><EditQuiz /></ProtectedRoute>} />
+              <Route path="/quiz/my" element={<ProtectedRoute><MyQuizzes /></ProtectedRoute>} />
+              <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
               <Route path="/host/lobby/:pin" element={<HostLobby />} />
               <Route path="/join" element={<JoinGame />} />
               <Route path="/waiting/:pin" element={<WaitingRoom />} />
