@@ -6,12 +6,15 @@ import {
   Settings, LogOut, Crown, ArrowRight, ArrowLeft, Search, Bell,
   ChevronDown, Plus, Play, Pencil, Trash2, Copy, RotateCw,
   Layers, FileEdit, Send, Clock, Users, X, MoreVertical,
-  Rocket, Globe, Code, Calculator, FileText, Check, ShieldCheck
+  Rocket, Globe, Code, Calculator, FileText, Check, ShieldCheck,
+  Menu
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
+import Logo from '../components/Logo';
 import HostProfileModal from '../components/HostProfileModal';
 import PlanComparisonTable from '../components/PlanComparisonTable';
+import AppSidebar from '../components/AppSidebar';
 import { getMyQuizzes, deleteQuiz, updateQuizStatus, createQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
@@ -64,8 +67,27 @@ export default function MyQuizzes() {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
+
+  // Lock background scrolling and dismiss dropdowns when mobile sidebar is open
+  useEffect(() => {
+    if (isMobileNavOpen) {
+      document.body.style.overflow = 'hidden';
+      setIsProfileDropdownOpen(false);
+      setIsNotificationsOpen(false);
+      setOpenCardMenuId(null);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileNavOpen]);
 
   const handleLogout = () => {
     clearAuthSession();
@@ -261,179 +283,67 @@ export default function MyQuizzes() {
 
   return (
     <AnimatedPage>
-      <div className="min-h-screen bg-[#FFFFFF] text-[#0F172A] flex relative font-['Inter',sans-serif] selection:bg-[#6222F5]/20">
+      <div className="relative min-h-screen bg-[#FDFDFE] text-[#1E293B] font-['Inter',sans-serif] selection:bg-[#6222F5]/20 selection:text-[#6222F5] overflow-x-hidden">
         
-        {/* MOBILE BACKDROP OVERLAY */}
-        {isMobileNavOpen && (
-          <div 
-            onClick={() => setIsMobileNavOpen(false)}
-            className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden transition-opacity"
-          />
-        )}
-
-        {/* ========================================================================= */}
-        {/* ASIDE - LEFTSIDEBAR (230px, #FDFDFE, #ECEFF5 Border) */}
-        {/* ========================================================================= */}
-        <aside 
-          className={`
-            fixed top-0 bottom-0 left-0 z-50 w-[230px] bg-[#FDFDFE] border-r border-[#ECEFF5]
-            shadow-[1px_0px_4px_rgba(0,0,0,0.06)] flex flex-col justify-between transition-transform duration-300
-            ${isMobileNavOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          `}
-        >
-          {/* Top Brand & Navigation Area */}
-          <div className="flex flex-col p-4 pt-5 gap-4 overflow-y-auto">
-            {/* Mascot Logo Brand */}
-            <div className="pb-4 border-b border-[#F1F5F9]/80 flex items-center justify-between">
-              <Link 
-                to="/dashboard" 
-                className="flex items-center justify-center w-full px-2 transition-transform hover:scale-105 active:scale-95"
-              >
-                <img 
-                  src="/gubbi-logo-transparent.png" 
-                  alt="Gubbi Mascot Logo" 
-                  className="h-12 w-auto object-contain drop-shadow-sm" 
-                  onError={(e) => { e.currentTarget.src = '/gubbi-bird.png'; }}
-                />
-              </Link>
-              <button 
-                onClick={() => setIsMobileNavOpen(false)}
-                className="lg:hidden p-1 rounded-lg text-slate-400 hover:text-slate-700"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Main Navigation Menu */}
-            <nav className="flex flex-col gap-2 pt-1">
-              {/* Link - Dashboard */}
-              <Link
-                to="/dashboard"
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all"
-              >
-                <LayoutDashboard className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
-                <span>Dashboard</span>
-              </Link>
-
-              {/* Link - My Quizzes (ACTIVE IN FIGMA) */}
-              <Link
-                to="/quiz/my"
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#6222F5] text-white font-medium text-[15px] leading-[22px] shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] transition-all"
-              >
-                <Layers className="w-5 h-5 text-white shrink-0 stroke-[2]" />
-                <span>My Quizzes</span>
-              </Link>
-
-              {/* Link - Create Quiz */}
-              <Link
-                to="/quiz/create"
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all"
-              >
-                <PlusCircle className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
-                <span>Create Quiz</span>
-              </Link>
-
-              {/* Link - Question Bank */}
-              <Link
-                to="/dashboard#predefined-quizzes-section"
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all text-left"
-              >
-                <HelpCircle className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
-                <span>Question Bank</span>
-              </Link>
-
-              {/* Link - Reports */}
-              <button
-                type="button"
-                onClick={() => navigate('/dashboard')}
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all text-left"
-              >
-                <BarChart2 className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
-                <span>Reports</span>
-              </button>
-
-              {/* Link - Settings */}
-              <button
-                type="button"
-                onClick={() => setActiveModal('profile')}
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#475569] hover:text-[#6222F5] hover:bg-[#F4EEFF]/70 font-medium text-[13.5px] leading-5 transition-all text-left"
-              >
-                <Settings className="w-5 h-5 text-[#94A3B8] shrink-0 stroke-[1.8]" />
-                <span>Settings</span>
-              </button>
-            </nav>
-          </div>
-
-          {/* Bottom Area: Promo Banner & Logout */}
-          <div className="p-4 pt-0 space-y-3">
-            {/* Bottom Promo Banner */}
-            <div className="w-full rounded-2xl bg-gradient-to-br from-[#FAF7FF] via-[#F4EEFF] to-[#EDE5FF] border border-[#E9DCFF] p-4 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex flex-col justify-between">
-              <div className="space-y-1.5">
-                <div className="w-9 h-9 rounded-xl bg-white border border-[#E9D5FF]/60 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center">
-                  <Crown className="w-5 h-5 text-[#F59E0B] fill-[#F59E0B]" />
-                </div>
-                <h4 className="font-bold text-[14.5px] text-[#0F172A] tracking-tight leading-snug pt-1">
-                  Upgrade to Gubbi Pro
-                </h4>
-                <p className="text-[11.5px] text-[#64748B] leading-[18px]">
-                  Unlock unlimited quizzes &amp; multiplayer rooms.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setActiveModal('upgrade')}
-                className="mt-3.5 w-full h-[35px] bg-[#6C38FF] hover:bg-[#5827e8] text-white font-semibold text-[12.5px] rounded-xl shadow-[0px_4px_16px_rgba(108,56,255,0.28)] flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
-              >
-                <span>Upgrade Now</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            {/* Logout Button */}
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="w-full h-[43px] px-3.5 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-[#EF4444] font-semibold text-[13.5px] flex items-center gap-3 transition-colors hover:bg-[#FEE2E2] active:scale-95 cursor-pointer"
-            >
-              <LogOut className="w-5 h-5 text-[#EF4444] stroke-[1.8]" />
-              <span>Logout</span>
-            </button>
-          </div>
-        </aside>
+        {/* ─── 1. LEFT SIDEBAR (230px, Fixed Desktop, Drawer Mobile) ─── */}
+        <AppSidebar
+          isOpen={isMobileNavOpen}
+          onClose={() => {
+            setIsMobileNavOpen(false);
+            setIsProfileDropdownOpen(false);
+            setIsNotificationsOpen(false);
+            setOpenCardMenuId(null);
+          }}
+          onOpenProfile={() => setActiveModal('profile')}
+          onOpenUpgrade={() => setActiveModal('upgrade')}
+          onOpenSessions={() => navigate('/dashboard')}
+          activeNav="my-quizzes"
+        />
 
         {/* ========================================================================= */}
         {/* MAIN CONTENT WRAPPER (TopHeader + My Quizzes Body) */}
         {/* ========================================================================= */}
-        <div className="flex-1 flex flex-col min-w-0 lg:pl-[230px] bg-[#FFFFFF]">
+        <div className="lg:pl-[230px] flex flex-col min-h-screen">
           
-          {/* TOP HEADER */}
-          <header className="sticky top-0 z-30 h-[74px] bg-white/80 backdrop-blur-md border-b border-[#EEF0F6] px-4 sm:px-8 flex items-center justify-between gap-4">
-            
-            {/* Left: Mobile Drawer Trigger + Search Bar */}
-            <div className="flex items-center gap-3 flex-1 max-w-[620px]">
+          {/* TOP HEADER (Clean, Mobile Friendly, Notification Removed) */}
+          <header className="sticky top-0 z-30 h-14 sm:h-[70px] bg-white/90 backdrop-blur-md border-b border-[#EEF0F6] px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
+            {/* Left Hamburger + Mobile Brand Logo */}
+            <div className="flex items-center gap-2.5 sm:gap-3">
               <button 
                 type="button"
-                onClick={() => setIsMobileNavOpen(true)}
-                className="lg:hidden p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
-                aria-label="Open navigation menu"
+                onClick={() => {
+                  setIsProfileDropdownOpen(false);
+                  setIsNotificationsOpen(false);
+                  setOpenCardMenuId(null);
+                  setIsMobileNavOpen(true);
+                }}
+                className="lg:hidden p-1.5 sm:p-2 rounded-xl border border-[#E2E8F0] text-[#475569] hover:bg-[#F8FAFC] cursor-pointer"
+                aria-label="Open Navigation Menu"
               >
-                <Layers className="w-5 h-5 text-purple-600" />
+                <Menu className="w-5 h-5" />
               </button>
 
-              <div className="relative flex-1 max-w-[580px] h-[46px]">
-                <Search className="w-4 h-4 text-[#94A3B8] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <div className="lg:hidden flex items-center">
+                <Logo className="h-7 sm:h-8 w-auto object-contain" />
+              </div>
+            </div>
+
+            {/* Desktop Global Search Bar (Hidden on phone screens to prevent squishing) */}
+            <div className="hidden sm:block flex-1 max-w-[540px] mx-auto">
+              <div className="relative w-full">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search quizzes, topics, or participants..."
-                  className="w-full h-full bg-[#FAF9FD] border border-[#E9EAF2] rounded-full pl-11 pr-4 text-[13.5px] text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:border-[#6C38FF] focus:bg-white transition-all shadow-sm"
+                  className="w-full pl-10 pr-4 py-2 rounded-full bg-[#FAF9FD] border border-[#E9EAF2] text-xs font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/20"
                 />
                 {searchQuery && (
                   <button 
+                    type="button"
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -441,96 +351,66 @@ export default function MyQuizzes() {
               </div>
             </div>
 
-            {/* Top Right Controls (Notification Bell & User Profile Pill) */}
-            <div className="flex items-center gap-3 shrink-0">
-              {/* Notification Button */}
-              <div className="relative" ref={notifDropdownRef}>
-                <button
-                  type="button"
-                  onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                  className="w-[42px] h-[40px] rounded-full bg-white border border-[#E7E9F2] flex items-center justify-center relative hover:bg-slate-50 transition-colors cursor-pointer shadow-sm active:scale-95"
-                  title="Notifications"
-                >
-                  <Bell className="w-4 h-4 text-[#475569] stroke-[1.8]" />
-                  <span className="w-2 h-2 rounded-full bg-[#EF4444] border-2 border-white absolute top-2.5 right-2.5" />
-                </button>
-
-                {isNotificationsOpen && (
-                  <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white border border-slate-200 shadow-xl p-4 z-50 animate-in fade-in zoom-in-95 duration-150 text-left">
-                    <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-2">
-                      <span className="font-bold text-xs uppercase tracking-wider text-slate-800">Notifications</span>
-                      <span className="text-[10px] text-purple-600 font-semibold bg-purple-50 px-2 py-0.5 rounded-full">3 New</span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="p-2.5 rounded-xl bg-purple-50/60 border border-purple-100/80">
-                        <p className="text-xs font-semibold text-slate-800">Draft Status Enabled! 📝</p>
-                        <p className="text-[11px] text-slate-500 mt-0.5">You can now save in-progress quizzes as drafts and publish when ready.</p>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                        <p className="text-xs font-semibold text-slate-800">Host Live Anytime 🚀</p>
-                        <p className="text-[11px] text-slate-500 mt-0.5">Click 'Host Room' on any published quiz to generate a 6-digit PIN.</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* User Profile Pill */}
+            {/* Top Right Controls: User Profile Pill ONLY */}
+            <div className="flex items-center gap-2 shrink-0">
               <div className="relative" ref={profileDropdownRef}>
                 <button
                   type="button"
                   onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                  className="h-[42px] rounded-full bg-white border border-[#E7E9F2] px-3 py-1 flex items-center gap-2 hover:bg-slate-50 transition-colors cursor-pointer shadow-sm select-none"
+                  className="flex items-center gap-1.5 p-1 sm:px-3 sm:py-1 rounded-full border border-[#E7E9F2] bg-white hover:bg-[#F8FAFC] transition-colors cursor-pointer select-none"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#6C38FF] text-white font-semibold text-[13px] flex items-center justify-center shrink-0">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#6C38FF] text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
                     {userInitial}
                   </div>
-                  <span className="font-semibold text-[13.5px] text-[#1E293B] max-w-[90px] truncate hidden sm:inline">
+                  <span className="text-xs font-semibold text-[#1E293B] max-w-[90px] truncate hidden sm:inline">
                     {userName}
                   </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8]" />
+                  <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] hidden sm:inline" />
                 </button>
 
+                {/* Profile Dropdown */}
                 {isProfileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200 shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 text-left">
-                    <div className="px-3 py-2 border-b border-slate-100 mb-1">
-                      <p className="text-xs font-bold text-slate-900 truncate">{userName}</p>
-                      <p className="text-[11px] text-slate-500 truncate">{user?.email || 'host@gubbi.io'}</p>
+                  <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white border border-[#EEF0F6] shadow-xl p-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-3 py-2 border-b border-[#F1F5F9]">
+                      <p className="text-xs font-bold text-[#0F172A] truncate">{userName}</p>
+                      <p className="text-[11px] text-[#64748B] truncate">{user?.email || 'host@gubbi.io'}</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsProfileDropdownOpen(false);
-                        setActiveModal('profile');
-                      }}
-                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-colors flex items-center gap-2"
-                    >
-                      <Settings className="w-4 h-4 text-slate-400" />
-                      <span>Account Settings</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsProfileDropdownOpen(false);
-                        setActiveModal('upgrade');
-                      }}
-                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-colors flex items-center gap-2"
-                    >
-                      <Crown className="w-4 h-4 text-amber-500" />
-                      <span>Upgrade to Pro</span>
-                    </button>
-                    <div className="my-1 border-t border-slate-100" />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsProfileDropdownOpen(false);
-                        handleLogout();
-                      }}
-                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4 text-red-500" />
-                      <span>Log Out</span>
-                    </button>
+                    <div className="py-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsProfileDropdownOpen(false);
+                          setActiveModal('profile');
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors cursor-pointer"
+                      >
+                        <Settings className="w-4 h-4 text-[#94A3B8]" />
+                        <span>Account Settings</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsProfileDropdownOpen(false);
+                          setActiveModal('upgrade');
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#6C38FF] hover:bg-[#FAF5FF] transition-colors cursor-pointer"
+                      >
+                        <Crown className="w-4 h-4 text-[#F59E0B]" />
+                        <span>Upgrade to Pro</span>
+                      </button>
+                      <div className="my-1 border-t border-[#F1F5F9]" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsProfileDropdownOpen(false);
+                          handleLogout();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4 text-[#EF4444]" />
+                        <span>Log Out</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
