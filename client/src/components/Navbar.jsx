@@ -425,27 +425,27 @@ export default function Navbar() {
                 </Link>
                 <Link
                   to="/register"
-                  className="btn-get-started px-5 py-2.5 rounded-full text-[14px] font-['Inter'] font-semibold !text-white shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center gap-1.5 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  className="btn-get-started px-5 py-2.5 rounded-full text-[14px] font-['Inter'] font-semibold !text-white shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center gap-1.5 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap"
                   style={{ 
                     background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
                     color: '#ffffff'
                   }}
                 >
-                  <span className="!text-white font-semibold" style={{ color: '#ffffff' }}>Get Started</span>
+                  <span className="!text-white font-semibold" style={{ color: '#ffffff' }}>Sign Up as Host</span>
                   <ArrowRight className="h-4 w-4 !text-white" style={{ color: '#ffffff' }} />
                 </Link>
               </div>
 
-              {/* Mobile Quick Get Started Button */}
+              {/* Mobile Quick Sign Up as Host Button */}
               <Link
                 to="/register"
-                className="btn-get-started md:hidden px-4 py-2 text-xs font-['Inter'] font-bold !text-white rounded-full shadow-sm flex items-center gap-1"
+                className="btn-get-started md:hidden px-3 sm:px-4 py-2 text-xs font-['Inter'] font-bold !text-white rounded-full shadow-sm flex items-center gap-1 shrink-0 whitespace-nowrap"
                 style={{ 
                   background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
                   color: '#ffffff'
                 }}
               >
-                <span className="!text-white font-bold" style={{ color: '#ffffff' }}>Get Started</span>
+                <span className="!text-white font-bold" style={{ color: '#ffffff' }}>Sign Up as Host</span>
                 <ArrowRight className="h-3.5 w-3.5 !text-white" style={{ color: '#ffffff' }} />
               </Link>
             </>
@@ -548,7 +548,7 @@ export default function Navbar() {
               onClick={closeMobile}
               className="btn-premium btn-primary-gradient w-full text-center py-3 rounded-xl text-sm font-extrabold text-white shadow-premium-glow flex items-center justify-center gap-2"
             >
-              <span>Create Free Account</span>
+              <span>Sign Up as Host</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
