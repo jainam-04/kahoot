@@ -661,99 +661,97 @@ export default function MyQuizzes() {
                     : (playCountMap[idStr] || playCountMap[titleKey] || 0);
                   const isMenuOpen = openCardMenuId === quiz._id;
 
-                  const renderStatusBadgeAndMenu = (isMobileView = false) => (
-                    <div className={`items-center gap-1.5 sm:gap-2.5 shrink-0 ${isMobileView ? 'flex md:hidden' : 'hidden md:flex'}`}>
-                      {/* Badge */}
-                      {isDraft ? (
-                        <span className="bg-[#FEF6E8] text-[#F59E0B] font-bold text-[10.5px] sm:text-[12px] rounded-full px-2 sm:px-3 py-0.5 sm:py-1 tracking-wide whitespace-nowrap shrink-0">
-                          Draft
-                        </span>
-                      ) : (
-                        <span className="bg-[#EBFBF3] text-[#10B981] font-bold text-[10.5px] sm:text-[12px] rounded-full px-2 sm:px-3 py-0.5 sm:py-1 tracking-wide whitespace-nowrap shrink-0">
-                          Published
-                        </span>
+                  const renderOptionsMenu = () => (
+                    <div className="relative card-options-menu shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setOpenCardMenuId(isMenuOpen ? null : quiz._id)}
+                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                        title="Quiz options"
+                      >
+                        <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </button>
+
+                      {isMenuOpen && (
+                        <div className="absolute right-0 mt-1 w-44 rounded-2xl bg-white border border-slate-200 shadow-xl p-1.5 z-40 animate-in fade-in zoom-in-95 duration-100">
+                          {isDraft ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenCardMenuId(null);
+                                handlePublish(quiz);
+                              }}
+                              className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-emerald-600 hover:bg-emerald-50 flex items-center gap-2"
+                            >
+                              <Send className="w-3.5 h-3.5" />
+                              <span>Publish Quiz</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenCardMenuId(null);
+                                handleUnpublish(quiz);
+                              }}
+                              className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-amber-600 hover:bg-amber-50 flex items-center gap-2"
+                            >
+                              <FileEdit className="w-3.5 h-3.5" />
+                              <span>Move to Drafts</span>
+                            </button>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setOpenCardMenuId(null);
+                              handleDuplicateQuiz(quiz);
+                            }}
+                            className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-purple-50 hover:text-purple-600 flex items-center gap-2"
+                          >
+                            <Copy className="w-3.5 h-3.5 text-slate-400" />
+                            <span>Duplicate Quiz</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setOpenCardMenuId(null);
+                              navigate(`/quiz/edit/${quiz._id}`);
+                            }}
+                            className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-purple-50 hover:text-purple-600 flex items-center gap-2"
+                          >
+                            <Pencil className="w-3.5 h-3.5 text-slate-400" />
+                            <span>Edit Questions</span>
+                          </button>
+
+                          <div className="my-1 border-t border-slate-100" />
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setOpenCardMenuId(null);
+                              handleDeleteQuiz(quiz);
+                            }}
+                            className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                            <span>Delete Quiz</span>
+                          </button>
+                        </div>
                       )}
-
-                      {/* More Options Dropdown */}
-                      <div className="relative card-options-menu shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => setOpenCardMenuId(isMenuOpen ? null : quiz._id)}
-                          className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-                          title="Quiz options"
-                        >
-                          <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </button>
-
-                        {isMenuOpen && (
-                          <div className="absolute right-0 mt-1 w-44 rounded-2xl bg-white border border-slate-200 shadow-xl p-1.5 z-40 animate-in fade-in zoom-in-95 duration-100">
-                            {isDraft ? (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setOpenCardMenuId(null);
-                                  handlePublish(quiz);
-                                }}
-                                className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-emerald-600 hover:bg-emerald-50 flex items-center gap-2"
-                              >
-                                <Send className="w-3.5 h-3.5" />
-                                <span>Publish Quiz</span>
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setOpenCardMenuId(null);
-                                  handleUnpublish(quiz);
-                                }}
-                                className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-amber-600 hover:bg-amber-50 flex items-center gap-2"
-                              >
-                                <FileEdit className="w-3.5 h-3.5" />
-                                <span>Move to Drafts</span>
-                              </button>
-                            )}
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setOpenCardMenuId(null);
-                                handleDuplicateQuiz(quiz);
-                              }}
-                              className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-purple-50 hover:text-purple-600 flex items-center gap-2"
-                            >
-                              <Copy className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Duplicate Quiz</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setOpenCardMenuId(null);
-                                navigate(`/quiz/edit/${quiz._id}`);
-                              }}
-                              className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-purple-50 hover:text-purple-600 flex items-center gap-2"
-                            >
-                              <Pencil className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Edit Questions</span>
-                            </button>
-
-                            <div className="my-1 border-t border-slate-100" />
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setOpenCardMenuId(null);
-                                handleDeleteQuiz(quiz);
-                              }}
-                              className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2"
-                            >
-                              <Trash2 className="w-3.5 h-3.5 text-red-500" />
-                              <span>Delete Quiz</span>
-                            </button>
-                          </div>
-                        )}
-                      </div>
                     </div>
+                  );
+
+                  const renderStatusBadge = (isMobile = false) => (
+                    isDraft ? (
+                      <span className={`bg-[#FEF6E8] text-[#F59E0B] font-bold text-[10.5px] sm:text-[12px] rounded-full ${isMobile ? 'px-2.5 py-0.5' : 'px-3 py-1'} tracking-wide whitespace-nowrap shrink-0`}>
+                        Draft
+                      </span>
+                    ) : (
+                      <span className={`bg-[#EBFBF3] text-[#10B981] font-bold text-[10.5px] sm:text-[12px] rounded-full ${isMobile ? 'px-2.5 py-0.5' : 'px-3 py-1'} tracking-wide whitespace-nowrap shrink-0`}>
+                        Published
+                      </span>
+                    )
                   );
 
                   return (
@@ -770,12 +768,14 @@ export default function MyQuizzes() {
 
                         {/* Quiz Information & Status */}
                         <div className="space-y-1 sm:space-y-1.5 flex-1 min-w-0">
-                          {/* Title Row (with Mobile Badge & Menu on Mobile) */}
-                          <div className="flex items-center justify-between gap-2 w-full">
-                            <h3 className="font-extrabold text-[15px] sm:text-[18px] leading-snug sm:leading-[28px] text-[#161427] truncate flex-1 min-w-0">
+                          {/* Title Row (Mobile 3-dots on right, full wrapping title with NO truncation) */}
+                          <div className="flex items-start justify-between gap-1.5 w-full">
+                            <h3 className="font-extrabold text-[15px] sm:text-[18px] leading-snug sm:leading-[28px] text-[#161427] break-words flex-1 min-w-0">
                               {quiz.title}
                             </h3>
-                            {renderStatusBadgeAndMenu(true)}
+                            <div className="md:hidden shrink-0 mt-0.5">
+                              {renderOptionsMenu()}
+                            </div>
                           </div>
 
                           {/* Meta Row */}
@@ -805,12 +805,17 @@ export default function MyQuizzes() {
                             )}
                           </div>
 
-                          {/* State Tag */}
-                          <div className="flex items-center gap-1.5 pt-0.5">
-                            <span className={`w-2 h-2 rounded-full ${isDraft ? 'bg-[#FBBF24]' : 'bg-[#10B981]'}`} />
-                            <span className={`text-[11.5px] sm:text-[12px] font-medium ${isDraft ? 'text-[#D97706]' : 'text-[#6B7280]'}`}>
-                              {isDraft ? 'Draft in progress' : 'Ready to host'}
-                            </span>
+                          {/* State Tag & Mobile Status Badge ("keep that published draft somewhere else") */}
+                          <div className="flex items-center gap-2 pt-0.5 flex-wrap">
+                            <div className="md:hidden">
+                              {renderStatusBadge(true)}
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className={`w-2 h-2 rounded-full ${isDraft ? 'bg-[#FBBF24]' : 'bg-[#10B981]'}`} />
+                              <span className={`text-[11.5px] sm:text-[12px] font-medium ${isDraft ? 'text-[#D97706]' : 'text-[#6B7280]'}`}>
+                                {isDraft ? 'Draft in progress' : 'Ready to host'}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -818,7 +823,10 @@ export default function MyQuizzes() {
                       {/* Right: Status Badge (Desktop) & Action Buttons */}
                       <div className="flex flex-col items-end gap-3 w-full md:w-auto shrink-0 pt-1 md:pt-0">
                         {/* Desktop Status Badge & 3-Dots More Options */}
-                        {renderStatusBadgeAndMenu(false)}
+                        <div className="hidden md:flex items-center gap-2.5 shrink-0">
+                          {renderStatusBadge(false)}
+                          {renderOptionsMenu()}
+                        </div>
 
                         {/* Bottom Actions Row */}
                         <div className="w-full md:w-auto flex items-center justify-end gap-2.5 pt-3.5 border-t border-slate-100/90 md:border-0 md:pt-0 shrink-0">
