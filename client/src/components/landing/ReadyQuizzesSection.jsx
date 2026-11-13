@@ -18,6 +18,8 @@ import { useTheme } from '../../context/ThemeContext';
 import { ALL_CURATED_QUIZZES, FEATURED_PRESET_QUIZZES } from '../../data/curatedQuizzes';
 
 import scienceImg from '../../assets/quizzes/science.jpg';
+import spaceImg from '../../assets/quizzes/space.jpg';
+import biologyImg from '../../assets/quizzes/biology.jpg';
 import gkImg from '../../assets/quizzes/gk.jpg';
 import programmingImg from '../../assets/quizzes/programming.jpg';
 import mathImg from '../../assets/quizzes/math.jpg';
@@ -97,7 +99,38 @@ export default function ReadyQuizzesSection() {
 
   // Determine metadata, illustration banner, and category styling
   const getQuizMeta = (quiz) => {
+    if (quiz.image) {
+      return {
+        image: quiz.image,
+        bgColor: quiz.bgColor || '#FFFFFF',
+        categoryIcon: quiz.icon || FlaskConical,
+        categoryLabel: (quiz.category || 'SCIENCE').toUpperCase(),
+      };
+    }
+
+    const title = (quiz.title || '').toLowerCase();
     const cat = (quiz.category || '').toLowerCase();
+
+    // Space & Astronomy Specific Quiz
+    if (title.includes('space') || title.includes('solar') || quiz._id === 'preset_sci_02') {
+      return {
+        image: spaceImg,
+        bgColor: '#E6FAF7',
+        categoryIcon: FlaskConical,
+        categoryLabel: 'SCIENCE',
+      };
+    }
+
+    // Human Biology & Health Science Quiz
+    if (title.includes('biology') || title.includes('health') || title.includes('anatomy') || quiz._id === 'preset_sci_03') {
+      return {
+        image: biologyImg,
+        bgColor: '#E6FAF7',
+        categoryIcon: FlaskConical,
+        categoryLabel: 'SCIENCE',
+      };
+    }
+
     if (cat.includes('science')) {
       return {
         image: scienceImg,
@@ -279,7 +312,7 @@ export default function ReadyQuizzesSection() {
                   <div className="flex flex-col">
                     {/* Artwork Banner with 144px height */}
                     <div
-                      className="relative w-full h-[144px] flex items-center justify-center overflow-hidden"
+                      className="relative w-full h-[144px] flex items-center justify-center overflow-hidden border-b border-[#F1F5F9]/80"
                       style={{ backgroundColor: meta.bgColor }}
                     >
                       <img

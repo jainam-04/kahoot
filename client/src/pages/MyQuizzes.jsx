@@ -770,30 +770,30 @@ export default function MyQuizzes() {
                   return (
                     <article
                       key={quiz._id}
-                      className="rounded-[28px] bg-white border border-[#ECEAF3] p-5 sm:px-6 sm:py-5 shadow-[0px_4px_20px_-2px_rgba(99,58,240,0.05),0px_2px_6px_-1px_rgba(0,0,0,0.02)] flex flex-col md:flex-row items-start md:items-center justify-between gap-5 transition-all hover:shadow-md hover:border-purple-200"
+                      className="relative rounded-[28px] bg-white border border-[#ECEAF3] p-5 sm:px-6 sm:py-5 shadow-[0px_4px_20px_-2px_rgba(99,58,240,0.05),0px_2px_6px_-1px_rgba(0,0,0,0.02)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-5 transition-all hover:shadow-md hover:border-purple-200"
                     >
                       {/* Left: Subject Icon + Title & Meta Information */}
-                      <div className="flex items-center gap-5 flex-1 min-w-0">
+                      <div className="flex items-center gap-4 sm:gap-5 flex-1 min-w-0 w-full md:w-auto pr-24 md:pr-0">
                         {/* Subject Icon Box */}
-                        <div className="w-16 h-16 rounded-2xl bg-[#F4F0FF] flex items-center justify-center text-[#6222F5] shrink-0">
-                          <IconComp className="w-8 h-8 stroke-[2]" />
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#F4F0FF] flex items-center justify-center text-[#6222F5] shrink-0">
+                          <IconComp className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2]" />
                         </div>
 
                         {/* Quiz Information & Status */}
-                        <div className="space-y-1.5 flex-1 min-w-0">
-                          <h3 className="font-extrabold text-[18px] leading-[28px] text-[#161427] truncate">
+                        <div className="space-y-1 sm:space-y-1.5 flex-1 min-w-0">
+                          <h3 className="font-extrabold text-[17px] sm:text-[18px] leading-[26px] sm:leading-[28px] text-[#161427] truncate">
                             {quiz.title}
                           </h3>
 
                           {/* Meta Row */}
-                          <div className="flex items-center gap-3 sm:gap-4 text-[12px] font-semibold text-[#6B7280] flex-wrap">
+                          <div className="flex items-center gap-2.5 sm:gap-4 text-[12px] font-semibold text-[#6B7280] flex-wrap">
                             <span className="flex items-center gap-1.5">
-                              <BookOpen className="w-4 h-4 text-[#9CA3AF]" />
+                              <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#9CA3AF]" />
                               <span>{questionsCount} Questions</span>
                             </span>
                             <span className="text-[#D1D5DB]">•</span>
                             <span className="flex items-center gap-1.5">
-                              <Clock className="w-4 h-4 text-[#9CA3AF]" />
+                              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#9CA3AF]" />
                               <span>{estimatedMinutes} mins</span>
                             </span>
                             <span className="text-[#D1D5DB]">•</span>
@@ -801,7 +801,7 @@ export default function MyQuizzes() {
                             {/* Published Shows Plays; Draft Shows Edited Time */}
                             {!isDraft ? (
                               <span className="flex items-center gap-1.5 text-[#6222F5] font-bold">
-                                <Users className="w-4 h-4 stroke-[2]" />
+                                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
                                 <span>{plays} Plays</span>
                               </span>
                             ) : (
@@ -822,17 +822,17 @@ export default function MyQuizzes() {
                       </div>
 
                       {/* Right: Status Badge & Action Buttons */}
-                      <div className="flex md:flex-col items-center md:items-end justify-between w-full md:w-auto gap-4 shrink-0">
+                      <div className="flex flex-col items-end gap-3.5 w-full md:w-auto shrink-0">
                         
                         {/* Top: Status Badge & 3-Dots More Options */}
-                        <div className="flex items-center gap-3">
+                        <div className="absolute top-4 right-4 sm:top-5 sm:right-5 md:static flex items-center gap-2 sm:gap-3 shrink-0">
                           {/* Badge */}
                           {isDraft ? (
-                            <span className="bg-[#FEF6E8] text-[#F59E0B] font-bold text-[12px] rounded-full px-3.5 py-1 tracking-wide">
+                            <span className="bg-[#FEF6E8] text-[#F59E0B] font-bold text-[12px] rounded-full px-3 py-1 tracking-wide">
                               Draft
                             </span>
                           ) : (
-                            <span className="bg-[#EBFBF3] text-[#10B981] font-bold text-[12px] rounded-full px-3.5 py-1 tracking-wide">
+                            <span className="bg-[#EBFBF3] text-[#10B981] font-bold text-[12px] rounded-full px-3 py-1 tracking-wide">
                               Published
                             </span>
                           )}
@@ -842,7 +842,7 @@ export default function MyQuizzes() {
                             <button
                               type="button"
                               onClick={() => setOpenCardMenuId(isMenuOpen ? null : quiz._id)}
-                              className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                              className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                               title="Quiz options"
                             >
                               <MoreVertical className="w-5 h-5" />
@@ -919,14 +919,14 @@ export default function MyQuizzes() {
                         </div>
 
                         {/* Bottom Actions Row */}
-                        <div className="flex items-center gap-2.5">
+                        <div className="w-full md:w-auto flex items-center justify-end gap-2.5 pt-3.5 border-t border-slate-100/90 md:border-0 md:pt-0 shrink-0">
                           {/* If Published: Edit icon + "▶ Host Room" */}
                           {!isDraft ? (
                             <>
                               <button
                                 type="button"
                                 onClick={() => navigate(`/quiz/edit/${quiz._id}`)}
-                                className="w-[38px] h-[38px] rounded-xl border border-[#E6E4EE] bg-white flex items-center justify-center text-[#4B5563] hover:text-[#6222F5] hover:bg-slate-50 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors cursor-pointer"
+                                className="w-[38px] h-[38px] rounded-xl border border-[#E6E4EE] bg-white flex items-center justify-center text-[#4B5563] hover:text-[#6222F5] hover:bg-slate-50 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors cursor-pointer shrink-0"
                                 title="Edit Quiz"
                               >
                                 <Pencil className="w-4 h-4" />
@@ -935,7 +935,7 @@ export default function MyQuizzes() {
                               <button
                                 type="button"
                                 onClick={() => handleHostGame(quiz)}
-                                className="h-[40px] px-5 rounded-xl bg-[#6222F5] hover:bg-[#5015E0] text-white font-bold text-[14px] shadow-[0px_4px_6px_-1px_rgba(98,34,245,0.25),0px_2px_4px_-2px_rgba(98,34,245,0.25)] flex items-center gap-2 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
+                                className="h-[40px] px-5 rounded-xl bg-[#6222F5] hover:bg-[#5015E0] text-white font-bold text-[14px] shadow-[0px_4px_6px_-1px_rgba(98,34,245,0.25),0px_2px_4px_-2px_rgba(98,34,245,0.25)] flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
                               >
                                 <Play className="w-3.5 h-3.5 fill-white" />
                                 <span>Host Room</span>
@@ -955,7 +955,7 @@ export default function MyQuizzes() {
                               <button
                                 type="button"
                                 onClick={() => navigate(`/quiz/edit/${quiz._id}`)}
-                                className="h-[42px] px-5 rounded-xl bg-[#F3EFFF] hover:bg-[#EAE4FF] border border-[#E5DBFD] text-[#6222F5] font-bold text-[14px] flex items-center gap-2 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all active:scale-95 cursor-pointer whitespace-nowrap"
+                                className="h-[40px] px-5 rounded-xl bg-[#F3EFFF] hover:bg-[#EAE4FF] border border-[#E5DBFD] text-[#6222F5] font-bold text-[14px] flex items-center justify-center gap-2 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all active:scale-95 cursor-pointer whitespace-nowrap"
                               >
                                 <Pencil className="w-4 h-4" />
                                 <span>Edit Quiz</span>

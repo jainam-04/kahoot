@@ -2,6 +2,8 @@ import {
   Atom, Rocket, HeartPulse, Compass, Landmark, Film,
   Code, Terminal, Layers, Calculator, Shapes, Hash
 } from 'lucide-react';
+import spaceImg from '../assets/quizzes/space.jpg';
+import biologyImg from '../assets/quizzes/biology.jpg';
 
 export const ALL_CURATED_QUIZZES = [
   // ==========================================
@@ -42,6 +44,8 @@ export const ALL_CURATED_QUIZZES = [
     timeLimit: 20,
     gradient: 'from-cyan-500 to-blue-600',
     icon: Rocket,
+    image: spaceImg,
+    bgColor: '#E6FAF7',
     questions: [
       { questionText: 'Which planet has the most confirmed moons in our Solar System?', options: ['Jupiter', 'Saturn', 'Uranus', 'Neptune'], correctAnswer: 1, timeLimit: 20 },
       { questionText: 'What is the boundary around a black hole where nothing can escape called?', options: ['Photon Sphere', 'Accretion Disk', 'Event Horizon', 'Singularity'], correctAnswer: 2, timeLimit: 20 },
@@ -66,6 +70,8 @@ export const ALL_CURATED_QUIZZES = [
     timeLimit: 20,
     gradient: 'from-teal-500 to-emerald-600',
     icon: HeartPulse,
+    image: biologyImg,
+    bgColor: '#E6FAF7',
     questions: [
       { questionText: 'Which organ is responsible for pumping blood throughout the human body?', options: ['Lungs', 'Brain', 'Heart', 'Liver'], correctAnswer: 2, timeLimit: 20 },
       { questionText: 'What is the largest organ in the human body by surface area?', options: ['Liver', 'Skin', 'Brain', 'Large Intestine'], correctAnswer: 1, timeLimit: 20 },

@@ -4,7 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, BookOpen, PlusCircle, HelpCircle, BarChart2, BarChart3,
   Settings, LogOut, Crown, ArrowRight, Search, Bell, ChevronDown, Zap,
-  Gamepad2, Coins, Users, Play, Copy, Plus, X, Clock, Trophy, UserCheck,
+  Gamepad2, Coins, Users, Database, Play, Copy, Plus, X, Clock, Trophy, UserCheck,
   Pencil, ChevronRight, Sparkles, FlaskConical, Compass, Code, Calculator,
   Menu, Check, Eye
 } from 'lucide-react';
@@ -590,126 +590,129 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Section - StatCardsRow (4 Cards with Drop Shadow & Watermarks) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            {/* Section - StatCardsRow (Exact Match: 4 Cards in 1 Row on Desktop) */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               
               {/* Metric 1: Total Quizzes */}
-              <div className="bg-white border border-[#EEF0F6] rounded-[24px] p-5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] relative overflow-hidden flex items-center justify-between min-h-[120px] transition-all hover:shadow-md">
-                <div className="flex items-center gap-4 z-10 text-left">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#6C2BD9] to-[#8B5CF6] flex items-center justify-center shadow-md shrink-0">
-                    <Zap className="w-7 h-7 text-white fill-white" />
+              <div className="bg-white border border-[#EEF0F6] rounded-[22px] px-5 py-4 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex items-center justify-between h-[100px] min-h-[100px] transition-all hover:shadow-md">
+                <div className="flex items-center gap-3.5 z-10 text-left">
+                  <div className="w-12 h-12 rounded-[16px] bg-[#6C2BD9] flex items-center justify-center shadow-sm shrink-0">
+                    <Zap className="w-6 h-6 text-white fill-white" />
                   </div>
                   <div>
-                    <span className="text-[14px] font-bold text-[#334155] block">Total Quizzes</span>
-                    <span className="text-[30px] font-bold text-[#0F172A] leading-tight block">{totalQuizzes}</span>
-                    <span className="text-[12px] font-medium text-[#94A3B8] block">Created so far</span>
+                    <span className="text-[13.5px] font-bold text-[#1E293B] block leading-none mb-1.5">Total Quizzes</span>
+                    <span className="text-[28px] font-bold text-[#0F172A] leading-none block my-1">{totalQuizzes}</span>
+                    <span className="text-[11.5px] font-medium text-[#94A3B8] block leading-none">Created so far</span>
                   </div>
                 </div>
 
-                {/* Lavender Document Watermark */}
-                <svg 
-                  className="absolute -right-3 -bottom-3 w-24 h-24 text-[#DDD6FE] opacity-40 pointer-events-none transform rotate-[27deg] select-none" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5"
-                >
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="#DDD6FE" fillOpacity="0.4" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                  <line x1="10" y1="9" x2="8" y2="9" />
-                </svg>
+                {/* Lavender Double Document Watermark */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none select-none">
+                  <svg width="76" height="76" viewBox="0 0 76 76" fill="none" className="transform rotate-[18deg]">
+                    {/* Back Sheet */}
+                    <rect x="20" y="4" width="38" height="50" rx="7" fill="#DDD6FE" fillOpacity="0.45" />
+                    {/* Front Sheet */}
+                    <rect x="10" y="12" width="38" height="50" rx="7" fill="#EDE9FE" />
+                    {/* Lines on Front Sheet */}
+                    <rect x="18" y="25" width="22" height="3" rx="1.5" fill="white" />
+                    <rect x="18" y="32" width="16" height="3" rx="1.5" fill="white" />
+                    <rect x="18" y="39" width="20" height="3" rx="1.5" fill="white" />
+                  </svg>
+                </div>
               </div>
 
               {/* Metric 2: Sessions Hosted */}
               <div 
                 onClick={() => setActiveModal('sessions')}
-                className="bg-white border border-[#EEF0F6] rounded-[24px] p-5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] relative overflow-hidden flex items-center justify-between min-h-[120px] transition-all hover:shadow-md cursor-pointer group"
+                className="bg-white border border-[#EEF0F6] rounded-[22px] px-5 py-4 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex items-center justify-between h-[100px] min-h-[100px] transition-all hover:shadow-md cursor-pointer group"
                 title="View hosted sessions history"
               >
-                <div className="flex items-center gap-4 z-10 text-left">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0284C7] to-[#0EA5E9] flex items-center justify-center shadow-md shrink-0 group-hover:scale-105 transition-transform">
-                    <Gamepad2 className="w-7 h-7 text-white" />
+                <div className="flex items-center gap-3.5 z-10 text-left">
+                  <div className="w-12 h-12 rounded-[16px] bg-[#0284C7] flex items-center justify-center shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <Users className="w-6 h-6 text-white stroke-[2.2]" />
                   </div>
                   <div>
-                    <span className="text-[14px] font-bold text-[#334155] block">Sessions Hosted</span>
-                    <span className="text-[30px] font-bold text-[#0F172A] leading-tight block">{totalGamesHosted}</span>
-                    <span className="text-[12px] font-medium text-[#94A3B8] block">Live games run</span>
+                    <span className="text-[13.5px] font-bold text-[#1E293B] block leading-none mb-1.5">Sessions Hosted</span>
+                    <span className="text-[28px] font-bold text-[#0F172A] leading-none block my-1">{totalGamesHosted}</span>
+                    <span className="text-[11.5px] font-medium text-[#94A3B8] block leading-none">Live games run</span>
                   </div>
                 </div>
 
                 {/* Soft Pastel Blue Gamepad Watermark */}
-                <svg 
-                  className="absolute -right-3 -bottom-3 w-24 h-24 text-[#BAE6FD] opacity-50 pointer-events-none transform rotate-[27deg] select-none" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5"
-                >
-                  <rect x="2" y="6" width="20" height="12" rx="6" fill="#BAE6FD" fillOpacity="0.35" />
-                  <path d="M6 12h4m-2-2v4m7-2h.01m3-2h.01" />
-                </svg>
+                <div className="absolute -right-2 top-1/2 -translate-y-1/2 pointer-events-none select-none">
+                  <svg width="78" height="56" viewBox="0 0 78 56" fill="none" className="transform rotate-[22deg]">
+                    {/* Gamepad Body */}
+                    <rect x="4" y="6" width="70" height="44" rx="22" fill="#BAE6FD" fillOpacity="0.6" />
+                    {/* D-Pad on Left Handle */}
+                    <path d="M24 20h4v16h-4z" fill="white" />
+                    <path d="M18 26h16v4h-16z" fill="white" />
+                    {/* Buttons on Right Handle */}
+                    <circle cx="53" cy="24" r="2.8" fill="white" />
+                    <circle cx="60" cy="28" r="2.8" fill="white" />
+                    <circle cx="47" cy="28" r="2.8" fill="white" />
+                    <circle cx="53" cy="32" r="2.8" fill="white" />
+                  </svg>
+                </div>
               </div>
 
               {/* Metric 3: Total Students */}
               <div 
                 onClick={() => setActiveModal('students')}
-                className="bg-white border border-[#EEF0F6] rounded-[24px] p-5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] relative overflow-hidden flex items-center justify-between min-h-[120px] transition-all hover:shadow-md cursor-pointer group"
+                className="bg-white border border-[#EEF0F6] rounded-[22px] px-5 py-4 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex items-center justify-between h-[100px] min-h-[100px] transition-all hover:shadow-md cursor-pointer group"
                 title="View student engagement roster"
               >
-                <div className="flex items-center gap-4 z-10 text-left">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#059669] to-[#10B981] flex items-center justify-center shadow-md shrink-0 group-hover:scale-105 transition-transform">
-                    <Coins className="w-7 h-7 text-white" />
+                <div className="flex items-center gap-3.5 z-10 text-left">
+                  <div className="w-12 h-12 rounded-[16px] bg-[#059669] flex items-center justify-center shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <Database className="w-6 h-6 text-white stroke-[2.2]" />
                   </div>
                   <div>
-                    <span className="text-[14px] font-bold text-[#334155] block">Total Students</span>
-                    <span className="text-[30px] font-bold text-[#0F172A] leading-tight block">{totalStudents}</span>
-                    <span className="text-[12px] font-medium text-[#94A3B8] block">Participants joined</span>
+                    <span className="text-[13.5px] font-bold text-[#1E293B] block leading-none mb-1.5">Total Students</span>
+                    <span className="text-[28px] font-bold text-[#0F172A] leading-none block my-1">{totalStudents}</span>
+                    <span className="text-[11.5px] font-medium text-[#94A3B8] block leading-none">Participants joined</span>
                   </div>
                 </div>
 
                 {/* Soft Pastel Green Users Watermark */}
-                <svg 
-                  className="absolute -right-2 -bottom-2 w-24 h-24 text-[#A7F3D0] opacity-50 pointer-events-none select-none" 
-                  viewBox="0 0 24 24" 
-                  fill="currentColor"
-                >
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none select-none">
+                  <svg width="64" height="54" viewBox="0 0 64 54" fill="none">
+                    {/* Background User */}
+                    <circle cx="44" cy="18" r="8" fill="#A7F3D0" fillOpacity="0.55" />
+                    <path d="M33 39c0-5 5-9 11-9s11 4 11 9" fill="#A7F3D0" fillOpacity="0.55" />
+                    {/* Foreground User */}
+                    <circle cx="23" cy="19" r="9" fill="#A7F3D0" fillOpacity="0.85" />
+                    <path d="M9 43c0-6 6-11 14-11s14 5 14 11" fill="#A7F3D0" fillOpacity="0.85" />
+                  </svg>
+                </div>
               </div>
 
               {/* Metric 4: Total Plays */}
-              <div className="bg-white border border-[#EEF0F6] rounded-[24px] p-5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] relative overflow-hidden flex items-center justify-between min-h-[120px] transition-all hover:shadow-md">
-                <div className="flex items-center gap-4 z-10 text-left">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#06B6D4] to-[#22D3EE] flex items-center justify-center shadow-md shrink-0">
-                    <BarChart3 className="w-7 h-7 text-white" />
+              <div className="bg-white border border-[#EEF0F6] rounded-[22px] px-5 py-4 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex items-center justify-between h-[100px] min-h-[100px] transition-all hover:shadow-md">
+                <div className="flex items-center gap-3.5 z-10 text-left">
+                  <div className="w-12 h-12 rounded-[16px] bg-[#06B6D4] flex items-center justify-center shadow-sm shrink-0">
+                    <BarChart3 className="w-6 h-6 text-white stroke-[2.2]" />
                   </div>
                   <div>
-                    <span className="text-[14px] font-bold text-[#334155] block">Total Plays</span>
-                    <span className="text-[30px] font-bold text-[#0F172A] leading-tight block">{totalPlays}</span>
-                    <span className="text-[12px] font-medium text-[#94A3B8] block">Across all quizzes</span>
+                    <span className="text-[13.5px] font-bold text-[#1E293B] block leading-none mb-1.5">Total Plays</span>
+                    <span className="text-[28px] font-bold text-[#0F172A] leading-none block my-1">{totalPlays}</span>
+                    <span className="text-[11.5px] font-medium text-[#94A3B8] block leading-none">Across all quizzes</span>
                   </div>
                 </div>
 
                 {/* Soft Pastel Cyan Bar Chart Watermark */}
-                <svg 
-                  className="absolute -right-2 -bottom-2 w-24 h-24 text-[#BAE6FD] opacity-50 pointer-events-none select-none" 
-                  viewBox="0 0 24 24" 
-                  fill="currentColor"
-                >
-                  <rect x="3" y="12" width="4" height="8" rx="1" />
-                  <rect x="10" y="8" width="4" height="12" rx="1" />
-                  <rect x="17" y="4" width="4" height="16" rx="1" />
-                </svg>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none select-none">
+                  <svg width="50" height="56" viewBox="0 0 50 56" fill="none">
+                    {/* Bar 1 (Short) */}
+                    <rect x="4" y="26" width="8" height="26" rx="4" fill="#BAE6FD" fillOpacity="0.8" />
+                    {/* Bar 2 (Tall) */}
+                    <rect x="18" y="10" width="8" height="42" rx="4" fill="#BAE6FD" fillOpacity="0.8" />
+                    {/* Bar 3 (Medium) */}
+                    <rect x="32" y="19" width="8" height="33" rx="4" fill="#BAE6FD" fillOpacity="0.8" />
+                  </svg>
+                </div>
               </div>
 
             </div>
 
-            {/* ========================================================================= */}
             {/* PREDEFINED READY-TO-USE QUIZZES SECTION (Figma Large Card with Tabs) */}
             {/* ========================================================================= */}
             <section 
