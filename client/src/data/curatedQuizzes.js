@@ -4,6 +4,12 @@ import {
 } from 'lucide-react';
 import spaceImg from '../assets/quizzes/space.jpg';
 import biologyImg from '../assets/quizzes/biology.jpg';
+import historyImg from '../assets/quizzes/history.jpg';
+import popcultureImg from '../assets/quizzes/popculture.jpg';
+import pythonImg from '../assets/quizzes/python.jpg';
+import backendImg from '../assets/quizzes/backend.jpg';
+import geometryImg from '../assets/quizzes/geometry.jpg';
+import logicImg from '../assets/quizzes/logic.jpg';
 
 export const ALL_CURATED_QUIZZES = [
   // ==========================================
@@ -15,7 +21,7 @@ export const ALL_CURATED_QUIZZES = [
     title: 'General Science & Nature Challenge',
     description: 'Explore the foundations of chemistry, physics, and life science with 10 essential questions.',
     category: 'Science',
-    difficulty: 'Medium',
+    difficulty: 'Easy',
     questionsCount: 10,
     timeLimit: 20,
     gradient: 'from-emerald-500 to-teal-600',
@@ -39,7 +45,7 @@ export const ALL_CURATED_QUIZZES = [
     title: 'Space Exploration & Solar System',
     description: 'Journey through planets, galaxies, black holes, and NASA missions in this 10-question space quiz.',
     category: 'Science',
-    difficulty: 'Hard',
+    difficulty: 'Medium',
     questionsCount: 10,
     timeLimit: 20,
     gradient: 'from-cyan-500 to-blue-600',
@@ -65,7 +71,7 @@ export const ALL_CURATED_QUIZZES = [
     title: 'Human Biology & Health Science',
     description: 'Test your understanding of the human anatomy, body systems, organs, and medical facts.',
     category: 'Science',
-    difficulty: 'Easy',
+    difficulty: 'Hard',
     questionsCount: 10,
     timeLimit: 20,
     gradient: 'from-teal-500 to-emerald-600',
@@ -124,6 +130,9 @@ export const ALL_CURATED_QUIZZES = [
     timeLimit: 20,
     gradient: 'from-amber-500 to-red-600',
     icon: Landmark,
+    image: historyImg,
+    fit: 'cover',
+    bgColor: '#FFF7EA',
     questions: [
       { questionText: 'In which year did the Titanic sink on its maiden voyage?', options: ['1912', '1905', '1920', '1898'], correctAnswer: 0, timeLimit: 20 },
       { questionText: 'Who served as the very first President of the United States?', options: ['Thomas Jefferson', 'George Washington', 'Abraham Lincoln', 'John Adams'], correctAnswer: 1, timeLimit: 20 },
@@ -143,11 +152,14 @@ export const ALL_CURATED_QUIZZES = [
     title: 'Global Pop Culture & Cinema Trivia',
     description: 'A fun and engaging trivia quiz covering iconic movies, award-winning music, games, and entertainment.',
     category: 'General Knowledge',
-    difficulty: 'Easy',
+    difficulty: 'Hard',
     questionsCount: 10,
     timeLimit: 20,
     gradient: 'from-pink-500 to-rose-600',
     icon: Film,
+    image: popcultureImg,
+    fit: 'cover',
+    bgColor: '#16102E',
     questions: [
       { questionText: 'Which movie won the first-ever Academy Award for Best Animated Feature in 2002?', options: ['Toy Story', 'Shrek', 'Monsters, Inc.', 'Finding Nemo'], correctAnswer: 1, timeLimit: 20 },
       { questionText: 'Which legendary artist is universally recognized as the "King of Pop"?', options: ['Prince', 'Michael Jackson', 'Elvis Presley', 'Freddie Mercury'], correctAnswer: 1, timeLimit: 20 },
@@ -171,7 +183,7 @@ export const ALL_CURATED_QUIZZES = [
     title: 'JavaScript & Modern Web Mastery',
     description: 'Test your knowledge on ES6+, React, DOM, asynchronous event loops, and web standards.',
     category: 'Programming',
-    difficulty: 'Medium',
+    difficulty: 'Easy',
     questionsCount: 10,
     timeLimit: 20,
     gradient: 'from-purple-500 to-indigo-600',
@@ -195,11 +207,14 @@ export const ALL_CURATED_QUIZZES = [
     title: 'Python Programming & Data Structures',
     description: 'Challenge your skills on Python syntax, dictionaries, lists, functions, and standard libraries.',
     category: 'Programming',
-    difficulty: 'Easy',
+    difficulty: 'Medium',
     questionsCount: 10,
     timeLimit: 20,
     gradient: 'from-indigo-500 to-violet-600',
     icon: Terminal,
+    image: pythonImg,
+    fit: 'cover',
+    bgColor: '#1E2038',
     questions: [
       { questionText: 'Which of the following built-in collection types is immutable in Python?', options: ['List', 'Dictionary', 'Set', 'Tuple'], correctAnswer: 3, timeLimit: 20 },
       { questionText: 'What standard function returns the number of elements in a Python container?', options: ['count()', 'size()', 'len()', 'length()'], correctAnswer: 2, timeLimit: 20 },
@@ -223,7 +238,10 @@ export const ALL_CURATED_QUIZZES = [
     questionsCount: 10,
     timeLimit: 25,
     gradient: 'from-violet-600 to-pink-600',
-    icon: Layers,
+    icon: Code,
+    image: backendImg,
+    fit: 'cover',
+    bgColor: '#08174E',
     questions: [
       { questionText: 'What is the average search time complexity of a balanced Binary Search Tree?', options: ['O(1)', 'O(log n)', 'O(n)', 'O(n^2)'], correctAnswer: 1, timeLimit: 25 },
       { questionText: 'Which HTTP method is designed to be idempotent and overwrite a full resource?', options: ['POST', 'PUT', 'PATCH', 'DELETE'], correctAnswer: 1, timeLimit: 25 },
@@ -275,7 +293,10 @@ export const ALL_CURATED_QUIZZES = [
     questionsCount: 10,
     timeLimit: 20,
     gradient: 'from-orange-500 to-amber-600',
-    icon: Shapes,
+    icon: Calculator,
+    image: geometryImg,
+    fit: 'cover',
+    bgColor: '#B672F0',
     questions: [
       { questionText: 'What is the sum of all interior angles in any planar triangle?', options: ['90°', '180°', '270°', '360°'], correctAnswer: 1, timeLimit: 20 },
       { questionText: 'If 3x + 9 = 24, what is the value of x?', options: ['3', '5', '7', '9'], correctAnswer: 1, timeLimit: 20 },
@@ -299,7 +320,10 @@ export const ALL_CURATED_QUIZZES = [
     questionsCount: 10,
     timeLimit: 20,
     gradient: 'from-amber-600 to-red-600',
-    icon: Hash,
+    icon: Calculator,
+    image: logicImg,
+    fit: 'cover',
+    bgColor: '#3B5598',
     questions: [
       { questionText: 'What is the probability of rolling a number greater than 4 on a standard 6-sided die?', options: ['1/6', '1/3 (2/6)', '1/2', '2/3'], correctAnswer: 1, timeLimit: 20 },
       { questionText: 'What is the smallest prime number?', options: ['0', '1', '2', '3'], correctAnswer: 2, timeLimit: 20 },

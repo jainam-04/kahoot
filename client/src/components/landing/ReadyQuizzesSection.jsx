@@ -20,6 +20,12 @@ import { ALL_CURATED_QUIZZES, FEATURED_PRESET_QUIZZES } from '../../data/curated
 import scienceImg from '../../assets/quizzes/science.jpg';
 import spaceImg from '../../assets/quizzes/space.jpg';
 import biologyImg from '../../assets/quizzes/biology.jpg';
+import historyImg from '../../assets/quizzes/history.jpg';
+import popcultureImg from '../../assets/quizzes/popculture.jpg';
+import pythonImg from '../../assets/quizzes/python.jpg';
+import backendImg from '../../assets/quizzes/backend.jpg';
+import geometryImg from '../../assets/quizzes/geometry.jpg';
+import logicImg from '../../assets/quizzes/logic.jpg';
 import gkImg from '../../assets/quizzes/gk.jpg';
 import programmingImg from '../../assets/quizzes/programming.jpg';
 import mathImg from '../../assets/quizzes/math.jpg';
@@ -100,11 +106,20 @@ export default function ReadyQuizzesSection() {
   // Determine metadata, illustration banner, and category styling
   const getQuizMeta = (quiz) => {
     if (quiz.image) {
+      let categoryIcon = quiz.icon || BookOpen;
+      const cat = (quiz.category || '').toLowerCase();
+      if (cat.includes('program') || cat.includes('code') || cat.includes('tech')) {
+        categoryIcon = Code;
+      }
+      if (cat.includes('math')) {
+        categoryIcon = Calculator;
+      }
       return {
         image: quiz.image,
+        fit: quiz.fit || 'contain',
         bgColor: quiz.bgColor || '#FFFFFF',
-        categoryIcon: quiz.icon || FlaskConical,
-        categoryLabel: (quiz.category || 'SCIENCE').toUpperCase(),
+        categoryIcon,
+        categoryLabel: (quiz.category || 'MATHEMATICS').toUpperCase(),
       };
     }
 
@@ -115,6 +130,7 @@ export default function ReadyQuizzesSection() {
     if (title.includes('space') || title.includes('solar') || quiz._id === 'preset_sci_02') {
       return {
         image: spaceImg,
+        fit: 'contain',
         bgColor: '#E6FAF7',
         categoryIcon: FlaskConical,
         categoryLabel: 'SCIENCE',
@@ -125,15 +141,83 @@ export default function ReadyQuizzesSection() {
     if (title.includes('biology') || title.includes('health') || title.includes('anatomy') || quiz._id === 'preset_sci_03') {
       return {
         image: biologyImg,
+        fit: 'contain',
         bgColor: '#E6FAF7',
         categoryIcon: FlaskConical,
         categoryLabel: 'SCIENCE',
       };
     }
 
+    // World History & Famous Eras Quiz
+    if (title.includes('history') || title.includes('eras') || quiz._id === 'preset_gk_02') {
+      return {
+        image: historyImg,
+        fit: 'cover',
+        bgColor: '#FFF7EA',
+        categoryIcon: BookOpen,
+        categoryLabel: 'GENERAL KNOWLEDGE',
+      };
+    }
+
+    // Global Pop Culture & Cinema Trivia Quiz
+    if (title.includes('pop') || title.includes('cinema') || quiz._id === 'preset_gk_03') {
+      return {
+        image: popcultureImg,
+        fit: 'cover',
+        bgColor: '#16102E',
+        categoryIcon: BookOpen,
+        categoryLabel: 'GENERAL KNOWLEDGE',
+      };
+    }
+
+    // Python Programming Quiz
+    if (title.includes('python') || quiz._id === 'preset_prog_02') {
+      return {
+        image: pythonImg,
+        fit: 'cover',
+        bgColor: '#1E2038',
+        categoryIcon: Code,
+        categoryLabel: 'PROGRAMMING',
+      };
+    }
+
+    // Computer Science & Backend Systems Quiz
+    if (title.includes('backend') || title.includes('computer science') || quiz._id === 'preset_prog_03') {
+      return {
+        image: backendImg,
+        fit: 'cover',
+        bgColor: '#08174E',
+        categoryIcon: Code,
+        categoryLabel: 'PROGRAMMING',
+      };
+    }
+
+    // Geometry & Algebra Fundamentals Quiz
+    if (title.includes('geometry') || title.includes('algebra') || quiz._id === 'preset_math_02') {
+      return {
+        image: geometryImg,
+        fit: 'cover',
+        bgColor: '#B672F0',
+        categoryIcon: Calculator,
+        categoryLabel: 'MATHEMATICS',
+      };
+    }
+
+    // Probability, Logic & Number Puzzles Quiz
+    if (title.includes('probability') || title.includes('logic') || title.includes('puzzles') || quiz._id === 'preset_math_03') {
+      return {
+        image: logicImg,
+        fit: 'cover',
+        bgColor: '#3B5598',
+        categoryIcon: Calculator,
+        categoryLabel: 'MATHEMATICS',
+      };
+    }
+
     if (cat.includes('science')) {
       return {
         image: scienceImg,
+        fit: 'contain',
         bgColor: '#E6FAF7',
         categoryIcon: FlaskConical,
         categoryLabel: 'SCIENCE',
@@ -142,6 +226,7 @@ export default function ReadyQuizzesSection() {
     if (cat.includes('general') || cat.includes('knowledge') || cat.includes('history') || cat.includes('pop')) {
       return {
         image: gkImg,
+        fit: 'contain',
         bgColor: '#FFF7EA',
         categoryIcon: BookOpen,
         categoryLabel: 'GENERAL KNOWLEDGE',
@@ -150,6 +235,7 @@ export default function ReadyQuizzesSection() {
     if (cat.includes('program') || cat.includes('code') || cat.includes('tech') || cat.includes('web')) {
       return {
         image: programmingImg,
+        fit: 'contain',
         bgColor: '#F2EDFE',
         categoryIcon: Code,
         categoryLabel: 'PROGRAMMING',
@@ -157,6 +243,7 @@ export default function ReadyQuizzesSection() {
     }
     return {
       image: mathImg,
+      fit: 'contain',
       bgColor: '#EBF5FE',
       categoryIcon: Calculator,
       categoryLabel: 'MATHEMATICS',
@@ -318,7 +405,7 @@ export default function ReadyQuizzesSection() {
                       <img
                         src={meta.image}
                         alt={quiz.title}
-                        className="w-full h-full object-contain p-2 transition-transform duration-300 hover:scale-105"
+                        className={`w-full h-full transition-transform duration-300 hover:scale-105 ${meta.fit === 'cover' ? 'object-cover' : 'object-contain p-2'}`}
                       />
                       {/* Difficulty Badge top right */}
                       <span
