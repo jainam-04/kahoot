@@ -155,10 +155,30 @@ export default function Navbar() {
     >
       <div className="max-w-[1351px] mx-auto w-full flex h-20 items-center justify-between px-4 sm:px-8">
         
-        {/* Brand Logo - Leftmost */}
-        <Link to={token ? "/dashboard" : "/"} className="flex items-center transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
-          <Logo className="shrink-0" size="md" />
-        </Link>
+        {/* Left Side: Mobile Hamburger Button + Brand Logo */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Mobile Hamburger Button (Brought to the left on mobile) */}
+          {!token && (
+            <button
+              type="button"
+              className="md:hidden flex items-center justify-center p-2 rounded-xl border transition-all active:scale-95 cursor-pointer"
+              style={{
+                background: isLight ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
+                borderColor: isLight ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
+                color: 'var(--text-main)',
+              }}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          )}
+
+          {/* Brand Logo */}
+          <Link to={token ? "/dashboard" : "/"} className="flex items-center transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
+            <Logo className="shrink-0" size="md" />
+          </Link>
+        </div>
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-8">
@@ -429,22 +449,6 @@ export default function Navbar() {
                 <ArrowRight className="h-3.5 w-3.5 !text-white" style={{ color: '#ffffff' }} />
               </Link>
             </>
-          )}
-
-          {/* Mobile Hamburger Button (Only displayed for logged-out visitors to access public links) */}
-          {!token && (
-            <button
-              className="md:hidden flex items-center justify-center p-2 rounded-xl border transition-all active:scale-95 cursor-pointer ml-0.5"
-              style={{
-                background: isLight ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
-                borderColor: isLight ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
-                color: 'var(--text-main)',
-              }}
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
           )}
         </div>
       </div>
