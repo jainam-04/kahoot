@@ -204,11 +204,17 @@ export default function Reports() {
   const { data: quizzesData } = useQuery({
     queryKey: ['my-quizzes'],
     queryFn: getMyQuizzes,
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchInterval: 15000,
   });
 
   const { data: resultsData } = useQuery({
     queryKey: ['my-results'],
     queryFn: getMyResults,
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchInterval: 15000,
   });
 
   const rawQuizzes = quizzesData?.quizzes || [];

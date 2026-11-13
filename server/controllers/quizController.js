@@ -1,5 +1,6 @@
 const Quiz = require('../models/Quiz');
 const GameSession = require('../models/GameSession');
+const Result = require('../models/Result');
 
 const createQuiz = async (req, res) => {
     try {
@@ -161,10 +162,62 @@ const getMyQuizzes = async (req, res) => {
             isActive: true
         }).sort({ createdAt: -1, _id: -1 });
 
+        const quizIds = quizzes.map(q => q._id);
+        const titles = quizzes.map(q => q.title);
+
+        // Fetch completed match results for these quizzes
+        const results = await Result.find({
+            $or: [
+                { quizId: { $in: quizIds } },
+                { quizTitle: { $in: titles }, hostId: req.user.id }
+            ]
+        });
+
+        // Also fetch active/completed game sessions
+        const sessions = await GameSession.find({
+            quizId: { $in: quizIds }
+        });
+
+        const playsMap = {};
+
+        // 1. Accumulate players count from Results
+        results.forEach(r => {
+            const idKey = r.quizId ? r.quizId.toString() : null;
+            const titleKey = r.quizTitle ? `title:${r.quizTitle.trim().toLowerCase()}` : null;
+            const pCount = (Array.isArray(r.players) && r.players.length > 0) ? r.players.length : 1;
+            
+            if (idKey) {
+                playsMap[idKey] = (playsMap[idKey] || 0) + pCount;
+            }
+            if (titleKey) {
+                playsMap[titleKey] = (playsMap[titleKey] || 0) + pCount;
+            }
+        });
+
+        // 2. Count any GameSessions not yet registered in Results (e.g. sessions created or in-flight)
+        sessions.forEach(s => {
+            const hasResult = results.some(r => r.sessionId?.toString() === s._id.toString());
+            if (!hasResult) {
+                const idKey = s.quizId ? s.quizId.toString() : null;
+                const pCount = (Array.isArray(s.players) && s.players.length > 0) ? s.players.length : (s.status !== 'waiting' ? 1 : 0);
+                if (idKey && pCount > 0) {
+                    playsMap[idKey] = (playsMap[idKey] || 0) + pCount;
+                }
+            }
+        });
+
+        const quizzesWithPlays = quizzes.map(q => {
+            const qObj = q.toObject();
+            const idKey = q._id.toString();
+            const titleKey = `title:${(q.title || '').trim().toLowerCase()}`;
+            qObj.playsCount = playsMap[idKey] || playsMap[titleKey] || 0;
+            return qObj;
+        });
+
         res.status(200).json({
             success: true,
-            count: quizzes.length,
-            quizzes: quizzes
+            count: quizzesWithPlays.length,
+            quizzes: quizzesWithPlays
         });
 
     } catch (error) {

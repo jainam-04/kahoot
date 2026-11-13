@@ -114,6 +114,9 @@ export default function Dashboard() {
   } = useQuery({
     queryKey: ['my-quizzes'],
     queryFn: getMyQuizzes,
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchInterval: 15000,
   });
 
   const {
@@ -122,6 +125,9 @@ export default function Dashboard() {
   } = useQuery({
     queryKey: ['my-results'],
     queryFn: getMyResults,
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchInterval: 15000,
   });
 
   // Host Game Mutation

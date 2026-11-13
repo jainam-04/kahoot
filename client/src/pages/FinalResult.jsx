@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { 
   Home, BarChart3, Loader2, RefreshCw, CheckCircle, Save,
@@ -40,6 +40,7 @@ export default function FinalResult() {
   const { pin } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const socketData = location.state?.finalData;
 
   const [isHost, setIsHost] = useState(() => {
@@ -966,6 +967,10 @@ export default function FinalResult() {
                         const res = await saveResult(sessionId);
                         if (res.success) {
                           setIsSaved(true);
+                          queryClient.invalidateQueries({ queryKey: ['my-quizzes-full'] });
+                          queryClient.invalidateQueries({ queryKey: ['my-quizzes'] });
+                          queryClient.invalidateQueries({ queryKey: ['my-results'] });
+                          queryClient.invalidateQueries({ queryKey: ['host-dashboard-stats'] });
                           toast.success('Results successfully saved! 💾');
                         }
                       } catch (err) {

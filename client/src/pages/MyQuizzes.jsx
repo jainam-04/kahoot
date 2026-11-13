@@ -105,14 +105,20 @@ export default function MyQuizzes() {
   } = useQuery({
     queryKey: ['my-quizzes-full'],
     queryFn: getMyQuizzes,
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchInterval: 15000,
   });
 
-  // Fetch Game Session Results (for plays count)
+  // Fetch Game Session Results (for real-time plays count)
   const {
     data: resultsData
   } = useQuery({
     queryKey: ['my-results'],
     queryFn: getMyResults,
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchInterval: 15000,
   });
 
   // Host Game Mutation
@@ -211,12 +217,18 @@ export default function MyQuizzes() {
     }
   };
 
-  // Map play counts by quiz ID
+  // Map play counts by quiz ID and title from live results
   const playCountMap = {};
   (resultsData?.results || []).forEach(res => {
-    const qId = res.quizId || res.quiz?._id;
-    if (qId) {
-      playCountMap[qId] = (playCountMap[qId] || 0) + (res.players?.length || 1);
+    const rawId = res.quizId?._id || res.quizId || res.quiz?._id;
+    const idStr = rawId ? String(rawId) : null;
+    const titleKey = res.quizTitle ? `title:${String(res.quizTitle).trim().toLowerCase()}` : null;
+    const count = (Array.isArray(res.players) && res.players.length > 0) ? res.players.length : 1;
+    if (idStr) {
+      playCountMap[idStr] = (playCountMap[idStr] || 0) + count;
+    }
+    if (titleKey) {
+      playCountMap[titleKey] = (playCountMap[titleKey] || 0) + count;
     }
   });
 
@@ -642,7 +654,11 @@ export default function MyQuizzes() {
                   const IconComp = getSubjectIcon(quiz.category, quiz.title);
                   const questionsCount = quiz.questions?.length || 0;
                   const estimatedMinutes = Math.max(3, Math.ceil(questionsCount * 0.8));
-                  const plays = playCountMap[quiz._id] || 0;
+                  const idStr = String(quiz._id || '');
+                  const titleKey = `title:${String(quiz.title || '').trim().toLowerCase()}`;
+                  const plays = (typeof quiz.playsCount === 'number' && quiz.playsCount > 0)
+                    ? quiz.playsCount
+                    : (playCountMap[idStr] || playCountMap[titleKey] || 0);
                   const isMenuOpen = openCardMenuId === quiz._id;
 
                   return (
