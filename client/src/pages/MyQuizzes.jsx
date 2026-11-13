@@ -420,25 +420,25 @@ export default function MyQuizzes() {
           {/* ========================================================================= */}
           {/* MAIN CONTENT BODY (Matching Figma: Title & Action, Overview Banner, Tabs & Cards) */}
           {/* ========================================================================= */}
-          <main className="flex-1 p-5 sm:p-8 lg:px-12 space-y-6 max-w-[1121px] w-full mx-auto">
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-5 sm:space-y-6 max-w-[1121px] w-full mx-auto">
             
             {/* Title & Action Bar */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-left">
+            <div className="flex items-center justify-between gap-3 text-left">
               {/* Left: Back Button & Page Heading */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                 <button
                   type="button"
                   onClick={() => navigate('/dashboard')}
-                  className="w-10 h-10 rounded-full bg-white border border-[#E6E4EE] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center hover:bg-slate-50 transition-all cursor-pointer shrink-0"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white border border-[#E6E4EE] shadow-2xs flex items-center justify-center hover:bg-slate-50 transition-all cursor-pointer shrink-0"
                   title="Back to Dashboard"
                 >
-                  <ArrowLeft className="w-5 h-5 text-[#374151] stroke-[2]" />
+                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#374151] stroke-[2]" />
                 </button>
-                <div>
-                  <h1 className="font-extrabold text-[30px] leading-[36px] text-[#161427] tracking-tight">
+                <div className="min-w-0">
+                  <h1 className="font-extrabold text-xl sm:text-[30px] sm:leading-[36px] text-[#161427] tracking-tight truncate">
                     My Quizzes
                   </h1>
-                  <p className="font-medium text-[14px] leading-[20px] text-[#6B7280] mt-0.5">
+                  <p className="font-medium text-xs sm:text-[14px] leading-tight sm:leading-[20px] text-[#6B7280] mt-0.5 truncate">
                     Manage and launch your multiplayer rooms.
                   </p>
                 </div>
@@ -447,15 +447,15 @@ export default function MyQuizzes() {
               {/* Right: Primary Action Button */}
               <Link
                 to="/quiz/create"
-                className="px-5 py-3 rounded-2xl bg-[#6222F5] hover:bg-[#5015E0] text-white font-bold text-[14px] shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.3),0px_4px_6px_-4px_rgba(98,34,245,0.3)] flex items-center gap-2 transition-all active:scale-95 whitespace-nowrap self-stretch sm:self-auto justify-center"
+                className="px-3.5 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl bg-[#6222F5] hover:bg-[#5015E0] text-white font-bold text-xs sm:text-[14px] shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.3)] flex items-center gap-1.5 transition-all active:scale-95 whitespace-nowrap shrink-0"
               >
                 <Plus className="w-4 h-4 stroke-[2.5]" />
-                <span>Create a Quiz</span>
+                <span>Create Quiz</span>
               </Link>
             </div>
 
-            {/* Section - Overview Banner (Exact Figma 3D Illustration) */}
-            <section className="w-full min-h-[170px] rounded-[32px] bg-gradient-to-r from-[#F3F0FE] via-[#EDE7FE] to-[#F4EEFD] border border-[#E8E1FB] p-6 sm:px-8 sm:py-6 shadow-[0px_2px_15px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-6 text-left">
+            {/* Section - Overview Banner (Side-by-side on both mobile & desktop) */}
+            <section className="w-full rounded-2xl sm:rounded-[32px] bg-gradient-to-r from-[#F3F0FE] via-[#EDE7FE] to-[#F4EEFD] border border-[#E8E1FB] p-4 sm:px-8 sm:py-6 shadow-[0px_2px_15px_rgba(0,0,0,0.04)] relative overflow-hidden flex items-center justify-between gap-4 text-left">
               
               {/* Subtle Decorative Wave Shape */}
               <svg 
@@ -468,52 +468,50 @@ export default function MyQuizzes() {
               </svg>
 
               {/* Left Side: Document Icon & Collection Count */}
-              <div className="flex items-center gap-5 z-10">
-                <div className="w-16 h-16 rounded-2xl bg-[#DFD6FB] shadow-[inset_0px_2px_4px_rgba(0,0,0,0.05)] flex items-center justify-center shrink-0">
-                  <FileText className="w-8 h-8 text-[#6222F5] stroke-[2]" />
+              <div className="flex items-center gap-3 sm:gap-5 z-10 min-w-0">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-[#DFD6FB] shadow-[inset_0px_2px_4px_rgba(0,0,0,0.05)] flex items-center justify-center shrink-0">
+                  <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-[#6222F5] stroke-[2]" />
                 </div>
-                <div>
-                  <span className="text-[14px] font-medium text-[#6B7280] block">Your quiz collection</span>
-                  <span className="text-[30px] font-extrabold text-[#161427] tracking-tight leading-tight block mt-0.5">
+                <div className="min-w-0">
+                  <span className="text-xs sm:text-[14px] font-medium text-[#6B7280] block truncate">Your quiz collection</span>
+                  <span className="text-xl sm:text-[30px] font-extrabold text-[#161427] tracking-tight leading-tight block mt-0.5">
                     {totalCount} {totalCount === 1 ? 'quiz' : 'quizzes'}
                   </span>
                 </div>
               </div>
 
               {/* Right Side: Decorative 3D Checklist & Game Controller Vector Graphics */}
-              <div className="relative w-64 h-36 flex items-center justify-end shrink-0 z-10 pr-2 sm:pr-4">
+              <div className="relative w-24 h-20 sm:w-56 sm:h-32 flex items-center justify-end shrink-0 z-10 scale-75 sm:scale-100 origin-right">
                 {/* Floating Sparkles */}
-                <span className="absolute top-2 left-6 text-[#8B5CF6] text-sm select-none">✦</span>
-                <span className="absolute top-10 right-2 text-[#8B5CF6] text-xs select-none">✦</span>
-                <span className="absolute bottom-4 left-4 text-[#8B5CF6] text-base select-none">✦</span>
+                <span className="absolute top-1 left-2 sm:top-2 sm:left-6 text-[#8B5CF6] text-xs sm:text-sm select-none">✦</span>
+                <span className="absolute bottom-2 left-0 sm:bottom-4 sm:left-4 text-[#8B5CF6] text-xs sm:text-base select-none">✦</span>
 
                 {/* 3D Clipboard Graphic */}
-                <div className="w-20 h-24 bg-white border-2 border-[#8B5CF6]/50 rounded-2xl shadow-md transform rotate-[20deg] flex flex-col justify-between p-2 pt-3 relative">
-                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-7 h-2 bg-[#8B5CF6] border border-white rounded-full" />
+                <div className="w-16 h-20 sm:w-20 sm:h-24 bg-white border-2 border-[#8B5CF6]/50 rounded-xl sm:rounded-2xl shadow-md transform rotate-[18deg] flex flex-col justify-between p-2 pt-2.5 relative">
+                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-6 h-2 bg-[#8B5CF6] border border-white rounded-full" />
                   <div className="space-y-1.5 pt-1">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#EDE9FE] border border-[#6222F5] flex items-center justify-center text-[6px] text-[#6222F5] font-black">✓</div>
-                      <div className="h-1 w-9 bg-[#E2DCFD] rounded-full" />
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-[#EDE9FE] border border-[#6222F5] flex items-center justify-center text-[5px] text-[#6222F5] font-black">✓</div>
+                      <div className="h-1 w-7 sm:w-9 bg-[#E2DCFD] rounded-full" />
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#EDE9FE] border border-[#6222F5] flex items-center justify-center text-[6px] text-[#6222F5] font-black">✓</div>
-                      <div className="h-1 w-8 bg-[#E2DCFD] rounded-full" />
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-[#EDE9FE] border border-[#6222F5] flex items-center justify-center text-[5px] text-[#6222F5] font-black">✓</div>
+                      <div className="h-1 w-6 sm:w-8 bg-[#E2DCFD] rounded-full" />
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#EDE9FE] border border-[#6222F5] flex items-center justify-center text-[6px] text-[#6222F5] font-black">✓</div>
-                      <div className="h-1 w-7 bg-[#E2DCFD] rounded-full" />
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-[#EDE9FE] border border-[#6222F5] flex items-center justify-center text-[5px] text-[#6222F5] font-black">✓</div>
+                      <div className="h-1 w-5 sm:w-7 bg-[#E2DCFD] rounded-full" />
                     </div>
                   </div>
                 </div>
 
                 {/* Purple Game Controller Overlay */}
-                <div className="absolute right-2 bottom-1 w-20 h-14 bg-[#6222F5] rounded-2xl shadow-xl transform rotate-[10deg] flex items-center justify-center border-2 border-[#5015E0]">
-                  {/* Controller Shape Elements */}
-                  <div className="flex items-center justify-between w-full px-2.5">
-                    <div className="w-3.5 h-3.5 bg-[#EDE9FE] rounded-sm flex items-center justify-center text-[7px] text-[#6222F5] font-black">+</div>
+                <div className="absolute right-0 bottom-0 sm:right-2 sm:bottom-1 w-16 h-11 sm:w-20 sm:h-14 bg-[#6222F5] rounded-xl sm:rounded-2xl shadow-lg transform rotate-[8deg] flex items-center justify-center border-2 border-[#5015E0]">
+                  <div className="flex items-center justify-between w-full px-2 sm:px-2.5">
+                    <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 bg-[#EDE9FE] rounded-xs flex items-center justify-center text-[6px] sm:text-[7px] text-[#6222F5] font-black">+</div>
                     <div className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#C4B5FD]" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#C4B5FD]" />
+                      <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-[#C4B5FD]" />
+                      <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-[#C4B5FD]" />
                     </div>
                   </div>
                 </div>
@@ -521,22 +519,22 @@ export default function MyQuizzes() {
             </section>
 
             {/* Filter, Search & Status Bar */}
-            <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 pt-1">
+            <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 sm:gap-4 pt-1">
               
               {/* Search within quizzes */}
-              <div className="relative w-full md:max-w-[384px] h-[42px]">
-                <Search className="w-4 h-4 text-[#9CA3AF] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <div className="relative w-full md:max-w-[384px] h-[40px] sm:h-[42px]">
+                <Search className="w-4 h-4 text-[#9CA3AF] absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search my quizzes..."
-                  className="w-full h-full bg-white border border-[#E6E4EE] rounded-full shadow-[0px_1px_2px_rgba(0,0,0,0.05)] pl-11 pr-4 text-[14px] text-[#1E293B] placeholder-[#9CA3AF] focus:outline-none focus:border-[#6222F5] transition-all"
+                  className="w-full h-full bg-white border border-[#E6E4EE] rounded-full shadow-[0px_1px_2px_rgba(0,0,0,0.05)] pl-10 sm:pl-11 pr-4 text-xs sm:text-[14px] text-[#1E293B] placeholder-[#9CA3AF] focus:outline-none focus:border-[#6222F5] transition-all"
                 />
                 {searchQuery && (
                   <button 
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -544,21 +542,21 @@ export default function MyQuizzes() {
               </div>
 
               {/* Filter Pill Tabs & Refresh */}
-              <div className="flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-none">
+              <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-1 scrollbar-none w-full md:w-auto">
                 
                 {/* Button - All */}
                 <button
                   type="button"
                   onClick={() => setActiveTab('all')}
                   className={`
-                    px-5 py-2.5 rounded-full text-[14px] flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer
+                    px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-[14px] flex items-center gap-1.5 whitespace-nowrap transition-all cursor-pointer
                     ${activeTab === 'all'
                       ? 'bg-[#6222F5] text-white font-bold shadow-[0px_4px_6px_-1px_rgba(98,34,245,0.25)]'
-                      : 'bg-white border border-[#E6E4EE] text-[#374151] font-semibold hover:bg-slate-50 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
+                      : 'bg-white border border-[#E6E4EE] text-[#374151] font-semibold hover:bg-slate-50 shadow-2xs'
                     }
                   `}
                 >
-                  <Layers className="w-4 h-4" />
+                  <Layers className="w-3.5 h-3.5" />
                   <span>All ({totalCount})</span>
                 </button>
 
@@ -567,14 +565,14 @@ export default function MyQuizzes() {
                   type="button"
                   onClick={() => setActiveTab('drafts')}
                   className={`
-                    px-4 py-2.5 rounded-full text-[14px] flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer
+                    px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full text-xs sm:text-[14px] flex items-center gap-1.5 whitespace-nowrap transition-all cursor-pointer
                     ${activeTab === 'drafts'
                       ? 'bg-[#6222F5] text-white font-bold shadow-[0px_4px_6px_-1px_rgba(98,34,245,0.25)]'
-                      : 'bg-white border border-[#E6E4EE] text-[#374151] font-semibold hover:bg-slate-50 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
+                      : 'bg-white border border-[#E6E4EE] text-[#374151] font-semibold hover:bg-slate-50 shadow-2xs'
                     }
                   `}
                 >
-                  <FileEdit className="w-4 h-4" />
+                  <FileEdit className="w-3.5 h-3.5" />
                   <span>Drafts ({draftsCount})</span>
                 </button>
 
@@ -583,14 +581,14 @@ export default function MyQuizzes() {
                   type="button"
                   onClick={() => setActiveTab('published')}
                   className={`
-                    px-4 py-2.5 rounded-full text-[14px] flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer
+                    px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full text-xs sm:text-[14px] flex items-center gap-1.5 whitespace-nowrap transition-all cursor-pointer
                     ${activeTab === 'published'
                       ? 'bg-[#6222F5] text-white font-bold shadow-[0px_4px_6px_-1px_rgba(98,34,245,0.25)]'
-                      : 'bg-white border border-[#E6E4EE] text-[#374151] font-semibold hover:bg-slate-50 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
+                      : 'bg-white border border-[#E6E4EE] text-[#374151] font-semibold hover:bg-slate-50 shadow-2xs'
                     }
                   `}
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-3.5 h-3.5" />
                   <span>Published ({publishedCount})</span>
                 </button>
 
@@ -598,10 +596,10 @@ export default function MyQuizzes() {
                 <button
                   type="button"
                   onClick={() => refetchQuizzes()}
-                  className="w-[38px] h-[38px] rounded-2xl bg-white border border-[#E6E4EE] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center text-[#4B5563] hover:bg-slate-50 transition-colors cursor-pointer shrink-0"
+                  className="w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] rounded-xl sm:rounded-2xl bg-white border border-[#E6E4EE] shadow-2xs flex items-center justify-center text-[#4B5563] hover:bg-slate-50 transition-colors cursor-pointer shrink-0"
                   title="Refresh quiz list"
                 >
-                  <RotateCw className={`w-4 h-4 ${isRefetching ? 'animate-spin text-[#6222F5]' : ''}`} />
+                  <RotateCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isRefetching ? 'animate-spin text-[#6222F5]' : ''}`} />
                 </button>
 
               </div>
