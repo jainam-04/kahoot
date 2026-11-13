@@ -432,7 +432,7 @@ export default function MyQuizzes() {
           {/* ========================================================================= */}
           {/* MAIN CONTENT BODY (Matching Figma: Title & Action, Overview Banner, Tabs & Cards) */}
           {/* ========================================================================= */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-5 sm:space-y-6 max-w-[1121px] w-full mx-auto">
+          <main className="flex-1 p-3 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 max-w-[1121px] w-full mx-auto">
             
             {/* Title & Action Bar */}
             <div className="flex items-center justify-between gap-3 text-left">
@@ -664,51 +664,52 @@ export default function MyQuizzes() {
                   return (
                     <article
                       key={quiz._id}
-                      className="relative rounded-[28px] bg-white border border-[#ECEAF3] p-5 sm:px-6 sm:py-5 shadow-[0px_4px_20px_-2px_rgba(99,58,240,0.05),0px_2px_6px_-1px_rgba(0,0,0,0.02)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-5 transition-all hover:shadow-md hover:border-purple-200"
+                      className="relative rounded-[22px] sm:rounded-[28px] bg-white border border-[#ECEAF3] p-3.5 sm:px-6 sm:py-5 shadow-[0px_4px_20px_-2px_rgba(99,58,240,0.05),0px_2px_6px_-1px_rgba(0,0,0,0.02)] flex flex-col md:flex-row items-start md:items-center justify-between gap-3.5 md:gap-5 transition-all hover:shadow-md hover:border-purple-200"
                     >
                       {/* Left: Subject Icon + Title & Meta Information */}
-                      <div className="flex items-center gap-4 sm:gap-5 flex-1 min-w-0 w-full md:w-auto pr-24 md:pr-0">
+                      <div className="flex items-start sm:items-center gap-3 sm:gap-5 flex-1 min-w-0 w-full md:w-auto">
                         {/* Subject Icon Box */}
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#F4F0FF] flex items-center justify-center text-[#6222F5] shrink-0">
-                          <IconComp className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2]" />
+                        <div className="w-11 h-11 sm:w-16 sm:h-16 rounded-2xl bg-[#F4F0FF] flex items-center justify-center text-[#6222F5] shrink-0 mt-0.5 sm:mt-0">
+                          <IconComp className="w-5 h-5 sm:w-8 sm:h-8 stroke-[2]" />
                         </div>
 
                         {/* Quiz Information & Status */}
                         <div className="space-y-1 sm:space-y-1.5 flex-1 min-w-0">
-                          <h3 className="font-extrabold text-[17px] sm:text-[18px] leading-[26px] sm:leading-[28px] text-[#161427] truncate">
+                          <h3 className="font-extrabold text-[15px] sm:text-[18px] leading-snug sm:leading-[28px] text-[#161427] truncate pr-20 sm:pr-24 md:pr-0">
                             {quiz.title}
                           </h3>
 
                           {/* Meta Row */}
-                          <div className="flex items-center gap-2.5 sm:gap-4 text-[12px] font-semibold text-[#6B7280] flex-wrap">
-                            <span className="flex items-center gap-1.5">
-                              <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#9CA3AF]" />
-                              <span>{questionsCount} Questions</span>
+                          <div className="flex items-center gap-1.5 sm:gap-3 text-[11px] sm:text-[12px] font-semibold text-[#6B7280] flex-wrap pt-0.5">
+                            <span className="inline-flex items-center gap-1 shrink-0">
+                              <BookOpen className="w-3.5 h-3.5 text-[#94A3B8]" />
+                              <span className="hidden sm:inline">{questionsCount} Questions</span>
+                              <span className="sm:hidden">{questionsCount} Qs</span>
                             </span>
                             <span className="text-[#D1D5DB]">•</span>
-                            <span className="flex items-center gap-1.5">
-                              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#9CA3AF]" />
+                            <span className="inline-flex items-center gap-1 shrink-0">
+                              <Clock className="w-3.5 h-3.5 text-[#94A3B8]" />
                               <span>{estimatedMinutes} mins</span>
                             </span>
                             <span className="text-[#D1D5DB]">•</span>
                             
                             {/* Published Shows Plays; Draft Shows Edited Time */}
                             {!isDraft ? (
-                              <span className="flex items-center gap-1.5 text-[#6222F5] font-bold">
-                                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
+                              <span className="inline-flex items-center gap-1 text-[#6222F5] font-bold shrink-0">
+                                <Users className="w-3.5 h-3.5 stroke-[2]" />
                                 <span>{plays} Plays</span>
                               </span>
                             ) : (
-                              <span className="flex items-center gap-1.5 text-[#6B7280]">
+                              <span className="inline-flex items-center gap-1 text-[#6B7280] shrink-0">
                                 <span>Edited {formatTimeAgo(quiz.updatedAt || quiz.createdAt)}</span>
                               </span>
                             )}
                           </div>
 
                           {/* State Tag */}
-                          <div className="flex items-center gap-2 pt-0.5">
+                          <div className="flex items-center gap-1.5 pt-0.5">
                             <span className={`w-2 h-2 rounded-full ${isDraft ? 'bg-[#FBBF24]' : 'bg-[#10B981]'}`} />
-                            <span className={`text-[12px] font-medium ${isDraft ? 'text-[#D97706]' : 'text-[#6B7280]'}`}>
+                            <span className={`text-[11.5px] sm:text-[12px] font-medium ${isDraft ? 'text-[#D97706]' : 'text-[#6B7280]'}`}>
                               {isDraft ? 'Draft in progress' : 'Ready to host'}
                             </span>
                           </div>
@@ -716,17 +717,17 @@ export default function MyQuizzes() {
                       </div>
 
                       {/* Right: Status Badge & Action Buttons */}
-                      <div className="flex flex-col items-end gap-3.5 w-full md:w-auto shrink-0">
+                      <div className="flex flex-col items-end gap-3 w-full md:w-auto shrink-0 pt-1 md:pt-0">
                         
                         {/* Top: Status Badge & 3-Dots More Options */}
-                        <div className="absolute top-4 right-4 sm:top-5 sm:right-5 md:static flex items-center gap-2 sm:gap-3 shrink-0">
+                        <div className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 md:static flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                           {/* Badge */}
                           {isDraft ? (
-                            <span className="bg-[#FEF6E8] text-[#F59E0B] font-bold text-[12px] rounded-full px-3 py-1 tracking-wide">
+                            <span className="bg-[#FEF6E8] text-[#F59E0B] font-bold text-[11px] sm:text-[12px] rounded-full px-2.5 py-0.5 sm:px-3 sm:py-1 tracking-wide">
                               Draft
                             </span>
                           ) : (
-                            <span className="bg-[#EBFBF3] text-[#10B981] font-bold text-[12px] rounded-full px-3 py-1 tracking-wide">
+                            <span className="bg-[#EBFBF3] text-[#10B981] font-bold text-[11px] sm:text-[12px] rounded-full px-2.5 py-0.5 sm:px-3 sm:py-1 tracking-wide">
                               Published
                             </span>
                           )}
@@ -736,10 +737,10 @@ export default function MyQuizzes() {
                             <button
                               type="button"
                               onClick={() => setOpenCardMenuId(isMenuOpen ? null : quiz._id)}
-                              className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                              className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                               title="Quiz options"
                             >
-                              <MoreVertical className="w-5 h-5" />
+                              <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
 
                             {isMenuOpen && (
