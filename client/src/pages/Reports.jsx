@@ -5,7 +5,6 @@ import {
   BarChart2,
   BarChart3,
   Search,
-  Bell,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -25,7 +24,6 @@ import {
   PlayCircle,
   HelpCircle,
   Check,
-  CheckCircle2,
   Clock,
   Menu,
   Trophy,
@@ -128,13 +126,11 @@ export default function Reports() {
 
   // Mobile drawer & dropdown controls
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
 
   const profileDropdownRef = useRef(null);
-  const notifDropdownRef = useRef(null);
   const categoryDropdownRef = useRef(null);
   const dateDropdownRef = useRef(null);
 
@@ -161,9 +157,6 @@ export default function Reports() {
       if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target)) {
         setIsProfileDropdownOpen(false);
       }
-      if (notifDropdownRef.current && !notifDropdownRef.current.contains(e.target)) {
-        setIsNotificationsOpen(false);
-      }
       if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(e.target)) {
         setIsCategoryOpen(false);
       }
@@ -184,7 +177,6 @@ export default function Reports() {
     if (isMobileNavOpen) {
       document.body.style.overflow = 'hidden';
       setIsProfileDropdownOpen(false);
-      setIsNotificationsOpen(false);
     } else {
       document.body.style.overflow = '';
     }
@@ -435,43 +427,9 @@ export default function Reports() {
               </div>
             </div>
 
-            {/* Right: Top Controls (Notifications & User Profile Pill) */}
+            {/* Right: Top Right Controls: User Profile Pill ONLY */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              
-              {/* Notification Button */}
-              <div className="relative" ref={notifDropdownRef}>
-                <button
-                  type="button"
-                  onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                  className="w-[42px] h-[40px] rounded-full bg-white border border-[#E7E9F2] shadow-2xs hover:bg-[#FAF9FD] transition-colors flex items-center justify-center relative cursor-pointer"
-                  aria-label="Notifications"
-                >
-                  <Bell className="w-4 h-4 text-[#475569]" />
-                  {/* Red Notification Dot (8px x 8px) */}
-                  <span className="absolute top-[9px] right-[9px] w-2 h-2 rounded-full bg-[#EF4444] border-2 border-white shadow-2xs" />
-                </button>
-
-                {/* Notifications Dropdown */}
-                {isNotificationsOpen && (
-                  <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white border border-[#EEF0F6] shadow-xl p-3 z-50 text-left animate-in fade-in zoom-in-95 duration-150">
-                    <div className="flex items-center justify-between pb-2 border-b border-[#F1F5F9]">
-                      <span className="text-xs font-bold text-[#0F172A]">Notifications</span>
-                      <span className="text-[10px] text-[#6320EE] font-semibold">1 New</span>
-                    </div>
-                    <div className="py-2.5 space-y-2">
-                      <div className="p-2 rounded-xl bg-[#FAF5FF] border border-[#F3E8FF] flex items-start gap-2.5">
-                        <CheckCircle2 className="w-4 h-4 text-[#6320EE] shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-xs font-bold text-[#0F172A]">Performance Analytics Ready</p>
-                          <p className="text-[11px] text-[#64748B]">All quiz reports are synchronized and ready to review.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* User Profile Pill (128px x 42px) */}
+              {/* User Profile Pill */}
               <div className="relative" ref={profileDropdownRef}>
                 <button
                   type="button"
