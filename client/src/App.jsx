@@ -17,6 +17,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const CreateQuiz = lazy(() => import('./pages/CreateQuiz'));
 const EditQuiz = lazy(() => import('./pages/EditQuiz'));
 const MyQuizzes = lazy(() => import('./pages/MyQuizzes'));
+const Reports = lazy(() => import('./pages/Reports'));
 const HostLobby = lazy(() => import('./pages/HostLobby'));
 const JoinGame = lazy(() => import('./pages/JoinGame'));
 const WaitingRoom = lazy(() => import('./pages/WaitingRoom'));
@@ -92,7 +93,8 @@ function AnimatedRoutes() {
     '/dashboard',
     '/quiz/my',
     '/quiz/create',
-    '/quiz/edit'
+    '/quiz/edit',
+    '/reports'
   ].some(path => location.pathname.startsWith(path));
 
   // Footer is displayed on the homepage and all public info/policy pages, hidden during gameplay
@@ -120,6 +122,7 @@ function AnimatedRoutes() {
               <Route path="/quiz/create" element={<CreateQuiz />} />
               <Route path="/quiz/edit/:id" element={<EditQuiz />} />
               <Route path="/quiz/my" element={<MyQuizzes />} />
+              <Route path="/reports" element={<Reports />} />
               <Route path="/host/lobby/:pin" element={<HostLobby />} />
               <Route path="/join" element={<JoinGame />} />
               <Route path="/waiting/:pin" element={<WaitingRoom />} />

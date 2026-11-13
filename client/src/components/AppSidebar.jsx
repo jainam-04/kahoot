@@ -33,6 +33,7 @@ export default function AppSidebar({
   const isCreateQuizActive = activeNav
     ? activeNav === 'create-quiz'
     : (currentPath.startsWith('/quiz/create') || currentPath.startsWith('/quiz/edit'));
+  const isReportsActive = activeNav ? activeNav === 'reports' : currentPath.startsWith('/reports');
 
   // Lock body scroll when mobile sidebar drawer is open
   useEffect(() => {
@@ -149,15 +150,19 @@ export default function AppSidebar({
                 <span>Create Quiz</span>
               </Link>
 
-              {/* Reports */}
-              <button
-                type="button"
-                onClick={handleReportsClick}
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors text-left cursor-pointer"
+              {/* My Reports */}
+              <Link
+                to="/reports"
+                onClick={onClose}
+                className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${
+                  isReportsActive
+                    ? 'rounded-2xl bg-[#6320EE] text-white shadow-[0px_8px_16px_-2px_rgba(99,32,238,0.35)] font-semibold text-[14px]'
+                    : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
+                }`}
               >
-                <BarChart2 className="w-5 h-5 text-[#94A3B8]" />
-                <span>Reports</span>
-              </button>
+                <BarChart2 className={`w-5 h-5 ${isReportsActive ? 'text-white' : 'text-[#94A3B8]'}`} />
+                <span>My Reports</span>
+              </Link>
 
               {/* Settings */}
               <button
