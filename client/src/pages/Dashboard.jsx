@@ -266,8 +266,8 @@ export default function Dashboard() {
       return {
         name: 'SCIENCE',
         icon: FlaskConical,
-        iconBg: 'bg-[#059669]',
-        textColor: 'text-[#7E22CE]',
+        iconBg: 'bg-[#10B981]',
+        textColor: 'text-[#059669]',
         defaultDifficulty: 'MEDIUM',
         diffBg: 'bg-[#FFFBEB]',
         diffBorder: 'border-[rgba(253,230,138,0.8)]',
@@ -278,8 +278,8 @@ export default function Dashboard() {
       return {
         name: 'GENERAL KNOWLEDGE',
         icon: Compass,
-        iconBg: 'bg-[#2563EB]',
-        textColor: 'text-[#1D4ED8]',
+        iconBg: 'bg-[#0284C7]',
+        textColor: 'text-[#0284C7]',
         defaultDifficulty: 'EASY',
         diffBg: 'bg-[#ECFDF5]',
         diffBorder: 'border-[rgba(167,243,208,0.8)]',
@@ -290,8 +290,8 @@ export default function Dashboard() {
       return {
         name: 'PROGRAMMING',
         icon: Code,
-        iconBg: 'bg-[#9333EA]',
-        textColor: 'text-[#7E22CE]',
+        iconBg: 'bg-[#F97316]',
+        textColor: 'text-[#EA580C]',
         defaultDifficulty: 'MEDIUM',
         diffBg: 'bg-[#FFFBEB]',
         diffBorder: 'border-[rgba(253,230,138,0.8)]',
@@ -301,8 +301,8 @@ export default function Dashboard() {
     return {
       name: 'MATHEMATICS',
       icon: Calculator,
-      iconBg: 'bg-[#F97316]',
-      textColor: 'text-[#7E22CE]',
+      iconBg: 'bg-[#F43F5E]',
+      textColor: 'text-[#E11D48]',
       defaultDifficulty: 'EASY',
       diffBg: 'bg-[#ECFDF5]',
       diffBorder: 'border-[rgba(167,243,208,0.8)]',
@@ -447,7 +447,7 @@ export default function Dashboard() {
           {/* ========================================================================= */}
           {/* MAIN - DASHBOARD BODY */}
           {/* ========================================================================= */}
-          <main className="flex-1 p-4 sm:p-8 space-y-4 sm:space-y-6 max-w-[1440px] w-full mx-auto">
+          <main className="flex-1 p-3 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 max-w-[1440px] w-full mx-auto">
             
             {/* Section - Welcome Banner */}
             <div className="text-left space-y-1">
@@ -714,25 +714,25 @@ export default function Dashboard() {
             {/* ========================================================================= */}
             <section 
               id="predefined-quizzes-section"
-              className="bg-white border border-[#EEF0F6] rounded-[24px] p-4 sm:p-8 shadow-[0px_2px_15px_rgba(0,0,0,0.06)] space-y-4 sm:space-y-5 text-left"
+              className="bg-white border border-[#EEF0F6] rounded-[22px] sm:rounded-[24px] p-3 sm:p-6 lg:p-8 shadow-[0px_2px_15px_rgba(0,0,0,0.06)] space-y-3.5 sm:space-y-5 text-left"
             >
               {/* Header with View All Button */}
               <div className="flex justify-between items-center gap-2">
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2">
-                    <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-[#6C38FF] fill-[#6C38FF]" />
-                    <h2 className="text-[15px] sm:text-[17px] font-bold text-[#0F172A] tracking-tight">
+                    <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-[#6C38FF] fill-[#6C38FF] shrink-0" />
+                    <h2 className="text-[15px] sm:text-[17px] font-bold text-[#0F172A] tracking-tight truncate">
                       Ready-to-Use Quizzes
                     </h2>
                   </div>
-                  <p className="text-[11.5px] sm:text-[13px] text-[#64748B] mt-0.5">
+                  <p className="text-[11px] sm:text-[13px] text-[#64748B] mt-0.5 truncate">
                     Instant play • 10 Questions each
                   </p>
                 </div>
 
                 <Link
                   to="/quiz/my"
-                  className="inline-flex items-center gap-1 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[rgba(250,245,255,0.8)] border border-[#E9D5FF] text-[11.5px] sm:text-[12.5px] font-semibold text-[#6C38FF] hover:bg-[#F3E8FF] transition-colors shrink-0"
+                  className="inline-flex items-center gap-1 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[rgba(250,245,255,0.8)] border border-[#E9D5FF] text-[11px] sm:text-[12.5px] font-semibold text-[#6C38FF] hover:bg-[#F3E8FF] transition-colors shrink-0"
                 >
                   <span>View All</span>
                   <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -749,18 +749,18 @@ export default function Dashboard() {
                       type="button"
                       onClick={() => setActivePresetCategory(cat)}
                       className={`
-                        px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[13px] sm:text-[14px] flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all cursor-pointer
+                        px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[12px] sm:text-[14px] flex items-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 transition-all cursor-pointer
                         ${isActive
                           ? 'bg-[#551BF5] text-white font-semibold shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
                           : 'bg-white border border-[#E2E8F0] text-[#334155] font-medium hover:bg-slate-50'
                         }
                       `}
                     >
-                      {cat === 'All' && <LayoutDashboard className="w-3.5 h-3.5" />}
-                      {cat === 'Science' && <FlaskConical className="w-3.5 h-3.5" />}
-                      {cat === 'General Knowledge' && <Compass className="w-3.5 h-3.5" />}
-                      {cat === 'Programming' && <Code className="w-3.5 h-3.5" />}
-                      {cat === 'Mathematics' && <Calculator className="w-3.5 h-3.5" />}
+                      {cat === 'All' && <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />}
+                      {cat === 'Science' && <FlaskConical className="w-3.5 h-3.5 shrink-0" />}
+                      {cat === 'General Knowledge' && <Compass className="w-3.5 h-3.5 shrink-0" />}
+                      {cat === 'Programming' && <Code className="w-3.5 h-3.5 shrink-0" />}
+                      {cat === 'Mathematics' && <Calculator className="w-3.5 h-3.5 shrink-0" />}
                       <span>{cat}</span>
                     </button>
                   );
@@ -768,7 +768,7 @@ export default function Dashboard() {
               </div>
 
               {/* 4 Ready-to-Use Quiz Cards Grid: 2 Columns on Mobile, 4 Columns on XL */}
-              <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 pt-1">
+              <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-3 xl:gap-4 pt-1">
                 {displayPresets.map((quiz, idx) => {
                   const cfg = getCategoryConfig(quiz.category);
                   const IconComp = cfg.icon;
@@ -779,16 +779,16 @@ export default function Dashboard() {
                   return (
                     <div
                       key={quiz._id || idx}
-                      className="bg-white border border-[#ECEFF5] rounded-[18px] sm:rounded-[16px] p-3 sm:p-5 shadow-[0px_2px_14px_rgba(0,0,0,0.03)] flex flex-col justify-between transition-all hover:shadow-md hover:-translate-y-0.5"
+                      className="bg-white border border-[#ECEFF5] rounded-[18px] sm:rounded-[20px] p-2.5 sm:p-4 shadow-[0px_2px_12px_rgba(0,0,0,0.03)] flex flex-col justify-between transition-all hover:shadow-md hover:-translate-y-0.5"
                     >
-                      <div className="space-y-2 sm:space-y-3">
+                      <div className="space-y-1.5 sm:space-y-2.5">
                         {/* Header Badges */}
                         <div className="flex items-center justify-between gap-1">
-                          <div className={`w-7 h-7 rounded-lg ${cfg.iconBg} text-white flex items-center justify-center shrink-0`}>
-                            <IconComp className="w-3.5 h-3.5 stroke-[2]" />
+                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${cfg.iconBg} text-white flex items-center justify-center shrink-0 shadow-xs`}>
+                            <IconComp className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
                           </div>
 
-                          <span className={`px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-bold border ${
+                          <span className={`px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold tracking-wide border ${
                             isEasy 
                               ? 'bg-[#ECFDF5] border-[rgba(167,243,208,0.8)] text-[#059669]'
                               : 'bg-[#FFFBEB] border-[rgba(253,230,138,0.8)] text-[#D97706]'
@@ -799,47 +799,48 @@ export default function Dashboard() {
 
                         {/* Title & Desc */}
                         <div>
-                          <h3 className="font-bold text-[12.5px] sm:text-[14.5px] text-[#0F172A] leading-snug sm:leading-[20px] line-clamp-2 h-[34px] sm:h-[40px]">
+                          <h3 className="font-extrabold text-[11.5px] sm:text-[14px] text-[#0F172A] leading-[1.28] line-clamp-2 min-h-[30px] sm:min-h-[36px] tracking-tight">
                             {quiz.title}
                           </h3>
-                          <p className="text-[11px] text-[#64748B] line-clamp-2 mt-1 hidden xs:block">
+                          <p className="text-[10px] sm:text-[11.5px] text-[#64748B] line-clamp-2 leading-tight mt-1">
                             {quiz.description}
                           </p>
                         </div>
                       </div>
 
                       {/* Card Footer: Meta Info & Actions */}
-                      <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-[#F1F5F9] space-y-2 sm:space-y-3">
-                        <div className="flex items-center gap-2 sm:gap-4 text-[10.5px] sm:text-[12px] font-medium text-[#64748B]">
-                          <span className="flex items-center gap-1">
-                            <BookOpen className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                      <div className="mt-2.5 sm:mt-3.5 pt-2 sm:pt-2.5 border-t border-[#F1F5F9] space-y-2 sm:space-y-2.5">
+                        <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[11.5px] font-medium text-[#64748B] whitespace-nowrap overflow-hidden">
+                          <span className="inline-flex items-center gap-1 shrink-0">
+                            <BookOpen className="w-3 h-3 text-[#94A3B8]" />
                             <span>{quiz.questionsCount || 10} Qs</span>
                           </span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                            <span>~5 mins</span>
+                          <span className="text-[#CBD5E1]">•</span>
+                          <span className="inline-flex items-center gap-1 shrink-0">
+                            <Clock className="w-3 h-3 text-[#94A3B8]" />
+                            <span>5 mins</span>
                           </span>
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex items-center gap-1.5 sm:gap-2">
+                        <div className="flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => handleHostPreset(quiz)}
                             disabled={isHosting}
-                            className="flex-1 h-[32px] sm:h-[35px] px-2 sm:px-3 bg-[#6C38FF] hover:bg-[#5827e8] disabled:opacity-60 text-white font-semibold text-[11px] sm:text-[12.5px] rounded-xl sm:rounded-full shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center gap-1 sm:gap-1.5 transition-all active:scale-95 cursor-pointer"
+                            className="flex-1 h-[30px] sm:h-[35px] px-1.5 sm:px-3 bg-[#6C38FF] hover:bg-[#5827e8] disabled:opacity-60 text-white font-extrabold text-[11px] sm:text-[12.5px] rounded-xl shadow-xs flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shrink-0"
                           >
-                            <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-white" />
-                            <span>{isHosting ? 'Starting...' : 'Host'}</span>
+                            <Play className="w-3 h-3 fill-white shrink-0" />
+                            <span>{isHosting ? '...' : 'Host'}</span>
                           </button>
 
                           <button
                             type="button"
                             onClick={() => handleCloneAndEditPreset(quiz)}
-                            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl sm:rounded-full border border-[#E2E8F0] hover:bg-slate-50 flex items-center justify-center text-[#64748B] hover:text-[#6C38FF] transition-colors cursor-pointer shrink-0"
+                            className="w-7 h-[30px] sm:w-8 sm:h-[35px] rounded-xl border border-[#E2E8F0] hover:bg-slate-50 flex items-center justify-center text-[#64748B] hover:text-[#6C38FF] transition-colors cursor-pointer shrink-0"
                             title="Duplicate & customize quiz"
                           >
-                            <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            <Copy className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
