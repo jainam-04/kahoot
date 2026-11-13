@@ -9,7 +9,6 @@ import toast from 'react-hot-toast';
 import Logo from './Logo';
 import DeleteAccountModal from './DeleteAccountModal';
 import HostProfileModal from './HostProfileModal';
-import AppSidebar from './AppSidebar';
 import { useTheme } from '../context/ThemeContext';
 import { clearAuthSession, getStoredUser, getStoredToken } from '../utils/auth';
 
@@ -21,7 +20,6 @@ export default function Navbar() {
   const { themeMode, toggleThemeMode } = useTheme();
   const isLight = themeMode === 'light';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -433,24 +431,8 @@ export default function Navbar() {
             </>
           )}
 
-          {/* Mobile Hamburger Button */}
-          {token ? (
-            <button
-              className="md:hidden flex items-center justify-center p-2 rounded-xl border transition-all active:scale-95 cursor-pointer ml-0.5"
-              style={{
-                background: isLight ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.05)',
-                borderColor: isLight ? 'rgba(139,92,246,0.18)' : 'rgba(255,255,255,0.10)',
-                color: 'var(--text-main)',
-              }}
-              onClick={() => {
-                setProfileDropdownOpen(false);
-                setIsMobileSidebarOpen(true);
-              }}
-              aria-label="Open navigation menu"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-          ) : (
+          {/* Mobile Hamburger Button (Only displayed for logged-out visitors to access public links) */}
+          {!token && (
             <button
               className="md:hidden flex items-center justify-center p-2 rounded-xl border transition-all active:scale-95 cursor-pointer ml-0.5"
               style={{
@@ -467,15 +449,54 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Universal Logged-In Mobile App Sidebar */}
+      {/* Mobile Quick Sub-Navbar when Logged In */}
       {token && (
-        <AppSidebar
-          isOpen={isMobileSidebarOpen}
-          onClose={() => setIsMobileSidebarOpen(false)}
-          onOpenProfile={() => setIsProfileModalOpen(true)}
-          onOpenUpgrade={() => navigate('/dashboard')}
-          onOpenSessions={() => navigate('/dashboard')}
-        />
+        <div 
+          className="md:hidden border-t px-2 py-1.5 flex items-center justify-around gap-1 overflow-x-auto text-xs font-extrabold"
+          style={{
+            backgroundColor: isLight ? 'rgba(245, 243, 255, 0.95)' : 'rgba(15, 15, 25, 0.95)',
+            borderColor: isLight ? 'rgba(139, 92, 246, 0.12)' : 'rgba(255, 255, 255, 0.08)'
+          }}
+        >
+          <Link
+            to="/dashboard"
+            onClick={closeMobile}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
+              location.pathname === '/dashboard'
+                ? 'bg-primary text-white shadow-sm'
+                : isLight ? 'text-gray-700 hover:bg-purple-100/50' : 'text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            <LayoutDashboard className="h-3.5 w-3.5" />
+            <span>Dashboard</span>
+          </Link>
+
+          <Link
+            to="/quiz/my"
+            onClick={closeMobile}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
+              location.pathname === '/quiz/my'
+                ? 'bg-secondary text-white shadow-sm'
+                : isLight ? 'text-gray-700 hover:bg-cyan-100/50' : 'text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            <BookOpen className="h-3.5 w-3.5" />
+            <span>My Quizzes</span>
+          </Link>
+
+          <Link
+            to="/quiz/create"
+            onClick={closeMobile}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
+              location.pathname === '/quiz/create'
+                ? 'bg-accent text-white shadow-sm'
+                : isLight ? 'text-gray-700 hover:bg-pink-100/50' : 'text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            <PlusCircle className="h-3.5 w-3.5" />
+            <span>Create Quiz</span>
+          </Link>
+        </div>
       )}
 
       {/* Mobile Menu Dropdown (Only for public guests when logged out) */}
