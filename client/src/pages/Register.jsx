@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import signupBg from "../assets/signup-bg.png";
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   User, Mail, Lock, UserPlus, ArrowRight, ShieldCheck, 
-  Check, Eye, EyeOff, Sparkles, PlusCircle, LayoutDashboard, CheckCircle2, Zap
+  Check, Eye, EyeOff, PlusCircle, LayoutDashboard, CheckCircle2, Zap
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import Logo from '../components/Logo';
 import { register as registerUser } from '../services/authService';
 import { setAuthSession } from '../utils/auth';
 import { useTheme } from '../context/ThemeContext';
@@ -114,101 +114,90 @@ export default function Register() {
   };
 
   return (
-    <AnimatedPage>
-      <div className="relative min-h-[85vh] flex items-center justify-center px-3 py-6 sm:py-10 lg:px-8 bg-background overflow-hidden w-full">
+  <AnimatedPage>
+
+    <div
+  className="relative min-h-[calc(100vh-var(--main-header-height,64px))] w-full overflow-hidden flex items-center justify-center px-3 py-6 sm:py-8 lg:px-8 bg-cover bg-center bg-no-repeat"
+  style={{
+    backgroundImage: `url(${signupBg})`,
+    backgroundAttachment: 'scroll',
+  }}
+>
+
         
-        {/* Glow Spheres */}
-        <div className="absolute top-[15%] left-[20%] h-[400px] w-[400px] rounded-full bg-primary/20 blur-[140px] pointer-events-none" />
-        <div className="absolute bottom-[15%] right-[20%] h-[450px] w-[450px] rounded-full bg-secondary/15 blur-[150px] pointer-events-none" />
 
-        <div className="relative z-10 w-full max-w-5xl mx-auto space-y-6">
-          
-          {/* Header Branding */}
-          <div className="text-center space-y-3">
-            <div className="flex items-center justify-center">
-              <Logo className="shrink-0" />
-            </div>
-            <h1 className={`font-outfit text-3xl sm:text-5xl font-black tracking-tight ${
-              isLight ? 'text-gray-900' : 'text-white'
-            }`}>
-              Create Your <span className="text-gradient-primary">Host Account</span>
-            </h1>
-            <p className={`text-xs sm:text-base max-w-xl mx-auto ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-              Get instant access to create quizzes, host live multiplayer trivia & track live leaderboards.
-            </p>
-          </div>
+        <div className="relative z-10 w-full max-w-[1180px] mx-auto px-2 sm:px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] gap-5 lg:gap-7 items-center">
+            <section className="flex min-h-[180px] flex-col justify-end px-3 pb-2 sm:min-h-[220px] sm:px-6 lg:min-h-[490px] lg:translate-y-8 lg:px-0 lg:pb-3">
+              <h1 className="font-outfit text-4xl sm:text-[40px] font-black leading-[0.98] tracking-tight text-[#11152d]">
+                Create Your
+                <span className="block text-[#6535ff]">Host Account</span>
+              </h1>
+              <p className="mt-3 max-w-md text-xs sm:text-sm font-semibold leading-relaxed text-[#59627a]">
+                Get instant access to create quizzes, host live multiplayer trivia &amp; track live leaderboards.
+              </p>
+            </section>
 
-          {/* Main Card Container */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <div className="rounded-[28px] bg-white p-4 shadow-[0_20px_60px_rgba(70,49,135,0.12)] sm:p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.55fr)_minmax(190px,1fr)] gap-5 lg:gap-6 items-stretch">
             
             {/* Left Column: Form Content */}
-            <div className="lg:col-span-8">
+            <div className="lg:col-span-1 w-full">
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl border h-full flex flex-col justify-between ${
-                  isLight ? 'bg-white border-gray-200/80 shadow-lg' : 'glass-panel border-white/15'
-                }`}
+                className="relative h-full"
               >
-                {/* Top Accent Line */}
-                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-secondary via-primary to-accent" />
-
                 {/* ACCOUNT FORM */}
                 {!isRegistered && (
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div className={`border-b pb-4 ${isLight ? 'border-gray-100' : 'border-white/10'}`}>
-                      <h2 className={`font-outfit text-xl sm:text-2xl font-black ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                        Host Information
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+                    <div className="flex items-center gap-2.5 pb-1">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#f4efff] text-[#6535ff]">
+                        <User className="h-4 w-4" />
+                      </span>
+                      <h2 className="font-outfit text-lg sm:text-xl font-black tracking-tight text-[#151a31]">
+                        Create Your Host Account
                       </h2>
-                      <p className={`text-xs mt-0.5 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                        Enter your details to create quizzes and manage live game sessions.
-                      </p>
                     </div>
 
                     {/* Row 1: Name & Email */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div className="grid grid-cols-1 gap-2.5">
                       <div className="space-y-1 text-left">
-                        <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                        <label className="sr-only">
                           Your Name / Nickname
                         </label>
                         <div className="relative">
-                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8b5cf6]">
                             <User className="h-4 w-4" />
                           </div>
                           <input
                             type="text"
-                            placeholder="e.g. Alex Smith"
+                            placeholder="Enter your name"
+                            aria-label="Your name"
                             {...register('name', { required: 'Name is required' })}
-                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 text-xs sm:text-sm font-medium transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
-                              isLight 
-                                ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
-                                : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
-                            }`}
+                            className="w-full rounded-xl border border-[#dfe5ef] bg-white px-3 py-2.5 pl-10 text-xs sm:text-sm font-medium text-[#27324b] placeholder:text-[#8b9ab3] transition-all focus:outline-none focus:border-[#8b5cf6] focus:ring-1 focus:ring-[#8b5cf6]/30"
                           />
                         </div>
                         {errors.name && <span className="text-[10px] text-accent font-bold">{errors.name.message}</span>}
                       </div>
 
                       <div className="space-y-1 text-left">
-                        <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                        <label className="sr-only">
                           Email Address
                         </label>
                         <div className="relative">
-                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8b5cf6]">
                             <Mail className="h-4 w-4" />
                           </div>
                           <input
                             type="email"
-                            placeholder="host@quiz.com"
+                            placeholder="Enter your email"
+                            aria-label="Email address"
                             {...register('email', { 
                               required: 'Email is required',
                               pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Valid email required' }
                             })}
-                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 text-xs sm:text-sm font-medium transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
-                              isLight 
-                                ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
-                                : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
-                            }`}
+                            className="w-full rounded-xl border border-[#dfe5ef] bg-white px-3 py-2.5 pl-10 text-xs sm:text-sm font-medium text-[#27324b] placeholder:text-[#8b9ab3] transition-all focus:outline-none focus:border-[#8b5cf6] focus:ring-1 focus:ring-[#8b5cf6]/30"
                           />
                         </div>
                         {errors.email && <span className="text-[10px] text-accent font-bold">{errors.email.message}</span>}
@@ -216,32 +205,27 @@ export default function Register() {
                     </div>
 
                     {/* Row 2: Password & Confirm Password */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div className="grid grid-cols-1 gap-2.5">
                       <div className="space-y-1 text-left">
-                        <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                        <label className="sr-only">
                           Password
                         </label>
                         <div className="relative">
-                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8b5cf6]">
                             <Lock className="h-4 w-4" />
                           </div>
                           <input
                             type={showPassword ? 'text' : 'password'}
-                            placeholder="••••••••"
+                            placeholder="Enter your password"
+                            aria-label="Password"
                             {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Min 6 characters' } })}
-                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 pr-10 text-xs sm:text-sm font-medium transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
-                              isLight 
-                                ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
-                                : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
-                            }`}
+                            className="w-full rounded-xl border border-[#dfe5ef] bg-white px-3 py-2.5 pl-10 pr-10 text-xs sm:text-sm font-medium text-[#27324b] placeholder:text-[#8b9ab3] transition-all focus:outline-none focus:border-[#8b5cf6] focus:ring-1 focus:ring-[#8b5cf6]/30"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                             aria-label={showPassword ? "Hide password" : "Show password"}
-                            className={`absolute inset-y-0 right-0 flex items-center pr-3.5 cursor-pointer transition-colors ${
-                              isLight ? 'text-gray-400 hover:text-gray-700' : 'text-gray-400 hover:text-white'
-                            }`}
+                            className="absolute inset-y-0 right-0 flex items-center pr-3.5 cursor-pointer text-[#8b9ab3] transition-colors hover:text-[#6535ff]"
                           >
                             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </button>
@@ -256,33 +240,28 @@ export default function Register() {
                       </div>
 
                       <div className="space-y-1 text-left">
-                        <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                        <label className="sr-only">
                           Confirm Password
                         </label>
                         <div className="relative">
-                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8b5cf6]">
                             <Lock className="h-4 w-4" />
                           </div>
                           <input
                             type={showConfirmPassword ? 'text' : 'password'}
-                            placeholder="••••••••"
+                            placeholder="Confirm your password"
+                            aria-label="Confirm password"
                             {...register('confirmPassword', {
                               required: 'Confirm password required',
                               validate: (val) => val === watchPassword || 'Passwords do not match',
                             })}
-                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 pr-10 text-xs sm:text-sm font-medium transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
-                              isLight 
-                                ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
-                                : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
-                            }`}
+                            className="w-full rounded-xl border border-[#dfe5ef] bg-white px-3 py-2.5 pl-10 pr-10 text-xs sm:text-sm font-medium text-[#27324b] placeholder:text-[#8b9ab3] transition-all focus:outline-none focus:border-[#8b5cf6] focus:ring-1 focus:ring-[#8b5cf6]/30"
                           />
                           <button
                             type="button"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                             aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                            className={`absolute inset-y-0 right-0 flex items-center pr-3.5 cursor-pointer transition-colors ${
-                              isLight ? 'text-gray-400 hover:text-gray-700' : 'text-gray-400 hover:text-white'
-                            }`}
+                            className="absolute inset-y-0 right-0 flex items-center pr-3.5 cursor-pointer text-[#8b9ab3] transition-colors hover:text-[#6535ff]"
                           >
                             {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </button>
@@ -292,20 +271,19 @@ export default function Register() {
                     </div>
 
                     {/* Row 3: Security Question & Security Answer */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div className="grid grid-cols-1 gap-2.5">
                       <div className="space-y-1 text-left">
-                        <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                        <label className="sr-only">
                           Security Question
                         </label>
                         <div className="relative">
-                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8b5cf6]">
                             <ShieldCheck className="h-4 w-4" />
                           </div>
                           <select
+                            aria-label="Security question"
                             {...register('securityQuestion', { required: 'Question required' })}
-                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 text-xs sm:text-sm font-medium focus:outline-none focus:border-secondary ${
-                              isLight ? 'bg-gray-50 border-gray-200 text-gray-900' : 'bg-[#151520] border-white/10 text-white'
-                            }`}
+                            className="w-full rounded-xl border border-[#dfe5ef] bg-white px-3 py-2.5 pl-10 text-xs sm:text-sm font-medium text-[#27324b] focus:outline-none focus:border-[#8b5cf6]"
                           >
                             <option value="What is your favourite colour?">What is your favourite colour?</option>
                             <option value="What was your first school?">What was your first school?</option>
@@ -316,33 +294,42 @@ export default function Register() {
                       </div>
 
                       <div className="space-y-1 text-left">
-                        <label className={`text-[11px] font-extrabold uppercase tracking-wider block ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                        <label className="sr-only">
                           Security Answer
                         </label>
                         <div className="relative">
-                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8b5cf6]">
                             <Lock className="h-4 w-4" />
                           </div>
                           <input
                             type="text"
-                            placeholder="Your answer"
+                            placeholder="Enter your answer"
+                            aria-label="Security answer"
                             {...register('securityAnswer', { required: 'Answer required' })}
-                            className={`w-full rounded-xl border px-3 py-2.5 sm:py-3 pl-10 text-xs sm:text-sm font-medium transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
-                              isLight 
-                                ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400' 
-                                : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
-                            }`}
+                            className="w-full rounded-xl border border-[#dfe5ef] bg-white px-3 py-2.5 pl-10 text-xs sm:text-sm font-medium text-[#27324b] placeholder:text-[#8b9ab3] transition-all focus:outline-none focus:border-[#8b5cf6] focus:ring-1 focus:ring-[#8b5cf6]/30"
                           />
                         </div>
                         {errors.securityAnswer && <span className="text-[10px] text-accent font-bold">{errors.securityAnswer.message}</span>}
                       </div>
                     </div>
 
-                    <div className="pt-3">
+                    <div className="flex items-start gap-2 pt-1 text-[10px] leading-relaxed text-[#526078]">
+                      <span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded bg-[#6535ff] text-white">
+                        <Check className="h-3 w-3" />
+                      </span>
+                      <p>
+                        By registering, you agree to our{' '}
+                        <Link to="/terms" className="font-bold text-[#6535ff] hover:underline">Terms &amp; Conditions</Link>
+                        {' '}and{' '}
+                        <Link to="/privacy" className="font-bold text-[#6535ff] hover:underline">Privacy Policy</Link>.
+                      </p>
+                    </div>
+
+                    <div className="pt-1">
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full btn-premium btn-secondary-gradient py-3.5 px-6 flex items-center justify-center gap-2 text-xs sm:text-sm font-extrabold text-white rounded-xl shadow-secondary-glow cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#4f13ee] to-[#7729ff] px-6 py-3 text-xs sm:text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(99,45,255,0.3)] cursor-pointer hover:brightness-105 active:scale-[0.98] transition-all"
                       >
                         {isLoading ? (
                           <div className="flex items-center gap-2">
@@ -352,19 +339,12 @@ export default function Register() {
                         ) : (
                           <>
                             <UserPlus className="h-4 w-4" />
-                            <span>Create Free Host Account</span>
+                            <span>Create Account</span>
                             <ArrowRight className="h-4 w-4 ml-1" />
                           </>
                         )}
                       </button>
                     </div>
-
-                    <p className={`text-[11px] text-center pt-2 ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
-                      By registering, you agree to our{' '}
-                      <Link to="/terms" className="text-secondary hover:underline font-bold">Terms & Conditions</Link>
-                      {' '}and{' '}
-                      <Link to="/privacy" className="text-primary hover:underline font-bold">Privacy Policy</Link>.
-                    </p>
 
                   </form>
                 )}
@@ -416,95 +396,90 @@ export default function Register() {
             </div>
 
             {/* Right Column: Free Plan Benefits & Trust Highlights */}
-            <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
-              <div className={`rounded-3xl p-6 border space-y-5 text-left h-full ${
-                isLight ? 'bg-white border-gray-200/80 shadow-sm' : 'glass-panel border-white/10'
-              }`}>
-                <div className={`flex items-center gap-2 border-b pb-3 ${isLight ? 'border-gray-100' : 'border-white/10'}`}>
-                  <Sparkles className="h-5 w-5 text-secondary animate-pulse" />
-                  <h3 className={`font-outfit text-base font-extrabold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+            <div className="lg:col-span-1 w-full flex flex-col justify-between space-y-3">
+              <div className="h-full space-y-4 rounded-2xl border border-[#edf0f5] bg-[#fbfcfe] p-4 text-left sm:p-5">
+                <div className="flex items-center border-b border-[#e9edf4] pb-2.5">
+                  <h3 className="font-outfit text-xs sm:text-sm font-extrabold text-[#151a31]">
                     Host Account Includes
                   </h3>
                 </div>
 
-                <div className="space-y-4 text-xs">
+                <div className="space-y-3 text-xs">
                   <div className="flex items-start gap-3">
-                    <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-500 dark:text-emerald-400 mt-0.5">
-                      <Check className="h-4 w-4" />
+                    <div className="mt-0.5 rounded-md bg-emerald-100 p-1 text-emerald-600">
+                      <Check className="h-3.5 w-3.5" />
                     </div>
                     <div>
-                      <h4 className={`font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>5 Active Quizzes</h4>
-                      <p className={`text-[11px] ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Build and host up to 5 fully functional quizzes.</p>
+                      <h4 className="text-[10px] sm:text-[11px] font-bold text-[#202941]">5 Active Quizzes</h4>
+                      <p className="text-[10px] leading-snug text-[#637089]">Build and host up to 5 fully functional quizzes.</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-500 dark:text-emerald-400 mt-0.5">
-                      <Check className="h-4 w-4" />
+                    <div className="mt-0.5 rounded-md bg-emerald-100 p-1 text-emerald-600">
+                      <Check className="h-3.5 w-3.5" />
                     </div>
                     <div>
-                      <h4 className={`font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>20 Live Players / Battle</h4>
-                      <p className={`text-[11px] ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Host multiplayer quiz games simultaneously.</p>
+                      <h4 className="text-[10px] sm:text-[11px] font-bold text-[#202941]">20 Live Players / Battle</h4>
+                      <p className="text-[10px] leading-snug text-[#637089]">Host multiplayer quiz games simultaneously.</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-500 dark:text-emerald-400 mt-0.5">
-                      <Check className="h-4 w-4" />
+                    <div className="mt-0.5 rounded-md bg-emerald-100 p-1 text-emerald-600">
+                      <Check className="h-3.5 w-3.5" />
                     </div>
                     <div>
-                      <h4 className={`font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Real-Time Leaderboard</h4>
-                      <p className={`text-[11px] ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Instant live scores & performance calculation.</p>
+                      <h4 className="text-[10px] sm:text-[11px] font-bold text-[#202941]">Real-Time Leaderboard</h4>
+                      <p className="text-[10px] leading-snug text-[#637089]">Instant live scores &amp; performance calculation.</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-500 dark:text-emerald-400 mt-0.5">
-                      <Check className="h-4 w-4" />
+                    <div className="mt-0.5 rounded-md bg-emerald-100 p-1 text-emerald-600">
+                      <Check className="h-3.5 w-3.5" />
                     </div>
                     <div>
-                      <h4 className={`font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Excel / CSV Question Import</h4>
-                      <p className={`text-[11px] ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Upload questions in seconds from spreadsheets.</p>
+                      <h4 className="text-[10px] sm:text-[11px] font-bold text-[#202941]">Excel / CSV Question Import</h4>
+                      <p className="text-[10px] leading-snug text-[#637089]">Upload questions in seconds from spreadsheets.</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-500 dark:text-emerald-400 mt-0.5">
-                      <Check className="h-4 w-4" />
+                    <div className="mt-0.5 rounded-md bg-emerald-100 p-1 text-emerald-600">
+                      <Check className="h-3.5 w-3.5" />
                     </div>
                     <div>
-                      <h4 className={`font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Custom Question Backgrounds</h4>
-                      <p className={`text-[11px] ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>Set blur, brightness, gradients or custom graphics.</p>
+                      <h4 className="text-[10px] sm:text-[11px] font-bold text-[#202941]">Custom Question Backgrounds</h4>
+                      <p className="text-[10px] leading-snug text-[#637089]">Set blur, brightness, gradients or custom graphics.</p>
                     </div>
                   </div>
                 </div>
 
-                <div className={`p-4 rounded-2xl border space-y-2 mt-4 ${
-                  isLight ? 'bg-purple-50/70 border-purple-200/80' : 'bg-primary/10 border-primary/20'
-                }`}>
-                  <div className="flex items-center gap-2 text-xs font-extrabold text-primary">
+                <div className="mt-2 space-y-1.5 rounded-xl border border-[#eee2ff] bg-[#f8f3ff] p-3">
+                  <div className="flex items-center gap-2 text-[10px] font-extrabold text-[#6535ff]">
                     <Zap className="h-4 w-4" />
                     <span>No Credit Card Required</span>
                   </div>
-                  <p className={`text-[11px] ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                  <p className="text-[10px] leading-relaxed text-[#536079]">
                     Get started completely free forever. Upgrade to Pro anytime for unlimited players.
                   </p>
                 </div>
               </div>
 
               {/* Login option footer */}
-              <div className={`rounded-2xl p-4 border text-center ${
-                isLight ? 'bg-white border-gray-200/80 shadow-sm' : 'glass-panel border-white/10'
-              }`}>
-                <p className={`text-xs font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+              <div className="pt-1 text-center">
+                <p className="text-[10px] font-medium text-[#59627a]">
                   Already have a host account?{' '}
-                  <Link to="/login" className="font-extrabold text-secondary hover:underline">
+                  <Link to="/login" className="font-extrabold text-[#6535ff] hover:underline">
                     Sign In
                   </Link>
                 </p>
               </div>
             </div>
 
+              </div>
+            </div>
           </div>
 
         </div>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import {
   Users,
@@ -18,21 +17,21 @@ const leftFeatures = [
     iconBg: 'bg-[#EDE9FE]',
     title: 'Real-time Multiplayer',
     desc: 'Battle live with unlimited players in synchronized real-time sessions.',
-    topPct: '38.8%',
+    topPct: '36.5%',
   },
   {
     icon: <Trophy className="h-5 w-5 xl:h-6 xl:w-6 text-[#F59E0B]" />,
     iconBg: 'bg-[#FFF7EA]',
     title: 'Instant Leaderboards',
     desc: 'Track global & session player rankings in real-time as points accumulate.',
-    topPct: '57.8%',
+    topPct: '56.8%',
   },
   {
     icon: <Zap className="h-5 w-5 xl:h-6 xl:w-6 text-[#551BF5]" />,
     iconBg: 'bg-[#F3E8FF]',
     title: 'Live Results',
     desc: 'Get instant feedback on answer accuracy the second each question ends.',
-    topPct: '76.8%',
+    topPct: '76.5%',
   },
 ];
 
@@ -42,21 +41,21 @@ const rightFeatures = [
     iconBg: 'bg-[#E0F2FE]',
     title: 'Question Timer',
     desc: 'Customizable countdown timers per question to keep players focused and fast.',
-    topPct: '38.8%',
+    topPct: '36.2%',
   },
   {
     icon: <BarChart3 className="h-5 w-5 xl:h-6 xl:w-6 text-[#059669]" />,
     iconBg: 'bg-[#E8FBF4]',
     title: 'Quiz Analytics',
     desc: 'Deep-dive metrics on accuracy, completion rates, and player performance.',
-    topPct: '57.8%',
+    topPct: '54.4%',
   },
   {
     icon: <LayoutGrid className="h-5 w-5 xl:h-6 xl:w-6 text-[#7C3AED]" />,
     iconBg: 'bg-[#EDE9FE]',
     title: 'Host Dashboard',
     desc: 'Full control center to manage quizzes, view battle history, and launch games.',
-    topPct: '76.8%',
+    topPct: '72.9%',
   },
 ];
 
@@ -67,7 +66,7 @@ export default function FeaturesSection() {
   return (
     <section
       id="features"
-      className="w-full relative overflow-hidden transition-colors scroll-mt-20 py-8 lg:py-4 xl:py-6"
+      className="w-full relative overflow-hidden transition-colors scroll-mt-20 lg:scroll-mt-[calc(var(--main-header-height,80px)+80px)] py-8 lg:py-0"
       style={{
         background: isLight
           ? '#FAF8FF'
@@ -79,20 +78,20 @@ export default function FeaturesSection() {
           Seamless full-bleed 1024x576 aspect architecture
           Matching Figma design and reference image with 100% precision
           ======================================================== */}
-      <div className="hidden lg:block w-full max-w-[1100px] xl:max-w-[1180px] 2xl:max-w-[1240px] mx-auto px-4 relative">
-        <div className="relative w-full aspect-[1024/576] max-h-[calc(100vh-100px)] mx-auto overflow-visible">
+      <div className="hidden lg:block w-full relative">
+        <div className="relative w-full aspect-[1024/576] mx-auto overflow-visible">
           
           {/* Background Illustration with 3D Laptop, Pedestal, Arch & Waves */}
           <img
             src={featuresSectionBg}
             alt="Gubbi Features Interface"
-            className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none z-0"
+            className="absolute inset-0 w-full h-full object-fill pointer-events-none select-none z-0"
           />
 
           {/* Section Header centered in top area */}
-          <div className="absolute top-[2.5%] left-1/2 -translate-x-1/2 flex flex-col items-center text-center w-full max-w-[760px] px-4 z-30 pointer-events-auto">
+          <div className="absolute top-[11.5%] left-1/2 -translate-x-1/2 flex flex-col items-center text-center w-full max-w-[760px] px-4 z-30 pointer-events-auto">
             {/* Top Pill Badge */}
-            <div className="mb-1.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EDE9FE] dark:bg-purple-950/60 border border-[#E9D5FF]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
+            <div className="mb-4 xl:mb-5 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#EDE9FE] dark:bg-purple-950/60 border border-[#E9D5FF]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
               <Zap className="w-3.5 h-3.5 fill-[#551BF5] text-[#551BF5]" />
               <span className="text-[11px] xl:text-[12px] font-bold uppercase tracking-[0.6px] text-[#551BF5] dark:text-purple-300">
                 CORE FEATURES
@@ -100,18 +99,18 @@ export default function FeaturesSection() {
             </div>
 
             {/* Heading 2 */}
-            <h2 className="mb-1 text-2xl xl:text-[32px] 2xl:text-[36px] xl:leading-[38px] tracking-[-0.9px] font-semibold text-[#0F0F2D] dark:text-white">
+            <h2 className="text-2xl lg:text-[29px] lg:leading-[34px] xl:text-[36px] xl:leading-[38px] tracking-[-0.9px] font-semibold text-[#0F0F2D] dark:text-white">
               <span>Everything You Need to </span>
               <span className="font-bold text-[#551BF5]">Engage &amp; Conquer</span>
             </h2>
 
             {/* Subtitle */}
-            <p className="text-xs xl:text-sm text-[#475569] dark:text-gray-300 max-w-[620px] text-center mb-1.5">
+            <p className="mt-3 text-xs lg:text-[13px] xl:text-base leading-6 text-[#475569] dark:text-gray-300 max-w-[680px] text-center">
               Gubbi comes packed with powerful features for teachers, quizmasters, and trivia hosts.
             </p>
 
             {/* Centered purple accent bar */}
-            <div className="w-12 h-1 bg-[#551BF5] rounded-full" />
+            <div className="mt-4 xl:mt-5 w-12 h-1 bg-[#551BF5] rounded-full" />
           </div>
 
           {/* SVG Curved Connector Lines & Unified Anchored Dots */}
@@ -121,69 +120,69 @@ export default function FeaturesSection() {
           >
             {/* Left Card 1 -> Laptop Screen Top Left */}
             <path
-              d="M 280 268 C 320 268, 340 275, 365 275"
+              d="M 283 258 C 320 258, 340 339, 365 339"
               fill="none"
               stroke="#DDD6FE"
               strokeWidth="2"
               strokeLinecap="round"
             />
-            <circle cx="280" cy="268" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
-            <circle cx="365" cy="275" r="3.5" fill="#A78BFA" opacity="0.9" />
+            <circle cx="283" cy="258" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
+            <circle cx="365" cy="339" r="3.5" fill="#A78BFA" opacity="0.9" />
 
             {/* Left Card 2 -> Laptop Middle Left Bezel */}
             <path
-              d="M 283 376 C 315 376, 340 365, 366 360"
+              d="M 286 367 C 315 367, 340 367, 366 367"
               fill="none"
               stroke="#DDD6FE"
               strokeWidth="2"
               strokeLinecap="round"
             />
-            <circle cx="283" cy="376" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
-            <circle cx="366" cy="360" r="3.5" fill="#A78BFA" opacity="0.9" />
+            <circle cx="286" cy="367" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
+            <circle cx="366" cy="367" r="3.5" fill="#A78BFA" opacity="0.9" />
 
             {/* Left Card 3 -> Laptop Bottom Left Base */}
             <path
-              d="M 284 484 C 325 484, 350 455, 378 448"
+              d="M 288 477 C 325 477, 350 455, 378 448"
               fill="none"
               stroke="#DDD6FE"
               strokeWidth="2"
               strokeLinecap="round"
             />
-            <circle cx="284" cy="484" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
+            <circle cx="288" cy="477" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
             <circle cx="378" cy="448" r="3.5" fill="#A78BFA" opacity="0.9" />
 
             {/* Right Card 1 -> Laptop Screen Top Right */}
             <path
-              d="M 733 261 C 693 261, 670 275, 645 275"
+              d="M 740 251 C 693 251, 670 280, 645 332"
               fill="none"
               stroke="#DDD6FE"
               strokeWidth="2"
               strokeLinecap="round"
             />
-            <circle cx="733" cy="261" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
-            <circle cx="645" cy="275" r="3.5" fill="#A78BFA" opacity="0.9" />
+            <circle cx="740" cy="251" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
+            <circle cx="645" cy="332" r="3.5" fill="#A78BFA" opacity="0.9" />
 
             {/* Right Card 2 -> Laptop Middle Right Bezel */}
             <path
-              d="M 733 367 C 700 367, 675 365, 651 360"
+              d="M 740 359 C 700 359, 675 359, 651 359"
               fill="none"
               stroke="#DDD6FE"
               strokeWidth="2"
               strokeLinecap="round"
             />
-            <circle cx="733" cy="367" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
-            <circle cx="651" cy="360" r="3.5" fill="#A78BFA" opacity="0.9" />
+            <circle cx="740" cy="359" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
+            <circle cx="651" cy="359" r="3.5" fill="#A78BFA" opacity="0.9" />
 
             {/* Right Card 3 -> Laptop Bottom Right Base */}
             <path
-              d="M 733 468 C 695 468, 670 455, 650 448"
+              d="M 740 460 C 695 460, 670 455, 650 463"
               fill="none"
               stroke="#DDD6FE"
               strokeWidth="2"
               strokeLinecap="round"
             />
-            <circle cx="733" cy="468" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
-            <circle cx="650" cy="448" r="3.5" fill="#A78BFA" opacity="0.9" />
+            <circle cx="740" cy="460" r="6" fill="#551BF5" stroke="#FFFFFF" strokeWidth="2.5" />
+            <circle cx="650" cy="463" r="3.5" fill="#A78BFA" opacity="0.9" />
           </svg>
 
           {/* Left 3 Feature Cards */}
@@ -194,22 +193,22 @@ export default function FeaturesSection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.35, delay: idx * 0.08 }}
-              style={{ top: feat.topPct, left: '2.34%', width: '25%' }}
-              className={`absolute rounded-[16px] xl:rounded-[20px] p-2.5 xl:p-3.5 border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl z-30 ${
+              style={{ top: feat.topPct, left: '2.5%', width: '25%' }}
+              className={`absolute rounded-[16px] xl:rounded-[20px] p-2.5 lg:p-5 xl:p-6 border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl z-30 ${
                 isLight
                   ? 'bg-white/95 backdrop-blur-xs border-[#F3E8FF]/90 shadow-[0px_4px_12px_rgba(168,85,247,0.06)]'
                   : 'bg-[#151224]/95 border-purple-500/20 shadow-xl'
               }`}
             >
-              <div className="flex items-center gap-2.5 xl:gap-3">
-                <div className={`w-9 h-9 xl:w-11 xl:h-11 rounded-xl xl:rounded-2xl ${feat.iconBg} flex items-center justify-center shrink-0 shadow-inner`}>
+              <div className="flex items-center gap-2.5 lg:gap-3 xl:gap-4">
+                <div className={`w-9 h-9 lg:w-11 lg:h-11 xl:w-14 xl:h-14 rounded-xl xl:rounded-2xl ${feat.iconBg} flex items-center justify-center shrink-0 shadow-inner`}>
                   {feat.icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-xs xl:text-sm font-bold text-[#0F172A] dark:text-white leading-tight truncate">
+                  <h3 className="text-xs lg:text-[13px] xl:text-base font-bold text-[#0F172A] dark:text-white leading-tight truncate">
                     {feat.title}
                   </h3>
-                  <p className="text-[10px] xl:text-[11px] text-[#64748B] dark:text-gray-300 leading-snug mt-0.5 line-clamp-2">
+                  <p className="text-[10px] lg:leading-4 xl:text-xs xl:leading-5 text-[#64748B] dark:text-gray-300 leading-snug mt-1 line-clamp-2">
                     {feat.desc}
                   </p>
                 </div>
@@ -225,22 +224,22 @@ export default function FeaturesSection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.35, delay: idx * 0.08 }}
-              style={{ top: feat.topPct, left: '71.58%', width: '25%' }}
-              className={`absolute rounded-[16px] xl:rounded-[20px] p-2.5 xl:p-3.5 border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl z-30 ${
+              style={{ top: feat.topPct, left: '72.58%', width: '25.3%' }}
+              className={`absolute rounded-[16px] xl:rounded-[20px] p-2.5 lg:p-5 xl:p-6 border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl z-30 ${
                 isLight
                   ? 'bg-white/95 backdrop-blur-xs border-[#F3E8FF]/90 shadow-[0px_4px_12px_rgba(168,85,247,0.06)]'
                   : 'bg-[#151224]/95 border-purple-500/20 shadow-xl'
               }`}
             >
-              <div className="flex items-center gap-2.5 xl:gap-3">
-                <div className={`w-9 h-9 xl:w-11 xl:h-11 rounded-xl xl:rounded-2xl ${feat.iconBg} flex items-center justify-center shrink-0 shadow-inner`}>
+              <div className="flex items-center gap-2.5 lg:gap-3 xl:gap-4">
+                <div className={`w-9 h-9 lg:w-11 lg:h-11 xl:w-14 xl:h-14 rounded-xl xl:rounded-2xl ${feat.iconBg} flex items-center justify-center shrink-0 shadow-inner`}>
                   {feat.icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-xs xl:text-sm font-bold text-[#0F172A] dark:text-white leading-tight truncate">
+                  <h3 className="text-xs lg:text-[13px] xl:text-base font-bold text-[#0F172A] dark:text-white leading-tight truncate">
                     {feat.title}
                   </h3>
-                  <p className="text-[10px] xl:text-[11px] text-[#64748B] dark:text-gray-300 leading-snug mt-0.5 line-clamp-2">
+                  <p className="text-[10px] lg:leading-4 xl:text-xs xl:leading-5 text-[#64748B] dark:text-gray-300 leading-snug mt-1 line-clamp-2">
                     {feat.desc}
                   </p>
                 </div>
