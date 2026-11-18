@@ -166,19 +166,20 @@ export default function JoinGame() {
         =============================================================================
       */}
       <div 
-        className="join-game-background relative min-h-[calc(100vh-var(--main-header-height,80px))] w-full overflow-hidden flex items-start justify-center px-3 py-4 sm:py-6 lg:py-0 bg-cover bg-bottom bg-no-repeat"
+        className="join-game-background relative min-h-[calc(max(100vh-var(--main-header-height,80px),760px))] w-full flex items-start justify-center px-3 py-4 sm:py-6 lg:py-0 bg-cover bg-bottom bg-no-repeat"
         style={{
           backgroundImage: `url(${joinBattleBg})`,
           backgroundColor: '#F7F4FD',
         }}
       >
-        <div className="relative z-10 w-full max-w-[1351px] mx-auto px-4 sm:px-6 lg:pl-[111px] lg:pr-[158px] lg:pt-[37px] lg:pb-12">
+        <div className="relative z-10 w-full max-w-[1351px] mx-auto px-4 sm:px-6 lg:pl-12 xl:pl-[96px] 2xl:pl-[111px] lg:pr-8 xl:pr-[128px] 2xl:pr-[158px] pt-4 sm:pt-6 lg:pt-[32px] pb-12">
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_481px] gap-6 lg:gap-[25px] items-start">
             
             {/* ===================================================================== */}
             {/* LEFT COLUMN: "Join the BATTLE!" Heading + Pill Subtitle (Figma 1:1)   */}
+            {/* Positioned comfortably in the open sky safely above the boy's head    */}
             {/* ===================================================================== */}
-            <section className="flex flex-col items-center lg:items-start text-center lg:text-left pt-2 lg:pt-[22px] z-10">
+            <section className="flex flex-col items-center lg:items-start text-center lg:text-left pt-1 lg:pt-0 z-10">
               {endedMessage && (
                 <div className="mb-3 p-3 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-600 text-xs font-bold flex items-center gap-2 shadow-sm">
                   <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
