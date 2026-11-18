@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Gamepad2, User, Phone, Tag, Smile, QrCode, ArrowRight, 
-  Check, Loader2, AlertCircle, Camera, Sparkles 
+  Check, Loader2, AlertCircle 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Html5Qrcode } from 'html5-qrcode';
@@ -28,7 +28,8 @@ export default function JoinGame() {
   const [selectedAvatar, setSelectedAvatar] = useState('dog');
   const qrCodeRef = useRef(null);
 
-  const avatars = ['dog', 'cat', 'mouse', 'hamster', 'rabbit', 'fox', 'bear', 'panda', 'koala', 'tiger', 'lion', 'cow'];
+  // Exact 8 avatars matching the Figma design reference (4 columns x 2 rows)
+  const avatars = ['dog', 'cat', 'mouse', 'hamster', 'rabbit', 'fox', 'bear', 'panda'];
 
   const {
     register,
@@ -71,14 +72,12 @@ export default function JoinGame() {
           console.log('[QR SCANNER SUCCESS] Decoded text:', decodedText);
           let pinVal = '';
           
-          // Case 1: Decoded text is a full URL with search parameter (e.g. ?pin=589231)
           if (decodedText.includes('?')) {
             const urlQuery = decodedText.split('?')[1];
             const urlParams = new URLSearchParams(urlQuery);
             pinVal = urlParams.get('pin');
           }
           
-          // Case 2: Decoded text is raw 6 digits
           if (!pinVal && /^\d{6}$/.test(decodedText.trim())) {
             pinVal = decodedText.trim();
           }
@@ -90,12 +89,12 @@ export default function JoinGame() {
           } else {
             toast.error('No valid game PIN found in QR Code.');
           }
-        } catch (err) {
+        } catch {
           toast.error('Failed to parse QR scan.');
         }
       },
       () => {
-        // Silently catch scan frames without success matches
+        // Silently catch scan frames without match
       }
     ).catch((err) => {
       console.error('[QR START ERROR]', err);
@@ -132,7 +131,6 @@ export default function JoinGame() {
         shouldReplacePrevious ? previousPlayerName.trim() : undefined
       );
       if (response.success) {
-        // Update global game contexts & immediately persist to localStorage
         setPin(cleanPin);
         setPlayerName(displayPlayerName);
         localStorage.setItem('guest_pin', cleanPin);
@@ -141,12 +139,10 @@ export default function JoinGame() {
         if (cleanMobile) {
           localStorage.setItem('guest_mobileNumber', cleanMobile);
         }
-        // Clear any old host flags if joining as student
         localStorage.removeItem('current_hosted_pin');
 
         toast.success(`Welcome to the lobby, ${displayPlayerName}!`);
         
-        // Navigate to the Waiting Room page
         setTimeout(() => {
           navigate(`/waiting/${cleanPin}`);
         }, 800);
@@ -166,26 +162,23 @@ export default function JoinGame() {
     <AnimatedPage>
       {/* 
         =============================================================================
-        DESKTOP - 6 JOIN THE BATTLE SECTION (Matching Figma 1:1)
+        DESKTOP - 6: JOIN THE BATTLE ARENA (Matching Figma 1:1)
         =============================================================================
       */}
       <div 
-        className="relative min-h-[calc(100vh-var(--main-header-height,64px))] w-full overflow-hidden flex items-center justify-center px-4 py-8 sm:py-10 lg:px-12 bg-cover bg-center lg:bg-left-center bg-no-repeat"
+        className="relative min-h-[calc(100vh-var(--main-header-height,64px))] w-full overflow-hidden flex items-center justify-center px-3 py-6 sm:py-8 lg:px-12 bg-cover bg-bottom lg:bg-left-center bg-no-repeat"
         style={{
           backgroundImage: `url(${joinBattleBg})`,
-          backgroundColor: '#F5F1FD',
+          backgroundColor: '#F7F4FD',
         }}
       >
-        {/* Soft background tint overlay for ultra-crisp legibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/40 pointer-events-none" />
-
-        <div className="relative z-10 w-full max-w-[1240px] mx-auto px-2 sm:px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_480px] gap-8 lg:gap-14 items-center">
+        <div className="relative z-10 w-full max-w-[1240px] mx-auto px-1 sm:px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_470px] gap-6 lg:gap-12 items-center">
             
             {/* ===================================================================== */}
-            {/* LEFT COLUMN: HEADING BLOCK ("Join The Battle" + Pill Subtitle)        */}
+            {/* LEFT COLUMN: "Join the BATTLE!" Heading + Pill Subtitle               */}
             {/* ===================================================================== */}
-            <section className="flex flex-col items-start gap-4 text-left lg:pb-14">
+            <section className="flex flex-col items-center lg:items-start text-center lg:text-left gap-3.5 pt-2 lg:pt-4 lg:pb-72">
               {endedMessage && (
                 <div className="mb-2 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-600 text-xs font-bold flex items-center gap-2.5 shadow-sm">
                   <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />
@@ -193,32 +186,32 @@ export default function JoinGame() {
                 </div>
               )}
 
-              {/* Heading 1: "Join The" + Gradient "Battle" */}
-              <div className="space-y-0.5">
-                <h1 className="font-['Inter'] text-4xl sm:text-5xl lg:text-[60px] font-extrabold leading-[1.02] tracking-[-1.5px] text-[#020617]">
-                  <span>Join The</span>
-                  <span className="block mt-1 font-black bg-gradient-to-r from-[#6C28FE] via-[#4D1AE0] to-[#2A56F6] bg-clip-text text-transparent">
-                    Battle
+              {/* Exact Heading: "Join the" (dark) + "BATTLE!" (purple) */}
+              <div className="space-y-0">
+                <h1 className="font-['Inter'] text-4xl sm:text-5xl lg:text-[56px] font-extrabold leading-[1.05] tracking-tight text-[#0F172A]">
+                  <span>Join the</span>
+                  <span className="block font-black text-[#6C28FE] tracking-tight">
+                    BATTLE!
                   </span>
                 </h1>
               </div>
 
-              {/* Pill Subtitle matching Figma 1:1 */}
-              <div className="inline-flex items-center px-5 py-2.5 rounded-[16px] bg-white/80 border border-white/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] backdrop-blur-md">
-                <span className="font-['Inter'] font-semibold text-xs sm:text-[14px] leading-5 text-[#1E293B]">
-                  Enter your game PIN to join the live quiz lobby
+              {/* Exact Pill Subtitle matching Figma */}
+              <div className="inline-flex items-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/85 border border-white/95 shadow-[0px_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-md">
+                <span className="font-['Inter'] font-semibold text-xs sm:text-[13.5px] text-[#1E293B]">
+                  Enter the Game PIN or Scan QR code to enter the arena
                 </span>
               </div>
             </section>
 
             {/* ===================================================================== */}
-            {/* RIGHT COLUMN: THE WHITE FORM CARD (Matching Figma 1:1)               */}
+            {/* RIGHT COLUMN: THE WHITE CARD (Matching Figma 1:1)                     */}
             {/* ===================================================================== */}
             <motion.div
-              initial={{ opacity: 0, y: 24, scale: 0.98 }}
+              initial={{ opacity: 0, y: 20, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: 'spring', stiffness: 85, damping: 16 }}
-              className="w-full max-w-[480px] mx-auto rounded-[26px] bg-white p-4 sm:p-5 md:p-6 shadow-[0px_10px_35px_-5px_rgba(124,58,237,0.1),0px_0px_0px_1px_rgba(235,230,254,0.8)] border border-[#ECE6FE] relative z-10"
+              transition={{ type: 'spring', stiffness: 90, damping: 16 }}
+              className="w-full max-w-[470px] mx-auto rounded-[28px] sm:rounded-[32px] bg-white p-4 sm:p-6 shadow-[0px_10px_35px_-5px_rgba(124,58,237,0.1),0px_0px_0px_1px_rgba(235,230,254,0.8)] border border-[#ECE6FE] relative z-10"
             >
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-2.5 sm:space-y-3">
                 
@@ -227,13 +220,13 @@ export default function JoinGame() {
                   <label className="block font-['Inter'] font-extrabold text-[9.5px] leading-[14px] tracking-[0.475px] uppercase text-[#334155]">
                     LOBBY GAME PIN
                   </label>
-                  <div className={`h-[40px] bg-white border rounded-[12px] px-2.5 flex items-center gap-2 shadow-[0px_2px_6px_rgba(139,92,246,0.03)] focus-within:border-[#9333EA] focus-within:ring-2 focus-within:ring-[#9333EA]/15 transition-all ${
+                  <div className={`h-[42px] bg-white border rounded-[12px] px-3 flex items-center gap-2.5 shadow-[0px_2px_6px_rgba(139,92,246,0.03)] focus-within:border-[#8B5CF6] focus-within:ring-2 focus-within:ring-[#8B5CF6]/15 transition-all ${
                     errors.pin ? 'border-red-400' : 'border-[#E5DEFF]'
                   }`}>
-                    <div className="w-4 h-4 flex items-center justify-center text-[#9333EA] shrink-0">
+                    <div className="w-4 h-4 flex items-center justify-center text-[#8B5CF6] shrink-0">
                       <Gamepad2 className="w-4 h-4" />
                     </div>
-                    <span className="text-[#CBD5E1] text-[14px] font-light select-none">|</span>
+                    <span className="text-[#CBD5E1] text-[13px] font-light select-none">|</span>
                     <input
                       type="text"
                       placeholder="Enter Game PIN"
@@ -249,7 +242,7 @@ export default function JoinGame() {
                           message: 'Lobby PIN must be a 6-digit number',
                         },
                       })}
-                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#D8B4FE] focus:outline-none font-['Inter'] tracking-wide"
+                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter'] tracking-wide"
                     />
                   </div>
                   {errors.pin && (
@@ -265,13 +258,13 @@ export default function JoinGame() {
                   <label className="block font-['Inter'] font-extrabold text-[9.5px] leading-[14px] tracking-[0.475px] uppercase text-[#334155]">
                     FULL NAME
                   </label>
-                  <div className={`h-[40px] bg-white border rounded-[12px] px-2.5 flex items-center gap-2 shadow-[0px_2px_6px_rgba(139,92,246,0.03)] focus-within:border-[#9333EA] focus-within:ring-2 focus-within:ring-[#9333EA]/15 transition-all ${
+                  <div className={`h-[42px] bg-white border rounded-[12px] px-3 flex items-center gap-2.5 shadow-[0px_2px_6px_rgba(139,92,246,0.03)] focus-within:border-[#8B5CF6] focus-within:ring-2 focus-within:ring-[#8B5CF6]/15 transition-all ${
                     errors.fullName ? 'border-red-400' : 'border-[#E5DEFF]'
                   }`}>
-                    <div className="w-4 h-4 flex items-center justify-center text-[#9333EA] shrink-0">
+                    <div className="w-4 h-4 flex items-center justify-center text-[#8B5CF6] shrink-0">
                       <User className="w-4 h-4" />
                     </div>
-                    <span className="text-[#CBD5E1] text-[14px] font-light select-none">|</span>
+                    <span className="text-[#CBD5E1] text-[13px] font-light select-none">|</span>
                     <input
                       type="text"
                       placeholder="Enter Full Name"
@@ -301,7 +294,7 @@ export default function JoinGame() {
                           setValue('fullName', sanitized, { shouldValidate: true });
                         }
                       })}
-                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#D8B4FE] focus:outline-none font-['Inter']"
+                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter']"
                     />
                   </div>
                   {errors.fullName && (
@@ -317,13 +310,13 @@ export default function JoinGame() {
                   <label className="block font-['Inter'] font-extrabold text-[9.5px] leading-[14px] tracking-[0.475px] uppercase text-[#334155]">
                     MOBILE NUMBER
                   </label>
-                  <div className={`h-[40px] bg-white border rounded-[12px] px-2.5 flex items-center gap-2 shadow-[0px_2px_6px_rgba(139,92,246,0.03)] focus-within:border-[#9333EA] focus-within:ring-2 focus-within:ring-[#9333EA]/15 transition-all ${
+                  <div className={`h-[42px] bg-white border rounded-[12px] px-3 flex items-center gap-2.5 shadow-[0px_2px_6px_rgba(139,92,246,0.03)] focus-within:border-[#8B5CF6] focus-within:ring-2 focus-within:ring-[#8B5CF6]/15 transition-all ${
                     errors.mobileNumber ? 'border-red-400' : 'border-[#E5DEFF]'
                   }`}>
-                    <div className="w-4 h-4 flex items-center justify-center text-[#9333EA] shrink-0">
+                    <div className="w-4 h-4 flex items-center justify-center text-[#8B5CF6] shrink-0">
                       <Phone className="w-4 h-4" />
                     </div>
-                    <span className="text-[#CBD5E1] text-[14px] font-light select-none">|</span>
+                    <span className="text-[#CBD5E1] text-[13px] font-light select-none">|</span>
                     <input
                       type="tel"
                       placeholder="Enter Mobile Number"
@@ -339,7 +332,7 @@ export default function JoinGame() {
                           message: 'Must be 10 digits starting with 6, 7, 8, or 9',
                         }
                       })}
-                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#D8B4FE] focus:outline-none font-['Inter'] tracking-wide"
+                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter'] tracking-wide"
                     />
                   </div>
                   {errors.mobileNumber && (
@@ -355,13 +348,13 @@ export default function JoinGame() {
                   <label className="block font-['Inter'] font-extrabold text-[9.5px] leading-[14px] tracking-[0.475px] uppercase text-[#334155]">
                     CHOOSE NICKNAME (OPTIONAL)
                   </label>
-                  <div className={`h-[40px] bg-white border rounded-[12px] px-2.5 flex items-center gap-2 shadow-[0px_2px_6px_rgba(139,92,246,0.03)] focus-within:border-[#9333EA] focus-within:ring-2 focus-within:ring-[#9333EA]/15 transition-all ${
+                  <div className={`h-[42px] bg-white border rounded-[12px] px-3 flex items-center gap-2.5 shadow-[0px_2px_6px_rgba(139,92,246,0.03)] focus-within:border-[#8B5CF6] focus-within:ring-2 focus-within:ring-[#8B5CF6]/15 transition-all ${
                     errors.nickname ? 'border-red-400' : 'border-[#E5DEFF]'
                   }`}>
-                    <div className="w-4 h-4 flex items-center justify-center text-[#9333EA] shrink-0">
+                    <div className="w-4 h-4 flex items-center justify-center text-[#8B5CF6] shrink-0">
                       <Tag className="w-4 h-4" />
                     </div>
-                    <span className="text-[#CBD5E1] text-[14px] font-light select-none">|</span>
+                    <span className="text-[#CBD5E1] text-[13px] font-light select-none">|</span>
                     <input
                       type="text"
                       placeholder="Enter Nickname"
@@ -379,7 +372,7 @@ export default function JoinGame() {
                           message: 'Letters and numbers only',
                         }
                       })}
-                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#D8B4FE] focus:outline-none font-['Inter']"
+                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter']"
                     />
                   </div>
                   {errors.nickname && (
@@ -390,49 +383,51 @@ export default function JoinGame() {
                   )}
                 </div>
 
-                {/* ── Avatar Selection Header & Grid ── */}
+                {/* ── Avatar Selection: 4 Columns x 2 Rows matching Figma ── */}
                 <div className="space-y-1.5 pt-0.5 text-left">
                   <div className="flex items-center gap-1.5">
-                    <Smile className="w-3.5 h-3.5 text-[#9333EA]" />
+                    <Smile className="w-3.5 h-3.5 text-[#8B5CF6]" />
                     <span className="font-['Inter'] font-extrabold text-[9.5px] leading-[14px] tracking-[0.475px] uppercase text-[#334155]">
                       CHOOSE AVATAR
                     </span>
                   </div>
 
-                  <div className="p-2 sm:p-2.5 rounded-[20px] bg-[#FAF8FF] border border-[#EDE9FE] shadow-[inset_0px_2px_4px_rgba(139,92,246,0.03)]">
-                    <div className="grid grid-cols-6 gap-1.5 sm:gap-2">
-                      {avatars.map((avatar) => (
+                  {/* 4x2 Avatar Grid */}
+                  <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
+                    {avatars.map((avatar) => {
+                      const isSelected = selectedAvatar === avatar;
+                      return (
                         <button
                           key={avatar}
                           type="button"
                           onClick={() => setSelectedAvatar(avatar)}
-                          className={`relative h-10 sm:h-11 rounded-xl flex items-center justify-center transition-all duration-150 cursor-pointer active:scale-95 ${
-                            selectedAvatar === avatar
-                              ? 'bg-gradient-to-br from-[#7A38FF] to-[#4F46E5] text-white shadow-[0_4px_12px_rgba(108,40,254,0.35)] scale-105 ring-2 ring-white z-10'
-                              : 'bg-white hover:bg-white/90 border border-[#E9E4F5] hover:border-[#D8B4FE]'
+                          className={`relative h-[52px] sm:h-[58px] rounded-2xl flex items-center justify-center transition-all duration-150 cursor-pointer active:scale-95 ${
+                            isSelected
+                              ? 'bg-purple-50/50 border-2 border-[#8B5CF6] shadow-sm scale-[1.02]'
+                              : 'bg-[#F8FAFC]/90 border border-slate-100 hover:bg-slate-100 hover:border-slate-200'
                           }`}
                         >
-                          <Avatar emoji={avatar} className="w-6 h-6 sm:w-7 sm:h-7 object-contain drop-shadow-xs" />
-                          {selectedAvatar === avatar && (
-                            <div className="absolute -top-1 -right-1 bg-white text-[#7A38FF] rounded-full p-0.5 shadow-sm ring-1 ring-[#7A38FF]/30 flex items-center justify-center">
+                          <Avatar emoji={avatar} className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-xs" />
+                          {isSelected && (
+                            <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#7A38FF] text-white rounded-full shadow-xs ring-1 ring-white flex items-center justify-center">
                               <Check className="w-2.5 h-2.5 stroke-[3]" />
                             </div>
                           )}
                         </button>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
                 </div>
 
-                {/* ── QR Scanner Camera Box (Expandable when toggled) ── */}
+                {/* ── Expandable QR Scanner Camera ── */}
                 {isScanning && (
                   <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2 animate-in fade-in duration-200">
                     {scanError ? (
-                      <div className="space-y-1.5 text-center">
+                      <div className="space-y-1 text-center">
                         <AlertCircle className="w-6 h-6 text-red-500 mx-auto" />
                         <p className="text-xs font-bold text-slate-800">Camera Access Error</p>
                         <p className="text-[11px] text-slate-500 leading-tight">
-                          Camera access requires HTTPS or localhost. Scan the QR code using your phone's native camera.
+                          Camera requires HTTPS or localhost. Scan the QR code with your phone's native camera.
                         </p>
                       </div>
                     ) : (
@@ -453,7 +448,7 @@ export default function JoinGame() {
                       setScanError(null);
                       setIsScanning(!isScanning);
                     }}
-                    className="w-full h-[46px] sm:h-[48px] rounded-full bg-white border border-[#E2E8F0]/90 shadow-[0px_4px_14px_rgba(0,0,0,0.04)] flex items-center justify-center gap-2 text-[#1E293B] font-['Inter'] font-bold text-[14px] hover:bg-slate-50 hover:border-slate-300 transition-all cursor-pointer active:scale-[0.99]"
+                    className="w-full h-[46px] sm:h-[48px] rounded-full bg-white border border-slate-200 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] flex items-center justify-center gap-2 text-slate-800 font-['Inter'] font-bold text-[14px] hover:bg-slate-50 transition-all cursor-pointer active:scale-[0.99]"
                   >
                     <QrCode className="w-4 h-4 text-[#0F172A]" />
                     <span>{isScanning ? 'Close Scanner' : 'Scan QR Code'}</span>
@@ -463,7 +458,7 @@ export default function JoinGame() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className={`w-full h-[50px] sm:h-[52px] rounded-full bg-gradient-to-r from-[#7A38FF] via-[#6C28FE] to-[#4F46E5] shadow-[0px_12px_30px_-5px_rgba(108,40,254,0.45)] flex items-center justify-center gap-2 text-white font-['Inter'] font-extrabold text-[15px] hover:opacity-95 hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer ${
+                    className={`w-full h-[50px] sm:h-[52px] rounded-full bg-gradient-to-r from-[#6C28FE] to-[#4F46E5] shadow-[0px_10px_25px_-3px_rgba(108,40,254,0.4)] flex items-center justify-center gap-2 text-white font-['Inter'] font-extrabold text-[15px] hover:brightness-105 active:scale-[0.99] transition-all cursor-pointer ${
                       isLoading ? 'opacity-60 cursor-not-allowed' : ''
                     }`}
                   >

@@ -182,7 +182,7 @@ export default function Navbar() {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-8">
-          {token ? (
+          {location.pathname === '/join' ? null : token ? (
             <>
               <Link 
                 to="/dashboard" 
@@ -415,39 +415,69 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              {/* Desktop Auth Buttons */}
+              {/* Desktop Auth Buttons / Join Lobby Button on /join */}
               <div className="hidden md:flex items-center gap-4">
+                {location.pathname === '/join' ? (
+                  <Link
+                    to="/join"
+                    className="btn-get-started px-6 py-2.5 rounded-full text-[14px] font-['Inter'] font-extrabold !text-white shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center gap-1.5 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap"
+                    style={{ 
+                      background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
+                      color: '#ffffff'
+                    }}
+                  >
+                    <span className="!text-white font-extrabold" style={{ color: '#ffffff' }}>Join Lobby</span>
+                    <ArrowRight className="h-4 w-4 !text-white" style={{ color: '#ffffff' }} />
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      className="px-3 py-2 text-[14px] font-['Inter'] font-semibold text-[#334155] hover:text-[#551BF5] transition-colors"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="btn-get-started px-5 py-2.5 rounded-full text-[14px] font-['Inter'] font-semibold !text-white shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center gap-1.5 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap"
+                      style={{ 
+                        background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
+                        color: '#ffffff'
+                      }}
+                    >
+                      <span className="!text-white font-semibold" style={{ color: '#ffffff' }}>Sign Up as Host</span>
+                      <ArrowRight className="h-4 w-4 !text-white" style={{ color: '#ffffff' }} />
+                    </Link>
+                  </>
+                )}
+              </div>
+
+              {/* Mobile Quick Action Button */}
+              {location.pathname === '/join' ? (
                 <Link
-                  to="/login"
-                  className="px-3 py-2 text-[14px] font-['Inter'] font-semibold text-[#334155] hover:text-[#551BF5] transition-colors"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="btn-get-started px-5 py-2.5 rounded-full text-[14px] font-['Inter'] font-semibold !text-white shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center gap-1.5 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap"
+                  to="/join"
+                  className="btn-get-started md:hidden px-4 py-2 text-xs font-['Inter'] font-extrabold !text-white rounded-full shadow-sm flex items-center gap-1 shrink-0 whitespace-nowrap"
                   style={{ 
                     background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
                     color: '#ffffff'
                   }}
                 >
-                  <span className="!text-white font-semibold" style={{ color: '#ffffff' }}>Sign Up as Host</span>
-                  <ArrowRight className="h-4 w-4 !text-white" style={{ color: '#ffffff' }} />
+                  <span className="!text-white font-extrabold" style={{ color: '#ffffff' }}>Join Lobby</span>
+                  <ArrowRight className="h-3.5 w-3.5 !text-white" style={{ color: '#ffffff' }} />
                 </Link>
-              </div>
-
-              {/* Mobile Quick Sign Up as Host Button */}
-              <Link
-                to="/register"
-                className="btn-get-started md:hidden px-3 sm:px-4 py-2 text-xs font-['Inter'] font-bold !text-white rounded-full shadow-sm flex items-center gap-1 shrink-0 whitespace-nowrap"
-                style={{ 
-                  background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
-                  color: '#ffffff'
-                }}
-              >
-                <span className="!text-white font-bold" style={{ color: '#ffffff' }}>Sign Up as Host</span>
-                <ArrowRight className="h-3.5 w-3.5 !text-white" style={{ color: '#ffffff' }} />
-              </Link>
+              ) : (
+                <Link
+                  to="/register"
+                  className="btn-get-started md:hidden px-3 sm:px-4 py-2 text-xs font-['Inter'] font-bold !text-white rounded-full shadow-sm flex items-center gap-1 shrink-0 whitespace-nowrap"
+                  style={{ 
+                    background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
+                    color: '#ffffff'
+                  }}
+                >
+                  <span className="!text-white font-bold" style={{ color: '#ffffff' }}>Sign Up as Host</span>
+                  <ArrowRight className="h-3.5 w-3.5 !text-white" style={{ color: '#ffffff' }} />
+                </Link>
+              )}
             </>
           )}
         </div>
