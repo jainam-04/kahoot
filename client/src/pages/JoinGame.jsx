@@ -166,41 +166,59 @@ export default function JoinGame() {
         =============================================================================
       */}
       <div 
-        className="relative min-h-[calc(100vh-var(--main-header-height,64px))] w-full overflow-hidden flex items-center justify-center px-3 py-6 sm:py-8 lg:px-12 bg-cover bg-bottom lg:bg-left-center bg-no-repeat"
+        className="relative min-h-[calc(100vh-var(--main-header-height,80px))] w-full overflow-hidden flex items-start justify-center px-3 py-4 sm:py-6 lg:py-0 bg-cover bg-bottom bg-no-repeat"
         style={{
           backgroundImage: `url(${joinBattleBg})`,
           backgroundColor: '#F7F4FD',
         }}
       >
-        <div className="relative z-10 w-full max-w-[1240px] mx-auto px-1 sm:px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_470px] gap-6 lg:gap-12 items-center">
+        <div className="relative z-10 w-full max-w-[1351px] mx-auto px-4 sm:px-6 lg:pl-[111px] lg:pr-[158px] lg:pt-[37px] lg:pb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_481px] gap-6 lg:gap-[25px] items-start">
             
             {/* ===================================================================== */}
-            {/* LEFT COLUMN: "Join the BATTLE!" Heading + Pill Subtitle               */}
+            {/* LEFT COLUMN: "Join the BATTLE!" Heading + Pill Subtitle (Figma 1:1)   */}
             {/* ===================================================================== */}
-            <section className="flex flex-col items-center lg:items-start text-center lg:text-left gap-3.5 pt-2 lg:pt-4 lg:pb-72">
+            <section className="flex flex-col items-center lg:items-start text-center lg:text-left pt-2 lg:pt-[22px] z-10">
               {endedMessage && (
-                <div className="mb-2 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-600 text-xs font-bold flex items-center gap-2.5 shadow-sm">
-                  <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />
+                <div className="mb-3 p-3 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-600 text-xs font-bold flex items-center gap-2 shadow-sm">
+                  <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
                   <span>{endedMessage}</span>
                 </div>
               )}
 
-              {/* Exact Heading: "Join the" (dark) + "BATTLE!" (purple) */}
-              <div className="space-y-0">
-                <h1 className="font-['Inter'] text-4xl sm:text-5xl lg:text-[56px] font-extrabold leading-[1.05] tracking-tight text-[#0F172A]">
-                  <span>Join the</span>
-                  <span className="block font-black text-[#6C28FE] tracking-tight">
+              {/* Exact Figma Heading Block: width: 576px, gap: 16px */}
+              <div className="flex flex-col items-center lg:items-start gap-4 w-full max-w-[576px]">
+                {/* Heading 1: gap: 6px */}
+                <div className="flex flex-col items-center lg:items-start gap-1.5 w-full">
+                  <h1 className="font-['Inter'] font-extrabold text-[36px] sm:text-[48px] lg:text-[60px] leading-none tracking-[-1.5px] text-[#020617] m-0 p-0">
+                    Join the
+                  </h1>
+                  <div 
+                    className="font-['Inter'] font-black text-[36px] sm:text-[48px] lg:text-[60px] leading-none tracking-[-1.5px] bg-clip-text text-transparent select-none m-0 p-0"
+                    style={{
+                      backgroundImage: 'linear-gradient(95.95deg, #6C28FE 0%, #4D1AE0 50%, #2A56F6 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
                     BATTLE!
-                  </span>
-                </h1>
-              </div>
+                  </div>
+                </div>
 
-              {/* Exact Pill Subtitle matching Figma */}
-              <div className="inline-flex items-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/85 border border-white/95 shadow-[0px_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-md">
-                <span className="font-['Inter'] font-semibold text-xs sm:text-[13.5px] text-[#1E293B]">
-                  Enter the Game PIN or Scan QR code to enter the arena
-                </span>
+                {/* Exact Figma Pill Subtitle: 411.8px x 42px, radius 16px, background rgba(255,255,255,0.8), border rgba(255,255,255,0.9) */}
+                <div 
+                  className="inline-flex items-center px-5 py-2.5 rounded-[16px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] select-none"
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    border: '1px solid rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(4px)',
+                    WebkitBackdropFilter: 'blur(4px)',
+                  }}
+                >
+                  <span className="font-['Inter'] font-semibold text-[13px] sm:text-[14px] leading-5 text-[#1E293B] whitespace-nowrap">
+                    Enter the Game PIN or Scan QR code to enter the arena
+                  </span>
+                </div>
               </div>
             </section>
 
@@ -211,7 +229,7 @@ export default function JoinGame() {
               initial={{ opacity: 0, y: 20, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ type: 'spring', stiffness: 90, damping: 16 }}
-              className="w-full max-w-[470px] mx-auto rounded-[28px] sm:rounded-[32px] bg-white p-4 sm:p-6 shadow-[0px_10px_35px_-5px_rgba(124,58,237,0.1),0px_0px_0px_1px_rgba(235,230,254,0.8)] border border-[#ECE6FE] relative z-10"
+              className="w-full max-w-[481px] mx-auto rounded-[26px] bg-white p-3.5 sm:p-5 shadow-[0px_10px_35px_-5px_rgba(124,58,237,0.1),0px_0px_0px_1px_rgba(235,230,254,0.8)] border border-[#ECE6FE] relative z-10"
             >
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-2.5 sm:space-y-3">
                 
