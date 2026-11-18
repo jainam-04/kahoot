@@ -166,7 +166,7 @@ export default function JoinGame() {
         =============================================================================
       */}
       <div 
-        className="relative min-h-[calc(100vh-var(--main-header-height,80px))] w-full overflow-hidden flex items-start justify-center px-3 py-4 sm:py-6 lg:py-0 bg-cover bg-bottom bg-no-repeat"
+        className="join-game-background relative min-h-[calc(100vh-var(--main-header-height,80px))] w-full overflow-hidden flex items-start justify-center px-3 py-4 sm:py-6 lg:py-0 bg-cover bg-bottom bg-no-repeat"
         style={{
           backgroundImage: `url(${joinBattleBg})`,
           backgroundColor: '#F7F4FD',
