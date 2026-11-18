@@ -121,49 +121,40 @@ export default function Register() {
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-4 sm:gap-6 lg:gap-8 items-center">
             
             {/* ===================================================================== */}
-            {/* HERO / BRANDING SECTION (With Gubbi Mascot Clipart & Badges)           */}
+            {/* MOBILE HERO / BRANDING SECTION (Hidden on desktop to avoid mascot collision) */}
             {/* ===================================================================== */}
-            <section className="flex flex-col items-center sm:items-start text-center sm:text-left gap-2.5 sm:gap-3.5 px-2 pb-1 lg:pb-6">
+            <section className="lg:hidden flex flex-col items-center text-center gap-2.5 sm:gap-3 px-2 pb-1">
               
-              {/* Mascot & Title Row */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 w-full">
-                {/* Gubbi Bird Mascot Clipart Container */}
-                <div className="relative shrink-0">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-2xl sm:rounded-3xl bg-white/95 border border-purple-200/90 shadow-[0_8px_20px_rgba(101,53,255,0.15)] p-2 sm:p-2.5 flex items-center justify-center backdrop-blur-md transition-transform hover:scale-105">
-                    <img 
-                      src="/gubbi-bird.png" 
-                      alt="Gubbi Bird Mascot" 
-                      className="w-full h-full object-contain filter drop-shadow-md select-none"
-                      onError={(e) => {
-                        e.currentTarget.src = '/gubbi-logo-transparent.png';
-                      }}
-                    />
-                  </div>
-                  {/* Playful Floating Sparkle Badge */}
-                  <span className="absolute -top-1.5 -right-1.5 text-base sm:text-lg select-none animate-bounce">
-                    ✨
-                  </span>
-                </div>
-
-                {/* Heading & Badge */}
-                <div className="flex flex-col items-center sm:items-start">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#EDE9FE] text-[#6535ff] text-[10px] sm:text-[11px] font-black uppercase tracking-wider mb-1 shadow-2xs">
-                    ✦ Free Host Registration
-                  </span>
-                  <h1 className="font-outfit text-2xl sm:text-3xl lg:text-[40px] font-black leading-tight sm:leading-[1.08] tracking-tight text-[#11152d]">
-                    <span>Create Your </span>
-                    <span className="text-[#6535ff]">Host Account</span>
-                  </h1>
-                </div>
+              {/* Proper Official Gubbi Brand Logo */}
+              <div className="flex items-center justify-center pt-1 pb-0.5">
+                <img 
+                  src="/gubbi-logo-transparent.png" 
+                  alt="GuBBi - Learn. Play. Shine." 
+                  className="h-12 sm:h-14 w-auto object-contain filter drop-shadow-[0_4px_16px_rgba(101,53,255,0.2)] select-none transition-transform hover:scale-105"
+                  onError={(e) => {
+                    e.currentTarget.src = '/gubbi-bird.png';
+                  }}
+                />
               </div>
 
+              {/* Host Registration Badge */}
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#EDE9FE] text-[#6535ff] text-[10px] sm:text-[11px] font-black uppercase tracking-wider shadow-2xs">
+                ✦ Free Host Registration
+              </span>
+
+              {/* Mobile Heading */}
+              <h1 className="font-outfit text-2xl sm:text-3xl font-black leading-tight tracking-tight text-[#11152d]">
+                <span>Create Your </span>
+                <span className="text-[#6535ff]">Host Account</span>
+              </h1>
+
               {/* Subtitle */}
-              <p className="max-w-md text-xs sm:text-sm font-semibold leading-relaxed text-[#59627a] px-1 sm:px-0">
+              <p className="max-w-md text-xs sm:text-sm font-semibold leading-relaxed text-[#59627a] px-1">
                 Get instant access to create quizzes, host live multiplayer trivia &amp; track live leaderboards.
               </p>
 
               {/* Trust Badges */}
-              <div className="flex items-center gap-2 flex-wrap pt-0.5 justify-center sm:justify-start">
+              <div className="flex items-center gap-2 flex-wrap pt-0.5 justify-center">
                 <span className="inline-flex items-center gap-1 text-[10.5px] sm:text-[11px] font-bold text-[#4B5563] bg-white/80 px-2.5 py-0.5 sm:py-1 rounded-full border border-purple-100 shadow-2xs">
                   <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
                   <span>100% Free Forever</span>
@@ -174,6 +165,11 @@ export default function Register() {
                 </span>
               </div>
             </section>
+
+            {/* ===================================================================== */}
+            {/* DESKTOP COLUMN SPACER: Lets the 3D Mascot Artwork in signup-bg shine  */}
+            {/* ===================================================================== */}
+            <div className="hidden lg:block min-h-[520px]" aria-hidden="true" />
 
             {/* ===================================================================== */}
             {/* REGISTRATION CARD (Mobile-Friendly & High-Density)                     */}
