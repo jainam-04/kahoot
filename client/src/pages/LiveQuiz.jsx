@@ -1,114 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Clock, HelpCircle, Loader2, ArrowRight, ArrowLeft, XCircle,
-  Cpu, Monitor, Keyboard, Mouse, Database, Server
+  Clock, Loader2, ArrowRight, XCircle, LogOut, AlertCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
-import { connectSocket, getSocket, emitJoinRoom, disconnectSocket } from '../services/socketService';
-import { submitAnswer, getGame, endQuestion } from '../services/gameService';
+import { connectSocket, getSocket, emitJoinRoom, emitLeaveRoom } from '../services/socketService';
+import { submitAnswer, getGame, endQuestion, leaveGame } from '../services/gameService';
 import { useGame } from '../context/GameContext';
 import { useTheme } from '../context/ThemeContext';
-
-const getTheme = (category, isLight = false) => {
-  const cat = String(category || 'general').toLowerCase();
-
-  if (isLight) {
-    if (cat.includes('science') || cat.includes('biology') || cat.includes('physics') || cat.includes('chemistry') || cat.includes('lab')) {
-      return {
-        bg: 'bg-gradient-to-br from-purple-50 via-fuchsia-50 to-pink-50',
-        glow1: 'bg-purple-300/20',
-        glow2: 'bg-fuchsia-300/15',
-        accentText: 'text-purple-700',
-        badgeBg: 'bg-purple-100 text-purple-700 border border-purple-200',
-        cardBorder: 'border-purple-200',
-        ambientElements: null
-      };
-    }
-
-    if (cat.includes('programming') || cat.includes('coding') || cat.includes('tech') || cat.includes('computer') || cat.includes('software') || cat.includes('hardware')) {
-      return {
-        bg: 'bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50',
-        glow1: 'bg-emerald-300/20',
-        glow2: 'bg-teal-300/15',
-        accentText: 'text-emerald-700 font-mono',
-        badgeBg: 'bg-emerald-100 text-emerald-800 border border-emerald-200 font-mono',
-        cardBorder: 'border-emerald-200',
-        ambientElements: null
-      };
-    }
-
-    if (cat.includes('geography') || cat.includes('history') || cat.includes('social') || cat.includes('civics') || cat.includes('world')) {
-      return {
-        bg: 'bg-gradient-to-br from-sky-50 via-blue-50 to-amber-50',
-        glow1: 'bg-blue-300/20',
-        glow2: 'bg-amber-300/15',
-        accentText: 'text-amber-800',
-        badgeBg: 'bg-amber-100 text-amber-800 border border-amber-200',
-        cardBorder: 'border-amber-200',
-        ambientElements: null
-      };
-    }
-
-    return {
-      bg: 'bg-gradient-to-br from-slate-50 via-indigo-50/60 to-purple-50/60',
-      glow1: 'bg-indigo-300/20',
-      glow2: 'bg-violet-300/15',
-      accentText: 'text-primary',
-      badgeBg: 'bg-primary/10 text-primary border border-primary/20',
-      cardBorder: 'border-slate-200',
-      ambientElements: null
-    };
-  }
-
-  if (cat.includes('science') || cat.includes('biology') || cat.includes('physics') || cat.includes('chemistry') || cat.includes('lab')) {
-    return {
-      bg: 'bg-[#0b0716] bg-gradient-to-br from-[#120b24] via-[#1b1036] to-[#0d071b]',
-      glow1: 'bg-purple-600/25',
-      glow2: 'bg-fuchsia-600/15',
-      accentText: 'text-fuchsia-400',
-      badgeBg: 'bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20',
-      cardBorder: 'border-fuchsia-500/20',
-      ambientElements: null
-    };
-  }
-
-  if (cat.includes('programming') || cat.includes('coding') || cat.includes('tech') || cat.includes('computer') || cat.includes('software') || cat.includes('hardware')) {
-    return {
-      bg: 'bg-[#030a08] bg-gradient-to-br from-[#051410] via-[#0b261f] to-[#040e0b]',
-      glow1: 'bg-emerald-600/20',
-      glow2: 'bg-teal-600/15',
-      accentText: 'text-emerald-400 font-mono',
-      badgeBg: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono',
-      cardBorder: 'border-emerald-500/20',
-      ambientElements: null
-    };
-  }
-
-  if (cat.includes('geography') || cat.includes('history') || cat.includes('social') || cat.includes('civics') || cat.includes('world')) {
-    return {
-      bg: 'bg-[#040c14] bg-gradient-to-br from-[#071626] via-[#0d2745] to-[#05111d]',
-      glow1: 'bg-blue-600/20',
-      glow2: 'bg-amber-600/10',
-      accentText: 'text-amber-400',
-      badgeBg: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-      cardBorder: 'border-amber-500/20',
-      ambientElements: null
-    };
-  }
-
-  return {
-    bg: 'bg-[#06070d] bg-gradient-to-br from-[#0d0f1a] via-[#16182c] to-[#090a11]',
-    glow1: 'bg-indigo-600/25',
-    glow2: 'bg-violet-600/15',
-    accentText: 'text-primary',
-    badgeBg: 'bg-primary/10 text-primary',
-    cardBorder: 'border-white/10 focus-within:border-primary/50',
-    ambientElements: null
-  };
-};
 
 const parseBgConfig = (bgStr) => {
   if (!bgStr) {
@@ -127,11 +28,10 @@ const parseBgConfig = (bgStr) => {
   }
   try {
     let config = bgStr;
-    // Recursively parse string if it's double serialized or nested JSON
     while (typeof config === 'string' && (config.trim().startsWith('{') || config.trim().startsWith('"'))) {
       const parsed = JSON.parse(config);
       if (typeof parsed === 'string' && parsed === config) {
-        break; // Prevent infinite loop
+        break;
       }
       config = parsed;
     }
@@ -171,13 +71,98 @@ const formatTime = (seconds) => {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 };
 
+// 4 Geometric Option Configurations Matching Figma 1:1
+const optionStyles = [
+  // Option 1: Red Triangle
+  {
+    bg: 'bg-[rgba(255,241,242,0.7)]',
+    border: 'border-[rgba(254,205,211,0.9)]',
+    hover: 'hover:bg-[rgba(255,241,242,0.95)] hover:border-[#FDA4AF]',
+    selectedRing: 'ring-2 ring-[#F43F5E]/60 border-[#F43F5E] shadow-sm',
+    radioBorder: 'border-[rgba(251,113,133,0.9)]',
+    radioDot: 'bg-[#F43F5E]',
+    shape: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#EF4444">
+        <polygon points="12 4, 21 20, 3 20" />
+      </svg>
+    ),
+  },
+  // Option 2: Royal Blue Diamond
+  {
+    bg: 'bg-[rgba(239,246,255,0.7)]',
+    border: 'border-[rgba(191,219,254,0.9)]',
+    hover: 'hover:bg-[rgba(239,246,255,0.95)] hover:border-[#93C5FD]',
+    selectedRing: 'ring-2 ring-[#3B82F6]/60 border-[#3B82F6] shadow-sm',
+    radioBorder: 'border-[rgba(96,165,250,0.9)]',
+    radioDot: 'bg-[#3B82F6]',
+    shape: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#2563EB">
+        <polygon points="12 2, 22 12, 12 22, 2 12" />
+      </svg>
+    ),
+  },
+  // Option 3: Amber Circle
+  {
+    bg: 'bg-[rgba(255,251,235,0.7)]',
+    border: 'border-[rgba(253,230,138,0.9)]',
+    hover: 'hover:bg-[rgba(255,251,235,0.95)] hover:border-[#FCD34D]',
+    selectedRing: 'ring-2 ring-[#F59E0B]/60 border-[#F59E0B] shadow-sm',
+    radioBorder: 'border-[rgba(251,191,36,0.9)]',
+    radioDot: 'bg-[#F59E0B]',
+    shape: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#F59E0B">
+        <circle cx="12" cy="12" r="8.5" />
+      </svg>
+    ),
+  },
+  // Option 4: Emerald Rounded Square
+  {
+    bg: 'bg-[rgba(236,253,245,0.7)]',
+    border: 'border-[rgba(167,243,208,0.9)]',
+    hover: 'hover:bg-[rgba(236,253,245,0.95)] hover:border-[#6EE7B7]',
+    selectedRing: 'ring-2 ring-[#10B981]/60 border-[#10B981] shadow-sm',
+    radioBorder: 'border-[rgba(52,211,153,0.9)]',
+    radioDot: 'bg-[#10B981]',
+    shape: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#10B981">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="3.5" />
+      </svg>
+    ),
+  },
+];
+
+// Helper to highlight keywords (like HTML question from Figma)
+const renderQuestionText = (text) => {
+  if (!text) return '';
+  if (text.includes('HTML') && text.includes('all web browsers')) {
+    return (
+      <>
+        What does <span className="text-[#551BF5]">HTML</span> stand for, powering structure across{' '}
+        <span className="text-[#551BF5]">all web browsers</span>?
+      </>
+    );
+  }
+  if (text.includes('`') || text.includes('*')) {
+    const parts = text.split(/(`[^`]+`|\*[^*]+\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('`') && part.endsWith('`')) {
+        return <span key={i} className="text-[#551BF5] font-mono">{part.slice(1, -1)}</span>;
+      }
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return <span key={i} className="text-[#551BF5] font-black">{part.slice(1, -1)}</span>;
+      }
+      return part;
+    });
+  }
+  return text;
+};
+
 export default function LiveQuiz() {
   const { pin } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { playerName, setPin, setPlayerName, setCurrentQuestion, setLeaderboard } = useGame();
   const { themeMode } = useTheme();
-  const isLight = themeMode === 'light';
 
   const localPlayer = (playerName || localStorage.getItem('guest_playerName') || '').trim();
   const hostToken = localStorage.getItem('token');
@@ -201,6 +186,9 @@ export default function LiveQuiz() {
   const [selectedIdx, setSelectedIdx] = useState(null);
   const questionRef = React.useRef(question);
   questionRef.current = question;
+
+  // Leave state
+  const [isLeaving, setIsLeaving] = useState(false);
 
   useEffect(() => {
     const localPlayer = (playerName || localStorage.getItem('guest_playerName') || '').trim();
@@ -229,10 +217,8 @@ export default function LiveQuiz() {
             setQuestionNumber(game.currentQuestion);
             setTotalQuestions(game.quiz.questions.length);
             setCategory(game.quiz.category || 'general');
-            // Use cached game.backgroundImage (on GameSession) as primary source
             const globalBg = game.backgroundImage || game.quiz.backgroundImage || '';
             const currentBg = q.backgroundImage || globalBg;
-            console.log('[FETCH STATE] globalBg length:', globalBg.length, 'preview:', globalBg.substring(0, 80));
             setBgImage(currentBg);
             localStorage.setItem('last_category', game.quiz.category || 'general');
             localStorage.setItem('quiz_global_bg_image', globalBg);
@@ -277,21 +263,15 @@ export default function LiveQuiz() {
     if (location.state?.socketQuestionData) {
       const data = location.state.socketQuestionData;
       const q = data.question;
-      console.log('[LIVE QUIZ] socketQuestionData received:', {
-        quizBackgroundImage: (data.quizBackgroundImage || '').substring(0, 100),
-        questionBackgroundImage: (q.backgroundImage || '').substring(0, 100),
-      });
       setQuestion(q);
       setQuestionNumber(data.questionNumber);
       setTotalQuestions(data.totalQuestions);
       setTimeLeft(data.timeLeft);
       setCategory(q.category || 'general');
       localStorage.setItem('last_category', q.category || 'general');
-      // Use the quiz global bg from the socket payload (teacher's customized bg)
       const globalBg = data.quizBackgroundImage || localStorage.getItem('quiz_global_bg_image') || '';
       localStorage.setItem('quiz_global_bg_image', globalBg);
       const resolvedBg = q.backgroundImage || globalBg;
-      console.log('[LIVE QUIZ] resolved bgImage length:', resolvedBg.length, 'preview:', resolvedBg.substring(0, 100));
       setBgImage(resolvedBg);
       localStorage.setItem('last_bg_image', resolvedBg);
       setHasAnswered(false);
@@ -299,11 +279,10 @@ export default function LiveQuiz() {
       localStorage.setItem('last_answerSubmitted', 'false');
       setSelectedIdx(null);
     } else {
-      // No socket data — must fetch from server (e.g. page refresh)
       fetchCurrentState();
     }
 
-    // 2. Connect Socket and Register Listeners (handle reconnects)
+    // 2. Connect Socket and Register Listeners
     const socket = connectSocket();
     const roleOrName = isUserHost ? 'Host' : localPlayer;
 
@@ -326,7 +305,6 @@ export default function LiveQuiz() {
     });
 
     socket.on('question_started', (data) => {
-      console.log('[SOCKET CLIENT] Question started inside LiveQuiz:', data);
       const q = data.question;
       setQuestion(q);
       setQuestionNumber(data.questionNumber);
@@ -334,7 +312,6 @@ export default function LiveQuiz() {
       setTimeLeft(data.timeLeft);
       setCategory(q.category || 'general');
       localStorage.setItem('last_category', q.category || 'general');
-      // Update global bg from socket payload (teacher's customized bg)
       const globalBg = data.quizBackgroundImage || localStorage.getItem('quiz_global_bg_image') || '';
       localStorage.setItem('quiz_global_bg_image', globalBg);
       const resolvedBg = q.backgroundImage || globalBg;
@@ -343,18 +320,14 @@ export default function LiveQuiz() {
       setHasAnswered(false);
       localStorage.setItem('last_hasAnswered', 'false');
       setSelectedIdx(null);
-      // Reset the auto-end guard for each new question
       autoEndCalledRef.current = false;
     });
 
     socket.on('question_ended', (data) => {
-      console.log('[SOCKET CLIENT] Question ended:', data);
-
       const currentQ = questionRef.current || question;
       const correctIdx = Number(data.correctAnswerIndex ?? currentQ?.correctAnswer ?? 0);
       const correctText = data.correctAnswerText || (data.options && data.options[correctIdx]) || (currentQ?.options && currentQ.options[correctIdx]) || '';
 
-      // Save stats to context and local storage for results page
       localStorage.setItem('last_correctAnswerIndex', String(correctIdx));
       if (correctText) {
         localStorage.setItem('last_correctAnswerText', correctText);
@@ -364,7 +337,6 @@ export default function LiveQuiz() {
       localStorage.setItem('last_isLastQuestion', data.isLastQuestion ? 'true' : 'false');
       localStorage.setItem('last_category', category);
 
-      // If player, save if their answer was correct and points earned
       if (!isUserHost) {
         const target = (localPlayer || '').trim().toLowerCase();
         const myData = data.leaderboard?.find(p => {
@@ -379,7 +351,6 @@ export default function LiveQuiz() {
         }
       }
 
-      // Navigate to Answer Result page
       setTimeout(() => {
         navigate(`/result/answer/${pin}`);
       }, 500);
@@ -428,6 +399,26 @@ export default function LiveQuiz() {
     navigate('/dashboard');
   };
 
+  const handleLeaveLobby = () => {
+    if (isLeaving) return;
+    if (isHost) {
+      handleHostExit();
+      return;
+    }
+    setIsLeaving(true);
+    try {
+      emitLeaveRoom(pin, localPlayer);
+    } catch (e) {
+      console.error('Socket leave error:', e);
+    }
+    leaveGame(pin, localPlayer).catch(() => {});
+    localStorage.removeItem('guest_pin');
+    localStorage.removeItem('guest_playerName');
+    localStorage.removeItem('guest_avatar');
+    toast('Left the quiz lobby', { icon: '👋' });
+    navigate('/join');
+  };
+
   const [isEnding, setIsEnding] = useState(false);
 
   const handleManualEndQuestion = async () => {
@@ -445,7 +436,7 @@ export default function LiveQuiz() {
   };
 
   const handleSelectAnswer = async (index) => {
-    if (hasAnswered || isHost) return;
+    if (hasAnswered || isHost || timeLeft <= 0) return;
 
     const player = (playerName || localStorage.getItem('guest_playerName') || '').trim();
     if (!player) {
@@ -517,19 +508,16 @@ export default function LiveQuiz() {
   }, [question]);
 
   // Host auto-end question logic
-  // FIXED: autoEndCalledRef prevents endQuestion from being called repeatedly
-  // when timeLeft stays at 0 or when other deps re-trigger the effect
   useEffect(() => {
     if (!isHost || !question) return;
 
     const autoEnd = async () => {
-      if (autoEndCalledRef.current) return; // Guard — only call once per question
+      if (autoEndCalledRef.current) return;
       autoEndCalledRef.current = true;
       try {
         await endQuestion(pin);
       } catch (err) {
         console.error('Error auto-ending question:', err);
-        // Reset on error so it can retry once
         autoEndCalledRef.current = false;
       }
     };
@@ -545,55 +533,23 @@ export default function LiveQuiz() {
   if (!question) {
     return (
       <AnimatedPage>
-        <div className="flex-1 flex items-center justify-center min-h-screen bg-background">
+        <div className="flex-1 flex items-center justify-center min-h-screen bg-[#F7F4FD]">
           <div className="text-center space-y-4">
-            <Loader2 className="h-10 w-10 animate-spin text-secondary mx-auto" />
-            <p className="text-xs text-gray-400">Synchronizing game board...</p>
+            <Loader2 className="h-10 w-10 animate-spin text-[#6C38FF] mx-auto" />
+            <p className="text-xs text-gray-500 font-medium font-['Inter']">Synchronizing game board...</p>
           </div>
         </div>
       </AnimatedPage>
     );
   }
 
-  // Answer Options Grid styling variables (Kahoot-style solid colors)
-  const optionColors = [
-    'bg-[#e21b3c] border-[#e21b3c] hover:bg-[#c91230] text-white shadow-lg cursor-pointer hover:shadow-xl',
-    'bg-[#1368ce] border-[#1368ce] hover:bg-[#1059b0] text-white shadow-lg cursor-pointer hover:shadow-xl',
-    'bg-[#d89e00] border-[#d89e00] hover:bg-[#b88500] text-white shadow-lg cursor-pointer hover:shadow-xl',
-    'bg-[#26890c] border-[#26890c] hover:bg-[#1f6f0a] text-white shadow-lg cursor-pointer hover:shadow-xl'
-  ];
-
-  const optionHostColors = [
-    'bg-[#e21b3c] border-[#e21b3c] text-white shadow-lg cursor-default',
-    'bg-[#1368ce] border-[#1368ce] text-white shadow-lg cursor-default',
-    'bg-[#d89e00] border-[#d89e00] text-white shadow-lg cursor-default',
-    'bg-[#26890c] border-[#26890c] text-white shadow-lg cursor-default'
-  ];
-
-  const optionShapes = [
-    // Triangle (Red)
-    <svg className="h-5 w-5 sm:h-6 sm:w-6 fill-white stroke-transparent shrink-0" viewBox="0 0 24 24" key="triangle">
-      <path d="M12 3l10 17H2L12 3z" />
-    </svg>,
-    // Diamond (Blue)
-    <svg className="h-5 w-5 sm:h-6 sm:w-6 fill-white stroke-transparent shrink-0 rotate-45" viewBox="0 0 24 24" key="diamond">
-      <rect x="5" y="5" width="14" height="14" />
-    </svg>,
-    // Circle (Yellow)
-    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-white shrink-0 shadow-sm" key="circle" />,
-    // Square (Green)
-    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded bg-white shrink-0 shadow-sm" key="square" />
-  ];
-
-  const theme = getTheme(category, isLight);
   const bgConfig = parseBgConfig(bgImage);
-
 
   return (
     <AnimatedPage>
-      <div className="relative h-[100dvh] flex flex-col justify-between gap-3 p-3 sm:p-6 transition-all duration-700 overflow-x-hidden overflow-y-auto sm:overflow-hidden select-none">
+      <div className="relative min-h-screen w-full flex flex-col bg-[#F8F5FF] overflow-x-hidden select-none">
 
-        {/* Customized Background Layer */}
+        {/* Customized Background Layer (if host uploaded one) or Default Brand Soft Purple */}
         {bgConfig.url ? (
           <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000 ease-out animate-fade-in">
             <div
@@ -628,172 +584,256 @@ export default function LiveQuiz() {
             )}
           </div>
         ) : (
-          <div className={`absolute inset-0 ${theme.bg} z-0 pointer-events-none`} />
+          <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+            {/* Soft Ambient Bubbles/Orbs matching Figma Screenshot */}
+            <div className="absolute top-[5%] left-[8%] w-[380px] h-[380px] rounded-full bg-[#E9D5FF]/40 blur-[90px]" />
+            <div className="absolute bottom-[10%] right-[10%] w-[440px] h-[440px] rounded-full bg-[#DDD6FE]/40 blur-[100px]" />
+            <div className="absolute top-[35%] right-[4%] w-[260px] h-[260px] rounded-full bg-[#EDE9FE]/50 blur-[80px]" />
+            <div className="absolute bottom-[2%] left-[2%] w-[300px] h-[300px] rounded-full bg-[#F3E8FF]/40 blur-[80px]" />
+          </div>
         )}
 
-        {/* Ambient Grid overlay */}
-        <div className="absolute inset-0 ambient-grid opacity-25 pointer-events-none"></div>
-
-        {/* Glow Spheres */}
-        <div className={`absolute top-[10%] left-[20%] h-[350px] w-[350px] rounded-full ${theme.glow1} pointer-events-none filter blur-[100px]`}></div>
-        <div className={`absolute bottom-[10%] right-[20%] h-[400px] w-[400px] rounded-full ${theme.glow2} pointer-events-none filter blur-[120px]`}></div>
-
-        {/* Dynamic theme element floaters */}
-        {theme.ambientElements}
-
-        {/* Header Indicator */}
-        <div className="flex justify-between items-center pb-2 sm:pb-4 relative z-10 shrink-0">
-          <div className="flex flex-wrap items-center gap-2">
-            {isHost && (
-              <button
-                onClick={handleHostExit}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-[10px] font-black uppercase tracking-wider mr-1 cursor-pointer active:scale-95 ${
-                  isLight
-                    ? 'bg-white hover:bg-slate-50 border-slate-300 text-slate-900 shadow-sm'
-                    : 'bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-md shadow-sm'
-                }`}
-              >
-                <ArrowLeft className="h-3 w-3 shrink-0 text-slate-800 dark:text-white" />
-                <span className="text-slate-900 dark:text-white">Return to Dashboard</span>
-              </button>
-            )}
-            <span className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl uppercase tracking-wider ${theme.badgeBg}`}>
-              Question {questionNumber} of {totalQuestions}
-            </span>
-            <span className={`text-[9px] font-bold uppercase tracking-widest hidden sm:inline ${isLight ? 'text-slate-500' : 'text-gray-500'}`}>{category}</span>
-          </div>
-        </div>
-
-        {/* Centered Timer Display */}
-        <div className="w-full flex justify-center items-center relative z-10 shrink-0 my-1.5">
-          <div className={`flex items-center gap-2.5 px-6 py-2 sm:px-8 sm:py-2.5 rounded-full border transition-all duration-300 shadow-xl ${
-            timeLeft <= 5 
-              ? isLight
-                ? 'bg-red-50 border-red-300 text-red-600 scale-105 shadow-[0_0_20px_rgba(239,68,68,0.3)] animate-pulse'
-                : 'bg-red-500/20 border-red-500/50 text-red-400 scale-105 shadow-[0_0_25px_rgba(239,68,68,0.5)] animate-pulse' 
-              : isLight
-                ? 'bg-white border-slate-200 text-slate-900 shadow-lg shadow-slate-200/60 ring-1 ring-slate-900/5'
-                : 'bg-white/10 border-white/20 text-white shadow-[0_0_20px_rgba(6,182,212,0.25)]'
-          }`}>
-            <Clock className={`h-5 w-5 sm:h-6 sm:w-6 ${
-              timeLeft <= 5 
-                ? isLight ? 'text-red-600 animate-pulse' : 'text-red-400 animate-pulse' 
-                : isLight ? 'text-primary' : 'text-secondary'
-            }`} />
-            <span className={`text-xl sm:text-2xl md:text-3xl font-black font-mono tracking-widest ${
-              timeLeft <= 5 
-                ? isLight ? 'text-red-600' : 'text-red-400' 
-                : isLight ? 'text-slate-900' : 'text-white'
-            }`}>
-              {formatTime(timeLeft)}
-            </span>
-          </div>
-        </div>
-
-        {/* QUESTION TEXT PANEL */}
-        <div className={`my-1 sm:my-2 max-w-4xl mx-auto text-center relative z-10 rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 border shadow-xl shrink-0 w-full ${
-          isLight
-            ? 'bg-white border-slate-200 text-slate-900 shadow-lg shadow-slate-200/50'
-            : 'bg-white border-gray-200 text-gray-900 shadow-xl'
-        }`}>
-          <h2 className="font-outfit text-base sm:text-xl md:text-2xl lg:text-3xl text-gray-900 font-black leading-tight break-words">
-            {question.questionText}
-          </h2>
-        </div>
-
-        {/* CENTRAL STATE VIEW (PROGRESS FOR HOST / WAITING FOR PLAYER) */}
-        <div className="flex items-center justify-center max-w-xl mx-auto w-full my-1 sm:my-4 relative z-10 shrink-0">
-          {isHost ? (
-            /* HOST PANEL */
-            <div className={`w-full rounded-2xl p-4 border text-center space-y-2 ${
-              isLight
-                ? 'bg-white/95 border-slate-200 text-slate-900 shadow-md'
-                : `glass-panel border ${theme.cardBorder} text-white`
-            }`}>
-              <span className={`text-[9px] font-bold uppercase tracking-widest block ${isLight ? 'text-slate-500' : 'text-gray-400'}`}>Lobby Statistics</span>
-              <div className={`font-outfit text-2xl font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                {answeredCount} <span className={`text-xs font-medium ${isLight ? 'text-slate-500' : 'text-gray-400'}`}>/ {totalPlayers} Answered</span>
-              </div>
-              <div className={`w-full rounded-full h-1.5 overflow-hidden border ${isLight ? 'bg-slate-100 border-slate-200' : 'bg-white/5 border-white/10'}`}>
-                <div
-                  className="bg-primary h-full transition-all duration-500"
-                  style={{ width: `${totalPlayers ? (answeredCount / totalPlayers) * 100 : 0}%` }}
-                />
-              </div>
-              <button
-                onClick={handleManualEndQuestion}
-                disabled={isEnding}
-                className="w-full btn-premium btn-primary-gradient py-2 flex items-center justify-center gap-1.5 text-[10px] font-bold shadow-premium-glow cursor-pointer mt-2"
-              >
-                <span>End Question / Skip to Standings</span>
-                <ArrowRight className="h-3 w-3" />
-              </button>
-            </div>
-          ) : hasAnswered ? (
-            /* PLAYER WAITING PANEL */
-            <div className={`text-center space-y-2 rounded-2xl p-5 w-full border ${
-              isLight
-                ? 'bg-white/95 border-slate-200 shadow-md'
-                : `glass-panel border ${theme.cardBorder}`
-            }`}>
-              <div className="h-8 w-8 rounded-full bg-secondary/15 border border-secondary/20 flex items-center justify-center mx-auto text-secondary">
-                <Loader2 className="h-5 w-5 animate-spin" />
-              </div>
-              <h3 className={`font-outfit text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Answer Locked!</h3>
-              <p className={`text-[10px] ${isLight ? 'text-slate-600' : 'text-gray-400'}`}>Waiting for other challengers to submit their choices...</p>
-            </div>
-          ) : timeLeft <= 0 ? (
-            /* PLAYER TIME'S UP PANEL */
-            <div className={`text-center space-y-2 rounded-2xl p-5 w-full border ${
-              isLight
-                ? 'bg-white/95 border-slate-200 shadow-md'
-                : `glass-panel border ${theme.cardBorder}`
-            }`}>
-              <div className="h-8 w-8 rounded-full bg-red-500/15 border border-red-500/20 flex items-center justify-center mx-auto text-red-500">
-                <XCircle className="h-5 w-5" />
-              </div>
-              <h3 className={`font-outfit text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Time's Up!</h3>
-              <p className={`text-[10px] ${isLight ? 'text-slate-600' : 'text-gray-400'}`}>Waiting for the teacher to end the question...</p>
-            </div>
-          ) : null}
-        </div>
-
-        {/* ANSWERS LAYOUT (HOST SEES ONLY GRID, PLAYER SEES LARGE TAP BUTTONS) */}
-        <div className="w-full max-w-5xl mx-auto grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2 relative z-10 sm:flex-1 mt-1 sm:mt-2 pb-2 sm:pb-0">
-          {question.options.map((opt, idx) => (
-            <button
-              key={idx}
-              disabled={hasAnswered || isHost || timeLeft <= 0}
-              onClick={() => handleSelectAnswer(idx)}
-              className={`rounded-xl sm:rounded-2xl border-2 px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6 flex items-center justify-between gap-3 sm:gap-5 text-left transition-all active:scale-[0.98] min-h-[56px] ${isHost
-                  ? optionHostColors[idx]
-                  : hasAnswered
-                    ? selectedIdx === idx
-                      ? optionColors[idx] + ' opacity-100 scale-[1.01] ring-2 ring-white/50 border-white'
-                      : optionColors[idx] + ' opacity-30 cursor-not-allowed scale-[0.99]'
-                    : timeLeft <= 0
-                      ? optionColors[idx] + ' opacity-35 cursor-not-allowed scale-[0.99]'
-                      : optionColors[idx]
-                }`}
+        {/* ========================================================================= */}
+        {/* TOP NAVIGATION BAR: Figma Header - TopNavigationBar (80px)                 */}
+        {/* ========================================================================= */}
+        <header className="relative z-30 w-full h-[80px] bg-white/90 border-b border-[#F1F5F9] backdrop-blur-[12px] px-4 sm:px-8">
+          <div className="max-w-[1351px] h-full mx-auto flex items-center justify-between">
+            {/* Brand Logo Container */}
+            <Link
+              to="/"
+              className="flex items-center gap-2.5 transition-transform hover:scale-105 active:scale-95"
+              title="GuBBi Home"
             >
-              <div className="flex items-center gap-3 sm:gap-5 min-w-0">
-                {/* Kahoot Solid White Shape Icon */}
-                {optionShapes[idx]}
-                <span className="text-sm sm:text-base md:text-lg font-black tracking-wide text-white break-words min-w-0 overflow-hidden">
-                  {opt}
-                </span>
-              </div>
+              <img
+                src="/gubbi-logo-transparent.png"
+                alt="GuBBi"
+                className="h-10 sm:h-12 w-auto object-contain drop-shadow-xs"
+              />
+            </Link>
 
-              {/* Selection Circle Outline on the right */}
-              <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full border-2 sm:border-3 border-white/70 flex items-center justify-center shrink-0">
-                {hasAnswered && selectedIdx === idx && (
-                  <div className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-white" />
-                )}
-              </div>
+            {/* Leave Lobby Button (Figma 1:1) */}
+            <button
+              type="button"
+              onClick={handleLeaveLobby}
+              disabled={isLeaving}
+              className="h-[38px] px-4 py-2 rounded-[12px] bg-[#FFF0F3] border border-[#FECDD3] hover:bg-[#FFE4E8] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs select-none disabled:opacity-50"
+              title={isHost ? 'Exit Quiz & Return to Dashboard' : 'Leave Quiz Lobby'}
+            >
+              {isLeaving ? (
+                <Loader2 className="w-4 h-4 text-[#FF4769] animate-spin shrink-0" />
+              ) : (
+                <svg className="w-4 h-4 text-[#FF4769] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              )}
+              <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#FF4769]">
+                Leave Lobby
+              </span>
             </button>
-          ))}
-        </div>
+          </div>
+        </header>
 
+        {/* ========================================================================= */}
+        {/* MAIN GAMEPLAY STAGE                                                      */}
+        {/* ========================================================================= */}
+        <main className="relative z-20 flex-1 w-full max-w-[1351px] mx-auto px-4 sm:px-8 py-5 sm:py-6 lg:py-8 flex flex-col items-center justify-start gap-5 sm:gap-6">
+          
+          {/* ----------------------------------------------------------------------- */}
+          {/* FLOATING PROGRESS AND TIMER BAR (Figma 1:1)                             */}
+          {/* ----------------------------------------------------------------------- */}
+          <div
+            className="w-full max-w-[1097px] rounded-[16px] px-4 py-3 flex items-center justify-between gap-4 transition-all"
+            style={{
+              background: 'rgba(255, 255, 255, 0.8)',
+              border: '1px solid rgba(255, 255, 255, 0.6)',
+              boxShadow: '0px 1px 20px rgba(0, 0, 0, 0.19)',
+              backdropFilter: 'blur(12px)',
+            }}
+          >
+            {/* Left: Book Icon + Counter + Progress Bar Track */}
+            <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
+              <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-[#7C3AED]" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+              </div>
+
+              <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                <span className="font-['Inter'] font-bold text-[12px] leading-4 tracking-[0.3px] text-[#1E293B]">
+                  Question {questionNumber} of {totalQuestions}
+                </span>
+                <div className="w-full h-[6px] bg-[rgba(226,232,240,0.9)] rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500 ease-out"
+                    style={{
+                      width: `${Math.max(4, (questionNumber / Math.max(1, totalQuestions)) * 100)}%`,
+                      background: 'linear-gradient(90deg, #7C3AED 0%, #4F46E5 100%)',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Countdown Timer */}
+            <div
+              className={`h-[30px] px-3 rounded-[12px] flex items-center gap-1.5 shrink-0 transition-all ${
+                timeLeft <= 5 ? 'animate-pulse ring-2 ring-red-400' : ''
+              }`}
+              style={{
+                background: '#FFF1F2',
+                border: '1px solid rgba(254, 205, 211, 0.8)',
+              }}
+            >
+              <svg className="w-4 h-4 text-[#F43F5E] shrink-0" viewBox="0 0 24 24" fill="none" stroke="#F43F5E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span className="font-['Inter'] font-extrabold text-[12px] leading-4 tracking-[0.6px] text-[#0F172A] tabular-nums">
+                {formatTime(timeLeft).replace(':', ' : ')}
+              </span>
+            </div>
+          </div>
+
+          {/* ----------------------------------------------------------------------- */}
+          {/* QUIZ DEMO CARD CONTAINER (Figma floating rounded-3xl box)                */}
+          {/* ----------------------------------------------------------------------- */}
+          <div
+            className="w-full max-w-[1097px] rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 lg:p-12 flex flex-col gap-6 sm:gap-8 lg:gap-[39px] transition-all"
+            style={{
+              background: 'rgba(255, 255, 255, 0.9)',
+              border: '1px solid rgba(243, 232, 255, 0.9)',
+              boxShadow:
+                '0px -3px 60px rgba(85, 27, 245, 0.15), 0px 10px 25px -5px rgba(0, 0, 0, 0.08), 0px 0px 0px 1px rgba(0, 0, 0, 0.08)',
+              backdropFilter: 'blur(12px)',
+            }}
+          >
+            {/* INNER QUESTION CARD (Figma 1:1) */}
+            <div className="w-full rounded-[18px] sm:rounded-[24px] bg-white border border-[#F1F5F9] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-5 sm:p-8 lg:p-10 flex flex-col justify-center">
+              <h2 className="font-['Inter'] font-extrabold text-xl sm:text-2xl lg:text-[30px] lg:leading-[36px] tracking-[-0.75px] text-[#0F172A] leading-snug break-words">
+                {renderQuestionText(question.questionText)}
+              </h2>
+            </div>
+
+            {/* 2x2 ANSWER OPTIONS GRID (Figma 1:1) */}
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+              {question.options.map((opt, idx) => {
+                const style = optionStyles[idx % optionStyles.length];
+                const isSelected = selectedIdx === idx;
+                const isDisabled = hasAnswered || isHost || timeLeft <= 0;
+
+                let btnClass = `w-full min-h-[58px] sm:min-h-[64px] px-4 sm:px-5 py-3.5 sm:py-4 rounded-[16px] border shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-between gap-3 text-left transition-all ${style.bg} ${style.border}`;
+
+                if (!isDisabled) {
+                  btnClass += ` ${style.hover} cursor-pointer active:scale-[0.99] hover:scale-[1.01]`;
+                } else if (isHost) {
+                  btnClass += ' cursor-default';
+                } else if (hasAnswered) {
+                  if (isSelected) {
+                    btnClass += ` ${style.selectedRing} scale-[1.01] shadow-md`;
+                  } else {
+                    btnClass += ' opacity-40 cursor-not-allowed scale-[0.99]';
+                  }
+                } else if (timeLeft <= 0) {
+                  btnClass += ' opacity-40 cursor-not-allowed';
+                }
+
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    disabled={isDisabled}
+                    onClick={() => handleSelectAnswer(idx)}
+                    className={btnClass}
+                  >
+                    {/* Left: Shape Icon + Option Text */}
+                    <div className="flex items-center gap-3.5 min-w-0 pr-2">
+                      <div className="w-7 h-7 flex items-center justify-center shrink-0">
+                        {style.shape}
+                      </div>
+                      <span className="font-['Inter'] font-bold text-sm sm:text-base leading-6 text-[#0F172A] break-words">
+                        {opt}
+                      </span>
+                    </div>
+
+                    {/* Right: Radio Selection Circle */}
+                    <div className="shrink-0 pl-1">
+                      <div
+                        className={`w-6 h-6 rounded-full bg-white/60 border-2 ${style.radioBorder} flex items-center justify-center transition-all`}
+                      >
+                        {isSelected && (
+                          <div className={`w-3 h-3 rounded-full ${style.radioDot} animate-scale-in`} />
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* INTERACTION / HOST STATE PANEL BELOW GRID */}
+            <div className="w-full pt-1">
+              {isHost ? (
+                /* Host Controls */
+                <div className="w-full max-w-md mx-auto rounded-2xl p-4 bg-white/95 border border-[#E9D5FF] shadow-xs text-center space-y-3">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#64748B]">
+                    <span className="uppercase tracking-wider">Lobby Progress</span>
+                    <span className="text-[#0F172A] font-extrabold">{answeredCount} / {totalPlayers} Answered</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500 ease-out"
+                      style={{
+                        width: `${totalPlayers ? (answeredCount / totalPlayers) * 100 : 0}%`,
+                        background: 'linear-gradient(90deg, #7C3AED 0%, #4F46E5 100%)',
+                      }}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleManualEndQuestion}
+                    disabled={isEnding}
+                    className="w-full h-10 px-4 rounded-xl text-white font-['Inter'] font-bold text-xs flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] transition-all shadow-md cursor-pointer disabled:opacity-50"
+                    style={{ background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)' }}
+                  >
+                    {isEnding ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        <span>End Question / Skip to Standings</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              ) : hasAnswered ? (
+                /* Player Answer Locked Banner */
+                <div className="flex items-center justify-center">
+                  <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white border border-[#E9D5FF] text-[#551BF5] shadow-xs backdrop-blur-md">
+                    <Loader2 className="w-4 h-4 animate-spin text-[#551BF5]" />
+                    <span className="font-['Inter'] font-bold text-xs sm:text-sm">
+                      Answer Locked! Waiting for other challengers...
+                    </span>
+                  </div>
+                </div>
+              ) : timeLeft <= 0 ? (
+                /* Time's Up Banner */
+                <div className="flex items-center justify-center">
+                  <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-50 border border-red-200 text-red-600 shadow-xs">
+                    <XCircle className="w-4 h-4 text-red-500" />
+                    <span className="font-['Inter'] font-bold text-xs sm:text-sm">
+                      Time's Up! Moving to standings...
+                    </span>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+
+          </div>
+
+        </main>
       </div>
     </AnimatedPage>
   );
