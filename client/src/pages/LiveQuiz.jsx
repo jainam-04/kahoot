@@ -73,61 +73,97 @@ const formatTime = (seconds) => {
 
 // 4 Geometric Option Configurations Matching Figma 1:1
 const optionStyles = [
-  // Option 1: Red Triangle
+  // Option 1: Red Triangle (Mercury)
   {
     bg: 'bg-[rgba(255,241,242,0.7)]',
     border: 'border-[rgba(254,205,211,0.9)]',
     hover: 'hover:bg-[rgba(255,241,242,0.95)] hover:border-[#FDA4AF]',
-    selectedRing: 'ring-2 ring-[#F43F5E]/60 border-[#F43F5E] shadow-sm',
     radioBorder: 'border-[rgba(251,113,133,0.9)]',
-    radioDot: 'bg-[#F43F5E]',
-    shape: (
+    shapeDefault: (
       <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#EF4444">
         <polygon points="12 4, 21 20, 3 20" />
       </svg>
     ),
+    // Selected Style (Figma Article - Option 1: Mercury Highlight 1:1)
+    selectedBg: 'bg-gradient-to-r from-[#FFD2D2] to-[#FF7575]',
+    selectedBorder: 'border-2 border-[#F87171]',
+    selectedShadow: 'shadow-[0px_8px_24px_-6px_rgba(239,68,68,0.28)]',
+    selectedShape: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#DC2626">
+        <polygon points="12 4, 21 20, 3 20" />
+      </svg>
+    ),
+    selectedBullseyeBorder: 'border-[#DC2626]',
+    selectedBullseyeDot: 'bg-[#DC2626]',
   },
   // Option 2: Royal Blue Diamond
   {
     bg: 'bg-[rgba(239,246,255,0.7)]',
     border: 'border-[rgba(191,219,254,0.9)]',
     hover: 'hover:bg-[rgba(239,246,255,0.95)] hover:border-[#93C5FD]',
-    selectedRing: 'ring-2 ring-[#3B82F6]/60 border-[#3B82F6] shadow-sm',
     radioBorder: 'border-[rgba(96,165,250,0.9)]',
-    radioDot: 'bg-[#3B82F6]',
-    shape: (
+    shapeDefault: (
       <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#2563EB">
         <polygon points="12 2, 22 12, 12 22, 2 12" />
       </svg>
     ),
+    // Selected Style
+    selectedBg: 'bg-gradient-to-r from-[#DBEAFE] to-[#93C5FD]',
+    selectedBorder: 'border-2 border-[#60A5FA]',
+    selectedShadow: 'shadow-[0px_8px_24px_-6px_rgba(37,99,235,0.28)]',
+    selectedShape: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#1D4ED8">
+        <polygon points="12 2, 22 12, 12 22, 2 12" />
+      </svg>
+    ),
+    selectedBullseyeBorder: 'border-[#2563EB]',
+    selectedBullseyeDot: 'bg-[#2563EB]',
   },
   // Option 3: Amber Circle
   {
     bg: 'bg-[rgba(255,251,235,0.7)]',
     border: 'border-[rgba(253,230,138,0.9)]',
     hover: 'hover:bg-[rgba(255,251,235,0.95)] hover:border-[#FCD34D]',
-    selectedRing: 'ring-2 ring-[#F59E0B]/60 border-[#F59E0B] shadow-sm',
     radioBorder: 'border-[rgba(251,191,36,0.9)]',
-    radioDot: 'bg-[#F59E0B]',
-    shape: (
+    shapeDefault: (
       <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#F59E0B">
         <circle cx="12" cy="12" r="8.5" />
       </svg>
     ),
+    // Selected Style
+    selectedBg: 'bg-gradient-to-r from-[#FEF3C7] to-[#FCD34D]',
+    selectedBorder: 'border-2 border-[#FBBF24]',
+    selectedShadow: 'shadow-[0px_8px_24px_-6px_rgba(245,158,11,0.28)]',
+    selectedShape: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#D97706">
+        <circle cx="12" cy="12" r="8.5" />
+      </svg>
+    ),
+    selectedBullseyeBorder: 'border-[#D97706]',
+    selectedBullseyeDot: 'bg-[#D97706]',
   },
   // Option 4: Emerald Rounded Square
   {
     bg: 'bg-[rgba(236,253,245,0.7)]',
     border: 'border-[rgba(167,243,208,0.9)]',
     hover: 'hover:bg-[rgba(236,253,245,0.95)] hover:border-[#6EE7B7]',
-    selectedRing: 'ring-2 ring-[#10B981]/60 border-[#10B981] shadow-sm',
     radioBorder: 'border-[rgba(52,211,153,0.9)]',
-    radioDot: 'bg-[#10B981]',
-    shape: (
+    shapeDefault: (
       <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#10B981">
         <rect x="3.5" y="3.5" width="17" height="17" rx="3.5" />
       </svg>
     ),
+    // Selected Style
+    selectedBg: 'bg-gradient-to-r from-[#D1FAE5] to-[#6EE7B7]',
+    selectedBorder: 'border-2 border-[#34D399]',
+    selectedShadow: 'shadow-[0px_8px_24px_-6px_rgba(16,185,129,0.28)]',
+    selectedShape: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#059669">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="3.5" />
+      </svg>
+    ),
+    selectedBullseyeBorder: 'border-[#059669]',
+    selectedBullseyeDot: 'bg-[#059669]',
   },
 ];
 
@@ -698,10 +734,10 @@ export default function LiveQuiz() {
           </div>
 
           {/* ----------------------------------------------------------------------- */}
-          {/* QUIZ DEMO CARD CONTAINER (Figma floating rounded-3xl box)                */}
+          {/* QUIZ CARD CONTAINER (Figma floating rounded-3xl box)                    */}
           {/* ----------------------------------------------------------------------- */}
           <div
-            className="w-full max-w-[1097px] rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 lg:p-12 flex flex-col gap-6 sm:gap-8 lg:gap-[39px] transition-all"
+            className="w-full max-w-[1097px] rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 lg:p-12 flex flex-col gap-6 sm:gap-7 transition-all"
             style={{
               background: 'rgba(255, 255, 255, 0.9)',
               border: '1px solid rgba(243, 232, 255, 0.9)',
@@ -710,12 +746,73 @@ export default function LiveQuiz() {
               backdropFilter: 'blur(12px)',
             }}
           >
-            {/* INNER QUESTION CARD (Figma 1:1) */}
-            <div className="w-full rounded-[18px] sm:rounded-[24px] bg-white border border-[#F1F5F9] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-5 sm:p-8 lg:p-10 flex flex-col justify-center">
-              <h2 className="font-['Inter'] font-extrabold text-xl sm:text-2xl lg:text-[30px] lg:leading-[36px] tracking-[-0.75px] text-[#0F172A] leading-snug break-words">
-                {renderQuestionText(question.questionText)}
-              </h2>
-            </div>
+            {/* TOP CARD: Inner Question Card OR Locked Answer Notification Card */}
+            {hasAnswered && !isHost ? (
+              /* LOCKED ANSWER NOTIFICATION CARD (Figma Section - Locked Answer Notification Card 1:1) */
+              <motion.div
+                initial={{ opacity: 0, scale: 0.97 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="w-full rounded-[24px] p-5 sm:p-7 flex flex-col items-center justify-center text-center transition-all relative overflow-hidden"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.85)',
+                  border: '1px solid rgba(255, 255, 255, 0.9)',
+                  boxShadow: '0px 8px 24px rgba(147, 118, 247, 0.1), 0px 4px 6px -4px rgba(0, 0, 0, 0.05)',
+                  backdropFilter: 'blur(16px)',
+                }}
+              >
+                {/* Violet Circular Padlock Badge */}
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center mb-3"
+                  style={{
+                    background: 'rgba(243, 232, 255, 0.8)',
+                    border: '1px solid rgba(233, 213, 255, 0.6)',
+                    boxShadow: 'inset 0px 2px 4px 1px rgba(0, 0, 0, 0.05)',
+                  }}
+                >
+                  <svg className="w-8 h-8 text-[#7E22CE]" viewBox="0 0 24 24" fill="none" stroke="#7E22CE" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2.5" ry="2.5" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </div>
+
+                {/* Headline: Answer Locked! */}
+                <h2 className="font-['Inter'] font-extrabold text-2xl sm:text-[24px] leading-8 tracking-[-0.6px] text-[#7E22CE] mb-1.5">
+                  Answer Locked!
+                </h2>
+
+                {/* Subtitle */}
+                <p className="font-['Inter'] font-medium text-sm leading-[23px] text-[#475569] mb-3 max-w-[399px]">
+                  Waiting for other challengers to submit their choices...
+                </p>
+
+                {/* Waiting Animation: 3 Pulsing Dots */}
+                <div className="flex items-center gap-2">
+                  <motion.span
+                    animate={{ scale: [1, 1.35, 1], opacity: [0.45, 1, 0.45] }}
+                    transition={{ repeat: Infinity, duration: 1.2, delay: 0 }}
+                    className="w-2.5 h-2.5 rounded-full bg-[#4F46E5]"
+                  />
+                  <motion.span
+                    animate={{ scale: [1, 1.35, 1], opacity: [0.45, 1, 0.45] }}
+                    transition={{ repeat: Infinity, duration: 1.2, delay: 0.2 }}
+                    className="w-2.5 h-2.5 rounded-full bg-[#A5B4FC]"
+                  />
+                  <motion.span
+                    animate={{ scale: [1, 1.35, 1], opacity: [0.45, 1, 0.45] }}
+                    transition={{ repeat: Infinity, duration: 1.2, delay: 0.4 }}
+                    className="w-2.5 h-2.5 rounded-full bg-[#C7D2FE]"
+                  />
+                </div>
+              </motion.div>
+            ) : (
+              /* INNER QUESTION CARD (Figma 1:1) */
+              <div className="w-full rounded-[18px] sm:rounded-[24px] bg-white border border-[#F1F5F9] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-5 sm:p-8 lg:p-10 flex flex-col justify-center">
+                <h2 className="font-['Inter'] font-extrabold text-xl sm:text-2xl lg:text-[30px] lg:leading-[36px] tracking-[-0.75px] text-[#0F172A] leading-snug break-words">
+                  {renderQuestionText(question.questionText)}
+                </h2>
+              </div>
+            )}
 
             {/* 2x2 ANSWER OPTIONS GRID (Figma 1:1) */}
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
@@ -724,20 +821,18 @@ export default function LiveQuiz() {
                 const isSelected = selectedIdx === idx;
                 const isDisabled = hasAnswered || isHost || timeLeft <= 0;
 
-                let btnClass = `w-full min-h-[58px] sm:min-h-[64px] px-4 sm:px-5 py-3.5 sm:py-4 rounded-[16px] border shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-between gap-3 text-left transition-all ${style.bg} ${style.border}`;
+                let btnClass = `w-full min-h-[58px] sm:min-h-[64px] px-4 sm:px-5 py-3.5 sm:py-4 rounded-[16px] flex items-center justify-between gap-3 text-left transition-all`;
 
-                if (!isDisabled) {
-                  btnClass += ` ${style.hover} cursor-pointer active:scale-[0.99] hover:scale-[1.01]`;
-                } else if (isHost) {
-                  btnClass += ' cursor-default';
-                } else if (hasAnswered) {
-                  if (isSelected) {
-                    btnClass += ` ${style.selectedRing} scale-[1.01] shadow-md`;
+                if (isSelected) {
+                  // Figma Selected Style with gradient background, solid border, and colored glow shadow
+                  btnClass += ` ${style.selectedBg} ${style.selectedBorder} ${style.selectedShadow} scale-[1.005]`;
+                } else {
+                  btnClass += ` ${style.bg} ${style.border} shadow-[0px_1px_2px_rgba(0,0,0,0.05)]`;
+                  if (!isDisabled) {
+                    btnClass += ` ${style.hover} cursor-pointer active:scale-[0.99] hover:scale-[1.01]`;
                   } else {
-                    btnClass += ' opacity-40 cursor-not-allowed scale-[0.99]';
+                    btnClass += ' cursor-default';
                   }
-                } else if (timeLeft <= 0) {
-                  btnClass += ' opacity-40 cursor-not-allowed';
                 }
 
                 return (
@@ -751,22 +846,26 @@ export default function LiveQuiz() {
                     {/* Left: Shape Icon + Option Text */}
                     <div className="flex items-center gap-3.5 min-w-0 pr-2">
                       <div className="w-7 h-7 flex items-center justify-center shrink-0">
-                        {style.shape}
+                        {isSelected ? style.selectedShape : style.shapeDefault}
                       </div>
                       <span className="font-['Inter'] font-bold text-sm sm:text-base leading-6 text-[#0F172A] break-words">
                         {opt}
                       </span>
                     </div>
 
-                    {/* Right: Radio Selection Circle */}
+                    {/* Right: Radio Selection Target Bullseye (Figma 1:1) */}
                     <div className="shrink-0 pl-1">
-                      <div
-                        className={`w-6 h-6 rounded-full bg-white/60 border-2 ${style.radioBorder} flex items-center justify-center transition-all`}
-                      >
-                        {isSelected && (
-                          <div className={`w-3 h-3 rounded-full ${style.radioDot} animate-scale-in`} />
-                        )}
-                      </div>
+                      {isSelected ? (
+                        <div
+                          className={`w-7 h-7 rounded-full bg-white border-2 ${style.selectedBullseyeBorder} flex items-center justify-center shrink-0 shadow-xs`}
+                        >
+                          <div className={`w-3.5 h-3.5 rounded-full ${style.selectedBullseyeDot} animate-scale-in`} />
+                        </div>
+                      ) : (
+                        <div
+                          className={`w-6 h-6 rounded-full bg-white/60 border-2 ${style.radioBorder} flex items-center justify-center transition-all`}
+                        />
+                      )}
                     </div>
                   </button>
                 );
@@ -774,9 +873,8 @@ export default function LiveQuiz() {
             </div>
 
             {/* INTERACTION / HOST STATE PANEL BELOW GRID */}
-            <div className="w-full pt-1">
-              {isHost ? (
-                /* Host Controls */
+            {isHost && (
+              <div className="w-full pt-1">
                 <div className="w-full max-w-md mx-auto rounded-2xl p-4 bg-white/95 border border-[#E9D5FF] shadow-xs text-center space-y-3">
                   <div className="flex items-center justify-between text-xs font-bold text-[#64748B]">
                     <span className="uppercase tracking-wider">Lobby Progress</span>
@@ -808,28 +906,19 @@ export default function LiveQuiz() {
                     )}
                   </button>
                 </div>
-              ) : hasAnswered ? (
-                /* Player Answer Locked Banner */
-                <div className="flex items-center justify-center">
-                  <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white border border-[#E9D5FF] text-[#551BF5] shadow-xs backdrop-blur-md">
-                    <Loader2 className="w-4 h-4 animate-spin text-[#551BF5]" />
-                    <span className="font-['Inter'] font-bold text-xs sm:text-sm">
-                      Answer Locked! Waiting for other challengers...
-                    </span>
-                  </div>
+              </div>
+            )}
+
+            {timeLeft <= 0 && !hasAnswered && !isHost && (
+              <div className="w-full pt-1 flex items-center justify-center">
+                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-50 border border-red-200 text-red-600 shadow-xs">
+                  <XCircle className="w-4 h-4 text-red-500" />
+                  <span className="font-['Inter'] font-bold text-xs sm:text-sm">
+                    Time's Up! Moving to standings...
+                  </span>
                 </div>
-              ) : timeLeft <= 0 ? (
-                /* Time's Up Banner */
-                <div className="flex items-center justify-center">
-                  <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-50 border border-red-200 text-red-600 shadow-xs">
-                    <XCircle className="w-4 h-4 text-red-500" />
-                    <span className="font-['Inter'] font-bold text-xs sm:text-sm">
-                      Time's Up! Moving to standings...
-                    </span>
-                  </div>
-                </div>
-              ) : null}
-            </div>
+              </div>
+            )}
 
           </div>
 
