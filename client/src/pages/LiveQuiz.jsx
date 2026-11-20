@@ -84,42 +84,42 @@ const optionStyles = [
         <polygon points="12 4, 21 20, 3 20" />
       </svg>
     ),
-    // Selected Style (Figma Article - Option 1: Mercury Highlight 1:1)
-    selectedBg: 'bg-gradient-to-r from-[#FFD2D2] to-[#FF7575]',
-    selectedBorder: 'border-2 border-[#F87171]',
-    selectedShadow: 'shadow-[0px_8px_24px_-6px_rgba(239,68,68,0.28)]',
+    // Selected Style (Figma 1:1)
+    selectedBg: 'bg-[linear-gradient(95.89deg,#FFB4B4_27.47%,rgba(255,71,105,0.66)_103.75%)]',
+    selectedBorder: 'border-2 border-[rgba(251,113,133,0.9)]',
+    selectedShadow: 'shadow-[0px_4px_16px_rgba(239,68,68,0.25)]',
     selectedShape: (
-      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#DC2626">
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#EF4444">
         <polygon points="12 4, 21 20, 3 20" />
       </svg>
     ),
-    selectedBullseyeBorder: 'border-[#DC2626]',
-    selectedBullseyeDot: 'bg-[#DC2626]',
+    selectedBullseyeBorder: 'border-[#EF4444]',
+    selectedBullseyeDot: 'bg-[#EF4444]',
   },
-  // Option 2: Royal Blue Diamond
+  // Option 2: Royal Blue Diamond (Venus)
   {
     bg: 'bg-[rgba(239,246,255,0.7)]',
     border: 'border-[rgba(191,219,254,0.9)]',
     hover: 'hover:bg-[rgba(239,246,255,0.95)] hover:border-[#93C5FD]',
     radioBorder: 'border-[rgba(96,165,250,0.9)]',
     shapeDefault: (
-      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#2563EB">
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#3B82F6">
         <polygon points="12 2, 22 12, 12 22, 2 12" />
       </svg>
     ),
-    // Selected Style
-    selectedBg: 'bg-gradient-to-r from-[#DBEAFE] to-[#93C5FD]',
-    selectedBorder: 'border-2 border-[#60A5FA]',
-    selectedShadow: 'shadow-[0px_8px_24px_-6px_rgba(37,99,235,0.28)]',
+    // Selected Style (Figma 1:1)
+    selectedBg: 'bg-[linear-gradient(95.89deg,#B4D5FF_27.47%,rgba(2,110,255,0.66)_103.75%)]',
+    selectedBorder: 'border-2 border-[rgba(82,159,255,0.9)]',
+    selectedShadow: 'shadow-[0px_4px_16px_rgba(37,99,235,0.25)]',
     selectedShape: (
-      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#1D4ED8">
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#2563EB">
         <polygon points="12 2, 22 12, 12 22, 2 12" />
       </svg>
     ),
     selectedBullseyeBorder: 'border-[#2563EB]',
     selectedBullseyeDot: 'bg-[#2563EB]',
   },
-  // Option 3: Amber Circle
+  // Option 3: Amber Circle (Earth)
   {
     bg: 'bg-[rgba(255,251,235,0.7)]',
     border: 'border-[rgba(253,230,138,0.9)]',
@@ -130,19 +130,19 @@ const optionStyles = [
         <circle cx="12" cy="12" r="8.5" />
       </svg>
     ),
-    // Selected Style
-    selectedBg: 'bg-gradient-to-r from-[#FEF3C7] to-[#FCD34D]',
-    selectedBorder: 'border-2 border-[#FBBF24]',
-    selectedShadow: 'shadow-[0px_8px_24px_-6px_rgba(245,158,11,0.28)]',
+    // Selected Style (Figma 1:1)
+    selectedBg: 'bg-[linear-gradient(95.89deg,#FDE68A_27.47%,rgba(245,158,11,0.66)_103.75%)]',
+    selectedBorder: 'border-2 border-[rgba(251,191,36,0.9)]',
+    selectedShadow: 'shadow-[0px_4px_16px_rgba(245,158,11,0.25)]',
     selectedShape: (
-      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#D97706">
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#F59E0B">
         <circle cx="12" cy="12" r="8.5" />
       </svg>
     ),
-    selectedBullseyeBorder: 'border-[#D97706]',
-    selectedBullseyeDot: 'bg-[#D97706]',
+    selectedBullseyeBorder: 'border-[#F59E0B]',
+    selectedBullseyeDot: 'bg-[#F59E0B]',
   },
-  // Option 4: Emerald Rounded Square
+  // Option 4: Emerald Rounded Square (Mars)
   {
     bg: 'bg-[rgba(236,253,245,0.7)]',
     border: 'border-[rgba(167,243,208,0.9)]',
@@ -153,17 +153,17 @@ const optionStyles = [
         <rect x="3.5" y="3.5" width="17" height="17" rx="3.5" />
       </svg>
     ),
-    // Selected Style
-    selectedBg: 'bg-gradient-to-r from-[#D1FAE5] to-[#6EE7B7]',
-    selectedBorder: 'border-2 border-[#34D399]',
-    selectedShadow: 'shadow-[0px_8px_24px_-6px_rgba(16,185,129,0.28)]',
+    // Selected Style (Figma 1:1)
+    selectedBg: 'bg-[linear-gradient(95.89deg,#A7F3D0_27.47%,rgba(16,185,129,0.66)_103.75%)]',
+    selectedBorder: 'border-2 border-[rgba(52,211,153,0.9)]',
+    selectedShadow: 'shadow-[0px_4px_16px_rgba(16,185,129,0.25)]',
     selectedShape: (
-      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#059669">
+      <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="#10B981">
         <rect x="3.5" y="3.5" width="17" height="17" rx="3.5" />
       </svg>
     ),
-    selectedBullseyeBorder: 'border-[#059669]',
-    selectedBullseyeDot: 'bg-[#059669]',
+    selectedBullseyeBorder: 'border-[#10B981]',
+    selectedBullseyeDot: 'bg-[#10B981]',
   },
 ];
 
@@ -752,7 +752,7 @@ export default function LiveQuiz() {
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
-                className="w-full rounded-[24px] p-5 sm:p-7 flex flex-col items-center justify-center text-center transition-all relative overflow-hidden"
+                className="w-full min-h-[163px] rounded-[24px] py-4 sm:py-5 px-6 flex flex-col items-center justify-center text-center transition-all relative overflow-hidden"
                 style={{
                   background: 'rgba(255, 255, 255, 0.85)',
                   border: '1px solid rgba(255, 255, 255, 0.9)',
@@ -762,26 +762,26 @@ export default function LiveQuiz() {
               >
                 {/* Violet Circular Padlock Badge */}
                 <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-3"
+                  className="w-16 h-16 rounded-full flex items-center justify-center mb-2.5 shrink-0"
                   style={{
                     background: 'rgba(243, 232, 255, 0.8)',
                     border: '1px solid rgba(233, 213, 255, 0.6)',
                     boxShadow: 'inset 0px 2px 4px 1px rgba(0, 0, 0, 0.05)',
                   }}
                 >
-                  <svg className="w-8 h-8 text-[#7E22CE]" viewBox="0 0 24 24" fill="none" stroke="#7E22CE" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2.5" ry="2.5" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  <svg className="w-8 h-8 text-[#7E22CE]" viewBox="0 0 24 24" fill="none" stroke="#7E22CE" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3.5" y="11" width="17" height="10" rx="2.5" ry="2.5" />
+                    <path d="M7.5 11V7a4.5 4.5 0 0 1 9 0v4" />
                   </svg>
                 </div>
 
                 {/* Headline: Answer Locked! */}
-                <h2 className="font-['Inter'] font-extrabold text-2xl sm:text-[24px] leading-8 tracking-[-0.6px] text-[#7E22CE] mb-1.5">
+                <h2 className="font-['Inter'] font-extrabold text-[24px] leading-8 tracking-[-0.6px] text-[#7E22CE] mb-1">
                   Answer Locked!
                 </h2>
 
                 {/* Subtitle */}
-                <p className="font-['Inter'] font-medium text-sm leading-[23px] text-[#475569] mb-3 max-w-[399px]">
+                <p className="font-['Inter'] font-medium text-[14px] leading-[23px] text-[#475569] mb-2.5 max-w-[399px]">
                   Waiting for other challengers to submit their choices...
                 </p>
 
