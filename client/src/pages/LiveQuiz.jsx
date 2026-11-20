@@ -447,7 +447,7 @@ export default function LiveQuiz() {
     } catch (e) {
       console.error('Socket leave error:', e);
     }
-    leaveGame(pin, localPlayer).catch(() => {});
+    leaveGame(pin, localPlayer).catch(() => { });
     localStorage.removeItem('guest_pin');
     localStorage.removeItem('guest_playerName');
     localStorage.removeItem('guest_avatar');
@@ -675,7 +675,7 @@ export default function LiveQuiz() {
         {/* MAIN GAMEPLAY STAGE                                                      */}
         {/* ========================================================================= */}
         <main className="relative z-20 flex-1 w-full max-w-[1351px] mx-auto px-4 sm:px-8 py-5 sm:py-6 lg:py-8 flex flex-col items-center justify-start gap-5 sm:gap-6">
-          
+
           {/* ----------------------------------------------------------------------- */}
           {/* FLOATING PROGRESS AND TIMER BAR (Figma 1:1)                             */}
           {/* ----------------------------------------------------------------------- */}
@@ -715,9 +715,8 @@ export default function LiveQuiz() {
 
             {/* Right: Countdown Timer */}
             <div
-              className={`h-[30px] px-3 rounded-[12px] flex items-center gap-1.5 shrink-0 transition-all ${
-                timeLeft <= 5 ? 'animate-pulse ring-2 ring-red-400' : ''
-              }`}
+              className={`h-[30px] px-3 rounded-[12px] flex items-center gap-1.5 shrink-0 transition-all ${timeLeft <= 5 ? 'animate-pulse ring-2 ring-red-400' : ''
+                }`}
               style={{
                 background: '#FFF1F2',
                 border: '1px solid rgba(254, 205, 211, 0.8)',
