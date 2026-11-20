@@ -547,12 +547,17 @@ export default function AnswerResult() {
             </div>
           </div>
 
-          {/* Section - Result Content Card (850px) */}
-          <div className="w-full max-w-[850px] bg-white/95 border border-white/90 shadow-[0px_20px_45px_rgba(108,71,255,0.08)] backdrop-blur-[24px] rounded-[36px] p-6 sm:p-10 transition-all duration-300">
+          {/* Section - Result Content Card (Figma: width 953px, max-w 1000px, 32px radius) */}
+          <div className="relative w-full max-w-[953px] bg-white border border-[#F3E8FF]/60 shadow-[0px_20px_25px_-5px_rgba(59,7,100,0.05),0px_8px_10px_-6px_rgba(59,7,100,0.05)] backdrop-blur-[4px] rounded-[32px] px-6 sm:px-10 py-7 sm:py-10 transition-all duration-300 overflow-hidden isolate">
+            
+            {/* Subtle internal decorative gradient blobs in card top corners */}
+            <div className="absolute w-[224px] h-[224px] -right-[63px] -top-[63px] bg-[rgba(255,228,230,0.4)] blur-[64px] rounded-full pointer-events-none z-0" />
+            <div className="absolute w-[224px] h-[224px] -left-[63px] -top-[63px] bg-[rgba(243,232,255,0.4)] blur-[64px] rounded-full pointer-events-none z-0" />
+
             {activeTab === 'my-result' ? (
               isHost ? (
                 /* Host View: Answer Breakdown chart + Next Question controls */
-                <div className="space-y-6">
+                <div className="relative z-10 space-y-6">
                   <div className="border-b border-slate-100 pb-4">
                     <span className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider bg-purple-100 text-purple-700 border border-purple-200">
                       Host Presenter Panel
@@ -627,167 +632,190 @@ export default function AnswerResult() {
                   </div>
                 </div>
               ) : (
-                /* Player View: Figma 1:1 Result Content Card */
-                <div className="flex flex-col items-center text-center">
+                /* Player View: Figma 1:1 Result Feedback */
+                <div className="relative z-10 flex flex-col items-center text-center">
                   
-                  {/* Feedback Badge with Concentric Radiance Rings & Sparkle Accents */}
-                  <div className="relative flex items-center justify-center mb-6">
-                    {/* Floating Confetti Accents matching screenshot */}
+                  {/* Feedback Badge with Concentric Halo, Inner Circle & Accents */}
+                  <div className="relative w-[112px] h-[112px] flex items-center justify-center mb-4 isolate">
+                    
+                    {/* Playful radial exclamation dashes for Wrong Answer (Figma 1:1) */}
+                    {!isCorrect && !isUnanswered && (
+                      <>
+                        {/* Top-left dash */}
+                        <div className="absolute w-[6px] h-[12px] -left-[15px] -top-[12.5px] bg-[#F87171] rounded-full -rotate-[40deg] pointer-events-none z-0" />
+                        {/* Top-right dash */}
+                        <div className="absolute w-[6px] h-[14px] right-[18.7px] -top-[16.6px] bg-[#F87171] rounded-full rotate-[25deg] pointer-events-none z-1" />
+                        {/* Left horizontal dash */}
+                        <div className="absolute w-[12px] h-[6px] -left-[20px] top-[28px] bg-[#F87171] rounded-full pointer-events-none z-2" />
+                        {/* Right horizontal dash */}
+                        <div className="absolute w-[8px] h-[6px] -right-[19.4px] top-[31px] bg-[#F87171] rounded-full rotate-[15deg] pointer-events-none z-3" />
+                      </>
+                    )}
+
+                    {/* Accents for Correct Answer */}
                     {isCorrect && (
                       <>
-                        {/* Blue 4-point star at top-left */}
                         <div className="absolute -left-3 top-2 pointer-events-none animate-pulse">
                           <svg className="w-4 h-4 text-[#38BDF8] fill-[#38BDF8]" viewBox="0 0 24 24">
                             <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
                           </svg>
                         </div>
-                        {/* Yellow ticker/pill at top-right */}
                         <div className="absolute -right-3 -top-1 w-1.5 h-4 bg-[#F59E0B] rounded-full rotate-25 shadow-xs pointer-events-none" />
                       </>
                     )}
 
-                    {/* Concentric radiance rings */}
+                    {/* Concentric Outer Halo */}
                     <div className={`w-[112px] h-[112px] rounded-full flex items-center justify-center transition-all ${
                       isUnanswered
-                        ? 'bg-[#FFEDD5]/60'
+                        ? 'bg-[rgba(255,237,213,0.7)] shadow-[0px_0px_45px_8px_rgba(249,115,22,0.22)]'
                         : isCorrect
-                          ? 'bg-[#D1FAE5]/60'
-                          : 'bg-[#FEE2E2]/60'
+                          ? 'bg-[rgba(209,250,229,0.7)] shadow-[0px_0px_45px_8px_rgba(34,197,94,0.22)]'
+                          : 'bg-[rgba(254,226,226,0.7)] shadow-[0px_0px_45px_8px_rgba(239,68,68,0.22)]'
                     }`}>
-                      <div className={`w-[92px] h-[92px] rounded-full flex items-center justify-center shadow-xs transition-all ${
+                      {/* Concentric Inner Circle */}
+                      <div className={`w-[92px] h-[92px] rounded-full flex items-center justify-center border-[4px] border-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)] transition-all ${
                         isUnanswered
-                          ? 'bg-[#FFEDD5]'
+                          ? 'bg-[#F97316]'
                           : isCorrect
-                            ? 'bg-[#D1FAE5]'
-                            : 'bg-[#FEE2E2]'
+                            ? 'bg-gradient-to-b from-[#22C55E] to-[#10B981]'
+                            : 'bg-[#EF4444]'
                       }`}>
-                        <div className={`w-[76px] h-[76px] rounded-full flex items-center justify-center text-white shadow-lg transition-all ${
-                          isUnanswered
-                            ? 'bg-gradient-to-b from-[#F97316] to-[#EA580C] shadow-[0px_4px_16px_rgba(234,88,12,0.35)]'
-                            : isCorrect
-                              ? 'bg-gradient-to-b from-[#22C55E] to-[#10B981] shadow-[0px_4px_16px_rgba(16,185,129,0.35)]'
-                              : 'bg-gradient-to-b from-[#EF4444] to-[#DC2626] shadow-[0px_4px_16px_rgba(220,38,38,0.35)]'
-                        }`}>
-                          {isUnanswered ? (
-                            <AlertCircle className="w-10 h-10 text-white stroke-[3]" />
-                          ) : isCorrect ? (
-                            <Check className="w-10 h-10 text-white stroke-[3.5]" />
-                          ) : (
-                            <X className="w-10 h-10 text-white stroke-[3.5]" />
-                          )}
-                        </div>
+                        {isUnanswered ? (
+                          <AlertCircle className="w-10 h-10 text-white stroke-[3.5]" />
+                        ) : isCorrect ? (
+                          <Check className="w-10 h-10 text-white stroke-[3.5]" />
+                        ) : (
+                          <X className="w-10 h-10 text-white stroke-[3.5]" />
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  {/* Main Headline */}
-                  <h2 className={`font-['Inter'] font-extrabold text-[32px] sm:text-[38px] leading-tight tracking-tight ${
-                    isUnanswered
-                      ? 'text-[#C2410C]'
-                      : isCorrect
-                        ? 'text-[#0B4A2C]'
-                        : 'text-[#991B1B]'
-                  }`}>
-                    {isUnanswered ? 'Answer Not Submitted' : isCorrect ? 'Correct Answer!' : 'Incorrect Answer!'}
+                  {/* Heading 1 - Feedback Headlines */}
+                  <h2 className="font-['Inter'] font-extrabold text-[36px] leading-[40px] tracking-[-0.9px] text-center mt-2">
+                    {isUnanswered ? (
+                      <>
+                        <span className="text-[#EA580C]">Answer Not</span> <span className="text-[#0F172A]">Submitted</span>
+                      </>
+                    ) : isCorrect ? (
+                      <span className="text-[#0B4A2C]">Correct Answer!</span>
+                    ) : (
+                      <>
+                        <span className="text-[#EF4444]">Wrong</span> <span className="text-[#0F172A]">Answer</span>
+                      </>
+                    )}
                   </h2>
 
                   {/* Subtitle */}
-                  <p className={`font-['Inter'] font-semibold text-[17px] sm:text-[20px] leading-snug mt-2 ${
-                    isUnanswered
-                      ? 'text-[#EA580C]'
-                      : isCorrect
-                        ? 'text-[#008A4E]'
-                        : 'text-[#B91C1C]'
-                  }`}>
+                  <p className="font-['Inter'] font-medium text-[16px] leading-[24px] text-[#64748B] text-center mt-1.5">
                     {isUnanswered
                       ? 'No answer was recorded before the timer ended.'
                       : isCorrect
                         ? 'Superb speed! Claim your points.'
-                        : 'Better luck on the next question!'}
+                        : "Better luck next time! Keep going, you're doing great."}
                   </p>
 
-                  {/* If incorrect or unanswered, show correct answer banner */}
+                  {/* The Correct Answer Revealed Banner (Figma 1:1) */}
                   {(!isCorrect || isUnanswered) && (
-                    <div className="mt-4 px-4 py-2.5 rounded-xl bg-[#FFF1F2] border border-[#FECDD3] flex items-center justify-center gap-2 max-w-md mx-auto">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[#9F1239]">Correct Answer:</span>
-                      <span className="px-2 py-0.5 rounded-md bg-[#E11D48] text-white text-xs font-extrabold">
-                        Option {optionLetters[correctAnswerIdx] || 'A'}
+                    <div className="w-full max-w-[871px] min-h-[55px] bg-[rgba(255,241,242,0.7)] border border-[rgba(254,205,211,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-3 flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-5">
+                      <span className="font-['Inter'] font-bold text-[14px] leading-[20px] tracking-[0.7px] uppercase text-[#64748B]">
+                        THE CORRECT ANSWER IS
                       </span>
-                      {correctAnswerText && (
-                        <span className="text-xs sm:text-sm font-extrabold text-[#881337] truncate">
-                          {correctAnswerText}
+
+                      {/* Option Pill */}
+                      <div className="h-[32px] px-4 py-1.5 bg-[#EF4444] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-full flex items-center gap-1.5 shrink-0">
+                        <div className="w-1.5 h-1.5 bg-white rounded-[1px] rotate-45 shrink-0" />
+                        <span className="font-['Inter'] font-bold text-[14px] leading-[20px] text-white">
+                          Option {optionLetters[correctAnswerIdx] || 'A'}
                         </span>
-                      )}
+                      </div>
+
+                      {/* Colon & Option Answer Text */}
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="font-['Inter'] font-extrabold text-[18px] leading-[28px] text-[#FB7185]">
+                          :
+                        </span>
+                        <span className="font-['Inter'] font-bold text-[16px] leading-[24px] text-[#0F172A] break-words">
+                          {correctAnswerText || 'HyperText Markup Language'}
+                        </span>
+                      </div>
                     </div>
                   )}
 
-                  {/* 3 Performance Stat Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-[750px] mt-8">
-                    {/* 1. Solve Time */}
-                    <div className="bg-[#F6F4FE] border border-[#E9E4FC] rounded-[20px] p-5 sm:p-6 flex flex-col items-center justify-center">
-                      <div className="w-10 h-10 rounded-full bg-[#E8E2FD] flex items-center justify-center mb-2.5">
-                        <Clock className="w-5 h-5 text-[#6C47FF]" />
+                  {/* Section - Performance Metrics (3-Column Performance Stats Cards) */}
+                  <div className="w-full max-w-[871px] grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mt-6">
+                    {/* Card 1: Solve Time */}
+                    <div className="relative bg-[#F6F4FE] border border-[#E9E4FC] rounded-[24px] p-5 sm:p-6 flex flex-col items-center justify-center shadow-[0px_8px_24px_-4px_rgba(79,70,229,0.05)]">
+                      <div className="w-12 h-12 rounded-full bg-[#E8E2FD] flex items-center justify-center mb-3">
+                        <Clock className="w-6 h-6 text-[#6C47FF] stroke-[2.2]" />
                       </div>
-                      <span className="font-['Inter'] font-extrabold text-[11px] tracking-[0.08em] text-[#5B557A] uppercase">
+                      <span className="font-['Inter'] font-bold text-[12px] leading-[18px] tracking-[0.6px] text-[#5B557A] uppercase text-center mb-1">
                         SOLVE TIME
                       </span>
-                      <span className="font-['Inter'] font-extrabold text-[26px] sm:text-[28px] leading-tight text-[#6C47FF] mt-1">
+                      <span className="font-['Inter'] font-extrabold text-[34px] leading-[36px] tracking-[-0.85px] text-[#6C47FF] text-center">
                         {timeTaken}s
                       </span>
                     </div>
 
-                    {/* 2. Points Received */}
-                    <div className="bg-[#EDFBF4] border border-[#D5F5E4] rounded-[20px] p-5 sm:p-6 flex flex-col items-center justify-center">
-                      <div className="w-10 h-10 rounded-full bg-[#D4F7E4] flex items-center justify-center mb-2.5">
-                        <Star className="w-5 h-5 text-[#059669] fill-[#059669]" />
+                    {/* Card 2: Points Received */}
+                    <div className="relative bg-[#EDFBF4] border border-[#D5F5E4] rounded-[24px] p-5 sm:p-6 flex flex-col items-center justify-center shadow-[0px_8px_24px_-4px_rgba(79,70,229,0.05)]">
+                      <div className="w-12 h-12 rounded-full bg-[#D4F7E4] flex items-center justify-center mb-3">
+                        <Star className="w-6 h-6 text-[#059669] fill-[#059669]" />
                       </div>
-                      <span className="font-['Inter'] font-extrabold text-[11px] tracking-[0.08em] text-[#356B52] uppercase">
+                      <span className="font-['Inter'] font-bold text-[12px] leading-[18px] tracking-[0.6px] text-[#356B52] uppercase text-center mb-1">
                         POINTS RECEIVED
                       </span>
-                      <span className="font-['Inter'] font-extrabold text-[26px] sm:text-[28px] leading-tight text-[#059669] mt-1">
+                      <span className="font-['Inter'] font-extrabold text-[34px] leading-[36px] tracking-[-0.85px] text-[#059669] text-center">
                         {isUnanswered ? '+0' : isCorrect ? `+${pointsEarned}` : '+0'}
                       </span>
                     </div>
 
-                    {/* 3. Total Score */}
-                    <div className="bg-[#F0F7FF] border border-[#DDECFC] rounded-[20px] p-5 sm:p-6 flex flex-col items-center justify-center">
-                      <div className="w-10 h-10 rounded-full bg-[#DCECFD] flex items-center justify-center mb-2.5">
-                        <Trophy className="w-5 h-5 text-[#0284C7]" />
+                    {/* Card 3: Total Score */}
+                    <div className="relative bg-[#F0F7FF] border border-[#DDECFC] rounded-[24px] p-5 sm:p-6 flex flex-col items-center justify-center shadow-[0px_8px_24px_-4px_rgba(79,70,229,0.05)]">
+                      <div className="w-12 h-12 rounded-full bg-[#DCECFD] flex items-center justify-center mb-3">
+                        <Trophy className="w-6 h-6 text-[#0284C7] stroke-[2]" />
                       </div>
-                      <span className="font-['Inter'] font-extrabold text-[11px] tracking-[0.08em] text-[#47607B] uppercase">
+                      <span className="font-['Inter'] font-bold text-[12px] leading-[18px] tracking-[0.6px] text-[#47607B] uppercase text-center mb-1">
                         TOTAL SCORE
                       </span>
-                      <span className="font-['Inter'] font-extrabold text-[26px] sm:text-[28px] leading-tight text-[#0284FE] mt-1">
+                      <span className="font-['Inter'] font-extrabold text-[34px] leading-[36px] tracking-[-0.85px] text-[#0284FE] text-center">
                         {currentScore} pts
                       </span>
                     </div>
                   </div>
 
-                  {/* Lobby Rank Banner */}
-                  <div className="w-full max-w-[750px] bg-[#F3F1FD] border border-[#E7E2FA] rounded-[16px] px-5 py-3.5 flex items-center justify-center gap-2.5 mt-6">
-                    <div className="w-7 h-7 rounded-full bg-[#6C47FF] flex items-center justify-center text-white shrink-0">
-                      <BarChart2 className="w-3.5 h-3.5 text-white" />
+                  {/* Status Indicator Banners (Lobby Rank + Waiting Banner) */}
+                  <div className="w-full max-w-[871px] flex flex-col gap-3 mt-6">
+                    {/* Lobby Rank Banner */}
+                    <div className="w-full min-h-[45px] bg-[#F3F1FD] border border-[#E7E2FA] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-2.5 flex items-center justify-center gap-3.5">
+                      <div className="w-8 h-8 rounded-full bg-[#6C47FF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center text-white shrink-0">
+                        <BarChart2 className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="flex flex-wrap items-center justify-center gap-2 text-center">
+                        <span className="font-['Inter'] font-medium text-[16px] leading-[24px] text-[#334155]">
+                          Lobby rank: <strong className="font-bold text-[18px] text-[#6C47FF]">#{myRank}</strong>
+                        </span>
+                        <span className="font-bold text-[16px] text-[#94A3B8]">•</span>
+                        <span className="font-['Inter'] font-medium text-[16px] leading-[24px] text-[#334155]">
+                          Total score: <strong className="font-bold text-[18px] text-[#6C47FF]">{myScore} pts</strong>
+                        </span>
+                      </div>
                     </div>
-                    <span className="font-['Inter'] font-medium text-[14px] text-[#475569]">
-                      Lobby rank: <strong className="font-extrabold text-[#6C47FF]">#{myRank}</strong>
-                      <span className="mx-2 text-[#CBD5E1]">•</span>
-                      Total score: <strong className="font-extrabold text-[#6C47FF]">{myScore} pts</strong>
-                    </span>
-                  </div>
 
-                  {/* Waiting for Host Status Banner */}
-                  <div className="w-full max-w-[750px] bg-[#F7F5FE] border border-[#ECE7FC] rounded-[16px] px-5 py-3.5 flex items-center justify-center gap-2.5 mt-3">
-                    <Hourglass className="w-4 h-4 text-[#6C47FF] animate-spin shrink-0" />
-                    <span className="font-['Inter'] font-bold text-[13px] text-[#6C47FF]">
-                      Waiting for Host to trigger next action...
-                    </span>
+                    {/* Waiting Banner */}
+                    <div className="w-full min-h-[46px] bg-[#F7F5FE] border border-[#ECE7FC] rounded-[16px] px-5 py-2.5 flex items-center justify-center gap-2.5">
+                      <Hourglass className="w-4 h-4 text-[#6C47FF] animate-spin shrink-0" />
+                      <span className="font-['Inter'] font-semibold text-[14px] leading-[20px] text-[#6C47FF] text-center">
+                        Waiting for Host to trigger next action...
+                      </span>
+                    </div>
                   </div>
 
                 </div>
               )
             ) : (
-              /* Lobby Standings View (Podium + Leaderboard inside the 850px card) */
-              <div className="space-y-6">
+              /* Lobby Standings View (Podium + Leaderboard inside the 953px card) */
+              <div className="relative z-10 space-y-6">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-[#E8E2FD] flex items-center justify-center text-[#6C47FF]">
