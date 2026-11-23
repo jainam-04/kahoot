@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   BookOpen, PlusCircle, LayoutDashboard, LogOut, LogIn, User, 
-  Sun, Moon, Menu, X, ArrowRight, ChevronDown, Trash2, Edit3, UserCheck, Settings 
+  Menu, X, ArrowRight, ChevronDown, Trash2, Edit3, UserCheck, Settings 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -17,7 +17,7 @@ export default function Navbar() {
   const location = useLocation();
   const [token, setToken] = useState(() => getStoredToken());
   const [user, setUser] = useState(() => getStoredUser());
-  const { themeMode, toggleThemeMode } = useTheme();
+  const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -249,26 +249,6 @@ export default function Navbar() {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-1 sm:gap-3">
-          {/* Theme Toggle Button (displayed when logged in; landing page desktop uses clean Figma design) */}
-          {token && (
-            <button
-              onClick={toggleThemeMode}
-              className="rounded-xl p-1.5 sm:p-2.5 border transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center"
-              style={{
-                background: isLight ? 'rgba(237, 233, 254, 0.7)' : 'rgba(255,255,255,0.05)',
-                borderColor: isLight ? 'rgba(221, 214, 254, 0.9)' : 'rgba(255,255,255,0.10)',
-                color: isLight ? '#551BF5' : '#d1d5db',
-              }}
-              aria-label="Toggle Theme"
-            >
-              {isLight ? (
-                <Moon className="h-4 w-4" style={{ color: '#551BF5' }} />
-              ) : (
-                <Sun className="h-4 w-4 text-yellow-400" />
-              )}
-            </button>
-          )}
-
           {token ? (
             <>
               {/* Profile Badge & Account Menu Dropdown */}

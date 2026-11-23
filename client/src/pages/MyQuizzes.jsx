@@ -15,6 +15,7 @@ import Logo from '../components/Logo';
 import HostProfileModal from '../components/HostProfileModal';
 import PlanComparisonTable from '../components/PlanComparisonTable';
 import AppSidebar from '../components/AppSidebar';
+import ReportsModal from '../components/ReportsModal';
 import { getMyQuizzes, deleteQuiz, updateQuizStatus, createQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
@@ -32,6 +33,8 @@ export default function MyQuizzes() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [openCardMenuId, setOpenCardMenuId] = useState(null);
+  const [isReportsModalOpen, setIsReportsModalOpen] = useState(false);
+  const [selectedQuizForReports, setSelectedQuizForReports] = useState(null);
 
   const profileDropdownRef = useRef(null);
   const notifDropdownRef = useRef(null);
@@ -219,6 +222,7 @@ export default function MyQuizzes() {
 
   // Map play counts by quiz ID and title from live results
   const playCountMap = {};
+  const sessionsByQuizMap = {};
   (resultsData?.results || []).forEach(res => {
     const rawId = res.quizId?._id || res.quizId || res.quiz?._id;
     const idStr = rawId ? String(rawId) : null;
@@ -226,9 +230,13 @@ export default function MyQuizzes() {
     const count = (Array.isArray(res.players) && res.players.length > 0) ? res.players.length : 1;
     if (idStr) {
       playCountMap[idStr] = (playCountMap[idStr] || 0) + count;
+      if (!sessionsByQuizMap[idStr]) sessionsByQuizMap[idStr] = [];
+      sessionsByQuizMap[idStr].push(res);
     }
     if (titleKey) {
       playCountMap[titleKey] = (playCountMap[titleKey] || 0) + count;
+      if (!sessionsByQuizMap[titleKey]) sessionsByQuizMap[titleKey] = [];
+      sessionsByQuizMap[titleKey].push(res);
     }
   });
 
@@ -659,6 +667,7 @@ export default function MyQuizzes() {
                   const plays = (typeof quiz.playsCount === 'number' && quiz.playsCount > 0)
                     ? quiz.playsCount
                     : (playCountMap[idStr] || playCountMap[titleKey] || 0);
+                  const quizSessions = sessionsByQuizMap[idStr] || sessionsByQuizMap[titleKey] || [];
                   const isMenuOpen = openCardMenuId === quiz._id;
 
                   const renderOptionsMenu = () => (
@@ -842,6 +851,21 @@ export default function MyQuizzes() {
                                 <Pencil className="w-4 h-4" />
                               </button>
 
+                              {quizSessions.length > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedQuizForReports({ title: quiz.title, _id: quiz._id, sessions: quizSessions });
+                                    setIsReportsModalOpen(true);
+                                  }}
+                                  className="h-[40px] px-3.5 sm:px-4 rounded-xl bg-[#FAF5FF] hover:bg-[#F3E8FF] border border-[#EDE9FE] text-[#6320EE] font-bold text-xs sm:text-[13px] shadow-2xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
+                                  title="View Battle Reports"
+                                >
+                                  <BarChart2 className="w-3.5 h-3.5 text-[#6320EE]" />
+                                  <span>REPORTS ({quizSessions.length})</span>
+                                </button>
+                              )}
+
                               <button
                                 type="button"
                                 onClick={() => handleHostGame(quiz)}
@@ -964,6 +988,14 @@ export default function MyQuizzes() {
             </div>
           </div>
         )}
+
+        {/* Battle Reports Modal */}
+        <ReportsModal
+          isOpen={isReportsModalOpen}
+          onClose={() => setIsReportsModalOpen(false)}
+          quiz={selectedQuizForReports}
+          results={selectedQuizForReports?.sessions || []}
+        />
 
       </div>
     </AnimatedPage>

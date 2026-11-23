@@ -68,7 +68,7 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
               </h3>
               {quiz && (
                 <p className="text-xs font-semibold text-slate-500 dark:text-gray-400 mt-1 truncate max-w-[400px]">
-                  Quiz: <span className="text-indigo-600 dark:text-indigo-400 font-bold">{quiz.title}</span>
+                  Quiz: <span className="text-[#6320EE] dark:text-purple-400 font-bold">{quiz.title}</span>
                 </p>
               )}
             </div>
@@ -120,33 +120,35 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
                   minute: '2-digit'
                 });
 
+                const winnerName = res.winner || sortedPlayers[0]?.fullName || sortedPlayers[0]?.name || 'No winner registered';
+
                 return (
                   <div
                     key={res._id}
-                    className="relative p-5 rounded-2xl border border-slate-200 dark:border-gray-800 bg-slate-50/30 dark:bg-[#1F2937]/50 shadow-sm hover:shadow-md dark:shadow-black/10 hover:border-indigo-500/40 dark:hover:border-indigo-500/40 transition-all duration-300 flex flex-col gap-4 group"
+                    className="relative p-5 rounded-2xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-[#1F2937]/50 shadow-xs hover:shadow-md dark:shadow-black/10 hover:border-purple-300 dark:hover:border-purple-500/40 transition-all duration-300 flex flex-col gap-4 group"
                   >
                     {/* Header row: Date, Time & Players Count */}
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-b border-slate-200 dark:border-gray-700/50 pb-3">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-b border-slate-100 dark:border-gray-700/50 pb-3">
                       <div className="flex items-center flex-wrap gap-2 text-slate-700 dark:text-slate-200 text-left">
-                        <Calendar className="h-4 w-4 text-indigo-500 dark:text-indigo-400 shrink-0" />
+                        <Calendar className="h-4 w-4 text-[#6320EE] dark:text-purple-400 shrink-0" />
                         <span className="text-xs font-bold text-slate-800 dark:text-slate-100">{formattedDate}</span>
                         <span className="text-[10px] text-slate-300 dark:text-slate-600 font-semibold">•</span>
                         <Clock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
                         <span className="text-xs text-slate-500 dark:text-gray-400 font-semibold">{formattedTime}</span>
                       </div>
                       
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-wider self-start sm:self-auto">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EEF2FF] dark:bg-purple-500/10 border border-[#E0E7FF] dark:border-purple-500/20 text-[#4F46E5] dark:text-purple-300 text-[10px] font-black uppercase tracking-wider self-start sm:self-auto">
                         <Users className="h-3 w-3" />
                         <span>{totalPlayers} Players</span>
                       </div>
                     </div>
 
                     {/* Winner Row */}
-                    <div className="flex items-center gap-2 bg-green-500/5 dark:bg-green-500/5 border border-green-500/10 dark:border-green-500/10 px-3.5 py-2.5 rounded-xl text-left">
+                    <div className="flex items-center gap-2 bg-[#ECFDF5] dark:bg-green-500/10 border border-[#A7F3D0]/70 dark:border-green-500/20 px-3.5 py-2.5 rounded-xl text-left">
                       <Trophy className="h-4 w-4 text-amber-500 shrink-0" />
                       <span className="text-xs text-slate-500 dark:text-gray-400 font-semibold">Winner:</span>
-                      <span className="text-xs text-green-600 dark:text-green-400 font-bold truncate">
-                        {res.winner ? res.winner : 'No winner registered'}
+                      <span className="text-xs text-[#059669] dark:text-green-400 font-bold truncate">
+                        {winnerName}
                       </span>
                     </div>
 
@@ -154,33 +156,34 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
                     {sortedPlayers.length > 0 ? (
                       <div className="space-y-2 text-left">
                         <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1">
-                          <Award className="h-3 w-3 text-indigo-500 dark:text-indigo-400" />
+                          <Award className="h-3.5 w-3.5 text-[#6320EE] dark:text-purple-400" />
                           <span>Leaderboard Standings</span>
                         </p>
                         
                         {/* Scrollable Player Standings List */}
                         <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-gray-800">
                           {sortedPlayers.map((player, idx) => {
-                            const isWinner = player.name === res.winner;
+                            const pName = player.fullName || player.name || `Player ${idx + 1}`;
+                            const isWinner = pName === winnerName || player.name === res.winner || player.fullName === res.winner || idx === 0;
                             const rank = idx + 1;
                             let rankColor = "text-slate-500 dark:text-slate-400";
                             let rankIcon = `#${rank}`;
-                            let bgClass = "bg-white/60 dark:bg-[#111827]/40 border-slate-100 dark:border-gray-800/40";
+                            let bgClass = "bg-white dark:bg-[#111827]/40 border-slate-100 dark:border-gray-800/40";
                             
                             if (rank === 1) {
                               rankColor = "text-amber-500 font-bold";
                               rankIcon = <Trophy className="h-4 w-4 text-yellow-500 inline-block" />;
-                              bgClass = "bg-amber-500/10 dark:bg-amber-500/5 border-amber-500/20";
+                              bgClass = "bg-[#FFFBEB] dark:bg-amber-500/10 border-[#FDE68A] dark:border-amber-500/20";
                             } else if (rank === 2) {
                               rankColor = "text-slate-400 font-bold";
                               rankIcon = <Trophy className="h-4 w-4 text-slate-400 inline-block" />;
-                              bgClass = "bg-slate-400/10 dark:bg-slate-400/5 border-slate-400/20";
+                              bgClass = "bg-[#F8FAFC] dark:bg-slate-400/10 border-[#E2E8F0] dark:border-slate-400/20";
                             } else if (rank === 3) {
                               rankColor = "text-amber-700 font-bold";
                               rankIcon = <Trophy className="h-4 w-4 text-amber-700 inline-block" />;
-                              bgClass = "bg-amber-700/10 dark:bg-amber-700/5 border-amber-700/20";
+                              bgClass = "bg-[#FFF7ED] dark:bg-amber-700/10 border-[#FED7AA] dark:border-amber-700/20";
                             } else if (isWinner) {
-                              bgClass = "bg-green-500/10 dark:bg-green-500/5 border-green-500/20";
+                              bgClass = "bg-[#ECFDF5] dark:bg-green-500/10 border-[#A7F3D0] dark:border-green-500/20";
                             }
 
                             return (
@@ -190,11 +193,11 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
                               >
                                 <div className="flex items-center gap-2 min-w-0">
                                   <span className={`w-5 flex items-center justify-center ${rankColor}`}>{rankIcon}</span>
-                                  <span className={`font-semibold truncate ${isWinner ? 'text-green-600 dark:text-green-400' : 'text-slate-700 dark:text-slate-200'}`}>
-                                    {player.name} {isWinner && <Trophy className="inline h-3.5 w-3.5 text-yellow-500 ml-1" />}
+                                  <span className={`font-semibold truncate ${isWinner ? 'text-[#059669] dark:text-green-400 font-bold' : 'text-slate-700 dark:text-slate-200'}`}>
+                                    {pName} {isWinner && <Trophy className="inline h-3.5 w-3.5 text-yellow-500 ml-1" />}
                                   </span>
                                 </div>
-                                <span className="font-bold text-blue-600 dark:text-blue-400 shrink-0">{player.totalScore || 0} pts</span>
+                                <span className="font-bold text-[#6320EE] dark:text-purple-400 shrink-0">{player.totalScore || 0} pts</span>
                               </div>
                             );
                           })}
@@ -209,9 +212,12 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
                       onClick={(e) => {
                         e.stopPropagation();
                         onClose();
-                        navigate(`/results/${res.sessionId}`);
+                        const targetId = (res.sessionId && typeof res.sessionId === 'object') 
+                          ? (res.sessionId._id || res.sessionId.id) 
+                          : (res.sessionId || res._id);
+                        navigate(`/results/${targetId}`);
                       }}
-                      className="w-full mt-1.5 py-2.5 px-4 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 border border-indigo-100 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full mt-1.5 py-2.5 px-4 rounded-xl bg-[#FAF5FF] hover:bg-[#F3E8FF] border border-[#EDE9FE] text-[#6320EE] text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs hover:shadow-xs focus:outline-none focus:ring-2 focus:ring-[#6320EE]"
                     >
                       <span>View Full Analytics Report</span>
                       <ChevronRight className="h-4 w-4 transform group-hover:translate-x-0.5 transition-transform" />

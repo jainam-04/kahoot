@@ -840,10 +840,10 @@ export default function ResultsAnalytics() {
   if (isLoading) {
     return (
       <AnimatedPage>
-        <div className={`flex-1 flex items-center justify-center min-h-[70vh] ${isDark ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
+        <div className={`flex-1 flex items-center justify-center min-h-[70vh] ${isDark ? 'bg-slate-950 text-white' : 'bg-[#FDFDFE] text-slate-900'}`}>
           <div className="text-center space-y-4">
-            <Loader2 className={`h-10 w-10 animate-spin mx-auto ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
-            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Compiling analytics report...</p>
+            <Loader2 className="h-10 w-10 animate-spin mx-auto text-[#6320EE]" />
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>Compiling analytics report...</p>
           </div>
         </div>
       </AnimatedPage>
@@ -853,15 +853,20 @@ export default function ResultsAnalytics() {
   if (error || !result) {
     return (
       <AnimatedPage>
-        <div className={`flex-1 flex flex-col items-center justify-center min-h-[70vh] text-center px-4 ${isDark ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
-          <BarChart3 className={`h-12 w-12 mb-4 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
-          <h2 className="font-outfit text-xl font-bold">Report Not Found</h2>
-          <p className={`text-sm mt-1 max-w-[280px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+        <div className={`flex-1 flex flex-col items-center justify-center min-h-[70vh] text-center px-4 ${isDark ? 'bg-slate-950 text-white' : 'bg-[#FDFDFE] text-slate-900'}`}>
+          <BarChart3 className="h-12 w-12 mb-4 text-[#6320EE]" />
+          <h2 className="font-outfit text-xl font-bold text-[#1E1B4B]">Report Not Found</h2>
+          <p className={`text-sm mt-1 max-w-[280px] ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>
             The requested battle logs could not be loaded. Please return to the dashboard.
           </p>
-          <button onClick={() => navigate('/dashboard')} className="btn-premium btn-primary-gradient px-4 py-2.5 text-xs font-bold mt-5">
-            Go to Dashboard
-          </button>
+          <div className="flex items-center gap-3 mt-5">
+            <button onClick={() => navigate('/reports')} className="px-4 py-2.5 text-xs font-bold rounded-xl bg-[#6320EE] hover:bg-[#5827e8] text-white transition-all shadow-sm">
+              Back to Reports
+            </button>
+            <button onClick={() => navigate('/dashboard')} className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-[#475569] hover:bg-slate-200'}`}>
+              Go to Dashboard
+            </button>
+          </div>
         </div>
       </AnimatedPage>
     );
@@ -869,46 +874,48 @@ export default function ResultsAnalytics() {
 
   return (
     <AnimatedPage>
-      <div className={`relative min-h-screen p-6 sm:p-8 transition-colors duration-300 ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
-        <div className={`absolute inset-0 pointer-events-none ${isDark ? 'bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.18),_transparent_35%)]' : 'bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.08),_transparent_35%)]'}`} />
+      <div className={`relative min-h-screen p-4 sm:p-6 lg:p-8 transition-colors duration-300 font-['Inter',sans-serif] ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-[#FDFDFE] text-[#1E1B4B]'}`}>
+        <div className={`absolute inset-0 pointer-events-none ${isDark ? 'bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.18),_transparent_35%)]' : 'bg-[radial-gradient(circle_at_top_left,_rgba(99,32,238,0.06),_transparent_35%)]'}`} />
 
         <div className="mx-auto max-w-7xl relative z-10 space-y-6 text-left">
-          <div className={`rounded-[28px] border p-6 sm:p-8 shadow-xl ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-slate-200 bg-white'}`}>
+          {/* Main Top Card */}
+          <div className={`rounded-[28px] border p-6 sm:p-8 shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <button onClick={() => navigate('/dashboard')} className={`rounded-xl p-2 transition ${isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-slate-100 text-slate-600 hover:text-slate-900'}`} aria-label="Back">
+                <div className="flex items-center gap-2.5">
+                  <button onClick={() => { if (window.history.state && window.history.state.idx > 0) { navigate(-1); } else { navigate('/reports'); } }} className={`rounded-xl p-2 transition cursor-pointer ${isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-[#FAF5FF] text-[#6320EE] hover:bg-[#F3E8FF] border border-[#EDE9FE]'}`} aria-label="Back">
                     <ArrowLeft className="h-4.5 w-4.5" />
                   </button>
-                  <span className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] ${isDark ? 'bg-blue-500/10 text-blue-300' : 'bg-blue-50 text-blue-700'}`}>
+                  <span className={`rounded-full px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.25em] ${isDark ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]'}`}>
                     {result.quizTitle ? 'Performance Report' : 'Battle Report'}
                   </span>
                 </div>
 
                 <div className="space-y-2">
-                  <h1 className={`font-outfit text-3xl sm:text-4xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{result.quizTitle || 'Quiz Match'}</h1>
-                  <div className={`flex flex-wrap gap-2 text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                    <span className={`rounded-full px-3 py-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>Category: {result.quizCategory || result.quiz?.category || 'General'}</span>
-                    <span className={`rounded-full px-3 py-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>Player: {winnerName}</span>
-                    <span className={`rounded-full px-3 py-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>Date: {result.playedAt ? new Date(result.playedAt).toLocaleDateString() : 'N/A'}</span>
+                  <h1 className={`font-outfit text-3xl sm:text-4xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>{result.quizTitle || 'Quiz Match'}</h1>
+                  <div className={`flex flex-wrap gap-2 text-xs sm:text-sm ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>
+                    <span className={`rounded-full px-3 py-1 font-medium ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]'}`}>Category: {result.quizCategory || result.quiz?.category || 'General'}</span>
+                    <span className={`rounded-full px-3 py-1 font-medium ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-[#F5F3FF] text-[#7C3AED] border border-[#EDE9FE]'}`}>Player: {winnerName}</span>
+                    <span className={`rounded-full px-3 py-1 font-medium ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600 border border-slate-200/60'}`}>Date: {result.playedAt ? new Date(result.playedAt).toLocaleDateString() : 'N/A'}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <button onClick={handleExportExcel} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition cursor-pointer hover:scale-105 active:scale-95 ${isDark ? 'bg-emerald-950/60 text-emerald-300 hover:bg-emerald-900/60 border border-emerald-700/50' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}`}>
+              {/* Action Buttons: Exports */}
+              <div className="flex flex-wrap items-center gap-2">
+                <button onClick={handleExportExcel} className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition cursor-pointer hover:scale-105 active:scale-95 shadow-2xs ${isDark ? 'bg-emerald-950/60 text-emerald-300 hover:bg-emerald-900/60 border border-emerald-700/50' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}`}>
                   <FileSpreadsheet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                   Export Excel (.xlsx)
                 </button>
-                <button onClick={handleExportCSV} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition cursor-pointer hover:scale-105 active:scale-95 ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
-                  <FileSpreadsheet className="h-4 w-4" />
+                <button onClick={handleExportCSV} className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition cursor-pointer hover:scale-105 active:scale-95 shadow-2xs ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-[#FAF5FF] text-[#6320EE] hover:bg-[#F3E8FF] border border-[#E9D5FF]'}`}>
+                  <FileSpreadsheet className="h-4 w-4 text-[#6320EE]" />
                   Export CSV
                 </button>
-                <button onClick={handleExportWord} className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition cursor-pointer hover:scale-105 active:scale-95 ${isDark ? 'bg-blue-900/40 text-blue-200 hover:bg-blue-900/60 border border-blue-700/50' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
-                  <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <button onClick={handleExportWord} className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition cursor-pointer hover:scale-105 active:scale-95 shadow-2xs ${isDark ? 'bg-purple-900/40 text-purple-200 hover:bg-purple-900/60 border border-purple-700/50' : 'bg-[#FAF5FF] text-[#6320EE] hover:bg-[#F3E8FF] border border-[#E9D5FF]'}`}>
+                  <FileText className="h-4 w-4 text-[#6320EE]" />
                   Export Word (.docx)
                 </button>
-                <button onClick={handleExportPDF} className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 shadow-md cursor-pointer hover:scale-105 active:scale-95">
+                <button onClick={handleExportPDF} className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#6320EE] to-[#7C3AED] hover:from-[#5827e8] hover:to-[#6d28d9] px-4 py-2.5 text-xs font-bold text-white transition hover:opacity-95 shadow-md shadow-[#6320EE]/20 cursor-pointer hover:scale-105 active:scale-95">
                   <Download className="h-4 w-4" />
                   Export PDF
                 </button>
@@ -916,131 +923,137 @@ export default function ResultsAnalytics() {
             </div>
 
             <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_0.8fr]">
-              <div className={`rounded-2xl border p-5 ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-slate-200 bg-slate-50'}`}>
+              {/* Performance Snapshot */}
+              <div className={`rounded-2xl border p-5 sm:p-6 ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-[#F3E8FF] bg-gradient-to-br from-[#FAF5FF]/80 via-white to-[#FAF5FF]/40'}`}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className={`text-[10px] font-semibold uppercase tracking-[0.28em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Quiz Summary</p>
-                    <h2 className={`mt-1 text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Performance Snapshot</h2>
+                    <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${isDark ? 'text-purple-400' : 'text-[#7C3AED]'}`}>Quiz Summary</p>
+                    <h2 className={`mt-1 text-xl font-bold font-outfit ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>Performance Snapshot</h2>
                   </div>
-                  <div className={`rounded-full px-3 py-1 text-sm font-semibold ${isDark ? 'bg-emerald-500/10 text-emerald-300' : 'bg-emerald-50 text-emerald-700'}`}>
+                  <div className={`rounded-full px-3.5 py-1 text-xs font-bold ${isDark ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]'}`}>
                     {accuracy}% accuracy
                   </div>
                 </div>
 
                 <div className="mt-4 space-y-4">
                   <div>
-                    <div className="mb-2 flex items-center justify-between text-sm">
-                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Completion</span>
-                      <span className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{completionPercentage}%</span>
+                    <div className="mb-2 flex items-center justify-between text-xs sm:text-sm">
+                      <span className={`font-medium ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>Completion</span>
+                      <span className={`font-bold ${isDark ? 'text-slate-200' : 'text-[#1E1B4B]'}`}>{completionPercentage}%</span>
                     </div>
-                    <div className={`h-2.5 rounded-full ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}>
-                      <div className="h-2.5 rounded-full bg-gradient-to-r from-blue-500 to-emerald-500" style={{ width: `${completionPercentage}%` }} />
+                    <div className={`h-2.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-[#EDE9FE]'}`}>
+                      <div className="h-2.5 rounded-full bg-gradient-to-r from-[#6320EE] via-[#7C3AED] to-[#A855F7]" style={{ width: `${completionPercentage}%` }} />
                     </div>
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <div className={`rounded-xl border p-3 ${isDark ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'}`}>
-                      <p className={`text-[10px] uppercase tracking-[0.25em] ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Final Score</p>
-                      <p className={`mt-1 text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{playerSummaries[0]?.totalScore || 0} pts</p>
+                    <div className={`rounded-xl border p-3.5 shadow-2xs ${isDark ? 'border-slate-800 bg-slate-900' : 'border-[#F3E8FF] bg-white'}`}>
+                      <p className={`text-[10px] uppercase font-bold tracking-[0.25em] ${isDark ? 'text-purple-400' : 'text-[#7C3AED]'}`}>Final Score</p>
+                      <p className={`mt-1 text-xl font-black ${isDark ? 'text-purple-300' : 'text-[#6320EE]'}`}>{playerSummaries[0]?.totalScore || 0} pts</p>
                     </div>
-                    <div className={`rounded-xl border p-3 ${isDark ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'}`}>
-                      <p className={`text-[10px] uppercase tracking-[0.25em] ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Rank</p>
-                      <p className={`mt-1 text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>#{playerSummaries[0]?.rank || 0}</p>
+                    <div className={`rounded-xl border p-3.5 shadow-2xs ${isDark ? 'border-slate-800 bg-slate-900' : 'border-[#F1F5F9] bg-white'}`}>
+                      <p className={`text-[10px] uppercase font-bold tracking-[0.25em] ${isDark ? 'text-slate-500' : 'text-[#64748B]'}`}>Rank</p>
+                      <p className={`mt-1 text-xl font-black ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>#{playerSummaries[0]?.rank || 0}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className={`rounded-2xl border p-5 ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-slate-200 bg-slate-50'}`}>
-                <p className={`text-[10px] font-semibold uppercase tracking-[0.28em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Quick Facts</p>
+              {/* Quick Facts */}
+              <div className={`rounded-2xl border p-5 sm:p-6 ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-[#F1F5F9] bg-[#FAFAFC]'}`}>
+                <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>Quick Facts</p>
                 <div className="mt-4 space-y-3 text-sm">
                   <div className="flex items-center justify-between">
-                    <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Quiz Date</span>
-                    <span className={`font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>{result.playedAt ? new Date(result.playedAt).toLocaleDateString() : 'Pending'}</span>
+                    <span className={isDark ? 'text-slate-400' : 'text-[#64748B]'}>Quiz Date</span>
+                    <span className={`font-bold ${isDark ? 'text-slate-100' : 'text-[#1E1B4B]'}`}>{result.playedAt ? new Date(result.playedAt).toLocaleDateString() : 'Pending'}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Quiz Time</span>
-                    <span className={`font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>{result.playedAt ? new Date(result.playedAt).toLocaleTimeString() : 'Pending'}</span>
+                    <span className={isDark ? 'text-slate-400' : 'text-[#64748B]'}>Quiz Time</span>
+                    <span className={`font-bold ${isDark ? 'text-slate-100' : 'text-[#1E1B4B]'}`}>{result.playedAt ? new Date(result.playedAt).toLocaleTimeString() : 'Pending'}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Questions</span>
-                    <span className={`font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>{totalQuestions}</span>
+                    <span className={isDark ? 'text-slate-400' : 'text-[#64748B]'}>Questions</span>
+                    <span className={`font-bold ${isDark ? 'text-slate-100' : 'text-[#1E1B4B]'}`}>{totalQuestions}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Players</span>
-                    <span className={`font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>{totalPlayers}</span>
+                    <span className={isDark ? 'text-slate-400' : 'text-[#64748B]'}>Players</span>
+                    <span className={`font-bold ${isDark ? 'text-slate-100' : 'text-[#1E1B4B]'}`}>{totalPlayers}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* 4 Stat Metric Cards */}
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {[
               { label: 'Correct Answers', value: `${avgCorrect} / ${totalQuestions}`, icon: <CheckCircle className="h-5 w-5 text-emerald-500" />, accent: isDark ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-300' : 'border-emerald-200 bg-emerald-50 text-emerald-700' },
               { label: 'Incorrect Answers', value: playerSummaries.reduce((sum, player) => sum + player.wrong, 0), icon: <XCircle className="h-5 w-5 text-rose-500" />, accent: isDark ? 'border-rose-500/20 bg-rose-500/10 text-rose-300' : 'border-rose-200 bg-rose-50 text-rose-700' },
               { label: 'Not Submitted', value: playerSummaries.reduce((sum, player) => sum + player.unanswered, 0), icon: <AlertCircle className="h-5 w-5 text-amber-500" />, accent: isDark ? 'border-amber-500/20 bg-amber-500/10 text-amber-300' : 'border-amber-200 bg-amber-50 text-amber-700' },
-              { label: 'Average Score', value: `${Math.round(playerSummaries.reduce((sum, player) => sum + player.totalScore, 0) / Math.max(totalPlayers, 1))} pts`, icon: <Trophy className="h-5 w-5 text-blue-500" />, accent: isDark ? 'border-blue-500/20 bg-blue-500/10 text-blue-300' : 'border-blue-200 bg-blue-50 text-blue-700' },
+              { label: 'Average Score', value: `${Math.round(playerSummaries.reduce((sum, player) => sum + player.totalScore, 0) / Math.max(totalPlayers, 1))} pts`, icon: <Trophy className="h-5 w-5 text-[#6320EE]" />, accent: isDark ? 'border-purple-500/20 bg-purple-500/10 text-purple-300' : 'border-[#EDE9FE] bg-[#FAF5FF] text-[#6320EE]' },
             ].map((card, idx) => (
-              <div key={idx} className={`rounded-2xl border p-5 shadow-sm ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-slate-200 bg-white'}`}>
+              <div key={idx} className={`rounded-2xl border p-5 shadow-[0px_4px_20px_-2px_rgba(99,32,238,0.04),0px_2px_6px_-1px_rgba(0,0,0,0.02)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
                 <div className="flex items-center justify-between">
-                  <div className={`rounded-xl p-2 ${card.accent}`}>{card.icon}</div>
-                  <span className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{card.label}</span>
+                  <div className={`rounded-xl p-2.5 border ${card.accent}`}>{card.icon}</div>
+                  <span className={`text-[10px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>{card.label}</span>
                 </div>
-                <p className={`mt-5 text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{card.value}</p>
+                <p className={`mt-5 text-2xl font-black ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>{card.value}</p>
               </div>
             ))}
           </div>
 
-          <div className={`rounded-[28px] border p-6 shadow-sm ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-slate-200 bg-white'}`}>
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Trophy className={`h-5 w-5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
-                <h3 className={`text-sm font-semibold uppercase tracking-[0.28em] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Player Rankings</h3>
+          {/* Player Rankings Table */}
+          <div className={`rounded-[28px] border p-6 sm:p-8 shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
+            <div className="mb-5 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#FAF5FF] flex items-center justify-center">
+                  <Trophy className="h-4.5 w-4.5 text-[#6320EE]" />
+                </div>
+                <h3 className={`text-sm font-bold uppercase tracking-[0.25em] ${isDark ? 'text-slate-200' : 'text-[#1E1B4B]'}`}>Player Rankings</h3>
               </div>
-              <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Live score breakdown</span>
+              <span className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>Live score breakdown</span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className={`border-b text-xs uppercase tracking-[0.24em] ${isDark ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-500'}`}>
-                    <th className="px-3 py-3">Rank</th>
-                    <th className="px-3 py-3">Full Name</th>
-                    <th className="px-3 py-3">Phone / Mobile</th>
-                    <th className="px-3 py-3 text-center">Correct</th>
-                    <th className="px-3 py-3 text-center">Incorrect</th>
-                    <th className="px-3 py-3 text-center">Not Submitted</th>
-                    <th className="px-3 py-3 text-center">Score</th>
-                    <th className="px-3 py-3 text-center">%</th>
+                  <tr className={`border-b text-xs font-bold uppercase tracking-[0.2em] ${isDark ? 'border-slate-800 text-slate-400' : 'border-[#F1F5F9] text-[#64748B]'}`}>
+                    <th className="px-3.5 py-3">Rank</th>
+                    <th className="px-3.5 py-3">Full Name</th>
+                    <th className="px-3.5 py-3">Phone / Mobile</th>
+                    <th className="px-3.5 py-3 text-center">Correct</th>
+                    <th className="px-3.5 py-3 text-center">Incorrect</th>
+                    <th className="px-3.5 py-3 text-center">Not Submitted</th>
+                    <th className="px-3.5 py-3 text-center">Score</th>
+                    <th className="px-3.5 py-3 text-center">%</th>
                   </tr>
                 </thead>
                 <tbody>
                   {playerSummaries.map((player) => (
-                    <tr key={player.rank} className={`border-b transition hover:opacity-90 ${isDark ? 'border-slate-800 hover:bg-slate-800/60' : 'border-slate-200 hover:bg-slate-50'}`}>
-                      <td className={`px-3 py-3 font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{player.rank === 1 ? <Crown className="inline h-4 w-4 text-yellow-500" /> : player.rank === 2 ? <Medal className="inline h-4 w-4 text-slate-400" /> : player.rank === 3 ? <Medal className="inline h-4 w-4 text-amber-600" /> : `#${player.rank}`}</td>
-                      <td className={`px-3 py-3 font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    <tr key={player.rank} className={`border-b transition hover:opacity-95 ${isDark ? 'border-slate-800 hover:bg-slate-800/60' : 'border-[#F8FAFC] hover:bg-[#FAF5FF]/60'}`}>
+                      <td className={`px-3.5 py-3.5 font-bold ${isDark ? 'text-slate-200' : 'text-[#1E1B4B]'}`}>{player.rank === 1 ? <Crown className="inline h-4.5 w-4.5 text-yellow-500 drop-shadow-2xs" /> : player.rank === 2 ? <Medal className="inline h-4 w-4 text-slate-400" /> : player.rank === 3 ? <Medal className="inline h-4 w-4 text-amber-600" /> : `#${player.rank}`}</td>
+                      <td className={`px-3.5 py-3.5 font-bold ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>
                         <div>
                           <span>{player.fullName}</span>
                           {player.nickname && player.nickname !== player.fullName && (
-                            <span className={`block text-xs font-normal ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            <span className={`block text-xs font-normal ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>
                               aka {player.nickname}
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className={`px-3 py-3 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      <td className={`px-3.5 py-3.5 ${isDark ? 'text-slate-300' : 'text-[#475569]'}`}>
                         {player.mobileNumber ? (
                           <span className="font-mono text-xs font-medium tracking-wide">{player.mobileNumber}</span>
                         ) : (
                           <span className={`text-xs italic ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>Not provided</span>
                         )}
                       </td>
-                      <td className={`px-3 py-3 text-center ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{player.correct}</td>
-                      <td className={`px-3 py-3 text-center ${isDark ? 'text-rose-400' : 'text-rose-600'}`}>{player.wrong}</td>
-                      <td className={`px-3 py-3 text-center ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{player.unanswered}</td>
-                      <td className={`px-3 py-3 text-center font-semibold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>{player.totalScore} pts</td>
-                      <td className={`px-3 py-3 text-center font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{player.percentage}%</td>
+                      <td className="px-3.5 py-3.5 text-center font-bold text-emerald-600 dark:text-emerald-400">{player.correct}</td>
+                      <td className="px-3.5 py-3.5 text-center font-bold text-rose-600 dark:text-rose-400">{player.wrong}</td>
+                      <td className="px-3.5 py-3.5 text-center font-bold text-amber-600 dark:text-amber-400">{player.unanswered}</td>
+                      <td className="px-3.5 py-3.5 text-center font-black text-[#6320EE] dark:text-purple-400">{player.totalScore} pts</td>
+                      <td className={`px-3.5 py-3.5 text-center font-black ${isDark ? 'text-slate-200' : 'text-[#1E1B4B]'}`}>{player.percentage}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1048,17 +1061,20 @@ export default function ResultsAnalytics() {
             </div>
           </div>
 
-          <div className={`rounded-[28px] border p-6 shadow-sm ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-slate-200 bg-white'}`}>
-            <div className="mb-4 flex items-center gap-2">
-              <FileSpreadsheet className={`h-5 w-5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
-              <h3 className={`text-sm font-semibold uppercase tracking-[0.28em] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Fastest Correct Solvers</h3>
+          {/* Fastest Correct Solvers */}
+          <div className={`rounded-[28px] border p-6 sm:p-8 shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
+            <div className="mb-5 flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[#FAF5FF] flex items-center justify-center">
+                <FileSpreadsheet className="h-4.5 w-4.5 text-[#6320EE]" />
+              </div>
+              <h3 className={`text-sm font-bold uppercase tracking-[0.25em] ${isDark ? 'text-slate-200' : 'text-[#1E1B4B]'}`}>Fastest Correct Solvers</h3>
             </div>
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-3.5 sm:gap-4 md:grid-cols-3">
               {questionHighlights.map((hl, idx) => (
-                <div key={idx} className={`rounded-2xl border p-4 ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-slate-200 bg-slate-50'}`}>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Question {hl.questionNumber}</p>
-                  <p className={`mt-2 font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{hl.fastestPlayer ? hl.fastestPlayer.name : 'No correct answers'}</p>
-                  {hl.fastestPlayer && <p className={`mt-1 text-sm ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>{hl.fastestPlayer.timeTaken}s</p>}
+                <div key={idx} className={`rounded-2xl border p-4 transition-all shadow-2xs ${isDark ? 'border-slate-800 bg-slate-950/70 hover:border-slate-700' : 'border-[#F3E8FF] bg-[#FAF5FF]/60 hover:bg-[#FAF5FF] hover:border-[#DDD6FE]'}`}>
+                  <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${isDark ? 'text-purple-400' : 'text-[#7C3AED]'}`}>Question {hl.questionNumber}</p>
+                  <p className={`mt-2 font-bold truncate ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>{hl.fastestPlayer ? hl.fastestPlayer.name : 'No correct answers'}</p>
+                  {hl.fastestPlayer && <p className="mt-1 text-sm font-black text-[#6320EE] dark:text-purple-400">{hl.fastestPlayer.timeTaken}s</p>}
                 </div>
               ))}
             </div>

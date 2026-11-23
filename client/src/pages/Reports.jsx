@@ -38,6 +38,7 @@ import Logo from '../components/Logo';
 import HostProfileModal from '../components/HostProfileModal';
 import PlanComparisonTable from '../components/PlanComparisonTable';
 import AppSidebar from '../components/AppSidebar';
+import ReportsModal from '../components/ReportsModal';
 import { getMyQuizzes } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { clearAuthSession, getStoredUser } from '../utils/auth';
@@ -112,6 +113,8 @@ export default function Reports() {
   const [user, setUser] = useState(() => getStoredUser());
   const [activeModal, setActiveModal] = useState(null); // 'profile' | 'upgrade' | 'viewSample' | null
   const [selectedSampleReport, setSelectedSampleReport] = useState(null);
+  const [isReportsModalOpen, setIsReportsModalOpen] = useState(false);
+  const [selectedQuizForReports, setSelectedQuizForReports] = useState(null);
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -212,18 +215,78 @@ export default function Reports() {
   const rawQuizzes = quizzesData?.quizzes || [];
   const realSessions = resultsData?.results || [];
 
-  // Compute Combined Reports List
+  // Compute Combined Reports List (Grouped by Quiz)
   const allReports = useMemo(() => {
-    // Transform real completed game sessions
-    const realReportRows = realSessions.map((s, idx) => {
-      const players = s.players || [];
-      const totalScore = players.reduce((sum, p) => sum + (p.totalScore || 0), 0);
-      const avgScore = players.length ? Math.round(totalScore / players.length) : 0;
-      // Convert to a percentage if totalQuestions is known
-      const totalQ = s.totalQuestions || s.quizId?.questions?.length || 10;
-      const avgPercent = totalQ > 0 ? Math.min(100, Math.round((avgScore / (totalQ * 100)) * 100)) : 75;
+    if (!realSessions || realSessions.length === 0) {
+      return BENCHMARK_REPORTS;
+    }
 
-      const category = s.quizId?.category || 'General Knowledge';
+    // Group real completed game sessions by quiz
+    const groupsMap = new Map();
+
+    realSessions.forEach((s) => {
+      // Create a stable key per quiz (either quizId or quizTitle)
+      const rawQuizId = s.quizId?._id || (typeof s.quizId === 'string' ? s.quizId : null);
+      const rawTitle = s.quizTitle || s.quizId?.title;
+      const quizKey = rawQuizId
+        ? String(rawQuizId)
+        : (rawTitle ? `title:${String(rawTitle).trim().toLowerCase()}` : String(s.sessionId || s._id));
+
+      if (!groupsMap.has(quizKey)) {
+        groupsMap.set(quizKey, {
+          quizId: rawQuizId,
+          title: rawTitle || 'Quiz Session',
+          category: s.quizId?.category || 'General Knowledge',
+          totalQuestions: s.totalQuestions || s.quizId?.questions?.length || 10,
+          sessions: []
+        });
+      }
+
+      const group = groupsMap.get(quizKey);
+      group.sessions.push(s);
+
+      // Backfill title/category if it was missing in earlier session
+      if ((!group.title || group.title === 'Quiz Session') && rawTitle) {
+        group.title = rawTitle;
+      }
+      if ((!group.category || group.category === 'General Knowledge') && s.quizId?.category) {
+        group.category = s.quizId.category;
+      }
+      if (s.totalQuestions && s.totalQuestions > group.totalQuestions) {
+        group.totalQuestions = s.totalQuestions;
+      }
+    });
+
+    const groupedReportRows = Array.from(groupsMap.values()).map((group, idx) => {
+      // Sort sessions newest first
+      group.sessions.sort((a, b) => {
+        const timeA = new Date(a.playedAt || a.createdAt || 0).getTime();
+        const timeB = new Date(b.playedAt || b.createdAt || 0).getTime();
+        return timeB - timeA;
+      });
+
+      const latestSession = group.sessions[0];
+      const totalParticipants = group.sessions.reduce((sum, s) => sum + (s.players?.length || 0), 0);
+
+      // Compute average accuracy / score percentage across sessions
+      let totalScoreSum = 0;
+      let totalPlayersWithScore = 0;
+      group.sessions.forEach(s => {
+        (s.players || []).forEach(p => {
+          totalScoreSum += (p.totalScore || 0);
+          totalPlayersWithScore += 1;
+        });
+      });
+
+      const totalQ = group.totalQuestions || 10;
+      let avgPercent = 75;
+      if (totalPlayersWithScore > 0 && totalQ > 0) {
+        const avgScore = totalScoreSum / totalPlayersWithScore;
+        avgPercent = Math.min(100, Math.round((avgScore / (totalQ * 100)) * 100));
+        if (avgPercent <= 0) avgPercent = 75;
+      }
+
+      const category = group.category || 'General Knowledge';
       let iconType = 'film';
       if (/geo|map|capital/i.test(category)) iconType = 'globe';
       else if (/science|nature|chem|phys/i.test(category)) iconType = 'flask';
@@ -231,25 +294,23 @@ export default function Reports() {
       else if (/code|react|tech|prog/i.test(category)) iconType = 'code';
 
       return {
-        id: s._id || `real-${idx}`,
-        title: s.quizTitle || s.quizId?.title || 'Quiz Session',
+        id: `quiz-group-${group.quizId || idx}`,
+        quizId: group.quizId,
+        title: group.title,
         category: category,
         questionsCount: totalQ,
-        sessionsCount: 1,
-        participantsCount: players.length,
-        avgScore: avgPercent || 75,
-        date: s.playedAt || s.createdAt || new Date().toISOString(),
+        sessionsCount: group.sessions.length,
+        participantsCount: totalParticipants,
+        avgScore: avgPercent,
+        date: latestSession?.playedAt || latestSession?.createdAt || new Date().toISOString(),
         iconType,
         isReal: true,
-        sessionId: s._id
+        sessions: group.sessions,
+        sessionId: latestSession?.sessionId || latestSession?._id
       };
     });
 
-    if (realReportRows.length > 0) {
-      return realReportRows;
-    }
-    // If no real sessions have been played yet, display the canonical Figma benchmark set
-    return BENCHMARK_REPORTS;
+    return groupedReportRows;
   }, [realSessions]);
 
   // Metric Computations (Matching 4 Stat Metric Cards)
@@ -364,8 +425,13 @@ export default function Reports() {
   };
 
   const handleViewReport = (report) => {
-    if (report.isReal && report.sessionId) {
-      navigate(`/results/${report.sessionId}`);
+    if (report.isReal) {
+      setSelectedQuizForReports({
+        title: report.title,
+        _id: report.quizId,
+        sessions: report.sessions || [report]
+      });
+      setIsReportsModalOpen(true);
     } else {
       setSelectedSampleReport(report);
       setActiveModal('viewSample');
@@ -838,10 +904,14 @@ export default function Reports() {
                             <button
                               type="button"
                               onClick={() => handleViewReport(report)}
-                              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#FAF5FF] hover:bg-[#F3E8FF] text-[#6320EE] text-xs font-bold transition-all shadow-2xs cursor-pointer ml-auto"
+                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FAF5FF] hover:bg-[#F3E8FF] border border-[#EDE9FE] text-[#6320EE] text-xs font-bold transition-all shadow-2xs cursor-pointer ml-auto active:scale-95"
                             >
                               <BarChart2 className="w-3.5 h-3.5 text-[#6320EE]" />
-                              <span>View Report</span>
+                              <span>
+                                {report.sessionsCount > 1 
+                                  ? `View Reports (${report.sessionsCount})` 
+                                  : `View Report (${report.sessionsCount || 1})`}
+                              </span>
                             </button>
                           </td>
                         </tr>
@@ -919,7 +989,11 @@ export default function Reports() {
                         className="w-full h-[38px] rounded-xl bg-[#6320EE] hover:bg-[#5217cc] text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-[0.98] cursor-pointer"
                       >
                         <BarChart2 className="w-3.5 h-3.5" />
-                        <span>View Detailed Report</span>
+                        <span>
+                          {report.sessionsCount > 1 
+                            ? `View Reports (${report.sessionsCount})` 
+                            : `View Report (${report.sessionsCount || 1})`}
+                        </span>
                         <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
                       </button>
                     </div>
@@ -1161,6 +1235,13 @@ export default function Reports() {
             </div>
           </div>
         )}
+        {/* Battle Reports Sessions Modal */}
+        <ReportsModal
+          isOpen={isReportsModalOpen}
+          onClose={() => setIsReportsModalOpen(false)}
+          quiz={selectedQuizForReports}
+          results={selectedQuizForReports?.sessions || []}
+        />
       </div>
     </AnimatedPage>
   );
