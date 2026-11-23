@@ -874,70 +874,70 @@ export default function ResultsAnalytics() {
 
   return (
     <AnimatedPage>
-      <div className={`relative min-h-screen p-4 sm:p-6 lg:p-8 transition-colors duration-300 font-['Inter',sans-serif] ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-[#FDFDFE] text-[#1E1B4B]'}`}>
+      <div className={`relative min-h-screen p-3 sm:p-6 lg:p-8 transition-colors duration-300 font-['Inter',sans-serif] ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-[#FDFDFE] text-[#1E1B4B]'}`}>
         <div className={`absolute inset-0 pointer-events-none ${isDark ? 'bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.18),_transparent_35%)]' : 'bg-[radial-gradient(circle_at_top_left,_rgba(99,32,238,0.06),_transparent_35%)]'}`} />
 
-        <div className="mx-auto max-w-7xl relative z-10 space-y-6 text-left">
+        <div className="mx-auto max-w-7xl relative z-10 space-y-4 sm:space-y-6 text-left">
           {/* Main Top Card */}
-          <div className={`rounded-[28px] border p-6 sm:p-8 shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
+          <div className={`rounded-2xl sm:rounded-[28px] border p-4 sm:p-6 lg:p-8 shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2.5">
-                  <button onClick={() => { if (window.history.state && window.history.state.idx > 0) { navigate(-1); } else { navigate('/reports'); } }} className={`rounded-xl p-2 transition cursor-pointer ${isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-[#FAF5FF] text-[#6320EE] hover:bg-[#F3E8FF] border border-[#EDE9FE]'}`} aria-label="Back">
-                    <ArrowLeft className="h-4.5 w-4.5" />
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-2">
+                  <button onClick={() => { if (window.history.state && window.history.state.idx > 0) { navigate(-1); } else { navigate('/reports'); } }} className={`rounded-xl p-2 transition cursor-pointer shrink-0 ${isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-[#FAF5FF] text-[#6320EE] hover:bg-[#F3E8FF] border border-[#EDE9FE]'}`} aria-label="Back">
+                    <ArrowLeft className="h-4 w-4" />
                   </button>
-                  <span className={`rounded-full px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.25em] ${isDark ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]'}`}>
+                  <span className={`rounded-full px-3 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider whitespace-nowrap ${isDark ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]'}`}>
                     {result.quizTitle ? 'Performance Report' : 'Battle Report'}
                   </span>
                 </div>
 
                 <div className="space-y-2">
-                  <h1 className={`font-outfit text-3xl sm:text-4xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>{result.quizTitle || 'Quiz Match'}</h1>
-                  <div className={`flex flex-wrap gap-2 text-xs sm:text-sm ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>
-                    <span className={`rounded-full px-3 py-1 font-medium ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]'}`}>Category: {result.quizCategory || result.quiz?.category || 'General'}</span>
-                    <span className={`rounded-full px-3 py-1 font-medium ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-[#F5F3FF] text-[#7C3AED] border border-[#EDE9FE]'}`}>Player: {winnerName}</span>
-                    <span className={`rounded-full px-3 py-1 font-medium ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600 border border-slate-200/60'}`}>Date: {result.playedAt ? new Date(result.playedAt).toLocaleDateString() : 'N/A'}</span>
+                  <h1 className={`font-outfit text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight break-words ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>{result.quizTitle || 'Quiz Match'}</h1>
+                  <div className={`flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>
+                    <span className={`rounded-lg px-2.5 py-1 ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]'}`}>Category: <span className="font-bold">{result.quizCategory || result.quiz?.category || 'General'}</span></span>
+                    <span className={`rounded-lg px-2.5 py-1 ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-[#F5F3FF] text-[#7C3AED] border border-[#EDE9FE]'}`}>Player: <span className="font-bold">{winnerName}</span></span>
+                    <span className={`rounded-lg px-2.5 py-1 ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600 border border-slate-200/60'}`}>Date: <span className="font-bold">{result.playedAt ? new Date(result.playedAt).toLocaleDateString() : 'N/A'}</span></span>
                   </div>
                 </div>
               </div>
 
-              {/* Action Buttons: Exports */}
-              <div className="flex flex-wrap items-center gap-2">
-                <button onClick={handleExportExcel} className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition cursor-pointer hover:scale-105 active:scale-95 shadow-2xs ${isDark ? 'bg-emerald-950/60 text-emerald-300 hover:bg-emerald-900/60 border border-emerald-700/50' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}`}>
-                  <FileSpreadsheet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                  Export Excel (.xlsx)
+              {/* Action Buttons: Exports (2x2 Grid on Mobile, Flex on Desktop) */}
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full lg:w-auto pt-1 lg:pt-0">
+                <button onClick={handleExportExcel} className={`flex items-center justify-center gap-1.5 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold transition cursor-pointer hover:scale-105 active:scale-95 shadow-2xs ${isDark ? 'bg-emerald-950/60 text-emerald-300 hover:bg-emerald-900/60 border border-emerald-700/50' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}`}>
+                  <FileSpreadsheet className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span className="truncate">Excel (.xlsx)</span>
                 </button>
-                <button onClick={handleExportCSV} className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition cursor-pointer hover:scale-105 active:scale-95 shadow-2xs ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-[#FAF5FF] text-[#6320EE] hover:bg-[#F3E8FF] border border-[#E9D5FF]'}`}>
-                  <FileSpreadsheet className="h-4 w-4 text-[#6320EE]" />
-                  Export CSV
+                <button onClick={handleExportCSV} className={`flex items-center justify-center gap-1.5 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold transition cursor-pointer hover:scale-105 active:scale-95 shadow-2xs ${isDark ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-[#FAF5FF] text-[#6320EE] hover:bg-[#F3E8FF] border border-[#E9D5FF]'}`}>
+                  <FileSpreadsheet className="h-4 w-4 text-[#6320EE] shrink-0" />
+                  <span>CSV</span>
                 </button>
-                <button onClick={handleExportWord} className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition cursor-pointer hover:scale-105 active:scale-95 shadow-2xs ${isDark ? 'bg-purple-900/40 text-purple-200 hover:bg-purple-900/60 border border-purple-700/50' : 'bg-[#FAF5FF] text-[#6320EE] hover:bg-[#F3E8FF] border border-[#E9D5FF]'}`}>
-                  <FileText className="h-4 w-4 text-[#6320EE]" />
-                  Export Word (.docx)
+                <button onClick={handleExportWord} className={`flex items-center justify-center gap-1.5 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold transition cursor-pointer hover:scale-105 active:scale-95 shadow-2xs ${isDark ? 'bg-purple-900/40 text-purple-200 hover:bg-purple-900/60 border border-purple-700/50' : 'bg-[#FAF5FF] text-[#6320EE] hover:bg-[#F3E8FF] border border-[#E9D5FF]'}`}>
+                  <FileText className="h-4 w-4 text-[#6320EE] shrink-0" />
+                  <span className="truncate">Word (.docx)</span>
                 </button>
-                <button onClick={handleExportPDF} className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#6320EE] to-[#7C3AED] hover:from-[#5827e8] hover:to-[#6d28d9] px-4 py-2.5 text-xs font-bold text-white transition hover:opacity-95 shadow-md shadow-[#6320EE]/20 cursor-pointer hover:scale-105 active:scale-95">
-                  <Download className="h-4 w-4" />
-                  Export PDF
+                <button onClick={handleExportPDF} className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#6320EE] to-[#7C3AED] hover:from-[#5827e8] hover:to-[#6d28d9] px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-white transition hover:opacity-95 shadow-md shadow-[#6320EE]/20 cursor-pointer hover:scale-105 active:scale-95">
+                  <Download className="h-4 w-4 shrink-0" />
+                  <span>Export PDF</span>
                 </button>
               </div>
             </div>
 
-            <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_0.8fr]">
+            <div className="mt-4 sm:mt-6 grid gap-3 sm:gap-4 lg:grid-cols-[1.4fr_0.8fr]">
               {/* Performance Snapshot */}
-              <div className={`rounded-2xl border p-5 sm:p-6 ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-[#F3E8FF] bg-gradient-to-br from-[#FAF5FF]/80 via-white to-[#FAF5FF]/40'}`}>
+              <div className={`rounded-xl sm:rounded-2xl border p-4 sm:p-6 ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-[#F3E8FF] bg-gradient-to-br from-[#FAF5FF]/80 via-white to-[#FAF5FF]/40'}`}>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${isDark ? 'text-purple-400' : 'text-[#7C3AED]'}`}>Quiz Summary</p>
-                    <h2 className={`mt-1 text-xl font-bold font-outfit ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>Performance Snapshot</h2>
+                    <h2 className={`mt-0.5 sm:mt-1 text-lg sm:text-xl font-bold font-outfit ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>Performance Snapshot</h2>
                   </div>
-                  <div className={`rounded-full px-3.5 py-1 text-xs font-bold ${isDark ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]'}`}>
+                  <div className={`rounded-full px-2.5 sm:px-3.5 py-1 text-xs font-bold ${isDark ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]'}`}>
                     {accuracy}% accuracy
                   </div>
                 </div>
 
-                <div className="mt-4 space-y-4">
+                <div className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
                   <div>
-                    <div className="mb-2 flex items-center justify-between text-xs sm:text-sm">
+                    <div className="mb-1.5 sm:mb-2 flex items-center justify-between text-xs sm:text-sm">
                       <span className={`font-medium ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>Completion</span>
                       <span className={`font-bold ${isDark ? 'text-slate-200' : 'text-[#1E1B4B]'}`}>{completionPercentage}%</span>
                     </div>
@@ -946,36 +946,36 @@ export default function ResultsAnalytics() {
                     </div>
                   </div>
 
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className={`rounded-xl border p-3.5 shadow-2xs ${isDark ? 'border-slate-800 bg-slate-900' : 'border-[#F3E8FF] bg-white'}`}>
+                  <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                    <div className={`rounded-lg sm:rounded-xl border p-3 sm:p-3.5 shadow-2xs ${isDark ? 'border-slate-800 bg-slate-900' : 'border-[#F3E8FF] bg-white'}`}>
                       <p className={`text-[10px] uppercase font-bold tracking-[0.25em] ${isDark ? 'text-purple-400' : 'text-[#7C3AED]'}`}>Final Score</p>
-                      <p className={`mt-1 text-xl font-black ${isDark ? 'text-purple-300' : 'text-[#6320EE]'}`}>{playerSummaries[0]?.totalScore || 0} pts</p>
+                      <p className={`mt-1 text-lg sm:text-xl font-black ${isDark ? 'text-purple-300' : 'text-[#6320EE]'}`}>{playerSummaries[0]?.totalScore || 0} pts</p>
                     </div>
-                    <div className={`rounded-xl border p-3.5 shadow-2xs ${isDark ? 'border-slate-800 bg-slate-900' : 'border-[#F1F5F9] bg-white'}`}>
+                    <div className={`rounded-lg sm:rounded-xl border p-3.5 shadow-2xs ${isDark ? 'border-slate-800 bg-slate-900' : 'border-[#F1F5F9] bg-white'}`}>
                       <p className={`text-[10px] uppercase font-bold tracking-[0.25em] ${isDark ? 'text-slate-500' : 'text-[#64748B]'}`}>Rank</p>
-                      <p className={`mt-1 text-xl font-black ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>#{playerSummaries[0]?.rank || 0}</p>
+                      <p className={`mt-1 text-lg sm:text-xl font-black ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>#{playerSummaries[0]?.rank || 0}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Quick Facts */}
-              <div className={`rounded-2xl border p-5 sm:p-6 ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-[#F1F5F9] bg-[#FAFAFC]'}`}>
+              <div className={`rounded-xl sm:rounded-2xl border p-4 sm:p-6 ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-[#F1F5F9] bg-[#FAFAFC]'}`}>
                 <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>Quick Facts</p>
-                <div className="mt-4 space-y-3 text-sm">
-                  <div className="flex items-center justify-between">
+                <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3 text-xs sm:text-sm">
+                  <div className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800/60">
                     <span className={isDark ? 'text-slate-400' : 'text-[#64748B]'}>Quiz Date</span>
                     <span className={`font-bold ${isDark ? 'text-slate-100' : 'text-[#1E1B4B]'}`}>{result.playedAt ? new Date(result.playedAt).toLocaleDateString() : 'Pending'}</span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800/60">
                     <span className={isDark ? 'text-slate-400' : 'text-[#64748B]'}>Quiz Time</span>
                     <span className={`font-bold ${isDark ? 'text-slate-100' : 'text-[#1E1B4B]'}`}>{result.playedAt ? new Date(result.playedAt).toLocaleTimeString() : 'Pending'}</span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800/60">
                     <span className={isDark ? 'text-slate-400' : 'text-[#64748B]'}>Questions</span>
                     <span className={`font-bold ${isDark ? 'text-slate-100' : 'text-[#1E1B4B]'}`}>{totalQuestions}</span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between py-1">
                     <span className={isDark ? 'text-slate-400' : 'text-[#64748B]'}>Players</span>
                     <span className={`font-bold ${isDark ? 'text-slate-100' : 'text-[#1E1B4B]'}`}>{totalPlayers}</span>
                   </div>
@@ -985,36 +985,104 @@ export default function ResultsAnalytics() {
           </div>
 
           {/* 4 Stat Metric Cards */}
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-4">
             {[
-              { label: 'Correct Answers', value: `${avgCorrect} / ${totalQuestions}`, icon: <CheckCircle className="h-5 w-5 text-emerald-500" />, accent: isDark ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-300' : 'border-emerald-200 bg-emerald-50 text-emerald-700' },
-              { label: 'Incorrect Answers', value: playerSummaries.reduce((sum, player) => sum + player.wrong, 0), icon: <XCircle className="h-5 w-5 text-rose-500" />, accent: isDark ? 'border-rose-500/20 bg-rose-500/10 text-rose-300' : 'border-rose-200 bg-rose-50 text-rose-700' },
-              { label: 'Not Submitted', value: playerSummaries.reduce((sum, player) => sum + player.unanswered, 0), icon: <AlertCircle className="h-5 w-5 text-amber-500" />, accent: isDark ? 'border-amber-500/20 bg-amber-500/10 text-amber-300' : 'border-amber-200 bg-amber-50 text-amber-700' },
-              { label: 'Average Score', value: `${Math.round(playerSummaries.reduce((sum, player) => sum + player.totalScore, 0) / Math.max(totalPlayers, 1))} pts`, icon: <Trophy className="h-5 w-5 text-[#6320EE]" />, accent: isDark ? 'border-purple-500/20 bg-purple-500/10 text-purple-300' : 'border-[#EDE9FE] bg-[#FAF5FF] text-[#6320EE]' },
+              { label: 'Correct Answers', value: `${avgCorrect} / ${totalQuestions}`, icon: <CheckCircle className="h-4 sm:h-5 w-4 sm:w-5 text-emerald-500" />, accent: isDark ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-300' : 'border-emerald-200 bg-emerald-50 text-emerald-700' },
+              { label: 'Incorrect Answers', value: playerSummaries.reduce((sum, player) => sum + player.wrong, 0), icon: <XCircle className="h-4 sm:h-5 w-4 sm:w-5 text-rose-500" />, accent: isDark ? 'border-rose-500/20 bg-rose-500/10 text-rose-300' : 'border-rose-200 bg-rose-50 text-rose-700' },
+              { label: 'Not Submitted', value: playerSummaries.reduce((sum, player) => sum + player.unanswered, 0), icon: <AlertCircle className="h-4 sm:h-5 w-4 sm:w-5 text-amber-500" />, accent: isDark ? 'border-amber-500/20 bg-amber-500/10 text-amber-300' : 'border-amber-200 bg-amber-50 text-amber-700' },
+              { label: 'Average Score', value: `${Math.round(playerSummaries.reduce((sum, player) => sum + player.totalScore, 0) / Math.max(totalPlayers, 1))} pts`, icon: <Trophy className="h-4 sm:h-5 w-4 sm:w-5 text-[#6320EE]" />, accent: isDark ? 'border-purple-500/20 bg-purple-500/10 text-purple-300' : 'border-[#EDE9FE] bg-[#FAF5FF] text-[#6320EE]' },
             ].map((card, idx) => (
-              <div key={idx} className={`rounded-2xl border p-5 shadow-[0px_4px_20px_-2px_rgba(99,32,238,0.04),0px_2px_6px_-1px_rgba(0,0,0,0.02)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
-                <div className="flex items-center justify-between">
-                  <div className={`rounded-xl p-2.5 border ${card.accent}`}>{card.icon}</div>
-                  <span className={`text-[10px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>{card.label}</span>
+              <div key={idx} className={`rounded-xl sm:rounded-2xl border p-3.5 sm:p-5 shadow-xs ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
+                <div className="flex items-center justify-between gap-1">
+                  <div className={`rounded-lg sm:rounded-xl p-2 sm:p-2.5 border ${card.accent}`}>{card.icon}</div>
+                  <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-right truncate ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>{card.label}</span>
                 </div>
-                <p className={`mt-5 text-2xl font-black ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>{card.value}</p>
+                <p className={`mt-3 sm:mt-5 text-lg sm:text-2xl font-black ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>{card.value}</p>
               </div>
             ))}
           </div>
 
-          {/* Player Rankings Table */}
-          <div className={`rounded-[28px] border p-6 sm:p-8 shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
-            <div className="mb-5 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#FAF5FF] flex items-center justify-center">
-                  <Trophy className="h-4.5 w-4.5 text-[#6320EE]" />
+          {/* Player Rankings Table & Mobile Cards */}
+          <div className={`rounded-2xl sm:rounded-[28px] border p-4 sm:p-6 lg:p-8 shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
+            <div className="mb-4 sm:mb-5 flex items-center justify-between">
+              <div className="flex items-center gap-2 sm:gap-2.5">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#FAF5FF] flex items-center justify-center">
+                  <Trophy className="h-4 w-4 text-[#6320EE]" />
                 </div>
-                <h3 className={`text-sm font-bold uppercase tracking-[0.25em] ${isDark ? 'text-slate-200' : 'text-[#1E1B4B]'}`}>Player Rankings</h3>
+                <h3 className={`text-xs sm:text-sm font-bold uppercase tracking-wider ${isDark ? 'text-slate-200' : 'text-[#1E1B4B]'}`}>Player Rankings</h3>
               </div>
-              <span className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>Live score breakdown</span>
+              <span className={`text-[11px] sm:text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>Live score breakdown</span>
             </div>
 
-            <div className="overflow-x-auto">
+            {/* Mobile Player Cards (< md) */}
+            <div className="md:hidden space-y-2.5">
+              {playerSummaries.map((player) => (
+                <div
+                  key={player.rank}
+                  className={`rounded-2xl border p-3.5 space-y-2.5 shadow-2xs ${
+                    isDark
+                      ? 'border-slate-800 bg-slate-950/70'
+                      : 'border-[#F3E8FF] bg-[#FAF5FF]/30'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 flex items-center justify-center shrink-0 text-xs font-black shadow-2xs">
+                        {player.rank === 1 ? (
+                          <Crown className="h-4 w-4 text-yellow-500 drop-shadow-2xs" />
+                        ) : player.rank === 2 ? (
+                          <Medal className="h-4 w-4 text-slate-400" />
+                        ) : player.rank === 3 ? (
+                          <Medal className="h-4 w-4 text-amber-600" />
+                        ) : (
+                          `#${player.rank}`
+                        )}
+                      </span>
+                      <div className="min-w-0">
+                        <p className={`font-bold text-xs sm:text-sm truncate ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>
+                          {player.fullName}
+                        </p>
+                        {player.mobileNumber ? (
+                          <p className="text-[10px] text-slate-400 font-mono">
+                            {player.mobileNumber}
+                          </p>
+                        ) : (
+                          player.nickname && player.nickname !== player.fullName && (
+                            <p className="text-[10px] text-slate-400 truncate">
+                              aka {player.nickname}
+                            </p>
+                          )
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-xs sm:text-sm font-black text-[#6320EE] dark:text-purple-400 block">
+                        {player.totalScore} pts
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 block">
+                        {player.percentage}% acc
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Mini score breakdown strip */}
+                  <div className="grid grid-cols-3 gap-1.5 text-center pt-2 border-t border-slate-100 dark:border-slate-800 text-[10.5px] font-bold">
+                    <div className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 py-1 rounded-md">
+                      <span>{player.correct}</span> Correct
+                    </div>
+                    <div className="bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 py-1 rounded-md">
+                      <span>{player.wrong}</span> Wrong
+                    </div>
+                    <div className="bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 py-1 rounded-md">
+                      <span>{player.unanswered}</span> Missed
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table (>= md) */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className={`border-b text-xs font-bold uppercase tracking-[0.2em] ${isDark ? 'border-slate-800 text-slate-400' : 'border-[#F1F5F9] text-[#64748B]'}`}>
@@ -1062,19 +1130,19 @@ export default function ResultsAnalytics() {
           </div>
 
           {/* Fastest Correct Solvers */}
-          <div className={`rounded-[28px] border p-6 sm:p-8 shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
-            <div className="mb-5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[#FAF5FF] flex items-center justify-center">
-                <FileSpreadsheet className="h-4.5 w-4.5 text-[#6320EE]" />
+          <div className={`rounded-2xl sm:rounded-[28px] border p-4 sm:p-6 lg:p-8 shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
+            <div className="mb-4 sm:mb-5 flex items-center gap-2 sm:gap-2.5">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#FAF5FF] flex items-center justify-center">
+                <FileSpreadsheet className="h-4 w-4 text-[#6320EE]" />
               </div>
-              <h3 className={`text-sm font-bold uppercase tracking-[0.25em] ${isDark ? 'text-slate-200' : 'text-[#1E1B4B]'}`}>Fastest Correct Solvers</h3>
+              <h3 className={`text-xs sm:text-sm font-bold uppercase tracking-wider ${isDark ? 'text-slate-200' : 'text-[#1E1B4B]'}`}>Fastest Correct Solvers</h3>
             </div>
-            <div className="grid gap-3.5 sm:gap-4 md:grid-cols-3">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-4">
               {questionHighlights.map((hl, idx) => (
-                <div key={idx} className={`rounded-2xl border p-4 transition-all shadow-2xs ${isDark ? 'border-slate-800 bg-slate-950/70 hover:border-slate-700' : 'border-[#F3E8FF] bg-[#FAF5FF]/60 hover:bg-[#FAF5FF] hover:border-[#DDD6FE]'}`}>
-                  <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${isDark ? 'text-purple-400' : 'text-[#7C3AED]'}`}>Question {hl.questionNumber}</p>
-                  <p className={`mt-2 font-bold truncate ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>{hl.fastestPlayer ? hl.fastestPlayer.name : 'No correct answers'}</p>
-                  {hl.fastestPlayer && <p className="mt-1 text-sm font-black text-[#6320EE] dark:text-purple-400">{hl.fastestPlayer.timeTaken}s</p>}
+                <div key={idx} className={`rounded-xl sm:rounded-2xl border p-3 sm:p-4 transition-all shadow-2xs ${isDark ? 'border-slate-800 bg-slate-950/70 hover:border-slate-700' : 'border-[#F3E8FF] bg-[#FAF5FF]/60 hover:bg-[#FAF5FF] hover:border-[#DDD6FE]'}`}>
+                  <p className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-purple-400' : 'text-[#7C3AED]'}`}>Question {hl.questionNumber}</p>
+                  <p className={`mt-1 sm:mt-2 text-xs sm:text-sm font-bold truncate ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>{hl.fastestPlayer ? hl.fastestPlayer.name : 'No correct answers'}</p>
+                  {hl.fastestPlayer && <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm font-black text-[#6320EE] dark:text-purple-400">{hl.fastestPlayer.timeTaken}s</p>}
                 </div>
               ))}
             </div>
