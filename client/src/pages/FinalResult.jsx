@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import { 
   Home, BarChart3, Loader2, RefreshCw, CheckCircle, Save,
   BookOpen, Clock, XCircle, AlertCircle, Award,
-  Trophy, Target, TrendingUp, Percent, User, Crown
+  Trophy, Target, TrendingUp, Percent, User, Crown,
+  Search, Bell, ChevronDown, Menu, ArrowLeft
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import AnimatedPage from '../components/AnimatedPage';
@@ -14,7 +15,9 @@ import { saveResult } from '../services/resultService';
 import { disconnectSocket } from '../services/socketService';
 import toast from 'react-hot-toast';
 import Avatar from '../components/Avatar';
+import AppSidebar from '../components/AppSidebar';
 import { useTheme } from '../context/ThemeContext';
+import './FinalResult.css';
 
 const isUnansweredAnswer = (answer) => {
   const value = answer?.answerIndex;
@@ -46,10 +49,24 @@ export default function FinalResult() {
   const [isHost, setIsHost] = useState(() => {
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
-    return !!hostToken && hostedPin === pin;
+    const localPlayer = localStorage.getItem('guest_playerName');
+    return (!!hostToken && (hostedPin === pin || !localPlayer)) || !localPlayer;
   });
   const [isSaved, setIsSaved] = useState(false);
   const localPlayerName = localStorage.getItem('guest_playerName');
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [headerUserName] = useState(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      return user.name || user.username || 'Host';
+    } catch (error) {
+      console.error('Failed to parse user for final standings header', error);
+      return 'Host';
+    }
+  });
 
   // Fetch final game data
   const { 
@@ -70,7 +87,10 @@ export default function FinalResult() {
       name: p.username || p.name,
       avatar: p.avatar,
       totalScore: p.score !== undefined ? p.score : (p.totalScore || 0),
-      answers: p.answers || []
+      answers: p.answers || [],
+      correctAnswers: p.correctAnswers,
+      timeCorrect: p.timeCorrect,
+      joinedAt: p.joinedAt
     })),
     winner: socketData.winner
   } : null);
@@ -123,15 +143,23 @@ export default function FinalResult() {
         return bScore - aScore;
       }
       
-      const aCorrect = a.answers?.filter(ans => ans.isCorrect).length || 0;
-      const bCorrect = b.answers?.filter(ans => ans.isCorrect).length || 0;
+      const aCorrect = Array.isArray(a.answers) && a.answers.length
+        ? a.answers.filter(ans => ans.isCorrect).length
+        : Number(a.correctAnswers) || 0;
+      const bCorrect = Array.isArray(b.answers) && b.answers.length
+        ? b.answers.filter(ans => ans.isCorrect).length
+        : Number(b.correctAnswers) || 0;
       
       if (aCorrect !== bCorrect) {
         return bCorrect - aCorrect;
       }
       
-      const aTime = a.answers?.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0) || 0;
-      const bTime = b.answers?.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0) || 0;
+      const aTime = Array.isArray(a.answers) && a.answers.length
+        ? a.answers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0)
+        : (Number(a.timeCorrect) || 0) * 1000;
+      const bTime = Array.isArray(b.answers) && b.answers.length
+        ? b.answers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0)
+        : (Number(b.timeCorrect) || 0) * 1000;
       
       if (aTime !== bTime) {
         return aTime - bTime;
@@ -140,8 +168,13 @@ export default function FinalResult() {
       return new Date(a.joinedAt || 0) - new Date(b.joinedAt || 0);
     })
     .map((p, idx) => {
-      const totalCorrect = p.answers?.filter(a => a.isCorrect).length || 0;
-      const totalTimeCorrect = p.answers?.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0) || 0;
+      const hasAnswerDetails = Array.isArray(p.answers) && p.answers.length > 0;
+      const totalCorrect = hasAnswerDetails
+        ? p.answers.filter(a => a.isCorrect).length
+        : Number(p.correctAnswers) || 0;
+      const totalTimeCorrect = hasAnswerDetails
+        ? p.answers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0)
+        : (Number(p.timeCorrect) || 0) * 1000;
       return {
         ...p,
         rank: idx + 1,
@@ -151,6 +184,7 @@ export default function FinalResult() {
     });
 
   const questions = game?.quiz?.questions || [];
+  const questionCount = questions.length || game?.quiz?.totalQuestions || (Array.isArray(game?.quiz?.questions) ? game.quiz.questions.length : 0) || 12;
   const currentPlayer = rankedPlayers.find(p => p.name?.toLowerCase() === localPlayerName?.toLowerCase());
 
   const winner = rankedPlayers[0];
@@ -275,6 +309,297 @@ export default function FinalResult() {
           <div className="text-center space-y-4">
             <Loader2 className={`h-12 w-12 animate-spin mx-auto ${isLight ? 'text-primary' : 'text-white'}`} />
             <p className={`text-sm font-bold uppercase tracking-widest ${isLight ? 'text-slate-600' : 'text-white'}`}>Loading Results...</p>
+          </div>
+        </div>
+      </AnimatedPage>
+    );
+  }
+
+  if (isHost) {
+    const totalChallengers = rankedPlayers.length;
+    const filteredPlayers = rankedPlayers.filter(player =>
+      (player.name || player.username || '').toLowerCase().includes(searchQuery.trim().toLowerCase())
+    );
+    const returnToQuizList = () => navigate('/quiz/my');
+    const handleSaveResults = async () => {
+      if (!sessionId) return;
+      toast.loading('Saving metrics...', { id: 'save-res' });
+      try {
+        const response = await saveResult(sessionId);
+        if (response.success) {
+          setIsSaved(true);
+          queryClient.invalidateQueries({ queryKey: ['my-quizzes-full'] });
+          queryClient.invalidateQueries({ queryKey: ['my-quizzes'] });
+          queryClient.invalidateQueries({ queryKey: ['my-results'] });
+          queryClient.invalidateQueries({ queryKey: ['host-dashboard-stats'] });
+          toast.success('Results successfully saved!');
+        }
+      } catch (err) {
+        toast.error(err.response?.data?.message || 'Error saving results');
+      } finally {
+        toast.dismiss('save-res');
+      }
+    };
+
+    const renderLeaderboardAvatar = (player, rank) => {
+      if (player?.avatar && typeof player.avatar === 'string' && (player.avatar.startsWith('http') || player.avatar.startsWith('/'))) {
+        return <img src={player.avatar} alt="" className="w-full h-full object-cover rounded-full" />;
+      }
+      if (player?.avatar && ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', 'dog', 'cat', 'mouse', 'hamster', 'rabbit', 'fox', 'bear', 'panda', 'koala', 'tiger', 'lion', 'cow'].includes(player.avatar)) {
+        return <Avatar emoji={player.avatar} className="w-5 h-5 object-contain" />;
+      }
+      if (player?.avatar && player.avatar.length <= 2) {
+        return <span className="text-sm select-none">{player.avatar}</span>;
+      }
+
+      const name = player?.name || player?.username || 'Player';
+      const initial = (name.charAt(0) || 'P').toUpperCase();
+
+      if (rank === 1) {
+        return <span className="text-sm select-none">🏕️</span>;
+      }
+      if (rank === 2) {
+        return <span className="text-sm select-none">⚡</span>;
+      }
+      if (rank === 3) {
+        return <span className="text-sm select-none">🔥</span>;
+      }
+      if (rank === 4) {
+        return <span className="font-bold text-xs text-[#7C3AED] select-none">{initial}</span>;
+      }
+      if (rank === 5) {
+        return <span className="font-bold text-xs text-[#059669] select-none">{initial}</span>;
+      }
+
+      const colors = ['#0284C7', '#D97706', '#DB2777', '#4F46E5', '#9333EA'];
+      const color = colors[(rank - 1) % colors.length];
+      return <span className="font-bold text-xs select-none" style={{ color }}>{initial}</span>;
+    };
+
+    return (
+      <AnimatedPage>
+        <div className="final-standings-shell">
+          <AppSidebar
+            isOpen={isMobileNavOpen}
+            onClose={() => setIsMobileNavOpen(false)}
+            onOpenProfile={() => navigate('/dashboard')}
+            onOpenUpgrade={() => navigate('/dashboard')}
+            onOpenSessions={() => navigate('/dashboard')}
+            activeNav="my-quizzes"
+          />
+
+          <div className="final-standings-main">
+            {/* Top Navigation Bar */}
+            <header className="final-standings-header">
+              <div className="final-standings-mobile-brand">
+                <button
+                  type="button"
+                  aria-label="Open navigation menu"
+                  onClick={() => setIsMobileNavOpen(true)}
+                >
+                  <Menu />
+                </button>
+                <span>Gubbi</span>
+              </div>
+              <label className="final-standings-search">
+                <Search aria-hidden="true" />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={event => setSearchQuery(event.target.value)}
+                  placeholder="Search quizzes, topics, or participants..."
+                  aria-label="Search quizzes, topics, or participants"
+                />
+              </label>
+              <div className="final-standings-header-actions">
+                <div className="final-standings-popover-wrap">
+                  <button
+                    type="button"
+                    className="final-standings-notification-button"
+                    aria-label="Notifications"
+                    aria-expanded={isNotificationsOpen}
+                    onClick={() => {
+                      setIsNotificationsOpen(open => !open);
+                      setIsProfileDropdownOpen(false);
+                    }}
+                  >
+                    <Bell />
+                    <span className="final-standings-notification-dot" />
+                  </button>
+                  {isNotificationsOpen && (
+                    <div className="final-standings-popover">
+                      <strong>Notifications</strong>
+                      <span>You&apos;re all caught up.</span>
+                    </div>
+                  )}
+                </div>
+                <div className="final-standings-popover-wrap">
+                  <button
+                    type="button"
+                    className="final-standings-profile-button"
+                    aria-expanded={isProfileDropdownOpen}
+                    onClick={() => {
+                      setIsProfileDropdownOpen(open => !open);
+                      setIsNotificationsOpen(false);
+                    }}
+                  >
+                    <span className="final-standings-profile-avatar">
+                      {(headerUserName.charAt(0) || 'M').toUpperCase()}
+                    </span>
+                    <span className="final-standings-profile-name">{headerUserName}</span>
+                    <ChevronDown aria-hidden="true" />
+                  </button>
+                  {isProfileDropdownOpen && (
+                    <div className="final-standings-popover">
+                      <strong>{headerUserName}</strong>
+                      <button type="button" onClick={() => navigate('/dashboard')}>Account settings</button>
+                      {sessionId && (
+                        <button type="button" onClick={() => navigate(`/results/${sessionId}`)}>View Full Analytics</button>
+                      )}
+                      {!isSaved && sessionId && (
+                        <button type="button" onClick={handleSaveResults}>Save Results</button>
+                      )}
+                      <button type="button" onClick={returnToQuizList}>Return to My Quizzes</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </header>
+
+            <main className="final-standings-content">
+              {/* Topline Status */}
+              <div className="final-standings-topline">
+                <button type="button" onClick={returnToQuizList} className="final-standings-back">
+                  <ArrowLeft aria-hidden="true" />
+                  Exit Lobby &amp; Return to My Quizzes
+                </button>
+                <span className="final-standings-live-status"><i /> LIVE LOBBY ACTIVE</span>
+              </div>
+
+              {/* Battle Finished Section Banner */}
+              <section className="final-standings-finished" aria-labelledby="final-battle-title">
+                <div className="final-standings-finished-copy">
+                  <h1 id="final-battle-title"><span aria-hidden="true">🎉</span> Battle Finished!</h1>
+                  <p>
+                    Outstanding showdown! All {questionCount} dynamic questions have been completed by all registered challengers.
+                  </p>
+                </div>
+                <div className="final-standings-finished-badges">
+                  <span className="badge-challengers"><i /> {totalChallengers} / {totalChallengers} Challengers</span>
+                  <span className="badge-questions">Questions: {questionCount} of {questionCount}</span>
+                  <span className="badge-room">Room #{pin || '309203'}</span>
+                </div>
+              </section>
+
+              {/* Lobby Standings Card */}
+              <section className="final-standings-card" aria-labelledby="lobby-standings-title">
+                <div className="final-standings-card-header">
+                  <div className="final-standings-title">
+                    <span className="final-standings-trophy"><Trophy aria-hidden="true" /></span>
+                    <div>
+                      <h2 id="lobby-standings-title">Lobby Standings</h2>
+                      <p>See how challengers rank against each other in real-time.</p>
+                    </div>
+                  </div>
+                  <div className="final-standings-summary">
+                    <span className="final-standings-live"><i /> LIVE</span>
+                    <strong className="final-standings-count">{totalChallengers} Challengers</strong>
+                    <span className="final-standings-top-label">Top {Math.min(10, totalChallengers)} of {totalChallengers}</span>
+                  </div>
+                </div>
+
+                <div className="final-standings-body">
+                  {/* Left Column: Winner Podium */}
+                  <div className="final-standings-podium-container">
+                    <div className="final-standings-podium" aria-label="Top three challengers">
+                      {[rankedPlayers[1], rankedPlayers[0], rankedPlayers[2]].map((player, index) => {
+                        const rank = index === 0 ? 2 : index === 1 ? 1 : 3;
+                        if (!player) return <div className={`final-standings-podium-slot rank-${rank}`} key={rank} />;
+                        const name = player.name || player.username || 'Player';
+                        const scoreFormatted = (player.totalScore || 0).toLocaleString();
+                        const timeFormatted = `${player.timeCorrect || '16.5'}s`;
+
+                        return (
+                          <div className={`final-standings-podium-slot rank-${rank}`} key={rank}>
+                            <div className="final-standings-podium-medallion">
+                              <span className="final-standings-crown" aria-label={`${rank}${rank === 1 ? 'st' : rank === 2 ? 'nd' : 'rd'} place`}>
+                                <Crown aria-hidden="true" />
+                              </span>
+                            </div>
+                            <strong className="final-standings-podium-name" title={name}>{name}</strong>
+                            <div className="final-standings-podium-metrics">
+                              <span className="final-standings-podium-score">{scoreFormatted} pts</span>
+                              <span className="final-standings-podium-time">{timeFormatted}</span>
+                            </div>
+                            {rank === 2 && <div className="final-standings-podium-tab tab-blue" />}
+                            {rank === 3 && <div className="final-standings-podium-tab tab-green" />}
+                            <div className="final-standings-podium-bar">
+                              <span className="final-standings-podium-number">{rank}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {!rankedPlayers.length && (
+                        <p className="final-standings-empty">Standings will appear when players join.</p>
+                      )}
+                    </div>
+                    {rankedPlayers.length > 0 && <div className="final-standings-podium-shelf" aria-hidden="true" />}
+                  </div>
+
+                  {/* Right Column: Live Leaderboard List */}
+                  <div className="final-standings-leaderboard-container">
+                    <div className="final-standings-ranking-list" aria-label="Live participant leaderboard">
+                      {filteredPlayers.map(player => {
+                        const name = player.name || player.username || 'Player';
+                        const totalCorrect = player.correctAnswers !== undefined ? player.correctAnswers : (Array.isArray(player.answers) ? player.answers.filter(a => a.isCorrect).length : 0);
+                        const scoreFormatted = (player.totalScore || 0).toLocaleString();
+                        const timeFormatted = `${player.timeCorrect || '16.5'}s`;
+
+                        return (
+                          <div className={`final-standings-row rank-${player.rank}`} key={player.id || `${name}-${player.rank}`}>
+                            <div className="final-standings-row-left">
+                              <span className="final-standings-position">{player.rank}</span>
+                              <span className={`final-standings-row-avatar rank-avatar-${player.rank}`}>
+                                {renderLeaderboardAvatar(player, player.rank)}
+                              </span>
+                              <div className="final-standings-player">
+                                <strong title={name}>{name}</strong>
+                                <span>{totalCorrect}/{questionCount} correct</span>
+                              </div>
+                            </div>
+                            <div className="final-standings-row-right">
+                              <strong className="final-standings-score">{scoreFormatted} pts</strong>
+                              <span className="final-standings-time">{timeFormatted}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {!filteredPlayers.length && (
+                        <p className="final-standings-empty">
+                          {rankedPlayers.length ? 'No players match your search.' : 'No participants have joined this battle.'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Center Scroll Hint */}
+                <div className="final-standings-scroll-footer">
+                  <button
+                    type="button"
+                    className="final-standings-scroll-hint"
+                    onClick={() => {
+                      const listEl = document.querySelector('.final-standings-ranking-list');
+                      if (listEl) {
+                        listEl.scrollBy({ top: 130, behavior: 'smooth' });
+                      }
+                    }}
+                  >
+                    ↕ Scroll to explore all {totalChallengers} live participants
+                  </button>
+                </div>
+              </section>
+            </main>
           </div>
         </div>
       </AnimatedPage>

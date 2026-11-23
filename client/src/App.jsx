@@ -104,6 +104,7 @@ function AnimatedRoutes() {
   const isGameplayView = [
     '/live', 
     '/waiting', 
+    '/host/lobby',
     '/result/answer', 
     '/leaderboard', 
     '/final-result',
@@ -141,6 +142,7 @@ function AnimatedRoutes() {
               <Route path="/quiz/edit/:id" element={<ProtectedRoute><EditQuiz /></ProtectedRoute>} />
               <Route path="/quiz/my" element={<ProtectedRoute><MyQuizzes /></ProtectedRoute>} />
               <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+              <Route path="/host/lobby" element={<HostLobby />} />
               <Route path="/host/lobby/:pin" element={<HostLobby />} />
               <Route path="/join" element={<JoinGame />} />
               <Route path="/waiting/:pin" element={<WaitingRoom />} />

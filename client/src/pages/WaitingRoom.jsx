@@ -1,122 +1,193 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Users, Loader2, LogOut } from 'lucide-react';
+import {
+  Check,
+  Copy,
+  KeyRound,
+  LogOut,
+  Loader2,
+  PartyPopper,
+  Pencil,
+  Share2,
+  UserRound,
+  Users,
+  Zap,
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
+import Avatar from '../components/Avatar';
+import Logo from '../components/Logo';
 import { connectSocket, emitJoinRoom, emitLeaveRoom } from '../services/socketService';
 import { useGame } from '../context/GameContext';
-import { useTheme } from '../context/ThemeContext';
-import { getGame, leaveGame } from '../services/gameService';
+import { getGame, joinGame, leaveGame } from '../services/gameService';
+import './WaitingRoom.css';
 
-const parseBgConfig = (bgStr) => {
-  if (!bgStr) {
-    return {
-      url: '',
-      blur: 0,
-      brightness: 100,
-      overlayOpacity: 30,
-      gradientOverlay: 'none',
-      gradientColor1: '#7c3aed',
-      gradientColor2: '#06b6d4',
-      position: 'center',
-      fit: 'cover',
-      darkOverlay: true
-    };
-  }
-  try {
-    let config = bgStr;
-    // Recursively parse string if it's double serialized or nested JSON
-    while (typeof config === 'string' && (config.trim().startsWith('{') || config.trim().startsWith('"'))) {
-      const parsed = JSON.parse(config);
-      if (typeof parsed === 'string' && parsed === config) {
-        break; // Prevent infinite loop
-      }
-      config = parsed;
-    }
+const avatarOptions = [
+  { id: 'dog', name: 'Puppy' },
+  { id: 'cat', name: 'Cat' },
+  { id: 'mouse', name: 'Mouse' },
+  { id: 'hamster', name: 'Hamster' },
+  { id: 'rabbit', name: 'Rabbit' },
+  { id: 'fox', name: 'Fox' },
+  { id: 'bear', name: 'Bear' },
+  { id: 'panda', name: 'Panda' },
+];
 
-    if (config && typeof config === 'object') {
-      return {
-        url: config.url || '',
-        blur: typeof config.blur === 'number' ? config.blur : 0,
-        brightness: typeof config.brightness === 'number' ? config.brightness : 100,
-        overlayOpacity: typeof config.overlayOpacity === 'number' ? config.overlayOpacity : 30,
-        gradientOverlay: config.gradientOverlay || 'none',
-        gradientColor1: config.gradientColor1 || '#7c3aed',
-        gradientColor2: config.gradientColor2 || '#06b6d4',
-        position: config.position || 'center',
-        fit: config.fit || 'cover',
-        darkOverlay: config.darkOverlay !== undefined ? !!config.darkOverlay : true
-      };
-    }
-  } catch (e) { void e; }
-  return {
-    url: typeof bgStr === 'string' ? bgStr : (bgStr?.url || ''),
-    blur: 0,
-    brightness: 100,
-    overlayOpacity: 30,
-    gradientOverlay: 'none',
-    gradientColor1: '#7c3aed',
-    gradientColor2: '#06b6d4',
-    position: 'center',
-    fit: 'cover',
-    darkOverlay: true
-  };
-};
-
-// Helper to deduplicate player list case-insensitively
 const deduplicatePlayers = (list) => {
   if (!Array.isArray(list)) return [];
   const seen = new Set();
-  const result = [];
-  for (const p of list) {
-    const name = (p?.username || p?.name || '').toString().trim();
-    if (!name || name.startsWith('__LEAVE__:')) continue;
-    const lower = name.toLowerCase();
-    if (!seen.has(lower)) {
-      seen.add(lower);
-      result.push({
-        username: name,
-        avatar: p.avatar || '👤',
-        score: p.score ?? p.totalScore ?? 0
-      });
-    }
-  }
-  return result;
+  return list.reduce((result, player) => {
+    const name = (player?.username || player?.name || '').toString().trim();
+    if (!name || name.startsWith('__LEAVE__:') || seen.has(name.toLowerCase())) return result;
+    seen.add(name.toLowerCase());
+    result.push({
+      username: name,
+      avatar: player.avatar || '👤',
+      score: player.score ?? player.totalScore ?? 0,
+    });
+    return result;
+  }, []);
 };
+
+const findPlayer = (players, name) => (
+  players?.find((player) => (
+    (player.name || player.username || '').toLowerCase() === name.toLowerCase()
+  ))
+);
 
 export default function WaitingRoom() {
   const { pin } = useParams();
   const navigate = useNavigate();
-  const { playerName, setPin, setPlayerName } = useGame();
-  const { themeMode } = useTheme();
-  const isLight = themeMode === 'light' || (!themeMode && !document.documentElement.classList.contains('dark')) || document.documentElement.classList.contains('light');
+  const { playerName: contextPlayerName } = useGame();
+  const localPlayerName = contextPlayerName || localStorage.getItem('guest_playerName') || 'Player';
   const [players, setPlayers] = useState([]);
+  const [game, setGame] = useState(null);
+  const [playerProfile, setPlayerProfile] = useState({});
+  const [selectedAvatar, setSelectedAvatar] = useState(() => localStorage.getItem('guest_avatar') || 'dog');
   const [isLeaving, setIsLeaving] = useState(false);
-  const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
-  const quizStartedRef = useRef(false);
+  const [isSavingAvatar, setIsSavingAvatar] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const knownPlayersRef = useRef(new Set());
+  const avatarOptionsRef = useRef(null);
 
-  // Fetch quiz background image and players list on mount
   useEffect(() => {
-    getGame(pin).then(res => {
-      if (res.success) {
-        // game.backgroundImage is cached directly on GameSession for reliability
-        const bg = res.game?.backgroundImage || res.game?.quiz?.backgroundImage || '';
-        console.log('[WAITING ROOM] Fetched background length:', bg.length, 'preview:', bg.substring(0, 80));
-        setBgImage(bg);
-        localStorage.setItem('quiz_global_bg_image', bg);
-        localStorage.setItem('last_bg_image', bg);
-
-        if (res.game?.players) {
-          setPlayers(deduplicatePlayers(res.game.players));
-        }
-      }
-    }).catch(() => {});
+    window.scrollTo(0, 0);
   }, [pin]);
 
-  // Fallback if player refresh and context gets cleared
-  const localPlayerName = playerName || localStorage.getItem('guest_playerName') || 'Player';
-  const knownPlayersRef = useRef(new Set());
+  useEffect(() => {
+    getGame(pin).then((response) => {
+      if (!response.success) {
+        toast.error(response.message || 'Could not load this lobby.');
+        return;
+      }
+
+      const currentGame = response.game;
+      const background = currentGame?.backgroundImage || currentGame?.quiz?.backgroundImage || '';
+      localStorage.setItem('quiz_global_bg_image', background);
+      localStorage.setItem('last_bg_image', background);
+      setGame(currentGame);
+      setPlayers(deduplicatePlayers(currentGame?.players));
+
+      const currentPlayer = findPlayer(currentGame?.players, localPlayerName);
+      if (currentPlayer) {
+        setPlayerProfile(currentPlayer);
+        const savedAvatar = currentPlayer.avatar || localStorage.getItem('guest_avatar') || 'dog';
+        setSelectedAvatar(savedAvatar);
+        localStorage.setItem('guest_avatar', savedAvatar);
+      }
+    }).catch((error) => {
+      toast.error(error.response?.data?.message || 'Could not load lobby details.');
+    });
+  }, [pin, localPlayerName]);
+
+  useEffect(() => {
+    if (!contextPlayerName && !localStorage.getItem('guest_playerName')) {
+      toast.error('Session expired. Please join the lobby again.');
+      navigate('/join');
+      return undefined;
+    }
+
+    if (contextPlayerName) {
+      localStorage.setItem('guest_pin', pin);
+      localStorage.setItem('guest_playerName', contextPlayerName);
+    }
+
+    const socket = connectSocket();
+    const joinRoom = () => emitJoinRoom(pin, localPlayerName);
+    socket.on('connect', joinRoom);
+    if (socket.connected) joinRoom();
+
+    socket.on('player_list', (data) => {
+      const activePlayers = deduplicatePlayers(data.players);
+      activePlayers.forEach((player) => knownPlayersRef.current.add(player.username.toLowerCase()));
+      setPlayers(activePlayers);
+    });
+
+    const handlePlayerLeft = (data) => {
+      const name = (data?.username || data?.playerName || '').toString().trim().toLowerCase();
+      if (!name) return;
+      knownPlayersRef.current.delete(name);
+      setPlayers((previous) => previous.filter((player) => player.username.toLowerCase() !== name));
+    };
+    socket.on('player_left', handlePlayerLeft);
+
+    socket.on('player-joined', ({ playerName: joinedName }) => {
+      if (!joinedName) return;
+      if (joinedName.startsWith('__LEAVE__:')) {
+        const name = joinedName.replace('__LEAVE__:', '').trim().toLowerCase();
+        knownPlayersRef.current.delete(name);
+        setPlayers((previous) => previous.filter((player) => player.username.toLowerCase() !== name));
+        return;
+      }
+
+      const name = joinedName.toString().trim();
+      setPlayers((previous) => deduplicatePlayers([...previous, { username: name, avatar: '👤' }]));
+      if (name.toLowerCase() !== localPlayerName.toLowerCase() && !knownPlayersRef.current.has(name.toLowerCase())) {
+        knownPlayersRef.current.add(name.toLowerCase());
+        toast(`${name} entered the quiz`, { id: `join-${name}`, icon: '👋', duration: 2500 });
+      }
+    });
+
+    const handleQuestionStarted = (data) => {
+      const globalBackground = localStorage.getItem('quiz_global_bg_image') || '';
+      const resolvedBackground = data?.question?.backgroundImage || globalBackground;
+      localStorage.setItem('last_bg_image', resolvedBackground);
+      navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
+    };
+    socket.on('question_started', handleQuestionStarted);
+
+    const handleQuizEnded = (data) => {
+      navigate(`/final-result/${pin}`, { state: { finalData: data } });
+    };
+    socket.on('quiz_ended', handleQuizEnded);
+    socket.on('show-final-result', handleQuizEnded);
+    socket.on('show_final_result', handleQuizEnded);
+
+    const handleHostEnded = (data) => {
+      if (data?.reason !== 'host_left') return;
+      const message = 'Host ended the quiz';
+      toast.error(message, { id: 'host-ended-toast', duration: 5000 });
+      localStorage.removeItem('guest_pin');
+      localStorage.removeItem('guest_playerName');
+      navigate('/join', { state: { endedMessage: message } });
+    };
+    socket.on('room_closed', handleHostEnded);
+    socket.on('host_left', handleHostEnded);
+
+    return () => {
+      socket.off('connect', joinRoom);
+      socket.off('player_list');
+      socket.off('player_left', handlePlayerLeft);
+      socket.off('player-joined');
+      socket.off('question_started', handleQuestionStarted);
+      socket.off('quiz_ended', handleQuizEnded);
+      socket.off('show-final-result', handleQuizEnded);
+      socket.off('show_final_result', handleQuizEnded);
+      socket.off('room_closed', handleHostEnded);
+      socket.off('host_left', handleHostEnded);
+    };
+  }, [pin, localPlayerName, contextPlayerName, navigate]);
 
   const handleLeaveLobby = () => {
     if (isLeaving) return;
@@ -124,12 +195,12 @@ export default function WaitingRoom() {
 
     try {
       emitLeaveRoom(pin, localPlayerName);
-    } catch (e) {
-      console.error('Socket leave error:', e);
+    } catch (error) {
+      console.error('Socket leave error:', error);
     }
-
-    // Fire and forget server cleanup without blocking user transition
-    leaveGame(pin, localPlayerName).catch(() => {});
+    leaveGame(pin, localPlayerName).catch((error) => {
+      console.error('Lobby leave request failed:', error);
+    });
 
     localStorage.removeItem('guest_pin');
     localStorage.removeItem('guest_playerName');
@@ -141,309 +212,303 @@ export default function WaitingRoom() {
   const handleChangeName = () => {
     if (isLeaving) return;
     setIsLeaving(true);
-
     try {
       emitLeaveRoom(pin, localPlayerName);
-    } catch (e) {
-      console.error('Socket leave error:', e);
+    } catch (error) {
+      console.error('Socket leave error:', error);
     }
+    leaveGame(pin, localPlayerName).catch((error) => {
+      console.error('Lobby leave request failed:', error);
+    });
 
-    leaveGame(pin, localPlayerName).catch(() => {});
-
-    // Clear previous name so user can enter a new one, but PRESERVE the PIN
     localStorage.removeItem('guest_playerName');
     localStorage.setItem('guest_pin', pin);
     toast('Enter your new name to join', { icon: '✏️' });
     navigate(`/join?pin=${pin}`, { state: { pin } });
   };
 
-  useEffect(() => {
-    if (!playerName && !localStorage.getItem('guest_playerName')) {
-      toast.error('Session expired. Please join the lobby again.');
-      navigate('/join');
-      return;
+  const handleCopyPin = async () => {
+    try {
+      await navigator.clipboard.writeText(pin);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+      toast.success('Arena PIN copied!');
+    } catch {
+      toast.error('Could not copy the PIN. Please copy it manually.');
     }
+  };
 
-    // Persist to localStorage for fallback reload support
-    if (playerName) {
-      localStorage.setItem('guest_pin', pin);
-      localStorage.setItem('guest_playerName', playerName);
+  const handleShare = async () => {
+    const joinUrl = `${window.location.origin}/join?pin=${encodeURIComponent(pin)}`;
+    const shareData = {
+      title: 'Join my Gubbi Quiz Arena',
+      text: `Join my Gubbi Quiz Arena! Use PIN ${pin}.`,
+      url: joinUrl,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${shareData.text}\n${joinUrl}`);
+        toast.success('Invite link copied. Share it with your friends!');
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        toast.error('Could not share the invite. Please try copying the PIN instead.');
+      }
     }
+  };
 
-    // 1. Establish Socket Connection
-    const socket = connectSocket();
+  const handleAvatarChange = async (avatar) => {
+    if (avatar === selectedAvatar || isSavingAvatar || isLeaving) return;
+    const previousAvatar = selectedAvatar;
+    setIsSavingAvatar(true);
+    try {
+      const leaveResponse = await leaveGame(pin, localPlayerName);
+      if (!leaveResponse.success) {
+        throw new Error(leaveResponse.message || 'Could not update your mascot.');
+      }
 
-    // 2. Register Player inside Socket Room (handle reconnects)
-    const joinRoom = () => {
-      emitJoinRoom(pin, localPlayerName);
-    };
-    
-    socket.on('connect', joinRoom);
-    if (socket.connected) {
-      joinRoom();
+      const joinResponse = await joinGame(
+        pin,
+        localPlayerName,
+        avatar,
+        playerProfile.fullName || localPlayerName,
+        playerProfile.mobileNumber || localStorage.getItem('guest_mobileNumber') || '',
+        playerProfile.nickname || localPlayerName
+      );
+      if (!joinResponse.success) {
+        throw new Error(joinResponse.message || 'Could not save your mascot.');
+      }
+
+      const refreshed = await getGame(pin);
+      const savedPlayer = findPlayer(refreshed.game?.players, localPlayerName);
+      if (!savedPlayer || savedPlayer.avatar !== avatar) {
+        throw new Error('Your mascot could not be confirmed. Please try again.');
+      }
+
+      setPlayers(deduplicatePlayers(refreshed.game.players));
+      setPlayerProfile(savedPlayer);
+      setSelectedAvatar(avatar);
+      localStorage.setItem('guest_avatar', avatar);
+      toast.success('Mascot updated!');
+    } catch (error) {
+      try {
+        await joinGame(
+          pin,
+          localPlayerName,
+          previousAvatar,
+          playerProfile.fullName || localPlayerName,
+          playerProfile.mobileNumber || localStorage.getItem('guest_mobileNumber') || '',
+          playerProfile.nickname || localPlayerName
+        );
+      } catch (restoreError) {
+        console.error('Could not restore lobby membership after mascot update failed:', restoreError);
+        toast.error('Could not update your mascot or restore your lobby session. Please rejoin the lobby.');
+      }
+      toast.error(error.response?.data?.message || error.message || 'Could not update your mascot.');
+    } finally {
+      setIsSavingAvatar(false);
     }
+  };
 
-    // 3. Listen to state updates
-    socket.on('player_list', (data) => {
-      console.log('[SOCKET CLIENT] Received player list:', data.players);
-      const activePlayers = deduplicatePlayers(data.players);
-      activePlayers.forEach((p) => knownPlayersRef.current.add(p.username.toLowerCase()));
-      setPlayers(activePlayers);
-    });
-
-    const handlePlayerLeft = (data) => {
-      const username = (data?.username || data?.playerName || '').toString().trim();
-      if (username) {
-        const u = username.toLowerCase();
-        knownPlayersRef.current.delete(u);
-        setPlayers((prev) => prev.filter((p) => p.username.toLowerCase() !== u));
-      }
-    };
-
-    socket.on('player_left', handlePlayerLeft);
-
-    // Listen to player-joined socket event (emitted by backend socket.on('player-join'))
-    socket.on('player-joined', ({ playerName }) => {
-      if (playerName) {
-        if (playerName.startsWith('__LEAVE__:')) {
-          const username = playerName.replace('__LEAVE__:', '').trim();
-          knownPlayersRef.current.delete(username.toLowerCase());
-          setPlayers((prev) => prev.filter((p) => p.username.toLowerCase() !== username.toLowerCase()));
-        } else {
-          const trimmed = playerName.toString().trim();
-          setPlayers((prev) => deduplicatePlayers([...prev, { username: trimmed, avatar: '👤', score: 0 }]));
-          if (trimmed.toLowerCase() !== localPlayerName.toLowerCase() && !knownPlayersRef.current.has(trimmed.toLowerCase())) {
-            knownPlayersRef.current.add(trimmed.toLowerCase());
-            toast(`${trimmed} entered the quiz`, { id: `join-${trimmed}`, icon: '👋', duration: 2500 });
-          }
-        }
-      }
-    });
-
-    socket.on('question_started', (data) => {
-      console.log('[SOCKET CLIENT] Battle started! Redirecting...', data);
-      quizStartedRef.current = true;
-      // Store the global background before navigating
-      const globalBg = localStorage.getItem('quiz_global_bg_image') || '';
-      const questionBg = data?.question?.backgroundImage || '';
-      const resolvedBg = questionBg || globalBg;
-      localStorage.setItem('last_bg_image', resolvedBg);
-      // Pass full socket data so LiveQuiz gets background immediately without extra API call
-      navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
-    });
-
-    const handleHostEnded = (data) => {
-      if (data?.reason === 'host_left') {
-        const msg = 'Host ended the quiz';
-        toast.error(msg, { id: 'host-ended-toast', duration: 5000 });
-        localStorage.removeItem('guest_pin');
-        localStorage.removeItem('guest_playerName');
-        navigate('/join', { state: { endedMessage: msg } });
-      }
-    };
-
-    const handleQuizEnded = (data) => {
-      navigate(`/final-result/${pin}`, { state: { finalData: data } });
-    };
-
-    socket.on('quiz_ended', handleQuizEnded);
-    socket.on('show-final-result', handleQuizEnded);
-    socket.on('show_final_result', handleQuizEnded);
-    socket.on('room_closed', handleHostEnded);
-    socket.on('host_left', handleHostEnded);
-
-    // Clean up socket listeners on unmount (do NOT emit leave so player is never deleted during game start)
-    return () => {
-      socket.off('connect', joinRoom);
-      socket.off('player_list');
-      socket.off('player_left', handlePlayerLeft);
-      socket.off('player-joined');
-      socket.off('question_started');
-      socket.off('quiz_ended', handleQuizEnded);
-      socket.off('show-final-result', handleQuizEnded);
-      socket.off('show_final_result', handleQuizEnded);
-      socket.off('room_closed', handleHostEnded);
-      socket.off('host_left', handleHostEnded);
-    };
-  }, [pin, localPlayerName, playerName, navigate]);
-
-  const bgConfig = parseBgConfig(bgImage);
+  const currentQuestion = Number.isFinite(Number(game?.currentQuestion))
+    ? Number(game.currentQuestion)
+    : Number(game?.currentQuestionIndex ?? -1) + 1;
+  const roundNumber = Math.max(1, currentQuestion + 1);
+  const visiblePlayers = players.slice(0, 12);
+  const additionalPlayers = Math.max(0, players.length - visiblePlayers.length);
+  const selectedAvatarName = avatarOptions.find((avatar) => avatar.id === selectedAvatar)?.name || 'Puppy';
 
   return (
     <AnimatedPage>
-      <div className={`relative min-h-screen p-6 sm:p-8 flex flex-col items-center justify-center overflow-hidden ${
-        isLight ? 'text-slate-900' : 'text-gray-200'
-      }`}>
-        
-        {/* Customized Background Layer */}
-        {bgConfig.url ? (
-          <div className="fixed inset-0 z-0 pointer-events-none transition-all duration-700">
-            <div
-              style={{
-                backgroundImage: `url(${bgConfig.url})`,
-                backgroundPosition: bgConfig.position,
-                backgroundSize: bgConfig.fit,
-                backgroundRepeat: 'no-repeat',
-                filter: `blur(${bgConfig.blur}px) brightness(${bgConfig.brightness}%)`,
-                position: 'fixed',
-                inset: '-20px',
-              }}
-            />
-            {bgConfig.darkOverlay && (
-              <div
-                className="absolute inset-0"
-                style={{
-                  backgroundColor: `rgba(0, 0, 0, ${bgConfig.overlayOpacity / 100})`,
-                }}
-              />
-            )}
-            {bgConfig.gradientOverlay !== 'none' && (
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    bgConfig.gradientOverlay === 'linear'
-                      ? `linear-gradient(135deg, ${bgConfig.gradientColor1}33, ${bgConfig.gradientColor2}33)`
-                      : `radial-gradient(circle, ${bgConfig.gradientColor1}33 0%, ${bgConfig.gradientColor2}33 100%)`,
-                }}
-              />
-            )}
-          </div>
-        ) : (
-          <div className="absolute inset-0 bg-background z-0 pointer-events-none" />
-        )}
-        
-        {/* Glow Spheres */}
-        <div className="absolute top-[10%] left-[10%] h-[350px] w-[350px] bg-glow-primary pointer-events-none opacity-45"></div>
-        <div className="absolute bottom-[10%] right-[10%] h-[400px] w-[400px] bg-glow-secondary pointer-events-none opacity-30"></div>
+      <div className="waiting-room-page">
+        <header className="waiting-room-header">
+          <Logo size="xs" className="waiting-room-logo" />
+          <button
+            type="button"
+            className="waiting-leave-button"
+            onClick={handleLeaveLobby}
+            disabled={isLeaving}
+          >
+            {isLeaving ? <Loader2 aria-hidden="true" className="waiting-spin" /> : <LogOut aria-hidden="true" />}
+            <span>Leave Lobby</span>
+          </button>
+        </header>
 
-        {/* Waiting card */}
-        <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ type: 'spring', stiffness: 80, damping: 15 }}
-          className={`w-full max-w-xl rounded-3xl p-5 sm:p-10 border text-center relative overflow-hidden ${
-            isLight
-              ? 'bg-white/95 border-slate-200 shadow-xl text-slate-900'
-              : 'glass-panel border-white/5 text-white'
-          }`}
-        >
-          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
-
-          {/* Quick Leave Lobby Button - responsive top bar */}
-          <div className="w-full flex justify-end items-center relative z-30 mb-2 sm:mb-4">
-            <button
-              type="button"
-              onClick={handleLeaveLobby}
-              disabled={isLeaving}
-              className={`px-3.5 py-2 min-h-[38px] rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer select-none touch-manipulation active:scale-95 ${
-                isLight
-                  ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200 active:bg-rose-200'
-                  : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border-rose-500/20 active:bg-rose-500/30'
-              }`}
-              title="Leave Quiz Lobby"
-            >
-              {isLeaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
-              <span>Leave Lobby</span>
-            </button>
-          </div>
-
-          {/* Large Loading animation */}
-          <div className="my-5 sm:my-8 relative flex items-center justify-center">
-            <div className={`h-20 w-20 rounded-full flex items-center justify-center relative border ${
-              isLight ? 'bg-primary/10 border-primary/20' : 'bg-primary/5 border-primary/20'
-            }`}>
-              <Loader2 className="h-10 w-10 text-primary animate-spin" />
+        <main className="waiting-room-content">
+          <motion.section
+            className="waiting-status-card"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            aria-labelledby="waiting-status-title"
+          >
+            <span className="waiting-eyebrow"><span className="waiting-eyebrow-dot" /> QUIZ ARENA</span>
+            <h1 id="waiting-status-title">Waiting for <span>Host...</span></h1>
+            <p>Please hold on while the host prepares the quiz session. The game battle begins automatically once launched!</p>
+            <div className="waiting-status-meta">
+              <span className="waiting-live-pill"><span /> Lobby Live</span>
+              <span className="waiting-round"><span /> Round {roundNumber} Starting Soon</span>
             </div>
-            {/* Pulsing ring */}
-            <div className="absolute h-28 w-28 rounded-full border border-secondary/15 animate-ping opacity-25 pointer-events-none"></div>
-          </div>
+          </motion.section>
 
-          <h2 className={`font-outfit text-3xl font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>Waiting for Host...</h2>
-          <p className={`text-sm mt-2 ${isLight ? 'text-slate-600' : 'text-gray-400'}`}>
-            Stay tuned. The host will commence the quiz battle shortly.
-          </p>
+          <div className="waiting-room-columns">
+            <div className="waiting-left-column">
+              <section className="waiting-card arena-pin-card" aria-labelledby="arena-pin-heading">
+                <div className="waiting-card-heading">
+                  <h2 id="arena-pin-heading"><span className="waiting-heading-icon"><KeyRound aria-hidden="true" /></span> Arena PIN</h2>
+                  <span className="waiting-subtle-label">Live Room Access Code</span>
+                </div>
+                <div className="waiting-pin-row">
+                  <span className="waiting-pin-label">PIN</span>
+                  <strong className="waiting-pin-value">{pin}</strong>
+                  <button type="button" className="waiting-copy-button" onClick={handleCopyPin}>
+                    {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
+                    <span>{copied ? 'Copied' : 'Copy Code'}</span>
+                  </button>
+                  <button type="button" className="waiting-share-button" onClick={handleShare} aria-label="Share invite link">
+                    <Share2 aria-hidden="true" />
+                  </button>
+                </div>
+                <div className="waiting-invite-row">
+                  <span><span className="waiting-green-dot" /> Share this 6-digit PIN with classmates or friends to join</span>
+                  <button type="button" onClick={handleShare}>Tap to invite <span aria-hidden="true">›</span></button>
+                </div>
+              </section>
 
-          {/* Lobby PIN details */}
-          <div className={`mt-6 inline-flex flex-col items-center px-6 py-2.5 rounded-2xl border font-bold ${
-            isLight
-              ? 'bg-slate-100 border-slate-200 text-slate-800'
-              : 'bg-white/5 border-white/10 text-gray-300'
-          }`}>
-            <span className={`text-[10px] uppercase tracking-widest block mb-0.5 ${
-              isLight ? 'text-slate-500' : 'text-gray-500'
-            }`}>Arena PIN</span>
-            <span className="font-outfit text-2xl tracking-widest text-secondary font-black">{pin}</span>
-          </div>
-
-          {/* Current Player Identification */}
-          <div className="mt-3 flex items-center justify-center gap-2">
-            <span className={`text-xs ${isLight ? 'text-slate-600' : 'text-gray-400'}`}>
-              Joined as <strong className={isLight ? 'text-slate-900 font-extrabold' : 'text-white font-bold'}>{localPlayerName}</strong>
-            </span>
-            <button
-              type="button"
-              onClick={handleChangeName}
-              disabled={isLeaving}
-              className={`text-xs font-bold underline transition-colors ${
-                isLight ? 'text-rose-600 hover:text-rose-800' : 'text-rose-400 hover:text-rose-300'
-              }`}
-            >
-              (Change Name)
-            </button>
-          </div>
-
-          {/* Players joined section */}
-          <div className={`mt-10 pt-8 border-t text-left ${
-            isLight ? 'border-slate-100' : 'border-white/5'
-          }`}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className={`font-outfit text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
-                isLight ? 'text-slate-700' : 'text-gray-500'
-              }`}>
-                <Users className="h-4 w-4 text-primary" />
-                Challengers in Arena
-              </h3>
-              <span className={`text-xs font-black px-2.5 py-0.5 rounded-lg border ${
-                isLight
-                  ? 'bg-slate-100 border-slate-200 text-slate-900'
-                  : 'text-white bg-white/5 border-white/10'
-              }`}>
-                {players.length} Ready
-              </span>
-            </div>
-
-            {players.length === 0 ? (
-              <p className={`text-xs italic text-center py-4 ${
-                isLight ? 'text-slate-500' : 'text-gray-500'
-              }`}>Synchronizing player logs...</p>
-            ) : (
-              <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto pr-1">
-                {players.slice(0, 50).map((p, idx) => (
-                  <div 
-                    key={idx} 
-                    className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 ${
-                      p.username.toLowerCase() === localPlayerName.toLowerCase()
-                        ? (isLight ? 'bg-secondary/15 border-secondary/40 text-secondary font-black' : 'bg-secondary/10 border-secondary/25 text-secondary font-bold')
-                        : (isLight ? 'bg-slate-100 border-slate-200 text-slate-900 font-bold' : 'bg-white/5 border-white/10 text-gray-300')
-                    }`}
+              <section className="waiting-card player-profile-card" aria-labelledby="player-profile-heading">
+                <div className="waiting-player-row">
+                  <div className="waiting-player-avatar">
+                    <span className="waiting-player-initial">{localPlayerName.charAt(0).toUpperCase()}</span>
+                  </div>
+                  <div className="waiting-player-identity">
+                    <span>JOINED AS</span>
+                    <strong>{localPlayerName} <em>(You)</em></strong>
+                  </div>
+                  <button
+                    type="button"
+                    className="waiting-change-name-button"
+                    onClick={handleChangeName}
+                    disabled={isLeaving}
                   >
-                    <div className={`h-1.5 w-1.5 rounded-full ${p.username.toLowerCase() === localPlayerName.toLowerCase() ? 'bg-secondary' : (isLight ? 'bg-emerald-500' : 'bg-gray-500')}`}></div>
-                    <span>{p.username}</span>
+                    <Pencil aria-hidden="true" /> Change Nickname
+                  </button>
+                </div>
+                <div className="waiting-avatar-heading">
+                  <h2 id="player-profile-heading">Choose your 3D mascot avatar:</h2>
+                  <span>{selectedAvatarName} Selected</span>
+                  <button
+                    type="button"
+                    className="waiting-avatar-change"
+                    onClick={() => avatarOptionsRef.current?.querySelector('button:not(:disabled)')?.focus()}
+                    aria-label="Change mascot avatar"
+                  >
+                    Change
+                  </button>
+                </div>
+                <div className="waiting-avatar-outer-frame">
+                  <div className="waiting-avatar-frame">
+                    <div ref={avatarOptionsRef} className="waiting-avatar-grid" aria-label="Choose your mascot avatar">
+                      {avatarOptions.map((avatar) => {
+                        const isSelected = selectedAvatar === avatar.id;
+                        return (
+                          <button
+                            key={avatar.id}
+                            type="button"
+                            className={`waiting-avatar-option${isSelected ? ' is-selected' : ''}`}
+                            onClick={() => handleAvatarChange(avatar.id)}
+                            disabled={isSavingAvatar || isLeaving}
+                            aria-label={`Choose ${avatar.name}${isSelected ? ', selected' : ''}`}
+                            aria-pressed={isSelected}
+                          >
+                            <Avatar emoji={avatar.id} />
+                            {isSelected && <span className="waiting-avatar-check"><Check aria-hidden="true" /></span>}
+                          </button>
+                        );
+                      })}
+                      {isSavingAvatar && <span className="waiting-avatar-saving" role="status">Saving mascot…</span>}
+                    </div>
                   </div>
-                ))}
-                {players.length > 50 && (
-                  <div className={`px-3 py-1.5 rounded-lg border border-dashed text-xs font-semibold ${
-                    isLight ? 'border-slate-300 bg-slate-50 text-slate-600' : 'border-white/10 bg-white/5 text-gray-400'
-                  }`}>
-                    + {players.length - 50} more challengers...
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+                </div>
+              </section>
+            </div>
 
-        </motion.div>
+            <section className="waiting-card challengers-card" aria-labelledby="challengers-heading">
+              <div className="waiting-card-heading challengers-heading">
+                <div>
+                  <h2 id="challengers-heading"><span className="waiting-heading-icon"><Users aria-hidden="true" /></span> Challengers in Arena</h2>
+                  <span className="waiting-subtle-label">Real-time room participants</span>
+                </div>
+                <span className="waiting-joined-pill"><span /> {players.length} Joined</span>
+              </div>
+
+              <div className="waiting-participant-grid" aria-live="polite">
+                {visiblePlayers.length === 0 ? (
+                  <p className="waiting-empty-participants">Waiting for challengers to join…</p>
+                ) : visiblePlayers.map((player) => {
+                  const isCurrentPlayer = player.username.toLowerCase() === localPlayerName.toLowerCase();
+                  return (
+                    <div className="waiting-participant" key={player.username}>
+                      <div className={`waiting-participant-avatar${isCurrentPlayer ? ' is-current-player' : ''}`}>
+                        <span className="waiting-participant-initial">{player.username.charAt(0).toUpperCase()}</span>
+                        <span className="waiting-online-dot" aria-label="Online" />
+                      </div>
+                      <span className={isCurrentPlayer ? 'is-current-player-name' : ''}>
+                        {player.username}
+                      </span>
+                      {isCurrentPlayer && <small>You</small>}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="waiting-more-challengers">
+                <span><UserRound aria-hidden="true" /> {additionalPlayers > 0
+                  ? `+ ${additionalPlayers} more challenger${additionalPlayers === 1 ? '' : 's'} in lobby`
+                  : 'Invite friends to join the lobby'}</span>
+                <div aria-hidden="true" className="waiting-mini-avatars">
+                  {visiblePlayers.slice(0, additionalPlayers > 0 ? 3 : 4).map((player) => (
+                    <span key={player.username}>
+                      <span className="waiting-mini-avatar-initial">{player.username.charAt(0).toUpperCase()}</span>
+                    </span>
+                  ))}
+                  {additionalPlayers > 0 && (
+                    <span className="waiting-mini-more">+{additionalPlayers}</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="waiting-tips-grid">
+                <div className="waiting-tip-card">
+                  <Share2 aria-hidden="true" />
+                  <strong>Invite Friends</strong>
+                  <span>Share PIN</span>
+                </div>
+                <div className="waiting-tip-card">
+                  <Zap aria-hidden="true" />
+                  <strong>Get Ready</strong>
+                  <span>Starts auto</span>
+                </div>
+                <div className="waiting-tip-card">
+                  <PartyPopper aria-hidden="true" />
+                  <strong>Have Fun</strong>
+                  <span>Climb ranks</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="waiting-bottom-leave-button"
+                onClick={handleLeaveLobby}
+                disabled={isLeaving}
+              >
+                {isLeaving ? <Loader2 aria-hidden="true" className="waiting-spin" /> : <LogOut aria-hidden="true" />}
+                <span>Leave Lobby</span>
+              </button>
+            </section>
+          </div>
+        </main>
       </div>
     </AnimatedPage>
   );

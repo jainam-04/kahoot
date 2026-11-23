@@ -1,18 +1,83 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Trophy, Clock, Star, BarChart2, Hourglass, Check, X, AlertCircle, 
-  Loader2, Crown, Medal, ArrowRight, ArrowLeft, CheckCircle, Award,
-  Sparkles, Flame
+import {
+  Trophy,
+  Clock,
+  Star,
+  BarChart2,
+  Hourglass,
+  Check,
+  X,
+  AlertCircle,
+  Loader2,
+  Crown,
+  Medal,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle,
+  Award,
+  Sparkles,
+  Flame,
+  HelpCircle,
+  XCircle,
+  Users,
+  Cpu,
+  Monitor,
+  Keyboard,
+  Mouse,
+  Database,
+  Server,
+  Wifi,
+  Terminal,
+  Code2,
+  Atom,
+  FlaskConical,
+  Dna,
+  Orbit,
+  Telescope,
+  Microscope,
+  Globe,
+  Compass,
+  Map,
+  Scroll,
+  Landmark,
+  Anchor,
+  History,
+  Bell,
+  ChevronDown,
+  Menu,
+  Search,
+  BarChart3,
+  Lightbulb,
+  Gamepad2,
+  BookOpen
 } from 'lucide-react';
+
 import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 import AnimatedPage from '../components/AnimatedPage';
-import { connectSocket, getSocket, emitJoinRoom, emitLeaveRoom } from '../services/socketService';
-import { startQuestion, endGame, getGame, showLeaderboard, leaveGame } from '../services/gameService';
+import AppSidebar from '../components/AppSidebar';
+import Avatar from '../components/Avatar';
+
+import {
+  connectSocket,
+  getSocket,
+  emitJoinRoom,
+  emitLeaveRoom
+} from '../services/socketService';
+
+import {
+  startQuestion,
+  endGame,
+  getGame,
+  showLeaderboard,
+  leaveGame
+} from '../services/gameService';
+
 import { useGame } from '../context/GameContext';
 import { useTheme } from '../context/ThemeContext';
+import './AnswerResult.css';
 
 const isUnansweredAnswer = (answer) => {
   return answer.answerIndex === -1 || answer.answerIndex === undefined || answer.answerIndex === null;
@@ -104,9 +169,37 @@ export default function AnswerResult() {
   const [isLastQuestion, setIsLastQuestion] = useState(() => localStorage.getItem('last_isLastQuestion') === 'true');
   const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState(() => localStorage.getItem('last_answerSubmitted') === 'true');
   const [isLoading, setIsLoading] = useState(false);
+  
+
+  // Player result states
   const [isLeaving, setIsLeaving] = useState(false);
   const [isShowingLeaderboard, setIsShowingLeaderboard] = useState(false);
-  const [bgImage, setBgImage] = useState(() => localStorage.getItem('last_bg_image') || '');
+
+  // Host dashboard states
+  const [category, setCategory] = useState('general');
+  const [mobileTab, setMobileTab] = useState('feedback');
+  const [questionData, setQuestionData] = useState(null);
+  const [questionNumber, setQuestionNumber] = useState(0);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const [headerUserName] = useState(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      return user.name || user.username || 'Host';
+    } catch (error) {
+      console.error('Failed to parse user for answer breakdown header', error);
+      return 'Host';
+    }
+  });
+
+  const [bgImage, setBgImage] = useState(
+    () => localStorage.getItem('last_bg_image') || ''
+  );
+
   const confettiFiredRef = useRef(false);
 
   // Sync document root class with light/dark themeMode
@@ -121,7 +214,7 @@ export default function AnswerResult() {
   }, [isLight]);
 
   useEffect(() => {
-    const hostToken = localStorage.getItem('token');
+    
     let user = null;
     try {
       const userStr = localStorage.getItem('user');
@@ -175,6 +268,9 @@ export default function AnswerResult() {
           setIsHost(isUserHost);
           const currentIdx = game.currentQuestion - 1;
           const currentQuestion = game.quiz?.questions?.[currentIdx];
+          setQuestionData(currentQuestion || null);
+          setQuestionNumber(game.currentQuestion || 0);
+          setTotalQuestions(game.quiz?.questions?.length || 0);
           const globalBg = game.quiz?.backgroundImage || '';
           const currentBg = currentQuestion?.backgroundImage || globalBg;
           setBgImage(currentBg);
@@ -227,34 +323,58 @@ export default function AnswerResult() {
             }
           }
 
+          
           // Build leaderboard
           const sortedPlayers = [...(game.players || [])].sort((a, b) => {
             const aScore = a.totalScore || 0;
             const bScore = b.totalScore || 0;
+
             if (aScore !== bScore) return bScore - aScore;
 
             const aCorrect = a.answers?.filter(ans => ans.isCorrect).length || 0;
             const bCorrect = b.answers?.filter(ans => ans.isCorrect).length || 0;
+
             if (aCorrect !== bCorrect) return bCorrect - aCorrect;
-            const aTime = a.answers?.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0) || 0;
-            const bTime = b.answers?.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0) || 0;
+
+            const aTime = a.answers?.reduce(
+              (acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0
+            ) || 0;
+
+            const bTime = b.answers?.reduce(
+              (acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0
+            ) || 0;
+
             if (aTime !== bTime) return aTime - bTime;
+
             return new Date(a.joinedAt || 0) - new Date(b.joinedAt || 0);
           });
-          
+
           const leaderboardData = sortedPlayers.map((p, idx) => {
-            const totalCorrect = p.answers?.filter(a => a.isCorrect).length || 0;
-            const totalTimeCorrect = p.answers?.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0) || 0;
-            const currentAns = p.answers?.find(a => a.questionIndex === currentIdx);
+            const totalCorrect =
+              p.answers?.filter(a => a.isCorrect).length || 0;
+
+            const totalTimeCorrect = p.answers?.reduce(
+              (acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0),
+              0
+            ) || 0;
+
+            const currentAns = p.answers?.find(
+              a => a.questionIndex === currentIdx
+            );
+
             return {
               username: p.name,
+              avatar: p.avatar,
               rank: idx + 1,
               correctAnswers: totalCorrect,
               totalScore: p.totalScore,
               timeCorrect: (totalTimeCorrect / 1000).toFixed(2),
-              lastTimeTaken: currentAns && currentAns.isCorrect ? (currentAns.timeTaken / 1000).toFixed(2) : '16.5'
+              lastTimeTaken: currentAns?.timeTaken !== undefined
+                ? (currentAns.timeTaken / 1000).toFixed(2)
+                : '0.0'
             };
           });
+
           setLeaderboard(leaderboardData);
         }
       } catch (err) {
@@ -262,6 +382,7 @@ export default function AnswerResult() {
       }
     };
     fetchLiveState();
+
 
     // Confetti on correct answer if not already fired
     if (!isUserHost && localStorage.getItem('last_isCorrect') === 'true' && !confettiFiredRef.current) {
@@ -408,32 +529,431 @@ export default function AnswerResult() {
   const bgConfig = parseBgConfig(bgImage);
   const isUnanswered = !hasSubmittedAnswer;
 
-  // Build complete list of players for display (with graceful Figma mock fallbacks if empty)
+  // Build complete player roster for result and standings UI
   const defaultRoster = [
-    { username: 'Vidi', rank: 1, totalScore: 1176, lastTimeTaken: '16.47', correctAnswers: 10, totalQuestions: 10, streak: 10 },
-    { username: 'Viper', rank: 2, totalScore: 1020, lastTimeTaken: '17.1', correctAnswers: 9, totalQuestions: 10 },
-    { username: 'Tanmay', rank: 3, totalScore: 985, lastTimeTaken: '17.8', correctAnswers: 9, totalQuestions: 10 },
-    { username: localPlayer || 'Mohsin', rank: 4, totalScore: currentScore || 940, lastTimeTaken: timeTaken || '18.2', correctAnswers: 8, totalQuestions: 10, isMe: true },
-    { username: 'Aarav S.', rank: 5, totalScore: 915, lastTimeTaken: '19.0', correctAnswers: 8, totalQuestions: 10 },
-    { username: 'Priya K.', rank: 6, totalScore: 890, lastTimeTaken: '19.5', correctAnswers: 7, totalQuestions: 10 }
+    {
+      username: 'Vidi',
+      rank: 1,
+      totalScore: 1176,
+      lastTimeTaken: '16.47',
+      correctAnswers: 10,
+      totalQuestions: 10,
+      streak: 10
+    },
+    {
+      username: 'Viper',
+      rank: 2,
+      totalScore: 1020,
+      lastTimeTaken: '17.1',
+      correctAnswers: 9,
+      totalQuestions: 10
+    },
+    {
+      username: 'Tanmay',
+      rank: 3,
+      totalScore: 985,
+      lastTimeTaken: '17.8',
+      correctAnswers: 9,
+      totalQuestions: 10
+    },
+    {
+      username: localPlayer || 'Mohsin',
+      rank: 4,
+      totalScore: currentScore || 940,
+      lastTimeTaken: timeTaken || '18.2',
+      correctAnswers: 8,
+      totalQuestions: 10,
+      isMe: true
+    },
+    {
+      username: 'Aarav S.',
+      rank: 5,
+      totalScore: 915,
+      lastTimeTaken: '19.0',
+      correctAnswers: 8,
+      totalQuestions: 10
+    },
+    {
+      username: 'Priya K.',
+      rank: 6,
+      totalScore: 890,
+      lastTimeTaken: '19.5',
+      correctAnswers: 7,
+      totalQuestions: 10
+    }
   ];
 
-  const effectiveRoster = leaderboard.length >= 3 
+  const effectiveRoster = leaderboard.length >= 3
     ? leaderboard.map((p, idx) => ({
         ...p,
         rank: idx + 1,
-        isMe: (p.username || '').trim().toLowerCase() === (localPlayer || '').trim().toLowerCase()
+        isMe:
+          (p.username || '').trim().toLowerCase() ===
+          (localPlayer || '').trim().toLowerCase()
       }))
     : defaultRoster;
 
-  const firstPlace = effectiveRoster.find(p => p.rank === 1) || defaultRoster[0];
-  const secondPlace = effectiveRoster.find(p => p.rank === 2) || defaultRoster[1];
-  const thirdPlace = effectiveRoster.find(p => p.rank === 3) || defaultRoster[2];
+  const firstPlace =
+    effectiveRoster.find(p => p.rank === 1) || defaultRoster[0];
 
-  const myLeaderboardEntry = effectiveRoster.find(p => p.isMe) || effectiveRoster[3] || { rank: 4, totalScore: 940, lastTimeTaken: '18.2' };
+  const secondPlace =
+    effectiveRoster.find(p => p.rank === 2) || defaultRoster[1];
+
+  const thirdPlace =
+    effectiveRoster.find(p => p.rank === 3) || defaultRoster[2];
+
+  const myLeaderboardEntry =
+    effectiveRoster.find(p => p.isMe) ||
+    effectiveRoster[3] ||
+    { rank: 4, totalScore: 940, lastTimeTaken: '18.2' };
+
   const myRank = myLeaderboardEntry?.rank || 4;
-  const myScore = myLeaderboardEntry?.totalScore !== undefined ? myLeaderboardEntry.totalScore : (currentScore || 940);
+
+  const myScore =
+    myLeaderboardEntry?.totalScore !== undefined
+      ? myLeaderboardEntry.totalScore
+      : (currentScore || 940);
+
   const totalChallengers = Math.max(effectiveRoster.length, 50);
+
+  // Host dashboard calculations
+  const runnersUp = leaderboard.filter(p => p.rank > 3);
+
+  const totalSubmissions = answerStats.reduce(
+    (total, count) => total + (Number(count) || 0),
+    0
+  );
+
+  const filteredLeaderboard = leaderboard.filter(player =>
+    (player.username || '')
+      .toLowerCase()
+      .includes(searchQuery.trim().toLowerCase())
+  );
+
+  if (isHost) {
+    return (
+      <AnimatedPage>
+        <div className="answer-breakdown-shell">
+          <AppSidebar
+            isOpen={isMobileNavOpen}
+            onClose={() => setIsMobileNavOpen(false)}
+            onOpenProfile={() => navigate('/dashboard')}
+            onOpenUpgrade={() => navigate('/dashboard')}
+            onOpenSessions={() => navigate('/dashboard')}
+            activeNav="my-quizzes"
+          />
+
+          <div className="answer-breakdown-main">
+            <header className="answer-breakdown-header">
+              <div className="answer-breakdown-mobile-brand">
+                <button
+                  type="button"
+                  className="answer-breakdown-menu-button"
+                  aria-label="Open navigation menu"
+                  onClick={() => setIsMobileNavOpen(true)}
+                >
+                  <Menu />
+                </button>
+                <span>Gubbi</span>
+              </div>
+
+              <label className="answer-breakdown-search">
+                <Search aria-hidden="true" />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={event => setSearchQuery(event.target.value)}
+                  placeholder="Search quizzes, topics, or participants..."
+                  aria-label="Search quizzes, topics, or participants"
+                />
+              </label>
+
+              <div className="answer-breakdown-header-actions">
+                <div className="answer-breakdown-popover-wrap">
+                  <button
+                    type="button"
+                    className="answer-breakdown-notification-button"
+                    aria-label="Notifications"
+                    aria-expanded={isNotificationsOpen}
+                    onClick={() => {
+                      setIsNotificationsOpen(open => !open);
+                      setIsProfileDropdownOpen(false);
+                    }}
+                  >
+                    <Bell />
+                  </button>
+                  {isNotificationsOpen && (
+                    <div className="answer-breakdown-popover">
+                      <strong>Notifications</strong>
+                      <span>You&apos;re all caught up.</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="answer-breakdown-popover-wrap">
+                  <button
+                    type="button"
+                    className="answer-breakdown-profile-button"
+                    aria-expanded={isProfileDropdownOpen}
+                    onClick={() => {
+                      setIsProfileDropdownOpen(open => !open);
+                      setIsNotificationsOpen(false);
+                    }}
+                  >
+                    <span className="answer-breakdown-profile-avatar">
+                      {(headerUserName.charAt(0) || 'H').toUpperCase()}
+                    </span>
+                    <span className="answer-breakdown-profile-name">{headerUserName}</span>
+                    <ChevronDown aria-hidden="true" />
+                  </button>
+                  {isProfileDropdownOpen && (
+                    <div className="answer-breakdown-popover">
+                      <strong>{headerUserName}</strong>
+                      <button type="button" onClick={() => navigate('/dashboard')}>Account settings</button>
+                      <button type="button" onClick={handleHostExit}>End quiz and return to dashboard</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </header>
+
+            <main className={`answer-breakdown-content ${mobileTab === 'standings' ? 'is-standings-view' : ''}`}>
+              <div className="answer-breakdown-tabs" role="tablist" aria-label="Quiz results">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mobileTab === 'feedback'}
+                  onClick={() => setMobileTab('feedback')}
+                  className={mobileTab === 'feedback' ? 'is-active' : ''}
+                >
+                  <BarChart3 aria-hidden="true" />
+                  <span>Answer Breakdown</span>
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mobileTab === 'standings'}
+                  onClick={() => setMobileTab('standings')}
+                  className={mobileTab === 'standings' ? 'is-active' : ''}
+                >
+                  <Trophy aria-hidden="true" />
+                  <span>Lobby Standings</span>
+                </button>
+              </div>
+
+              {mobileTab === 'feedback' ? (
+                <section className="answer-breakdown-card" role="tabpanel">
+                  <div className="answer-breakdown-card-header">
+                    <h1>Answer Breakdown</h1>
+                    <div className="answer-breakdown-submissions">
+                      <span>Total Submissions</span>
+                      <strong>{totalSubmissions} Players</strong>
+                    </div>
+                  </div>
+
+                  <div className="answer-breakdown-question">
+                    <div className="answer-breakdown-question-category">
+                      <HelpCircle aria-hidden="true" />
+                      <span>
+                        Question {questionNumber || 1}
+                        {questionData?.category || category
+                          ? ` \u2022 ${questionData?.category || category}`
+                          : ''}
+                      </span>
+                    </div>
+                    <p>{questionData?.questionText || 'Loading question...'}</p>
+                  </div>
+
+                  <div className="answer-breakdown-options">
+                    {(questionData?.options || []).map((option, idx) => {
+                      const count = Number(answerStats[idx]) || 0;
+                      const percentage = totalSubmissions
+                        ? Math.round((count / totalSubmissions) * 100)
+                        : 0;
+                      const isCorrectOption = correctAnswerIdx === idx;
+
+                      return (
+                        <article
+                          key={`${idx}-${option}`}
+                          className={`answer-breakdown-option ${isCorrectOption ? 'is-correct' : ''}`}
+                        >
+                          <div className="answer-breakdown-option-details">
+                            <div className="answer-breakdown-option-label">
+                              <strong>Option {optionLetters[idx]}</strong>
+                              <span aria-hidden="true">GÇó</span>
+                              <span className="answer-breakdown-option-text">{option}</span>
+                              {isCorrectOption && (
+                                <span className="answer-breakdown-correct-badge">
+                                  <CheckCircle aria-hidden="true" /> Correct
+                                </span>
+                              )}
+                            </div>
+                            <div className="answer-breakdown-option-count">
+                              <strong>{count}</strong>
+                              <span>{percentage}%</span>
+                            </div>
+                          </div>
+                          <div
+                            className="answer-breakdown-progress"
+                            role="progressbar"
+                            aria-label={`Option ${optionLetters[idx]} responses`}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-valuenow={percentage}
+                          >
+                            <span style={{ width: `${percentage}%` }} />
+                          </div>
+                        </article>
+                      );
+                    })}
+                    {!questionData?.options?.length && (
+                      <p className="answer-breakdown-empty">Question options are unavailable.</p>
+                    )}
+                  </div>
+
+                  <div className="answer-breakdown-actions">
+                    <button
+                      type="button"
+                      onClick={handleShowLeaderboard}
+                      disabled={isShowingLeaderboard || isLoading}
+                      className="answer-breakdown-leaderboard-button"
+                    >
+                      {isShowingLeaderboard ? (
+                        <Loader2 className="animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Trophy aria-hidden="true" />
+                      )}
+                      <span>Show Leaderboard Arena</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNextStep}
+                      disabled={isLoading || isShowingLeaderboard}
+                      className="answer-breakdown-next-button"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="animate-spin" aria-hidden="true" />
+                      ) : (
+                        <>
+                          <span>{isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}</span>
+                          <ArrowRight aria-hidden="true" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </section>
+              ) : (
+                <section className="answer-breakdown-card answer-breakdown-standings-card" role="tabpanel">
+                  <div className="answer-breakdown-card-header">
+                    <div className="answer-breakdown-standings-title">
+                      <span className="answer-breakdown-trophy-icon"><Trophy aria-hidden="true" /></span>
+                      <div>
+                        <h1>Lobby Standings</h1>
+                        <p>See how challengers rank against each other in real time.</p>
+                      </div>
+                    </div>
+                    <div className="answer-breakdown-standings-summary">
+                      <span className="answer-breakdown-live"><span aria-hidden="true" /> LIVE</span>
+                      <strong>{leaderboard.length} Challengers</strong>
+                      <span className="answer-breakdown-top-count">
+                        Top {Math.min(10, leaderboard.length)} of {leaderboard.length}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="answer-breakdown-standings-body">
+                    <div className="answer-breakdown-podium" aria-label="Top three challengers">
+                      {[secondPlace, firstPlace, thirdPlace].map((player, index) => {
+                        const rank = index === 0 ? 2 : index === 1 ? 1 : 3;
+                        if (!player) return <div className="answer-breakdown-podium-slot" key={rank} />;
+                        const playerName = player.username || player.name || 'Player';
+                        return (
+                          <div className={`answer-breakdown-podium-slot rank-${rank}`} key={rank}>
+                            <div className="answer-breakdown-podium-avatar">
+                              {player.avatar
+                                ? <Avatar emoji={player.avatar} />
+                                : <span>{playerName.charAt(0).toUpperCase()}</span>}
+                              {rank === 1 && <Crown aria-label="First place" />}
+                            </div>
+                            <strong className="answer-breakdown-podium-name">{playerName}</strong>
+                            <span className="answer-breakdown-podium-score">{player.totalScore || 0} pts</span>
+                            <div className="answer-breakdown-podium-bar">
+                              <span>{rank}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {!leaderboard.length && (
+                        <p className="answer-breakdown-podium-empty">Standings will appear when players score points.</p>
+                      )}
+                    </div>
+
+                    <div className="answer-breakdown-ranking-list" aria-label="Top ranked challengers">
+                      {filteredLeaderboard.slice(0, 10).map(player => {
+                        const playerName = player.username || player.name || 'Player';
+                        return (
+                          <div
+                            className={`answer-breakdown-ranking-row rank-${player.rank} ${player.rank <= 3 ? 'is-podium-rank' : ''}`}
+                            key={player.rank}
+                          >
+                            <span className="answer-breakdown-ranking-position">{player.rank}</span>
+                            <span className="answer-breakdown-ranking-avatar">
+                              {player.avatar
+                                ? <Avatar emoji={player.avatar} />
+                                : playerName.charAt(0).toUpperCase()}
+                            </span>
+                            <span className="answer-breakdown-ranking-player">
+                              <strong>{playerName}</strong>
+                              <span>
+                                {player.correctAnswers || 0}
+                                {totalQuestions ? `/${totalQuestions}` : ''} correct
+                              </span>
+                            </span>
+                            <strong className="answer-breakdown-ranking-score">{player.totalScore || 0} pts</strong>
+                            <span className="answer-breakdown-ranking-time">{player.lastTimeTaken || '0.0'}s</span>
+                          </div>
+                        );
+                      })}
+                      {!filteredLeaderboard.length && (
+                        <p className="answer-breakdown-empty">
+                          {leaderboard.length ? 'No players match your search.' : 'No score values logged.'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="answer-breakdown-actions">
+                    <button
+                      type="button"
+                      onClick={() => setMobileTab('feedback')}
+                      className="answer-breakdown-leaderboard-button"
+                    >
+                      <ArrowLeft aria-hidden="true" />
+                      <span>Back to Answer Breakdown</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNextStep}
+                      disabled={isLoading}
+                      className="answer-breakdown-next-button"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="animate-spin" aria-hidden="true" />
+                      ) : (
+                        <>
+                          <span>{isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}</span>
+                          <ArrowRight aria-hidden="true" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </section>
+              )}
+            </main>
+          </div>
+        </div>
+      </AnimatedPage>
+    );
+  }
 
   return (
     <AnimatedPage>

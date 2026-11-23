@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard,
-  BookOpen,
+  Home,
+  Layers,
   PlusCircle,
   BarChart2,
   Settings,
@@ -118,7 +118,7 @@ export default function AppSidebar({
                     : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
                 }`}
               >
-                <LayoutDashboard className={`w-5 h-5 ${isDashboardActive ? 'text-white' : 'text-[#94A3B8]'}`} />
+                <Home className={`w-5 h-5 ${isDashboardActive ? 'text-white' : 'text-[#94A3B8]'}`} />
                 <span>Dashboard</span>
               </Link>
 
@@ -132,7 +132,7 @@ export default function AppSidebar({
                     : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
                 }`}
               >
-                <BookOpen className={`w-5 h-5 ${isMyQuizzesActive ? 'text-white' : 'text-[#94A3B8]'}`} />
+                <Layers className={`w-5 h-5 ${isMyQuizzesActive ? 'text-white' : 'text-[#94A3B8]'}`} />
                 <span>My Quizzes</span>
               </Link>
 
@@ -150,18 +150,18 @@ export default function AppSidebar({
                 <span>Create Quiz</span>
               </Link>
 
-              {/* My Reports */}
+              {/* Reports */}
               <Link
                 to="/reports"
                 onClick={onClose}
                 className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${
                   isReportsActive
-                    ? 'rounded-2xl bg-[#6320EE] text-white shadow-[0px_8px_16px_-2px_rgba(99,32,238,0.35)] font-semibold text-[14px]'
+                    ? 'rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]'
                     : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
                 }`}
               >
                 <BarChart2 className={`w-5 h-5 ${isReportsActive ? 'text-white' : 'text-[#94A3B8]'}`} />
-                <span>My Reports</span>
+                <span>Reports</span>
               </Link>
 
               {/* Settings */}
@@ -186,7 +186,7 @@ export default function AppSidebar({
               <div>
                 <h4 className="text-[13px] font-bold text-[#0F172A] tracking-tight">Upgrade to Gubbi Pro</h4>
                 <p className="text-[11px] text-[#64748B] mt-0.5 leading-snug">
-                  Unlock unlimited quizzes & rooms.
+                  Unlock unlimited quizzes &amp; multiplayer rooms.
                 </p>
               </div>
               <button
