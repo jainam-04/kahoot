@@ -1,13 +1,19 @@
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useQuery } from '@tanstack/react-query';
 import { 
   BarChart3, ArrowLeft, Loader2, Download, Trophy, 
-  CheckCircle, XCircle, AlertCircle, FileSpreadsheet, FileText, Crown, Medal
+  CheckCircle, XCircle, AlertCircle, FileSpreadsheet, FileText, Crown, Medal,
+  Menu, Search, Settings, LogOut, ChevronDown, Check, X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
+import AppSidebar from '../components/AppSidebar';
+import HostProfileModal from '../components/HostProfileModal';
+import PlanComparisonTable from '../components/PlanComparisonTable';
 import { getResultBySession } from '../services/resultService';
+import { clearAuthSession, getStoredUser } from '../utils/auth';
 
 const isUnansweredAnswer = (answer) => {
   const value = answer?.answerIndex;
@@ -20,6 +26,55 @@ export default function ResultsAnalytics() {
   const { sessionId } = useParams();
   const id = sessionId;
   const navigate = useNavigate();
+
+  const [user, setUser] = useState(() => getStoredUser());
+  const [activeModal, setActiveModal] = useState(null); // 'profile' | 'upgrade' | null
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [headerSearch, setHeaderSearch] = useState('');
+  const profileDropdownRef = useRef(null);
+
+  // Sync stored user profile across windows & storage
+  useEffect(() => {
+    const handleProfileSync = (e) => {
+      if (e && 'detail' in e) {
+        setUser(e.detail);
+      } else {
+        setUser(getStoredUser());
+      }
+    };
+    window.addEventListener('user-profile-updated', handleProfileSync);
+    window.addEventListener('storage', handleProfileSync);
+    return () => {
+      window.removeEventListener('user-profile-updated', handleProfileSync);
+      window.removeEventListener('storage', handleProfileSync);
+    };
+  }, []);
+
+  // Dismiss profile dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    clearAuthSession();
+    setUser(null);
+    toast.success('Logged out successfully');
+    navigate('/login');
+  };
+
+  const userInitial = (user?.name || user?.fullName || 'Mohsin').charAt(0).toUpperCase();
+  const userName = user?.name || user?.fullName || 'Mohsin';
 
   // Fetch Session Results
   const { 
@@ -874,10 +929,126 @@ export default function ResultsAnalytics() {
 
   return (
     <AnimatedPage>
-      <div className={`relative min-h-screen p-3 sm:p-6 lg:p-8 transition-colors duration-300 font-['Inter',sans-serif] ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-[#FDFDFE] text-[#1E1B4B]'}`}>
-        <div className={`absolute inset-0 pointer-events-none ${isDark ? 'bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.18),_transparent_35%)]' : 'bg-[radial-gradient(circle_at_top_left,_rgba(99,32,238,0.06),_transparent_35%)]'}`} />
+      <div className={`min-h-screen flex flex-col font-['Inter',sans-serif] antialiased selection:bg-[#6320EE]/20 selection:text-[#6320EE] ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-[#FDFDFE] text-slate-800'}`}>
+        {/* ─── APP SIDEBAR (Canonical Component) ─── */}
+        <AppSidebar
+          isOpen={isMobileNavOpen}
+          onClose={() => setIsMobileNavOpen(false)}
+          onOpenProfile={() => setActiveModal('profile')}
+          onOpenUpgrade={() => setActiveModal('upgrade')}
+          activeNav="reports"
+        />
 
-        <div className="mx-auto max-w-7xl relative z-10 space-y-4 sm:space-y-6 text-left">
+        {/* ─── MAIN CONTENT WRAPPER (Shifted by 230px on desktop) ─── */}
+        <div className="flex-1 flex flex-col lg:pl-[230px] w-full min-w-0 transition-all">
+          
+          {/* TOP HEADER (74px height, exact Figma specifications matching /reports) */}
+          <header className={`sticky top-0 z-30 h-[74px] max-h-[74px] px-4 sm:px-8 backdrop-blur-md border-b flex items-center justify-between gap-4 ${isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white/80 border-[#EEF0F6]'}`}>
+            
+            {/* Left: Mobile Drawer Hamburger Button */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIsMobileNavOpen(true)}
+                className={`lg:hidden p-2 rounded-xl border transition-colors cursor-pointer ${isDark ? 'border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800' : 'border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC]'}`}
+                aria-label="Open navigation menu"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Center: Global Search Input Container (580px max-width, pill) */}
+            <div className="hidden sm:flex flex-1 max-w-[580px] mx-auto items-center">
+              <div className="relative w-full">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] pointer-events-none" />
+                <input
+                  type="text"
+                  value={headerSearch}
+                  onChange={(e) => setHeaderSearch(e.target.value)}
+                  placeholder="Search quizzes, topics, or participants..."
+                  className={`w-full h-[46px] pl-11 pr-10 rounded-full border text-[13.5px] font-bold placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6320EE]/15 transition-all ${isDark ? 'bg-slate-800/60 border-slate-700 text-white focus:border-[#7C3AED]' : 'bg-[#FAF9FD] border-[#E9EAF2] text-[#1E293B] focus:border-[#6320EE]'}`}
+                />
+                {headerSearch && (
+                  <button
+                    type="button"
+                    onClick={() => setHeaderSearch('')}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#1E293B] p-1 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Right: User Profile Pill */}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <div className="relative" ref={profileDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                  className={`h-[42px] pl-1 pr-3 py-1 rounded-full border shadow-2xs transition-colors flex items-center gap-2 cursor-pointer select-none ${isDark ? 'bg-slate-900 border-slate-800 hover:bg-slate-800' : 'bg-white border-[#E7E9F2] hover:bg-[#FAF9FD]'}`}
+                  aria-label="User Profile"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#6C38FF] text-white font-semibold text-[13px] flex items-center justify-center shrink-0 shadow-2xs">
+                    {userInitial}
+                  </div>
+                  <span className={`text-[13.5px] font-semibold max-w-[100px] truncate hidden sm:inline ${isDark ? 'text-slate-200' : 'text-[#1E293B]'}`}>
+                    {userName}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] hidden sm:inline" />
+                </button>
+
+                {/* Profile Dropdown */}
+                {isProfileDropdownOpen && (
+                  <div className={`absolute right-0 mt-2 w-52 rounded-2xl border shadow-xl p-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-[#EEF0F6]'}`}>
+                    <div className={`px-3 py-2 border-b ${isDark ? 'border-slate-800' : 'border-[#F1F5F9]'}`}>
+                      <p className={`text-xs font-bold truncate ${isDark ? 'text-white' : 'text-[#0F172A]'}`}>{userName}</p>
+                      <p className="text-[11px] text-[#64748B] truncate">{user?.email || 'host@gubbi.io'}</p>
+                    </div>
+                    <div className="py-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsProfileDropdownOpen(false);
+                          setActiveModal('profile');
+                        }}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${isDark ? 'text-slate-300 hover:bg-slate-800 hover:text-white' : 'text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'}`}
+                      >
+                        <Settings className="w-4 h-4 text-[#94A3B8]" />
+                        <span>Account Settings</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsProfileDropdownOpen(false);
+                          setActiveModal('upgrade');
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#6C38FF] hover:bg-[#FAF5FF] transition-colors cursor-pointer"
+                      >
+                        <Crown className="w-4 h-4 text-[#F59E0B]" />
+                        <span>Upgrade to Pro</span>
+                      </button>
+                      <div className={`my-1 border-t ${isDark ? 'border-slate-800' : 'border-[#F1F5F9]'}`} />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsProfileDropdownOpen(false);
+                          handleLogout();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4 text-[#EF4444]" />
+                        <span>Log Out</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </header>
+
+          {/* MAIN BODY CONTENT */}
+          <main className="flex-1 p-3.5 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 max-w-[1280px] w-full mx-auto text-left">
           {/* Main Top Card */}
           <div className={`rounded-2xl sm:rounded-[28px] border p-4 sm:p-6 lg:p-8 shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -1147,7 +1318,115 @@ export default function ResultsAnalytics() {
               ))}
             </div>
           </div>
-        </div>
+        </main>
+      </div>
+
+        {/* ─── MODALS ─── */}
+        {/* Profile Settings Modal */}
+        {activeModal === 'profile' && (
+          <HostProfileModal
+            isOpen={true}
+            onClose={() => setActiveModal(null)}
+            onUpdated={(updated) => setUser(updated)}
+          />
+        )}
+
+        {/* Upgrade Plan Modal */}
+        {activeModal === 'upgrade' && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-xs animate-fade-in">
+            <div className="relative my-auto rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 bg-white text-slate-900 text-left">
+              <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-purple-50 via-white to-purple-50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-amber-100 text-amber-600 rounded-xl shadow-xs">
+                    <Crown className="h-5 w-5 fill-amber-500 text-amber-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-slate-900">Upgrade to Gubbi Pro</h3>
+                    <p className="text-xs text-slate-500">Unlock unlimited multiplayer rooms, export reports, and custom trivia sets.</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Pro Plan Card */}
+                  <div className="p-5 rounded-2xl border-2 border-[#6C38FF] bg-purple-50/30 flex flex-col justify-between space-y-4">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded-full">
+                        Educator Pro
+                      </span>
+                      <h4 className="text-2xl font-black text-slate-900 mt-2">
+                        ₹499 <span className="text-xs font-normal text-slate-500">/ month</span>
+                      </h4>
+                      <p className="text-xs text-slate-600 mt-1">Built for classroom teachers, coaching institutes, and active event hosts.</p>
+                      
+                      <ul className="mt-4 space-y-2 text-xs text-slate-700">
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Unlimited quiz creation</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Unlimited live multiplayer participants</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> PDF &amp; Excel performance export</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Priority email support</li>
+                      </ul>
+                    </div>
+
+                    <a
+                      href="mailto:info@fouriseindia.com?subject=Gubbi%20Pro%20Upgrade%20Inquiry"
+                      className="w-full py-2.5 rounded-xl bg-[#6C38FF] hover:bg-[#5827e8] text-white text-xs font-bold text-center shadow-md transition-all block cursor-pointer"
+                    >
+                      Contact Sales &amp; Upgrade
+                    </a>
+                  </div>
+
+                  {/* Free Plan Recap */}
+                  <div className="p-5 rounded-2xl border border-slate-200 bg-white flex flex-col justify-between space-y-4">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
+                        Free Community
+                      </span>
+                      <h4 className="text-2xl font-black text-slate-900 mt-2">₹0 <span className="text-xs font-normal text-slate-500">/ forever</span></h4>
+                      <p className="text-xs text-slate-500 mt-1">Perfect for casual trivia, weekend hangouts, and testing questions.</p>
+                      
+                      <ul className="mt-4 space-y-2 text-xs text-slate-600">
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-slate-400 shrink-0" /> Up to 5 custom quizzes</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-slate-400 shrink-0" /> Up to 20 live players per room</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-slate-400 shrink-0" /> Basic web summaries</li>
+                      </ul>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveModal(null)}
+                      className="w-full py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold text-center transition-all cursor-pointer"
+                    >
+                      Keep Current Plan
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between space-y-4">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 bg-slate-200 px-2.5 py-0.5 rounded-full">
+                      Feature Overview
+                    </span>
+                    <div className="mt-3 overflow-x-auto text-xs">
+                      <PlanComparisonTable />
+                    </div>
+                  </div>
+
+                  <div className="text-[11px] text-slate-500 text-center">
+                    Need custom institutional pricing? Email <span className="font-semibold text-purple-600">info@fouriseindia.com</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AnimatedPage>
   );
