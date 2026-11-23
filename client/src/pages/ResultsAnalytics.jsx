@@ -892,41 +892,6 @@ export default function ResultsAnalytics() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <AnimatedPage>
-        <div className={`flex-1 flex items-center justify-center min-h-[70vh] ${isDark ? 'bg-slate-950 text-white' : 'bg-[#FDFDFE] text-slate-900'}`}>
-          <div className="text-center space-y-4">
-            <Loader2 className="h-10 w-10 animate-spin mx-auto text-[#6320EE]" />
-            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>Compiling analytics report...</p>
-          </div>
-        </div>
-      </AnimatedPage>
-    );
-  }
-
-  if (error || !result) {
-    return (
-      <AnimatedPage>
-        <div className={`flex-1 flex flex-col items-center justify-center min-h-[70vh] text-center px-4 ${isDark ? 'bg-slate-950 text-white' : 'bg-[#FDFDFE] text-slate-900'}`}>
-          <BarChart3 className="h-12 w-12 mb-4 text-[#6320EE]" />
-          <h2 className="font-outfit text-xl font-bold text-[#1E1B4B]">Report Not Found</h2>
-          <p className={`text-sm mt-1 max-w-[280px] ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>
-            The requested battle logs could not be loaded. Please return to the dashboard.
-          </p>
-          <div className="flex items-center gap-3 mt-5">
-            <button onClick={() => navigate('/reports')} className="px-4 py-2.5 text-xs font-bold rounded-xl bg-[#6320EE] hover:bg-[#5827e8] text-white transition-all shadow-sm">
-              Back to Reports
-            </button>
-            <button onClick={() => navigate('/dashboard')} className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-[#475569] hover:bg-slate-200'}`}>
-              Go to Dashboard
-            </button>
-          </div>
-        </div>
-      </AnimatedPage>
-    );
-  }
-
   return (
     <AnimatedPage>
       <div className={`min-h-screen flex flex-col font-['Inter',sans-serif] antialiased selection:bg-[#6320EE]/20 selection:text-[#6320EE] ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-[#FDFDFE] text-slate-800'}`}>
@@ -1048,7 +1013,31 @@ export default function ResultsAnalytics() {
           </header>
 
           {/* MAIN BODY CONTENT */}
-          <main className="flex-1 p-3.5 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 max-w-[1280px] w-full mx-auto text-left">
+          {isLoading ? (
+            <div className="flex-1 flex items-center justify-center min-h-[60vh]">
+              <div className="text-center space-y-4">
+                <Loader2 className="h-10 w-10 animate-spin mx-auto text-[#6320EE]" />
+                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>Compiling analytics report...</p>
+              </div>
+            </div>
+          ) : error || !result ? (
+            <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+              <BarChart3 className="h-12 w-12 mb-4 text-[#6320EE]" />
+              <h2 className={`font-outfit text-xl font-bold ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>Report Not Found</h2>
+              <p className={`text-sm mt-1 max-w-[280px] ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>
+                The requested battle logs could not be loaded. Please return to the dashboard.
+              </p>
+              <div className="flex items-center gap-3 mt-5">
+                <button onClick={() => navigate('/reports')} className="px-4 py-2.5 text-xs font-bold rounded-xl bg-[#6320EE] hover:bg-[#5827e8] text-white transition-all shadow-sm cursor-pointer">
+                  Back to Reports
+                </button>
+                <button onClick={() => navigate('/dashboard')} className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer ${isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-[#475569] hover:bg-slate-200'}`}>
+                  Go to Dashboard
+                </button>
+              </div>
+            </div>
+          ) : (
+            <main className="flex-1 p-3.5 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 max-w-[1280px] w-full mx-auto text-left">
           {/* Main Top Card */}
           <div className={`rounded-2xl sm:rounded-[28px] border p-4 sm:p-6 lg:p-8 shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] ${isDark ? 'border-slate-800 bg-slate-900/90' : 'border-[#F1F5F9] bg-white'}`}>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -1319,6 +1308,7 @@ export default function ResultsAnalytics() {
             </div>
           </div>
         </main>
+          )}
       </div>
 
         {/* ─── MODALS ─── */}
