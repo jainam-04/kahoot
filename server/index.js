@@ -92,6 +92,11 @@ app.get('/', (req, res) => {
     res.send('Quiz API is running...');
 });
 
+// Catch-all 404 handler to return clean JSON and prevent Express 5 default CSP injection
+app.use((req, res) => {
+    res.status(404).json({ error: 'Endpoint not found', path: req.originalUrl });
+});
+
 const PORT = Number(process.env.PORT) || 5000;
 const HOST = process.env.HOST || '0.0.0.0';
 
