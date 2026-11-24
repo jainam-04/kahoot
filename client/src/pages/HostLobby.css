@@ -61,7 +61,7 @@
   gap: 10px;
 }
 
-.host-lobby-search > svg {
+.host-lobby-search>svg {
   width: 17px;
   height: 17px;
   flex: 0 0 auto;
@@ -131,7 +131,7 @@
   border-color: #d1d5db;
 }
 
-.host-lobby-notification-button > svg {
+.host-lobby-notification-button>svg {
   width: 18px;
   height: 18px;
 }
@@ -182,7 +182,7 @@
   white-space: nowrap;
 }
 
-.host-lobby-profile-button > svg {
+.host-lobby-profile-button>svg {
   width: 14px;
   height: 14px;
   color: #94a3b8;
@@ -308,10 +308,13 @@
 }
 
 @keyframes hostLobbyPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.25);
     opacity: 0.75;
@@ -447,16 +450,19 @@
   text-align: center;
 }
 
-.host-lobby-pin-value,
-.host-lobby-pin-block > div {
+.host-lobby-pin-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   border: 1.5px solid #ece4fc;
-  border-radius: 16px;
+  border-radius: 14px;
   background: #faf8ff;
-  padding: 8px 24px;
+  padding: 6px 20px;
   color: #5e17eb;
-  font-size: 38px;
+  font-size: 34px;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   line-height: 1.2;
   text-align: center;
   white-space: nowrap;
@@ -1002,11 +1008,11 @@
   font-weight: 500;
 }
 
-.host-lobby-url > svg {
+.host-lobby-url>svg {
   color: #6222f5;
 }
 
-.host-lobby-url > span {
+.host-lobby-url>span {
   min-width: 0;
   flex: 1;
   overflow: hidden;
@@ -1697,7 +1703,7 @@
 }
 
 @media (min-width: 64rem) {
-  .host-lobby-shell > aside {
+  .host-lobby-shell>aside {
     transform: translateX(0);
   }
 
@@ -1831,7 +1837,7 @@
   }
 
   .host-lobby-profile-name,
-  .host-lobby-profile-button > svg {
+  .host-lobby-profile-button>svg {
     display: none;
   }
 
@@ -1865,81 +1871,112 @@
     letter-spacing: 0.04em;
   }
 
-  /* CARD 1: PIN CARD MOBILE */
+  /* CARD 1: PIN CARD MOBILE — COMPACT & ELEGANT */
   .host-lobby-pin-card {
     height: auto !important;
     min-height: auto !important;
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 12px !important;
-    border-radius: 18px !important;
-    padding: 16px !important;
+    gap: 10px !important;
+    border-radius: 16px !important;
+    padding: 12px 14px !important;
   }
 
   .host-lobby-quiz-details {
-    gap: 12px;
+    gap: 10px;
   }
 
   .host-lobby-rocket-circle {
-    width: 48px;
-    height: 48px;
-    flex: 0 0 48px;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
   }
 
   .host-lobby-rocket-image {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .host-lobby-eyebrow {
+    font-size: 9.5px;
+    padding: 2px 8px;
+    margin-bottom: 2px;
   }
 
   .host-lobby-quiz-text h2 {
-    font-size: 16px;
-    line-height: 1.3;
+    font-size: 15px;
+    line-height: 1.25;
+    margin-bottom: 2px;
   }
 
   .host-lobby-quiz-text p {
-    font-size: 11.5px;
+    font-size: 11px;
+    line-height: 1.35;
   }
 
+  /* Compact Horizontal Banner for PIN on Mobile */
   .host-lobby-pin-block {
     width: 100%;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    gap: 3px;
+    justify-content: space-between;
+    gap: 8px;
     background: #fbf9ff;
-    border: 1.5px dashed #ded4fc;
-    border-radius: 14px;
-    padding: 10px 14px;
-    margin-top: 2px;
+    border: 1px dashed #d8ccff;
+    border-radius: 12px;
+    padding: 7px 12px;
+    margin-top: 0;
   }
 
   .host-lobby-pin-label-row {
-    color: #7c3aed;
+    color: #64748b;
     font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.1em;
+    font-weight: 700;
+    letter-spacing: 0.06em;
   }
 
-  .host-lobby-pin-value,
-  .host-lobby-pin-block > div {
+  .host-lobby-pin-value {
     border: none;
     background: transparent;
-    padding: 2px 0;
-    font-size: 30px;
-    letter-spacing: 0.14em;
+    padding: 0;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
     color: #6222f5;
+    gap: 6px;
+  }
+
+  .host-lobby-pin-value svg {
+    width: 13px;
+    height: 13px;
   }
 
   .host-lobby-pin-tap-hint {
     display: inline-block;
+    font-size: 9.5px;
+    color: #8b5cf6;
+    font-weight: 600;
+  }
+
+  .host-lobby-mobile-tabs {
+    margin: 8px 0 10px;
+    padding: 3px;
+    border-radius: 12px;
+    gap: 4px;
+  }
+
+  .host-lobby-tab-btn {
+    padding: 8px 10px;
+    font-size: 12.5px;
+    border-radius: 9px;
   }
 
   /* CARD 2: PLAYERS CARD MOBILE */
   .host-lobby-players-card {
     min-height: auto !important;
-    border-radius: 18px !important;
-    padding: 16px !important;
-    gap: 12px !important;
+    border-radius: 16px !important;
+    padding: 14px 12px !important;
+    gap: 10px !important;
   }
 
   .host-lobby-players-heading {

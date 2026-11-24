@@ -91,7 +91,7 @@ export default function HostLobby() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  
+
   const [isPlayersModalOpen, setIsPlayersModalOpen] = useState(false);
   const [modalSearchQuery, setModalSearchQuery] = useState('');
   const [modalSortOrder, setModalSortOrder] = useState('latest'); // 'latest' | 'alpha'
@@ -535,7 +535,7 @@ export default function HostLobby() {
                       </div>
                     </div>
 
-                    <div 
+                    <div
                       className="host-lobby-pin-block cursor-pointer select-none"
                       onClick={() => {
                         navigator.clipboard.writeText(pin);
@@ -545,9 +545,11 @@ export default function HostLobby() {
                     >
                       <div className="host-lobby-pin-label-row">
                         <span>LOBBY PIN</span>
-                        <Copy className="h-3 w-3 text-[#7C3AED] opacity-75" />
                       </div>
-                      <div className="host-lobby-pin-value">{pin}</div>
+                      <div className="host-lobby-pin-value">
+                        <span>{pin}</span>
+                        <Copy className="h-3.5 w-3.5 text-[#7C3AED] opacity-75 shrink-0" />
+                      </div>
                       <span className="host-lobby-pin-tap-hint">Tap to copy</span>
                     </div>
                   </div>
@@ -567,8 +569,8 @@ export default function HostLobby() {
                             <p>Real-time battle participants</p>
                           </div>
                         </div>
-                        <span 
-                          onClick={() => setIsPlayersModalOpen(true)} 
+                        <span
+                          onClick={() => setIsPlayersModalOpen(true)}
                           className="host-lobby-player-count cursor-pointer hover:bg-[#ebdfff] transition-colors"
                         >
                           {totalParticipantCount} Joined
@@ -605,7 +607,7 @@ export default function HostLobby() {
                           })}
 
                           {totalParticipantCount > 8 && (
-                            <button 
+                            <button
                               type="button"
                               className="host-lobby-avatar-more cursor-pointer"
                               onClick={() => setIsPlayersModalOpen(true)}
@@ -678,12 +680,12 @@ export default function HostLobby() {
                       {/* Footer Roster Toggle Row */}
                       {totalParticipantCount > 5 && (
                         <div className="host-lobby-roster-footer">
-                          <span 
-                            onClick={() => setShowAllPlayers(!showAllPlayers)} 
+                          <span
+                            onClick={() => setShowAllPlayers(!showAllPlayers)}
                             className="host-lobby-more-lobby-text cursor-pointer hover:underline"
                           >
-                            {showAllPlayers 
-                              ? 'Show fewer players' 
+                            {showAllPlayers
+                              ? 'Show fewer players'
                               : `+${remainingLobbyCount} more players in lobby`
                             }
                           </span>
