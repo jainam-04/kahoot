@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import PlanComparisonTable from '../PlanComparisonTable';
 import QuickRegisterModal from '../QuickRegisterModal';
+import { useScrollLock } from '../../utils/scrollLock';
 
 function CheckIcon() {
   return (
@@ -21,6 +22,9 @@ export default function PricingSection() {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const carouselRef = useRef(null);
   const token = localStorage.getItem('token');
+
+  // Lock background scroll when plan details modal is open
+  useScrollLock(showPlanDetails);
 
   const plans = ['free', 'pro', 'enterprise'];
 
@@ -77,15 +81,15 @@ export default function PricingSection() {
   const isEnterpriseSelected = selectedPlan === 'enterprise';
 
   return (
-    <section 
-      id="pricing" 
+    <section
+      id="pricing"
       className="relative w-full py-12 sm:py-16 lg:py-20 scroll-mt-20 overflow-hidden"
       style={{
         background: 'linear-gradient(180deg, #FAF8FF 0%, #FAF6FF 50%, #FAF8FF 100%)'
       }}
     >
       <div className="max-w-[1349px] mx-auto px-4 sm:px-8 w-full flex flex-col items-center">
-        
+
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -118,11 +122,10 @@ export default function PricingSection() {
               <button
                 type="button"
                 onClick={() => setIsYearly(false)}
-                className={`px-5 py-2 rounded-full font-['Inter'] text-xs transition-all cursor-pointer ${
-                  !isYearly
-                    ? 'bg-[#551BF5] text-white font-bold shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
-                    : 'text-[#475569] font-semibold hover:text-[#0D0B26]'
-                }`}
+                className={`px-5 py-2 rounded-full font-['Inter'] text-xs transition-all cursor-pointer ${!isYearly
+                  ? 'bg-[#551BF5] text-white font-bold shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
+                  : 'text-[#475569] font-semibold hover:text-[#0D0B26]'
+                  }`}
               >
                 Monthly
               </button>
@@ -131,17 +134,15 @@ export default function PricingSection() {
               <button
                 type="button"
                 onClick={() => setIsYearly(true)}
-                className={`px-5 py-2 rounded-full font-['Inter'] text-xs transition-all flex items-center gap-1.5 cursor-pointer ${
-                  isYearly
-                    ? 'bg-[#551BF5] text-white font-bold shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
-                    : 'text-[#475569] font-semibold hover:text-[#0D0B26]'
-                }`}
+                className={`px-5 py-2 rounded-full font-['Inter'] text-xs transition-all flex items-center gap-1.5 cursor-pointer ${isYearly
+                  ? 'bg-[#551BF5] text-white font-bold shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
+                  : 'text-[#475569] font-semibold hover:text-[#0D0B26]'
+                  }`}
               >
                 <span>Yearly</span>
                 <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                    isYearly ? 'bg-white/20 text-white' : 'bg-[#F3E8FF] text-[#551BF5]'
-                  }`}
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${isYearly ? 'bg-white/20 text-white' : 'bg-[#F3E8FF] text-[#551BF5]'
+                    }`}
                 >
                   Save 20%
                 </span>
@@ -165,7 +166,7 @@ export default function PricingSection() {
           onScroll={handleCarouselScroll}
           className="w-full max-w-[1152px] flex lg:grid lg:grid-cols-3 overflow-x-auto lg:overflow-visible snap-x snap-mandatory scrollbar-none gap-4 sm:gap-6 lg:gap-8 items-stretch mt-8 sm:mt-14 px-6 sm:px-8 lg:px-0 py-6 -mx-4 sm:-mx-8 lg:mx-0 scroll-smooth"
         >
-          
+
           {/* Card 1: Free (Starter) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -176,11 +177,10 @@ export default function PricingSection() {
               setSelectedPlan('free');
               scrollToCard(0);
             }}
-            className={`w-[84vw] max-w-[340px] shrink-0 snap-center lg:w-auto rounded-[24px] bg-white p-6 sm:p-8 flex flex-col justify-between text-left transition-all duration-300 cursor-pointer relative ${
-              isFreeSelected
-                ? 'border-2 border-[#551BF5] shadow-[0px_20px_25px_-5px_rgba(168,85,247,0.1),0px_8px_10px_-6px_rgba(168,85,247,0.1)] lg:-translate-y-2 z-10'
-                : 'border border-[rgba(243,232,255,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:border-[#D8B4FE] hover:shadow-md'
-            }`}
+            className={`w-[84vw] max-w-[340px] shrink-0 snap-center lg:w-auto rounded-[24px] bg-white p-6 sm:p-8 flex flex-col justify-between text-left transition-all duration-300 cursor-pointer relative ${isFreeSelected
+              ? 'border-2 border-[#551BF5] shadow-[0px_20px_25px_-5px_rgba(168,85,247,0.1),0px_8px_10px_-6px_rgba(168,85,247,0.1)] lg:-translate-y-2 z-10'
+              : 'border border-[rgba(243,232,255,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:border-[#D8B4FE] hover:shadow-md'
+              }`}
           >
             {isFreeSelected && (
               <div className="absolute -top-[12px] left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-[#551BF5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
@@ -192,9 +192,8 @@ export default function PricingSection() {
 
             <div className="space-y-4">
               {/* Category Tag */}
-              <span className={`font-['Inter'] font-bold text-xs leading-4 tracking-[0.6px] uppercase block transition-colors ${
-                isFreeSelected ? 'text-[#551BF5]' : 'text-[#64748B]'
-              }`}>
+              <span className={`font-['Inter'] font-bold text-xs leading-4 tracking-[0.6px] uppercase block transition-colors ${isFreeSelected ? 'text-[#551BF5]' : 'text-[#64748B]'
+                }`}>
                 Starter
               </span>
 
@@ -253,11 +252,10 @@ export default function PricingSection() {
                 <Link
                   to="/dashboard"
                   onClick={(e) => e.stopPropagation()}
-                  className={`w-full h-[42px] rounded-[16px] font-['Inter'] font-bold text-xs flex items-center justify-center transition-all cursor-pointer ${
-                    isFreeSelected
-                      ? 'bg-[#551BF5] hover:opacity-95 text-white shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25)] hover:scale-[1.01] active:scale-[0.99]'
-                      : 'border border-[#E9D5FF] bg-white hover:bg-purple-50/50 text-[#551BF5]'
-                  }`}
+                  className={`w-full h-[42px] rounded-[16px] font-['Inter'] font-bold text-xs flex items-center justify-center transition-all cursor-pointer ${isFreeSelected
+                    ? 'bg-[#551BF5] hover:opacity-95 text-white shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25)] hover:scale-[1.01] active:scale-[0.99]'
+                    : 'border border-[#E9D5FF] bg-white hover:bg-purple-50/50 text-[#551BF5]'
+                    }`}
                 >
                   Go to Dashboard
                 </Link>
@@ -268,11 +266,10 @@ export default function PricingSection() {
                     e.stopPropagation();
                     setShowRegisterModal(true);
                   }}
-                  className={`w-full h-[42px] rounded-[16px] font-['Inter'] font-bold text-xs flex items-center justify-center transition-all cursor-pointer ${
-                    isFreeSelected
-                      ? 'bg-[#551BF5] hover:opacity-95 text-white shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25)] hover:scale-[1.01] active:scale-[0.99]'
-                      : 'border border-[#E9D5FF] bg-white hover:bg-purple-50/50 text-[#551BF5]'
-                  }`}
+                  className={`w-full h-[42px] rounded-[16px] font-['Inter'] font-bold text-xs flex items-center justify-center transition-all cursor-pointer ${isFreeSelected
+                    ? 'bg-[#551BF5] hover:opacity-95 text-white shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25)] hover:scale-[1.01] active:scale-[0.99]'
+                    : 'border border-[#E9D5FF] bg-white hover:bg-purple-50/50 text-[#551BF5]'
+                    }`}
                 >
                   Get Started Free
                 </button>
@@ -290,16 +287,14 @@ export default function PricingSection() {
               setSelectedPlan('pro');
               scrollToCard(1);
             }}
-            className={`w-[84vw] max-w-[340px] shrink-0 snap-center lg:w-auto rounded-[24px] bg-white p-6 sm:p-8 flex flex-col justify-between text-left transition-all duration-300 cursor-pointer relative ${
-              isProSelected
-                ? 'border-2 border-[#551BF5] shadow-[0px_20px_25px_-5px_rgba(168,85,247,0.1),0px_8px_10px_-6px_rgba(168,85,247,0.1)] lg:-translate-y-2 z-10'
-                : 'border border-[rgba(243,232,255,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:border-[#D8B4FE] hover:shadow-md'
-            }`}
+            className={`w-[84vw] max-w-[340px] shrink-0 snap-center lg:w-auto rounded-[24px] bg-white p-6 sm:p-8 flex flex-col justify-between text-left transition-all duration-300 cursor-pointer relative ${isProSelected
+              ? 'border-2 border-[#551BF5] shadow-[0px_20px_25px_-5px_rgba(168,85,247,0.1),0px_8px_10px_-6px_rgba(168,85,247,0.1)] lg:-translate-y-2 z-10'
+              : 'border border-[rgba(243,232,255,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:border-[#D8B4FE] hover:shadow-md'
+              }`}
           >
             {/* Top Minimal Tag */}
-            <div className={`absolute -top-[12px] left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors ${
-              isProSelected ? 'bg-[#551BF5] text-white' : 'bg-[#F3E8FF] text-[#551BF5]'
-            }`}>
+            <div className={`absolute -top-[12px] left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors ${isProSelected ? 'bg-[#551BF5] text-white' : 'bg-[#F3E8FF] text-[#551BF5]'
+              }`}>
               <span className="font-['Inter'] font-bold text-[10px] leading-4 tracking-[0.5px] uppercase whitespace-nowrap">
                 Most Popular
               </span>
@@ -307,9 +302,8 @@ export default function PricingSection() {
 
             <div className="space-y-4">
               {/* Category Tag */}
-              <span className={`font-['Inter'] font-bold text-xs leading-4 tracking-[0.6px] uppercase block transition-colors ${
-                isProSelected ? 'text-[#551BF5]' : 'text-[#64748B]'
-              }`}>
+              <span className={`font-['Inter'] font-bold text-xs leading-4 tracking-[0.6px] uppercase block transition-colors ${isProSelected ? 'text-[#551BF5]' : 'text-[#64748B]'
+                }`}>
                 Educator & Host
               </span>
 
@@ -384,11 +378,10 @@ export default function PricingSection() {
               <Link
                 to={token ? "/dashboard" : "/register"}
                 onClick={(e) => e.stopPropagation()}
-                className={`w-full h-[42px] rounded-[16px] font-['Inter'] font-bold text-xs flex items-center justify-center transition-all cursor-pointer ${
-                  isProSelected
-                    ? 'bg-[#551BF5] hover:opacity-95 text-white shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25)] hover:scale-[1.01] active:scale-[0.99]'
-                    : 'border border-[#E9D5FF] bg-white hover:bg-purple-50/50 text-[#551BF5]'
-                }`}
+                className={`w-full h-[42px] rounded-[16px] font-['Inter'] font-bold text-xs flex items-center justify-center transition-all cursor-pointer ${isProSelected
+                  ? 'bg-[#551BF5] hover:opacity-95 text-white shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25)] hover:scale-[1.01] active:scale-[0.99]'
+                  : 'border border-[#E9D5FF] bg-white hover:bg-purple-50/50 text-[#551BF5]'
+                  }`}
               >
                 Upgrade to Pro
               </Link>
@@ -405,11 +398,10 @@ export default function PricingSection() {
               setSelectedPlan('enterprise');
               scrollToCard(2);
             }}
-            className={`w-[84vw] max-w-[340px] shrink-0 snap-center lg:w-auto rounded-[24px] bg-white p-6 sm:p-8 flex flex-col justify-between text-left transition-all duration-300 cursor-pointer relative ${
-              isEnterpriseSelected
-                ? 'border-2 border-[#551BF5] shadow-[0px_20px_25px_-5px_rgba(168,85,247,0.1),0px_8px_10px_-6px_rgba(168,85,247,0.1)] lg:-translate-y-2 z-10'
-                : 'border border-[rgba(243,232,255,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:border-[#D8B4FE] hover:shadow-md'
-            }`}
+            className={`w-[84vw] max-w-[340px] shrink-0 snap-center lg:w-auto rounded-[24px] bg-white p-6 sm:p-8 flex flex-col justify-between text-left transition-all duration-300 cursor-pointer relative ${isEnterpriseSelected
+              ? 'border-2 border-[#551BF5] shadow-[0px_20px_25px_-5px_rgba(168,85,247,0.1),0px_8px_10px_-6px_rgba(168,85,247,0.1)] lg:-translate-y-2 z-10'
+              : 'border border-[rgba(243,232,255,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:border-[#D8B4FE] hover:shadow-md'
+              }`}
           >
             {isEnterpriseSelected && (
               <div className="absolute -top-[12px] left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-[#551BF5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
@@ -421,9 +413,8 @@ export default function PricingSection() {
 
             <div className="space-y-4">
               {/* Category Tag */}
-              <span className={`font-['Inter'] font-bold text-xs leading-4 tracking-[0.6px] uppercase block transition-colors ${
-                isEnterpriseSelected ? 'text-[#551BF5]' : 'text-[#64748B]'
-              }`}>
+              <span className={`font-['Inter'] font-bold text-xs leading-4 tracking-[0.6px] uppercase block transition-colors ${isEnterpriseSelected ? 'text-[#551BF5]' : 'text-[#64748B]'
+                }`}>
                 Organization
               </span>
 
@@ -481,11 +472,10 @@ export default function PricingSection() {
               <a
                 href="mailto:info@fouriseindia.com?subject=Enterprise%20Plan%20Inquiry"
                 onClick={(e) => e.stopPropagation()}
-                className={`w-full h-[42px] rounded-[16px] font-['Inter'] font-bold text-xs flex items-center justify-center transition-all cursor-pointer ${
-                  isEnterpriseSelected
-                    ? 'bg-[#551BF5] hover:opacity-95 text-white shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25)] hover:scale-[1.01] active:scale-[0.99]'
-                    : 'border border-[#E9D5FF] bg-white hover:bg-purple-50/50 text-[#551BF5]'
-                }`}
+                className={`w-full h-[42px] rounded-[16px] font-['Inter'] font-bold text-xs flex items-center justify-center transition-all cursor-pointer ${isEnterpriseSelected
+                  ? 'bg-[#551BF5] hover:opacity-95 text-white shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.25)] hover:scale-[1.01] active:scale-[0.99]'
+                  : 'border border-[#E9D5FF] bg-white hover:bg-purple-50/50 text-[#551BF5]'
+                  }`}
               >
                 Contact Sales
               </a>
@@ -513,11 +503,10 @@ export default function PricingSection() {
                 type="button"
                 onClick={() => scrollToCard(i)}
                 aria-label={`Go to ${p} plan`}
-                className={`transition-all duration-300 rounded-full cursor-pointer ${
-                  activeCardIndex === i
-                    ? 'w-7 h-2 bg-[#551BF5] shadow-xs'
-                    : 'w-2 h-2 bg-purple-200 hover:bg-purple-300'
-                }`}
+                className={`transition-all duration-300 rounded-full cursor-pointer ${activeCardIndex === i
+                  ? 'w-7 h-2 bg-[#551BF5] shadow-xs'
+                  : 'w-2 h-2 bg-purple-200 hover:bg-purple-300'
+                  }`}
               />
             ))}
           </div>
@@ -542,7 +531,7 @@ export default function PricingSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overscroll-contain"
             onClick={() => setShowPlanDetails(false)}
           >
             <motion.div
@@ -550,7 +539,7 @@ export default function PricingSection() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.2 }}
-              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-3xl border border-slate-200 shadow-2xl text-left"
+              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain bg-white rounded-3xl border border-slate-200 shadow-2xl text-left"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}

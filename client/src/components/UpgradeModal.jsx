@@ -1,25 +1,17 @@
 import React, { useEffect } from 'react';
 import { Crown, X, Check, Mail, Sparkles } from 'lucide-react';
 import PlanComparisonTable from './PlanComparisonTable';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function UpgradeModal({ isOpen, onClose }) {
   // Prevent background body scroll while modal is active
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+  useScrollLock(isOpen);
 
   if (!isOpen) return null;
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-2.5 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-2.5 sm:p-6 overflow-y-auto overscroll-contain bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget && onClose) onClose();
       }}

@@ -13,13 +13,14 @@ import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
 import HostProfileModal from '../components/HostProfileModal';
 import DeleteAccountModal from '../components/DeleteAccountModal';
-import UpgradeModal from '../components/UpgradeModal';
+import PlanComparisonTable from '../components/PlanComparisonTable';
 import AppSidebar from '../components/AppSidebar';
 import { getMyQuizzes, createQuiz, deleteQuiz } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
 import { clearAuthSession, getStoredUser } from '../utils/auth';
 import { ALL_CURATED_QUIZZES, FEATURED_PRESET_QUIZZES } from '../data/curatedQuizzes';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -36,6 +37,9 @@ export default function Dashboard() {
 
   const profileDropdownRef = useRef(null);
   const notifDropdownRef = useRef(null);
+
+  // Lock background scroll when any dashboard modal is active
+  useScrollLock(Boolean(activeModal));
 
   // Sync stored user profile across window events and storage changes
   useEffect(() => {
@@ -86,18 +90,12 @@ export default function Dashboard() {
     };
   }, []);
 
-  // Lock background scrolling and dismiss dropdowns when mobile sidebar is open
+  // Dismiss dropdowns when mobile sidebar is open
   useEffect(() => {
     if (isMobileNavOpen) {
-      document.body.style.overflow = 'hidden';
       setIsProfileDropdownOpen(false);
       setIsNotificationsOpen(false);
-    } else {
-      document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [isMobileNavOpen]);
 
   const handleLogout = () => {
@@ -107,7 +105,7 @@ export default function Dashboard() {
     navigate('/login');
   };
 
-  const { 
+  const {
     data: quizzesData,
     isLoading: isQuizzesLoading,
     refetch: refetchQuizzes
@@ -241,19 +239,19 @@ export default function Dashboard() {
 
   // Filter with active search query
   const displayPresets = searchQuery.trim()
-    ? basePresets.filter(q => 
-        q.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        q.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        q.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    ? basePresets.filter(q =>
+      q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : basePresets;
 
   const filteredUserQuizzes = searchQuery.trim()
-    ? userQuizzes.filter(q => 
-        q.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        q.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        q.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    ? userQuizzes.filter(q =>
+      q.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : userQuizzes;
 
   const userName = user?.name || user?.username || 'User';
@@ -313,7 +311,7 @@ export default function Dashboard() {
   return (
     <AnimatedPage>
       <div className="relative min-h-screen bg-[#FDFDFE] text-[#1E293B] font-['Inter',sans-serif] selection:bg-[#6222F5]/20 selection:text-[#6222F5] overflow-x-hidden">
-        
+
         {/* ─── 1. LEFT SIDEBAR (230px, Fixed Desktop, Drawer Mobile) ─── */}
         <AppSidebar
           isOpen={isMobileNavOpen}
@@ -332,12 +330,12 @@ export default function Dashboard() {
         {/* MAIN CONTENT WRAPPER (TopHeader + DashboardBody) */}
         {/* ========================================================================= */}
         <div className="lg:pl-[230px] flex flex-col min-h-screen">
-          
+
           {/* TOP HEADER (Clean, Mobile Friendly, Notification Removed) */}
           <header className="sticky top-0 z-30 h-14 sm:h-[70px] bg-white/90 backdrop-blur-md border-b border-[#EEF0F6] px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
             {/* Left Hamburger + Mobile Brand Logo */}
             <div className="flex items-center gap-2.5 sm:gap-3">
-              <button 
+              <button
                 type="button"
                 onClick={() => {
                   setIsProfileDropdownOpen(false);
@@ -367,7 +365,7 @@ export default function Dashboard() {
                   className="w-full pl-10 pr-4 py-2 rounded-full bg-[#FAF9FD] border border-[#E9EAF2] text-xs font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/20"
                 />
                 {searchQuery && (
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setSearchQuery('')}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
@@ -448,7 +446,7 @@ export default function Dashboard() {
           {/* MAIN - DASHBOARD BODY */}
           {/* ========================================================================= */}
           <main className="flex-1 p-3 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 max-w-[1440px] w-full mx-auto">
-            
+
             {/* Section - Welcome Banner */}
             <div className="text-left space-y-1">
               <h1 className="text-[22px] sm:text-[26px] font-bold text-[#0F172A] tracking-tight flex items-center gap-2">
@@ -494,7 +492,7 @@ export default function Dashboard() {
               </div>
 
               {/* Card 2: Sessions */}
-              <div 
+              <div
                 onClick={() => setActiveModal('sessions')}
                 className="shrink-0 w-[calc(33.333%-7px)] min-w-[108px] snap-start bg-white border border-[#EEF0F6] rounded-[20px] p-3 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col justify-between h-[110px] cursor-pointer"
               >
@@ -529,7 +527,7 @@ export default function Dashboard() {
               </div>
 
               {/* Card 3: Students */}
-              <div 
+              <div
                 onClick={() => setActiveModal('students')}
                 className="shrink-0 w-[calc(33.333%-7px)] min-w-[108px] snap-start bg-white border border-[#EEF0F6] rounded-[20px] p-3 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col justify-between h-[110px] cursor-pointer"
               >
@@ -589,7 +587,7 @@ export default function Dashboard() {
 
             {/* Desktop StatCardsRow (Exact Match: 4 Cards in 1 Row on Desktop) */}
             <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              
+
               {/* Metric 1: Total Quizzes */}
               <div className="bg-white border border-[#EEF0F6] rounded-[22px] px-5 py-4 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex items-center justify-between h-[100px] min-h-[100px] transition-all hover:shadow-md">
                 <div className="flex items-center gap-3.5 z-10 text-left">
@@ -619,7 +617,7 @@ export default function Dashboard() {
               </div>
 
               {/* Metric 2: Sessions Hosted */}
-              <div 
+              <div
                 onClick={() => setActiveModal('sessions')}
                 className="bg-white border border-[#EEF0F6] rounded-[22px] px-5 py-4 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex items-center justify-between h-[100px] min-h-[100px] transition-all hover:shadow-md cursor-pointer group"
                 title="View hosted sessions history"
@@ -653,7 +651,7 @@ export default function Dashboard() {
               </div>
 
               {/* Metric 3: Total Students */}
-              <div 
+              <div
                 onClick={() => setActiveModal('students')}
                 className="bg-white border border-[#EEF0F6] rounded-[22px] px-5 py-4 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex items-center justify-between h-[100px] min-h-[100px] transition-all hover:shadow-md cursor-pointer group"
                 title="View student engagement roster"
@@ -712,7 +710,7 @@ export default function Dashboard() {
 
             {/* PREDEFINED READY-TO-USE QUIZZES SECTION (Figma Large Card with Tabs) */}
             {/* ========================================================================= */}
-            <section 
+            <section
               id="predefined-quizzes-section"
               className="bg-white border border-[#EEF0F6] rounded-[22px] sm:rounded-[24px] p-3 sm:p-6 lg:p-8 shadow-[0px_2px_15px_rgba(0,0,0,0.06)] space-y-3.5 sm:space-y-5 text-left"
             >
@@ -788,11 +786,10 @@ export default function Dashboard() {
                             <IconComp className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
                           </div>
 
-                          <span className={`px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold tracking-wide border ${
-                            isEasy 
-                              ? 'bg-[#ECFDF5] border-[rgba(167,243,208,0.8)] text-[#059669]'
-                              : 'bg-[#FFFBEB] border-[rgba(253,230,138,0.8)] text-[#D97706]'
-                          }`}>
+                          <span className={`px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold tracking-wide border ${isEasy
+                            ? 'bg-[#ECFDF5] border-[rgba(167,243,208,0.8)] text-[#059669]'
+                            : 'bg-[#FFFBEB] border-[rgba(253,230,138,0.8)] text-[#D97706]'
+                            }`}>
                             {diff}
                           </span>
                         </div>
@@ -855,12 +852,12 @@ export default function Dashboard() {
             {/* ========================================================================= */}
             {userQuizzes.length === 0 ? (
               <section className="bg-gradient-to-r from-[#EDE9FE] via-[#F4F1FD] to-[#E9E4FE] border border-[#DDD6FE]/70 rounded-[24px] p-6 sm:p-8 lg:px-12 shadow-[0px_2px_15px_rgba(0,0,0,0.05)] relative overflow-hidden flex flex-col md:flex-row items-center gap-8 md:gap-12 text-left">
-                
+
                 {/* Subtle Wavy Shape in Background */}
-                <svg 
-                  className="absolute inset-0 w-full h-full pointer-events-none opacity-30 select-none" 
-                  preserveAspectRatio="none" 
-                  viewBox="0 0 1000 140" 
+                <svg
+                  className="absolute inset-0 w-full h-full pointer-events-none opacity-30 select-none"
+                  preserveAspectRatio="none"
+                  viewBox="0 0 1000 140"
                   fill="none"
                 >
                   <path d="M0,70 C300,120 500,20 800,80 C900,100 950,50 1000,60 L1000,140 L0,140 Z" fill="#DDD6FE" />
@@ -1015,7 +1012,7 @@ export default function Dashboard() {
 
         {/* 1. SESSIONS HOSTED HISTORY MODAL */}
         {activeModal === 'sessions' && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto overscroll-contain bg-black/70 backdrop-blur-sm animate-fade-in">
             <div className="relative my-auto rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 bg-white text-slate-900">
               <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-50/80">
                 <div className="flex items-center gap-3">
@@ -1027,7 +1024,7 @@ export default function Dashboard() {
                     <p className="text-xs text-slate-500">Total live games executed: {totalGamesHosted}</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => setActiveModal(null)}
                   className="p-2 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
                 >
@@ -1044,7 +1041,7 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   hostedSessions.map((session, idx) => (
-                    <div 
+                    <div
                       key={session._id || session.id || idx}
                       className="p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-slate-200 bg-slate-50/70 hover:border-purple-300 transition-all text-left"
                     >
@@ -1084,7 +1081,7 @@ export default function Dashboard() {
 
         {/* 2. TOTAL STUDENTS ROSTER MODAL */}
         {activeModal === 'students' && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto overscroll-contain bg-black/70 backdrop-blur-sm animate-fade-in">
             <div className="relative my-auto rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 bg-white text-slate-900">
               <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-50/80">
                 <div className="flex items-center gap-3">
@@ -1096,7 +1093,7 @@ export default function Dashboard() {
                     <p className="text-xs text-slate-500">Unique connected students: {studentList.length}</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => setActiveModal(null)}
                   className="p-2 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
                 >
@@ -1113,17 +1110,16 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   studentList.map((st, idx) => (
-                    <div 
+                    <div
                       key={idx}
                       className="p-3.5 rounded-xl flex items-center justify-between gap-3 border border-slate-200 bg-slate-50/60 hover:border-emerald-300 transition-all text-left"
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
-                          idx === 0 ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${idx === 0 ? 'bg-amber-100 text-amber-700 border border-amber-200' :
                           idx === 1 ? 'bg-slate-200 text-slate-700 border border-slate-300' :
-                          idx === 2 ? 'bg-orange-100 text-orange-700 border border-orange-200' :
-                          'bg-slate-100 text-slate-600'
-                        }`}>
+                            idx === 2 ? 'bg-orange-100 text-orange-700 border border-orange-200' :
+                              'bg-slate-100 text-slate-600'
+                          }`}>
                           {idx === 0 ? <Trophy className="h-4 w-4 text-amber-500" /> : `#${idx + 1}`}
                         </div>
                         <div>
@@ -1150,10 +1146,74 @@ export default function Dashboard() {
         )}
 
         {/* 3. PRO UPGRADE MODAL */}
-        <UpgradeModal
-          isOpen={activeModal === 'upgrade'}
-          onClose={() => setActiveModal(null)}
-        />
+        {activeModal === 'upgrade' && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm animate-fade-in">
+            <div className="relative my-auto rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 bg-white text-slate-900 text-left">
+              <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-purple-50 via-white to-purple-50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-amber-100 text-amber-600 rounded-xl shadow-sm">
+                    <Crown className="h-5 w-5 fill-amber-500 text-amber-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-slate-900">Upgrade to Gubbi Pro</h3>
+                    <p className="text-xs text-slate-500">Unlock unlimited multiplayer rooms, export reports, and custom trivia sets.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setActiveModal(null)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Pro Plan Card */}
+                  <div className="p-5 rounded-2xl border-2 border-purple-500 bg-purple-50/30 flex flex-col justify-between space-y-4">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded-full">
+                        Educator Pro
+                      </span>
+                      <h4 className="text-2xl font-black text-slate-900 mt-2">₹499 <span className="text-xs font-normal text-slate-500">/ month</span></h4>
+                      <p className="text-xs text-slate-600 mt-1">Built for classroom teachers, coaching institutes, and active event hosts.</p>
+
+                      <ul className="mt-4 space-y-2 text-xs text-slate-700">
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Unlimited quiz creation</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Unlimited live multiplayer participants</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> PDF &amp; Excel performance export</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Priority email support</li>
+                      </ul>
+                    </div>
+
+                    <a
+                      href="mailto:info@fouriseindia.com?subject=Gubbi%20Pro%20Upgrade%20Inquiry"
+                      className="w-full py-2.5 rounded-xl bg-[#6C38FF] hover:bg-[#5827e8] text-white text-xs font-bold text-center shadow-md transition-all block"
+                    >
+                      Contact for Pro Access
+                    </a>
+                  </div>
+
+                  {/* Plan Comparison Table Section */}
+                  <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between space-y-4">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 bg-slate-200 px-2.5 py-0.5 rounded-full">
+                        Feature Overview
+                      </span>
+                      <div className="mt-3 overflow-x-auto text-xs">
+                        <PlanComparisonTable />
+                      </div>
+                    </div>
+
+                    <div className="text-[11px] text-slate-500 text-center">
+                      Need custom institutional pricing? Email <span className="font-semibold text-purple-600">info@fouriseindia.com</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 4. HOST PROFILE SETTINGS MODAL */}
         {activeModal === 'profile' && (

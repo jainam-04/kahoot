@@ -15,13 +15,14 @@ import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
 import HostProfileModal from '../components/HostProfileModal';
-import UpgradeModal from '../components/UpgradeModal';
+import PlanComparisonTable from '../components/PlanComparisonTable';
 import AIQuizAssistantModal from '../components/AIQuizAssistantModal';
 import BackgroundPicker from '../components/BackgroundPicker';
 import AppSidebar from '../components/AppSidebar';
 import { createQuiz } from '../services/quizService';
 import { createGame } from '../services/gameService';
 import { clearAuthSession, getStoredUser } from '../utils/auth';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function CreateQuiz() {
   const navigate = useNavigate();
@@ -34,6 +35,9 @@ export default function CreateQuiz() {
   const [showAIModal, setShowAIModal] = useState(false);
   const [showPexelsModal, setShowPexelsModal] = useState(false);
   const [bgModalTarget, setBgModalTarget] = useState(null);
+
+  // Lock background scroll when modals are active
+  useScrollLock(Boolean(activeModal || showPexelsModal || bgModalTarget !== null));
 
   // Active question index in question editor
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
@@ -82,17 +86,11 @@ export default function CreateQuiz() {
     };
   }, []);
 
-  // Lock background scrolling and dismiss dropdowns when mobile sidebar is open
+  // Dismiss dropdowns when mobile sidebar is open
   useEffect(() => {
     if (isMobileNavOpen) {
-      document.body.style.overflow = 'hidden';
       setIsProfileDropdownOpen(false);
-    } else {
-      document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [isMobileNavOpen]);
 
   const handleLogout = () => {
@@ -817,14 +815,12 @@ export default function CreateQuiz() {
                     aria-checked={useSameBgForAll}
                     onClick={() => setUseSameBgForAll(!useSameBgForAll)}
                     style={{ width: '36px', height: '20px', minHeight: '20px', maxHeight: '20px' }}
-                    className={`relative inline-flex items-center w-[36px] h-[20px] p-[2px] min-h-0 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
-                      useSameBgForAll ? 'bg-[#7C3AED]' : 'bg-[#CBD5E1]'
-                    }`}
+                    className={`relative inline-flex items-center w-[36px] h-[20px] p-[2px] min-h-0 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${useSameBgForAll ? 'bg-[#7C3AED]' : 'bg-[#CBD5E1]'
+                      }`}
                   >
                     <span
-                      className={`pointer-events-none inline-block w-[16px] h-[16px] transform rounded-full bg-white shadow-xs transition-transform duration-200 ease-in-out ${
-                        useSameBgForAll ? 'translate-x-[16px]' : 'translate-x-0'
-                      }`}
+                      className={`pointer-events-none inline-block w-[16px] h-[16px] transform rounded-full bg-white shadow-xs transition-transform duration-200 ease-in-out ${useSameBgForAll ? 'translate-x-[16px]' : 'translate-x-0'
+                        }`}
                     />
                   </button>
                 </div>
@@ -834,11 +830,10 @@ export default function CreateQuiz() {
                   <button
                     type="button"
                     onClick={() => setActiveBgTab('upload')}
-                    className={`py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl font-semibold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                      activeBgTab === 'upload'
-                        ? 'bg-[#7C3AED] text-white shadow-xs'
-                        : 'bg-white border border-[#E9D5FF] text-[#334155] hover:bg-[#FAF5FF]'
-                    }`}
+                    className={`py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl font-semibold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${activeBgTab === 'upload'
+                      ? 'bg-[#7C3AED] text-white shadow-xs'
+                      : 'bg-white border border-[#E9D5FF] text-[#334155] hover:bg-[#FAF5FF]'
+                      }`}
                   >
                     <Upload className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">Upload Image</span>
@@ -867,11 +862,10 @@ export default function CreateQuiz() {
                   onDragOver={(e) => { e.preventDefault(); setBgDragActive(true); }}
                   onDragLeave={() => setBgDragActive(false)}
                   onDrop={handleDrop}
-                  className={`rounded-2xl border-2 border-dashed p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all min-h-[110px] sm:min-h-[130px] ${
-                    bgDragActive
-                      ? 'border-[#7C3AED] bg-[#FAF5FF]'
-                      : 'border-[#E9D5FF] bg-[#FCFBFE]'
-                  }`}
+                  className={`rounded-2xl border-2 border-dashed p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all min-h-[110px] sm:min-h-[130px] ${bgDragActive
+                    ? 'border-[#7C3AED] bg-[#FAF5FF]'
+                    : 'border-[#E9D5FF] bg-[#FCFBFE]'
+                    }`}
                 >
                   {bgSettings.url ? (
                     <div className="w-full flex items-center justify-between gap-2.5">
@@ -1031,16 +1025,14 @@ export default function CreateQuiz() {
                       <button
                         type="button"
                         onClick={() => updateBgSettings({ lightOverlay: !bgSettings.lightOverlay })}
-                        className={`py-1 px-2 rounded-lg border flex items-center justify-between text-[10px] font-semibold cursor-pointer transition-colors ${
-                          bgSettings.lightOverlay
-                            ? 'bg-[#FAF5FF] border-[#E9D5FF] text-[#6D28D9]'
-                            : 'bg-[#F1F5F9] border-[#E2E8F0] text-[#475569]'
-                        }`}
+                        className={`py-1 px-2 rounded-lg border flex items-center justify-between text-[10px] font-semibold cursor-pointer transition-colors ${bgSettings.lightOverlay
+                          ? 'bg-[#FAF5FF] border-[#E9D5FF] text-[#6D28D9]'
+                          : 'bg-[#F1F5F9] border-[#E2E8F0] text-[#475569]'
+                          }`}
                       >
                         <span className="truncate mr-1">Overlay</span>
-                        <div className={`w-3.5 h-3.5 rounded flex items-center justify-center text-white shrink-0 ${
-                          bgSettings.lightOverlay ? 'bg-[#7C3AED]' : 'border border-[#CBD5E1] bg-white'
-                        }`}>
+                        <div className={`w-3.5 h-3.5 rounded flex items-center justify-center text-white shrink-0 ${bgSettings.lightOverlay ? 'bg-[#7C3AED]' : 'border border-[#CBD5E1] bg-white'
+                          }`}>
                           {bgSettings.lightOverlay && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                         </div>
                       </button>
@@ -1058,11 +1050,10 @@ export default function CreateQuiz() {
                     <button
                       type="button"
                       onClick={() => setPreviewDevice('mobile')}
-                      className={`px-2 py-0.5 rounded-md text-[10.5px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
-                        previewDevice === 'mobile'
-                          ? 'bg-[#7C3AED] text-white shadow-xs'
-                          : 'text-[#64748B] hover:text-[#0F172A]'
-                      }`}
+                      className={`px-2 py-0.5 rounded-md text-[10.5px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${previewDevice === 'mobile'
+                        ? 'bg-[#7C3AED] text-white shadow-xs'
+                        : 'text-[#64748B] hover:text-[#0F172A]'
+                        }`}
                     >
                       <Smartphone className="w-3 h-3" />
                       <span>Mobile</span>
@@ -1070,11 +1061,10 @@ export default function CreateQuiz() {
                     <button
                       type="button"
                       onClick={() => setPreviewDevice('desktop')}
-                      className={`px-2 py-0.5 rounded-md text-[10.5px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
-                        previewDevice === 'desktop'
-                          ? 'bg-[#7C3AED] text-white shadow-xs'
-                          : 'text-[#64748B] hover:text-[#0F172A]'
-                      }`}
+                      className={`px-2 py-0.5 rounded-md text-[10.5px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${previewDevice === 'desktop'
+                        ? 'bg-[#7C3AED] text-white shadow-xs'
+                        : 'text-[#64748B] hover:text-[#0F172A]'
+                        }`}
                     >
                       <Monitor className="w-3 h-3" />
                       <span>Desktop</span>
@@ -1084,11 +1074,10 @@ export default function CreateQuiz() {
 
                 {/* Mockup Preview Window */}
                 <div
-                  className={`relative overflow-hidden transition-all duration-300 flex flex-col justify-between shadow-inner bg-gradient-to-br from-[#F5F3FF] via-[#F0F4FF] to-[#EEF2FF] ${
-                    previewDevice === 'mobile'
-                      ? 'w-full max-w-[245px] sm:max-w-[260px] mx-auto rounded-[24px] border-[4px] border-[#334155] shadow-xl p-2.5 min-h-[310px]'
-                      : 'w-full rounded-xl border border-[#CBD5E1] shadow-md p-2.5 sm:p-3 min-h-[290px]'
-                  }`}
+                  className={`relative overflow-hidden transition-all duration-300 flex flex-col justify-between shadow-inner bg-gradient-to-br from-[#F5F3FF] via-[#F0F4FF] to-[#EEF2FF] ${previewDevice === 'mobile'
+                    ? 'w-full max-w-[245px] sm:max-w-[260px] mx-auto rounded-[24px] border-[4px] border-[#334155] shadow-xl p-2.5 min-h-[310px]'
+                    : 'w-full rounded-xl border border-[#CBD5E1] shadow-md p-2.5 sm:p-3 min-h-[290px]'
+                    }`}
                 >
                   {/* Optional Background image layer */}
                   {bgSettings.url && (
@@ -1167,9 +1156,8 @@ export default function CreateQuiz() {
                             {activeQuestion.options?.[0] || 'Option A'}
                           </span>
                         </div>
-                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                          Number(activeQuestion.correctAnswer) === 0 ? 'border-[#FB7185] bg-[#FB7185]' : 'border-[#FB7185] bg-white'
-                        }`}>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${Number(activeQuestion.correctAnswer) === 0 ? 'border-[#FB7185] bg-[#FB7185]' : 'border-[#FB7185] bg-white'
+                          }`}>
                           {Number(activeQuestion.correctAnswer) === 0 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </div>
                       </div>
@@ -1182,9 +1170,8 @@ export default function CreateQuiz() {
                             {activeQuestion.options?.[1] || 'Option B'}
                           </span>
                         </div>
-                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                          Number(activeQuestion.correctAnswer) === 1 ? 'border-[#38BDF8] bg-[#38BDF8]' : 'border-[#38BDF8] bg-white'
-                        }`}>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${Number(activeQuestion.correctAnswer) === 1 ? 'border-[#38BDF8] bg-[#38BDF8]' : 'border-[#38BDF8] bg-white'
+                          }`}>
                           {Number(activeQuestion.correctAnswer) === 1 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </div>
                       </div>
@@ -1197,9 +1184,8 @@ export default function CreateQuiz() {
                             {activeQuestion.options?.[2] || 'Option C'}
                           </span>
                         </div>
-                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                          Number(activeQuestion.correctAnswer) === 2 ? 'border-[#FBBF24] bg-[#FBBF24]' : 'border-[#FBBF24] bg-white'
-                        }`}>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${Number(activeQuestion.correctAnswer) === 2 ? 'border-[#FBBF24] bg-[#FBBF24]' : 'border-[#FBBF24] bg-white'
+                          }`}>
                           {Number(activeQuestion.correctAnswer) === 2 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </div>
                       </div>
@@ -1212,9 +1198,8 @@ export default function CreateQuiz() {
                             {activeQuestion.options?.[3] || 'Option D'}
                           </span>
                         </div>
-                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                          Number(activeQuestion.correctAnswer) === 3 ? 'border-[#34D399] bg-[#34D399]' : 'border-[#34D399] bg-white'
-                        }`}>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${Number(activeQuestion.correctAnswer) === 3 ? 'border-[#34D399] bg-[#34D399]' : 'border-[#34D399] bg-white'
+                          }`}>
                           {Number(activeQuestion.correctAnswer) === 3 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </div>
                       </div>
@@ -1230,9 +1215,8 @@ export default function CreateQuiz() {
                             {activeQuestion.options?.[0] || 'Option A'}
                           </span>
                         </div>
-                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                          Number(activeQuestion.correctAnswer) === 0 ? 'border-[#FB7185] bg-[#FB7185]' : 'border-[#FB7185] bg-white'
-                        }`}>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${Number(activeQuestion.correctAnswer) === 0 ? 'border-[#FB7185] bg-[#FB7185]' : 'border-[#FB7185] bg-white'
+                          }`}>
                           {Number(activeQuestion.correctAnswer) === 0 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </div>
                       </div>
@@ -1245,9 +1229,8 @@ export default function CreateQuiz() {
                             {activeQuestion.options?.[1] || 'Option B'}
                           </span>
                         </div>
-                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                          Number(activeQuestion.correctAnswer) === 1 ? 'border-[#38BDF8] bg-[#38BDF8]' : 'border-[#38BDF8] bg-white'
-                        }`}>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${Number(activeQuestion.correctAnswer) === 1 ? 'border-[#38BDF8] bg-[#38BDF8]' : 'border-[#38BDF8] bg-white'
+                          }`}>
                           {Number(activeQuestion.correctAnswer) === 1 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </div>
                       </div>
@@ -1260,9 +1243,8 @@ export default function CreateQuiz() {
                             {activeQuestion.options?.[2] || 'Option C'}
                           </span>
                         </div>
-                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                          Number(activeQuestion.correctAnswer) === 2 ? 'border-[#FBBF24] bg-[#FBBF24]' : 'border-[#FBBF24] bg-white'
-                        }`}>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${Number(activeQuestion.correctAnswer) === 2 ? 'border-[#FBBF24] bg-[#FBBF24]' : 'border-[#FBBF24] bg-white'
+                          }`}>
                           {Number(activeQuestion.correctAnswer) === 2 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </div>
                       </div>
@@ -1275,9 +1257,8 @@ export default function CreateQuiz() {
                             {activeQuestion.options?.[3] || 'Option D'}
                           </span>
                         </div>
-                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                          Number(activeQuestion.correctAnswer) === 3 ? 'border-[#34D399] bg-[#34D399]' : 'border-[#34D399] bg-white'
-                        }`}>
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${Number(activeQuestion.correctAnswer) === 3 ? 'border-[#34D399] bg-[#34D399]' : 'border-[#34D399] bg-white'
+                          }`}>
                           {Number(activeQuestion.correctAnswer) === 3 && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </div>
                       </div>
@@ -1325,11 +1306,10 @@ export default function CreateQuiz() {
                       <div
                         key={field.id}
                         onClick={() => setActiveQuestionIndex(idx)}
-                        className={`flex items-center justify-between p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer ${
-                          isActive
-                            ? 'bg-[#F3EFFF] border-[#E9D5FF]/90 shadow-xs'
-                            : 'bg-white border-[#E2E8F0] hover:bg-[#FAF9FD]'
-                        }`}
+                        className={`flex items-center justify-between p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer ${isActive
+                          ? 'bg-[#F3EFFF] border-[#E9D5FF]/90 shadow-xs'
+                          : 'bg-white border-[#E2E8F0] hover:bg-[#FAF9FD]'
+                          }`}
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           {/* Grip Icon */}
@@ -1466,11 +1446,10 @@ export default function CreateQuiz() {
                         <div
                           key={optIdx}
                           onClick={() => setValue(`questions.${safeActiveIndex}.correctAnswer`, optIdx, { shouldDirty: true })}
-                          className={`flex items-center gap-2 p-2 sm:p-2.5 rounded-xl border transition-all cursor-pointer ${
-                            isCorrect
-                              ? 'bg-[#F3EFFF] border-[#7C3AED] shadow-[0px_0px_10px_rgba(124,58,237,0.12)]'
-                              : 'bg-[#FCFCFF] border-[#E9D5FF]/80 hover:border-[#7C3AED]/50 focus-within:border-[#7C3AED]'
-                          }`}
+                          className={`flex items-center gap-2 p-2 sm:p-2.5 rounded-xl border transition-all cursor-pointer ${isCorrect
+                            ? 'bg-[#F3EFFF] border-[#7C3AED] shadow-[0px_0px_10px_rgba(124,58,237,0.12)]'
+                            : 'bg-[#FCFCFF] border-[#E9D5FF]/80 hover:border-[#7C3AED]/50 focus-within:border-[#7C3AED]'
+                            }`}
                         >
                           {/* Letter Badge */}
                           <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#F3E8FF]/70 text-[#6D28D9] font-bold text-xs flex items-center justify-center shrink-0">
@@ -1497,11 +1476,10 @@ export default function CreateQuiz() {
                               setValue(`questions.${safeActiveIndex}.correctAnswer`, optIdx, { shouldDirty: true });
                             }}
                             style={{ width: '22px', height: '22px', minWidth: '22px', minHeight: '22px', maxHeight: '22px' }}
-                            className={`min-h-0 w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center transition-all cursor-pointer shrink-0 ${
-                              isCorrect
-                                ? 'border-[#7C3AED] bg-[#7C3AED] text-white'
-                                : 'border-[#CBD5E1] bg-white hover:border-[#7C3AED]'
-                            }`}
+                            className={`min-h-0 w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center transition-all cursor-pointer shrink-0 ${isCorrect
+                              ? 'border-[#7C3AED] bg-[#7C3AED] text-white'
+                              : 'border-[#CBD5E1] bg-white hover:border-[#7C3AED]'
+                              }`}
                             title={`Mark Option ${letter} as correct`}
                           >
                             {isCorrect && <Check className="w-3.5 h-3.5 stroke-[3]" />}
@@ -1661,7 +1639,7 @@ export default function CreateQuiz() {
 
         {/* 2. PEXELS / PRESET LIBRARY MODAL */}
         {showPexelsModal && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200 overscroll-contain">
             <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl p-4 sm:p-7 shadow-2xl border border-[#E2E8F0] overflow-y-auto space-y-4 text-left relative">
               <div className="flex items-center justify-between pb-2.5 border-b border-[#F1F5F9]">
                 <div>
@@ -1698,7 +1676,7 @@ export default function CreateQuiz() {
 
         {/* 3. QUESTION BACKGROUND CUSTOMIZER MODAL */}
         {bgModalTarget !== null && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200 overscroll-contain">
             <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl p-4 sm:p-7 shadow-2xl border border-[#E2E8F0] overflow-y-auto space-y-4 text-left relative">
               <div className="flex items-center justify-between pb-2.5 border-b border-[#F1F5F9]">
                 <div>
@@ -1765,10 +1743,75 @@ export default function CreateQuiz() {
         />
 
         {/* 5. PRO UPGRADE MODAL */}
-        <UpgradeModal
-          isOpen={activeModal === 'upgrade'}
-          onClose={() => setActiveModal(null)}
-        />
+        {activeModal === 'upgrade' && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="relative my-auto rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 bg-white text-slate-900 text-left">
+              <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-purple-50 via-white to-purple-50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-amber-100 text-amber-600 rounded-xl shadow-sm">
+                    <Crown className="h-5 w-5 fill-amber-500 text-amber-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-slate-900">Upgrade to Gubbi Pro</h3>
+                    <p className="text-xs text-slate-500">Unlock unlimited multiplayer rooms, export reports, and custom trivia sets.</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Pro Plan Card */}
+                  <div className="p-5 rounded-2xl border-2 border-purple-500 bg-purple-50/30 flex flex-col justify-between space-y-4">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded-full">
+                        Educator Pro
+                      </span>
+                      <h4 className="text-2xl font-black text-slate-900 mt-2">₹499 <span className="text-xs font-normal text-slate-500">/ month</span></h4>
+                      <p className="text-xs text-slate-600 mt-1">Built for classroom teachers, coaching institutes, and active event hosts.</p>
+
+                      <ul className="mt-4 space-y-2 text-xs text-slate-700">
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Unlimited quiz creation</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Unlimited live multiplayer participants</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> PDF &amp; Excel performance export</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Priority email support</li>
+                      </ul>
+                    </div>
+
+                    <a
+                      href="mailto:info@fouriseindia.com?subject=Gubbi%20Pro%20Upgrade%20Inquiry"
+                      className="w-full py-2.5 rounded-xl bg-[#6C38FF] hover:bg-[#5827e8] text-white text-xs font-bold text-center shadow-md transition-all block cursor-pointer"
+                    >
+                      Contact for Pro Access
+                    </a>
+                  </div>
+
+                  {/* Plan Comparison Table Section inside modal */}
+                  <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between space-y-4">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 bg-slate-200 px-2.5 py-0.5 rounded-full">
+                        Feature Overview
+                      </span>
+                      <div className="mt-3 overflow-x-auto text-xs">
+                        <PlanComparisonTable />
+                      </div>
+                    </div>
+
+                    <div className="text-[11px] text-slate-500 text-center">
+                      Need custom institutional pricing? Email <span className="font-semibold text-purple-600">info@fouriseindia.com</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </AnimatedPage>

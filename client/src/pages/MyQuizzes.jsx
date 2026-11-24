@@ -20,6 +20,7 @@ import { getMyQuizzes, deleteQuiz, updateQuizStatus, createQuiz } from '../servi
 import { getMyResults } from '../services/resultService';
 import { createGame } from '../services/gameService';
 import { clearAuthSession, getStoredUser } from '../utils/auth';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function MyQuizzes() {
   const navigate = useNavigate();
@@ -38,6 +39,9 @@ export default function MyQuizzes() {
 
   const profileDropdownRef = useRef(null);
   const notifDropdownRef = useRef(null);
+
+  // Lock background scroll when any quiz modal is open
+  useScrollLock(Boolean(activeModal));
 
   // Sync stored user profile across storage and custom events
   useEffect(() => {
@@ -77,19 +81,13 @@ export default function MyQuizzes() {
     };
   }, []);
 
-  // Lock background scrolling and dismiss dropdowns when mobile sidebar is open
+  // Dismiss dropdowns when mobile sidebar is open
   useEffect(() => {
     if (isMobileNavOpen) {
-      document.body.style.overflow = 'hidden';
       setIsProfileDropdownOpen(false);
       setIsNotificationsOpen(false);
       setOpenCardMenuId(null);
-    } else {
-      document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [isMobileNavOpen]);
 
   const handleLogout = () => {
@@ -100,7 +98,7 @@ export default function MyQuizzes() {
   };
 
   // Fetch Quizzes Query
-  const { 
+  const {
     data: quizzesData,
     isLoading: isQuizzesLoading,
     isRefetching,
@@ -304,7 +302,7 @@ export default function MyQuizzes() {
   return (
     <AnimatedPage>
       <div className="relative min-h-screen bg-[#FDFDFE] text-[#1E293B] font-['Inter',sans-serif] selection:bg-[#6222F5]/20 selection:text-[#6222F5] overflow-x-hidden">
-        
+
         {/* ─── 1. LEFT SIDEBAR (230px, Fixed Desktop, Drawer Mobile) ─── */}
         <AppSidebar
           isOpen={isMobileNavOpen}
@@ -324,12 +322,12 @@ export default function MyQuizzes() {
         {/* MAIN CONTENT WRAPPER (TopHeader + My Quizzes Body) */}
         {/* ========================================================================= */}
         <div className="lg:pl-[230px] flex flex-col min-h-screen">
-          
+
           {/* TOP HEADER (Clean, Mobile Friendly, Notification Removed) */}
           <header className="sticky top-0 z-30 h-14 sm:h-[70px] bg-white/90 backdrop-blur-md border-b border-[#EEF0F6] px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
             {/* Left Hamburger + Mobile Brand Logo */}
             <div className="flex items-center gap-2.5 sm:gap-3">
-              <button 
+              <button
                 type="button"
                 onClick={() => {
                   setIsProfileDropdownOpen(false);
@@ -360,7 +358,7 @@ export default function MyQuizzes() {
                   className="w-full pl-10 pr-4 py-2 rounded-full bg-[#FAF9FD] border border-[#E9EAF2] text-xs font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/20"
                 />
                 {searchQuery && (
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setSearchQuery('')}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
@@ -441,7 +439,7 @@ export default function MyQuizzes() {
           {/* MAIN CONTENT BODY (Matching Figma: Title & Action, Overview Banner, Tabs & Cards) */}
           {/* ========================================================================= */}
           <main className="flex-1 p-3 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 max-w-[1121px] w-full mx-auto">
-            
+
             {/* Title & Action Bar */}
             <div className="flex items-center justify-between gap-3 text-left">
               {/* Left: Back Button & Page Heading */}
@@ -476,12 +474,12 @@ export default function MyQuizzes() {
 
             {/* Section - Overview Banner (Side-by-side on both mobile & desktop) */}
             <section className="w-full rounded-2xl sm:rounded-[32px] bg-gradient-to-r from-[#F3F0FE] via-[#EDE7FE] to-[#F4EEFD] border border-[#E8E1FB] p-4 sm:px-8 sm:py-6 shadow-[0px_2px_15px_rgba(0,0,0,0.04)] relative overflow-hidden flex items-center justify-between gap-4 text-left">
-              
+
               {/* Subtle Decorative Wave Shape */}
-              <svg 
-                className="absolute inset-0 w-full h-full pointer-events-none opacity-30 select-none" 
-                preserveAspectRatio="none" 
-                viewBox="0 0 1000 170" 
+              <svg
+                className="absolute inset-0 w-full h-full pointer-events-none opacity-30 select-none"
+                preserveAspectRatio="none"
+                viewBox="0 0 1000 170"
                 fill="none"
               >
                 <path d="M0,90 C300,140 550,50 800,110 C900,130 950,80 1000,95 L1000,170 L0,170 Z" fill="#DDD6FE" />
@@ -540,7 +538,7 @@ export default function MyQuizzes() {
 
             {/* Filter, Search & Status Bar */}
             <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 sm:gap-4 pt-1">
-              
+
               {/* Search within quizzes */}
               <div className="relative w-full md:max-w-[384px] h-[40px] sm:h-[42px]">
                 <Search className="w-4 h-4 text-[#9CA3AF] absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -552,7 +550,7 @@ export default function MyQuizzes() {
                   className="w-full h-full bg-white border border-[#E6E4EE] rounded-full shadow-[0px_1px_2px_rgba(0,0,0,0.05)] pl-10 sm:pl-11 pr-4 text-xs sm:text-[14px] text-[#1E293B] placeholder-[#9CA3AF] focus:outline-none focus:border-[#6222F5] transition-all"
                 />
                 {searchQuery && (
-                  <button 
+                  <button
                     onClick={() => setSearchQuery('')}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
                   >
@@ -563,7 +561,7 @@ export default function MyQuizzes() {
 
               {/* Filter Pill Tabs & Refresh */}
               <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-1 scrollbar-none w-full md:w-auto">
-                
+
                 {/* Button - All */}
                 <button
                   type="button"
@@ -634,15 +632,15 @@ export default function MyQuizzes() {
                   <FileText className="w-12 h-12 text-slate-300 mx-auto" />
                   <div>
                     <h3 className="font-bold text-lg text-slate-900">
-                      {activeTab === 'drafts' ? 'No draft quizzes found' : 
-                       activeTab === 'published' ? 'No published quizzes found' : 'No quizzes found'}
+                      {activeTab === 'drafts' ? 'No draft quizzes found' :
+                        activeTab === 'published' ? 'No published quizzes found' : 'No quizzes found'}
                     </h3>
                     <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">
-                      {searchQuery 
+                      {searchQuery
                         ? `No quizzes matched "${searchQuery}". Clear your search to view all.`
-                        : activeTab === 'drafts' 
-                        ? 'Create a new quiz and click "Save as Draft" to work on it later.'
-                        : 'Create your first multiplayer battle set to host live.'
+                        : activeTab === 'drafts'
+                          ? 'Create a new quiz and click "Save as Draft" to work on it later.'
+                          : 'Create your first multiplayer battle set to host live.'
                       }
                     </p>
                   </div>
@@ -800,7 +798,7 @@ export default function MyQuizzes() {
                               <span>{estimatedMinutes} mins</span>
                             </span>
                             <span className="text-[#D1D5DB]">•</span>
-                            
+
                             {/* Published Shows Plays; Draft Shows Edited Time */}
                             {!isDraft ? (
                               <span className="inline-flex items-center gap-1 text-[#6222F5] font-bold shrink-0">

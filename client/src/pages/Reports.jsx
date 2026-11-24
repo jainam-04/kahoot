@@ -36,12 +36,13 @@ import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
 import HostProfileModal from '../components/HostProfileModal';
-import UpgradeModal from '../components/UpgradeModal';
+import PlanComparisonTable from '../components/PlanComparisonTable';
 import AppSidebar from '../components/AppSidebar';
 import ReportsModal from '../components/ReportsModal';
 import { getMyQuizzes } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
 import { clearAuthSession, getStoredUser } from '../utils/auth';
+import { useScrollLock } from '../utils/scrollLock';
 
 // ── Canonical Demo Benchmark Reports from Figma Spec ─────────────────────────
 const BENCHMARK_REPORTS = [
@@ -137,6 +138,9 @@ export default function Reports() {
   const categoryDropdownRef = useRef(null);
   const dateDropdownRef = useRef(null);
 
+  // Lock background scroll when reports modal is open
+  useScrollLock(Boolean(activeModal));
+
   // Sync user profile across windows & events
   useEffect(() => {
     const handleProfileSync = (e) => {
@@ -175,17 +179,11 @@ export default function Reports() {
     };
   }, []);
 
-  // Lock body scroll when mobile navigation drawer is open
+  // Dismiss dropdowns when mobile navigation drawer is open
   useEffect(() => {
     if (isMobileNavOpen) {
-      document.body.style.overflow = 'hidden';
       setIsProfileDropdownOpen(false);
-    } else {
-      document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [isMobileNavOpen]);
 
   const handleLogout = () => {
@@ -452,12 +450,12 @@ export default function Reports() {
 
         {/* ─── MAIN CONTENT WRAPPER (Shifted by 230px on desktop) ─── */}
         <div className="flex-1 flex flex-col lg:pl-[230px] w-full min-w-0 transition-all">
-          
+
           {/* ========================================================================= */}
           {/* TOP HEADER (74px height, exact Figma specifications) */}
           {/* ========================================================================= */}
           <header className="sticky top-0 z-30 h-[74px] max-h-[74px] px-4 sm:px-8 bg-white/80 backdrop-blur-md border-b border-[#EEF0F6] flex items-center justify-between gap-4">
-            
+
             {/* Left: Mobile Drawer Hamburger Button */}
             <div className="flex items-center gap-3">
               <button
@@ -566,10 +564,10 @@ export default function Reports() {
           {/* MAIN BODY CONTENT (Exact Figma spacing, max-width: 1340px) */}
           {/* ========================================================================= */}
           <main className="flex-1 p-4 sm:p-6 lg:p-7 space-y-6 max-w-[1340px] w-full mx-auto text-left">
-            
+
             {/* ── SECTION 1: HERO BANNER (Responsive on mobile) ── */}
             <section className="min-h-[110px] sm:min-h-[146px] p-4 sm:p-6 sm:px-8 rounded-[20px] sm:rounded-[24px] bg-gradient-to-r from-[#F2EDFF] via-[#F4EFFF] to-[#EDE5FF] border border-[#F3E8FF]/70 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 relative overflow-hidden">
-              
+
               {/* Left Side: White Icon Tile + Title & Subtitle */}
               <div className="flex items-center gap-3.5 sm:gap-5 z-10">
                 {/* Responsive Tile with Purple Icon */}
@@ -600,7 +598,7 @@ export default function Reports() {
 
                   {/* Clipboard Base (Purple) */}
                   <rect x="25" y="14" width="62" height="66" rx="12" fill="#6320EE" />
-                  
+
                   {/* Inner White Page */}
                   <rect x="29" y="18" width="54" height="58" rx="9" fill="#FFFFFF" />
 
@@ -631,7 +629,7 @@ export default function Reports() {
 
             {/* ── SECTION 2: STAT METRIC CARDS (4 Cards, 92px height) ── */}
             <section className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
-              
+
               {/* Card 1: Total Quizzes */}
               <div className="h-[76px] sm:h-[92px] p-3 sm:p-5 rounded-2xl bg-white border border-[#F1F5F9] shadow-[0px_4px_20px_-2px_rgba(99,32,238,0.06),0px_2px_6px_-1px_rgba(0,0,0,0.03)] flex items-center gap-2.5 sm:gap-4">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#FAF5FF] flex items-center justify-center shrink-0">
@@ -681,7 +679,7 @@ export default function Reports() {
 
             {/* ── SECTION 3: FILTER CONTROLS ── */}
             <section className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
-              
+
               {/* Left: Search Table Input */}
               <div className="relative w-full sm:w-[320px]">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] pointer-events-none" />
@@ -705,7 +703,7 @@ export default function Reports() {
 
               {/* Right: Dropdowns (Category & Date Filter) */}
               <div className="grid grid-cols-2 sm:flex items-center gap-2.5 sm:gap-3">
-                
+
                 {/* Category Dropdown */}
                 <div className="relative w-full sm:w-auto" ref={categoryDropdownRef}>
                   <button
@@ -733,11 +731,10 @@ export default function Reports() {
                             setSelectedCategory(cat);
                             setIsCategoryOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-colors ${
-                            selectedCategory === cat
-                              ? 'bg-[#FAF5FF] text-[#6320EE]'
-                              : 'text-[#475569] hover:bg-slate-50'
-                          }`}
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-colors ${selectedCategory === cat
+                            ? 'bg-[#FAF5FF] text-[#6320EE]'
+                            : 'text-[#475569] hover:bg-slate-50'
+                            }`}
                         >
                           <span>{cat === 'All' ? 'All Categories' : cat}</span>
                           {selectedCategory === cat && <Check className="w-3.5 h-3.5 text-[#6320EE]" />}
@@ -763,10 +760,10 @@ export default function Reports() {
                         {selectedDateRange === '7days'
                           ? 'Last 7 Days'
                           : selectedDateRange === '30days'
-                          ? 'Last 30 Days'
-                          : selectedDateRange === '90days'
-                          ? 'Last 90 Days'
-                          : 'All Time'}
+                            ? 'Last 30 Days'
+                            : selectedDateRange === '90days'
+                              ? 'Last 90 Days'
+                              : 'All Time'}
                       </span>
                     </div>
                     <ChevronDown className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#94A3B8] shrink-0 transition-transform duration-150 ${isDateFilterOpen ? 'rotate-180' : ''}`} />
@@ -787,11 +784,10 @@ export default function Reports() {
                             setSelectedDateRange(d.key);
                             setIsDateFilterOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-colors ${
-                            selectedDateRange === d.key
-                              ? 'bg-[#FAF5FF] text-[#6320EE]'
-                              : 'text-[#475569] hover:bg-slate-50'
-                          }`}
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-colors ${selectedDateRange === d.key
+                            ? 'bg-[#FAF5FF] text-[#6320EE]'
+                            : 'text-[#475569] hover:bg-slate-50'
+                            }`}
                         >
                           <span>{d.label}</span>
                           {selectedDateRange === d.key && <Check className="w-3.5 h-3.5 text-[#6320EE]" />}
@@ -805,11 +801,11 @@ export default function Reports() {
 
             {/* ── SECTION 4: REPORTS TABLE (Desktop) & CARDS (Mobile) ── */}
             <section className="rounded-[20px] sm:rounded-[24px] bg-white border border-[#F1F5F9] shadow-[0px_4px_20px_-2px_rgba(99,32,238,0.06),0px_2px_6px_-1px_rgba(0,0,0,0.03)] p-3 sm:p-5 lg:p-6 flex flex-col gap-4">
-              
+
               {/* DESKTOP TABLE VIEW (Visible on tablet & desktop) */}
               <div className="hidden md:block w-full overflow-x-auto">
                 <table className="w-full text-left border-collapse">
-                  
+
                   {/* Table Header Row */}
                   <thead>
                     <tr className="border-b border-[#6C38FF] text-[#1E1B4B]">
@@ -819,7 +815,7 @@ export default function Reports() {
                       <th className="py-3 px-1.5 sm:px-2 text-center font-bold text-xs sm:text-sm w-[8%]">Sessions</th>
                       <th className="py-3 px-1.5 sm:px-2 text-center font-bold text-xs sm:text-sm w-[10%]">Participants</th>
                       <th className="py-3 px-1.5 sm:px-2 text-center font-bold text-xs sm:text-sm w-[9%]">Avg. Score</th>
-                      <th 
+                      <th
                         className="py-3 px-2 sm:px-2.5 text-center font-bold text-xs sm:text-sm w-[11%] cursor-pointer hover:text-[#6C38FF] transition-colors select-none"
                         onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
                         title="Click to reverse date sort"
@@ -885,11 +881,10 @@ export default function Reports() {
 
                           {/* Avg. Score Pill */}
                           <td className="py-3.5 px-1.5 sm:px-2 text-center align-middle">
-                            <span className={`inline-flex items-center justify-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-bold whitespace-nowrap ${
-                              report.avgScore >= 75
-                                ? 'bg-[#ECFDF5] text-[#059669]'
-                                : 'bg-[#FFFBEB] text-[#D97706]'
-                            }`}>
+                            <span className={`inline-flex items-center justify-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-bold whitespace-nowrap ${report.avgScore >= 75
+                              ? 'bg-[#ECFDF5] text-[#059669]'
+                              : 'bg-[#FFFBEB] text-[#D97706]'
+                              }`}>
                               {report.avgScore}%
                             </span>
                           </td>
@@ -908,8 +903,8 @@ export default function Reports() {
                             >
                               <BarChart2 className="w-3.5 h-3.5 text-[#6320EE] shrink-0" />
                               <span>
-                                {report.sessionsCount > 1 
-                                  ? `View Reports (${report.sessionsCount})` 
+                                {report.sessionsCount > 1
+                                  ? `View Reports (${report.sessionsCount})`
                                   : `View Report (${report.sessionsCount || 1})`}
                               </span>
                             </button>
@@ -972,11 +967,10 @@ export default function Reports() {
                         </div>
                         <div>
                           <span className="text-[10px] font-medium text-[#94A3B8] block">Avg. Score</span>
-                          <span className={`text-xs font-bold block mt-0.5 ${
-                            report.avgScore >= 75
-                              ? 'text-[#059669]'
-                              : 'text-[#D97706]'
-                          }`}>
+                          <span className={`text-xs font-bold block mt-0.5 ${report.avgScore >= 75
+                            ? 'text-[#059669]'
+                            : 'text-[#D97706]'
+                            }`}>
                             {report.avgScore}%
                           </span>
                         </div>
@@ -990,8 +984,8 @@ export default function Reports() {
                       >
                         <BarChart2 className="w-3.5 h-3.5" />
                         <span>
-                          {report.sessionsCount > 1 
-                            ? `View Reports (${report.sessionsCount})` 
+                          {report.sessionsCount > 1
+                            ? `View Reports (${report.sessionsCount})`
                             : `View Report (${report.sessionsCount || 1})`}
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
@@ -1025,11 +1019,10 @@ export default function Reports() {
                       key={page}
                       type="button"
                       onClick={() => setCurrentPage(page)}
-                      className={`w-9 h-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        currentPage === page
-                          ? 'bg-[#6320EE] text-white shadow-xs'
-                          : 'border border-[#E2E8F0]/80 text-[#334155] hover:bg-slate-50'
-                      }`}
+                      className={`w-9 h-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === page
+                        ? 'bg-[#6320EE] text-white shadow-xs'
+                        : 'border border-[#E2E8F0]/80 text-[#334155] hover:bg-slate-50'
+                        }`}
                     >
                       {page}
                     </button>
@@ -1061,14 +1054,90 @@ export default function Reports() {
         )}
 
         {/* Upgrade Plan Modal */}
-        <UpgradeModal
-          isOpen={activeModal === 'upgrade'}
-          onClose={() => setActiveModal(null)}
-        />
+        {activeModal === 'upgrade' && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-xs animate-fade-in">
+            <div className="relative my-auto rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 bg-white text-slate-900 text-left">
+              <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-purple-50 via-white to-purple-50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-amber-100 text-amber-600 rounded-xl shadow-xs">
+                    <Crown className="h-5 w-5 fill-amber-500 text-amber-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-slate-900">Upgrade to Gubbi Pro</h3>
+                    <p className="text-xs text-slate-500">Unlock unlimited multiplayer rooms, export reports, and custom trivia sets.</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Pro Plan Card */}
+                  <div className="p-5 rounded-2xl border-2 border-[#6C38FF] bg-purple-50/30 flex flex-col justify-between space-y-4">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded-full">
+                        Educator Pro
+                      </span>
+                      <h4 className="text-2xl font-black text-slate-900 mt-2">
+                        ₹499 <span className="text-xs font-normal text-slate-500">/ month</span>
+                      </h4>
+                      <p className="text-xs text-slate-600 mt-1">Built for classroom teachers, coaching institutes, and active event hosts.</p>
+
+                      <ul className="mt-4 space-y-2 text-xs text-slate-700">
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Unlimited quiz creation</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Unlimited live multiplayer participants</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> PDF &amp; Excel performance export</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Priority email support</li>
+                      </ul>
+                    </div>
+
+                    <a
+                      href="mailto:info@fouriseindia.com?subject=Gubbi%20Pro%20Upgrade%20Inquiry"
+                      className="w-full py-2.5 rounded-xl bg-[#6C38FF] hover:bg-[#5827e8] text-white text-xs font-bold text-center shadow-md transition-all block cursor-pointer"
+                    >
+                      Contact Sales &amp; Upgrade
+                    </a>
+                  </div>
+
+                  {/* Free Plan Recap */}
+                  <div className="p-5 rounded-2xl border border-slate-200 bg-white flex flex-col justify-between space-y-4">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
+                        Free Community
+                      </span>
+                      <h4 className="text-2xl font-black text-slate-900 mt-2">₹0 <span className="text-xs font-normal text-slate-500">/ forever</span></h4>
+                      <p className="text-xs text-slate-500 mt-1">Perfect for casual trivia, weekend hangouts, and testing questions.</p>
+
+                      <ul className="mt-4 space-y-2 text-xs text-slate-600">
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-slate-400 shrink-0" /> Up to 5 custom quizzes</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-slate-400 shrink-0" /> Up to 20 live players per room</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-slate-400 shrink-0" /> Basic web summaries</li>
+                      </ul>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveModal(null)}
+                      className="w-full py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold text-center transition-all cursor-pointer"
+                    >
+                      Keep Current Plan
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Sample Report Modal Preview */}
         {activeModal === 'viewSample' && selectedSampleReport && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-xs animate-fade-in">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto overscroll-contain bg-black/70 backdrop-blur-xs animate-fade-in">
             <div className="relative my-auto rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl border border-slate-200 bg-white text-slate-900 text-left">
               <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-[#FAF9FD]">
                 <div className="flex items-center gap-3">

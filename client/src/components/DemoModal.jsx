@@ -2,13 +2,17 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles } from 'lucide-react';
 import LiveDemoSection from './landing/LiveDemoSection';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function DemoModal({ isOpen, onClose }) {
+  // Lock background scroll when modal is open
+  useScrollLock(isOpen);
+
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-md">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 overflow-y-auto overscroll-contain bg-black/80 backdrop-blur-md">
         {/* Backdrop click listener */}
         <div className="fixed inset-0" onClick={onClose} />
 
@@ -18,7 +22,7 @@ export default function DemoModal({ isOpen, onClose }) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative z-10 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl glass-panel border border-white/20 p-4 sm:p-6 shadow-2xl bg-gradient-to-b from-slate-950 via-black to-slate-950 text-white"
+          className="relative z-10 w-full max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain rounded-3xl glass-panel border border-white/20 p-4 sm:p-6 shadow-2xl bg-gradient-to-b from-slate-950 via-black to-slate-950 text-white"
         >
           {/* Modal Header */}
           <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">

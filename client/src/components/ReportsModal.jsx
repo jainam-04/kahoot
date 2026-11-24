@@ -1,14 +1,18 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Trophy, Users, Calendar, X, Clock, Award, ChevronRight, BarChart3, Loader2 
+import {
+  Trophy, Users, Calendar, X, Clock, Award, ChevronRight, BarChart3, Loader2
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLoading = false }) {
   const navigate = useNavigate();
   const { themeMode } = useTheme();
+
+  // Lock background scroll when modal is open
+  useScrollLock(isOpen);
 
   // Close modal on Escape key press
   useEffect(() => {
@@ -39,9 +43,9 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[9999] overflow-y-auto flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[9999] overflow-y-auto overscroll-contain flex items-center justify-center p-4">
         {/* Backdrop overlay */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -82,7 +86,7 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
           </div>
 
           {/* Body Content */}
-          <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 scrollbar-thin">
+          <div className="flex-1 overflow-y-auto overscroll-contain p-5 sm:p-6 space-y-5 scrollbar-thin">
             {isLoading ? (
               <>
                 <div className="flex items-center justify-center gap-2 py-6 text-sm text-slate-400">
@@ -136,7 +140,7 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
                         <Clock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
                         <span className="text-xs text-slate-500 dark:text-gray-400 font-semibold">{formattedTime}</span>
                       </div>
-                      
+
                       <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EEF2FF] dark:bg-purple-500/10 border border-[#E0E7FF] dark:border-purple-500/20 text-[#4F46E5] dark:text-purple-300 text-[10px] font-black uppercase tracking-wider self-start sm:self-auto">
                         <Users className="h-3 w-3" />
                         <span>{totalPlayers} Players</span>
@@ -159,7 +163,7 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
                           <Award className="h-3.5 w-3.5 text-[#6320EE] dark:text-purple-400" />
                           <span>Leaderboard Standings</span>
                         </p>
-                        
+
                         {/* Scrollable Player Standings List */}
                         <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-gray-800">
                           {sortedPlayers.map((player, idx) => {
@@ -169,7 +173,7 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
                             let rankColor = "text-slate-500 dark:text-slate-400";
                             let rankIcon = `#${rank}`;
                             let bgClass = "bg-white dark:bg-[#111827]/40 border-slate-100 dark:border-gray-800/40";
-                            
+
                             if (rank === 1) {
                               rankColor = "text-amber-500 font-bold";
                               rankIcon = <Trophy className="h-4 w-4 text-yellow-500 inline-block" />;
@@ -187,8 +191,8 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
                             }
 
                             return (
-                              <div 
-                                key={idx} 
+                              <div
+                                key={idx}
                                 className={`flex items-center justify-between text-xs px-3 py-1.5 rounded-xl border ${bgClass} transition-all`}
                               >
                                 <div className="flex items-center gap-2 min-w-0">
@@ -212,8 +216,8 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
                       onClick={(e) => {
                         e.stopPropagation();
                         onClose();
-                        const targetId = (res.sessionId && typeof res.sessionId === 'object') 
-                          ? (res.sessionId._id || res.sessionId.id) 
+                        const targetId = (res.sessionId && typeof res.sessionId === 'object')
+                          ? (res.sessionId._id || res.sessionId.id)
                           : (res.sessionId || res._id);
                         navigate(`/results/${targetId}`);
                       }}

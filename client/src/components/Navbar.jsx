@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  BookOpen, PlusCircle, LayoutDashboard, LogOut, LogIn, User, 
-  Menu, X, ArrowRight, ChevronDown, Trash2, Edit3, UserCheck, Settings 
+import {
+  BookOpen, PlusCircle, LayoutDashboard, LogOut, LogIn, User,
+  Menu, X, ArrowRight, ChevronDown, Trash2, Edit3, UserCheck, Settings
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -11,6 +11,7 @@ import DeleteAccountModal from './DeleteAccountModal';
 import HostProfileModal from './HostProfileModal';
 import { useTheme } from '../context/ThemeContext';
 import { clearAuthSession, getStoredUser, getStoredToken } from '../utils/auth';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -27,6 +28,9 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const headerRef = React.useRef(null);
   const profileDropdownRef = useRef(null);
+
+  // Lock background scroll when mobile navigation menu is open
+  useScrollLock(!token && mobileMenuOpen);
 
   // Synchronize user profile across window events and storage changes
   useEffect(() => {
@@ -145,7 +149,7 @@ export default function Navbar() {
   };
 
   return (
-    <header 
+    <header
       ref={headerRef}
       className="fixed top-0 left-0 right-0 z-50 w-full border-b backdrop-blur-md transition-all duration-300"
       style={{
@@ -154,7 +158,7 @@ export default function Navbar() {
       }}
     >
       <div className="max-w-[1351px] mx-auto w-full flex h-20 items-center justify-between px-4 sm:px-8">
-        
+
         {/* Left Side: Mobile Hamburger Button + Brand Logo */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Mobile Hamburger Button (Brought to the left on mobile) */}
@@ -184,35 +188,32 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-8">
           {location.pathname === '/join' ? null : token ? (
             <>
-              <Link 
-                to="/dashboard" 
-                className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${
-                  location.pathname === '/dashboard' 
-                    ? 'text-primary bg-primary/10 border border-primary/25 shadow-sm' 
-                    : isLight ? 'text-slate-700 hover:text-sky-700 hover:bg-sky-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
-                }`}
+              <Link
+                to="/dashboard"
+                className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${location.pathname === '/dashboard'
+                  ? 'text-primary bg-primary/10 border border-primary/25 shadow-sm'
+                  : isLight ? 'text-slate-700 hover:text-sky-700 hover:bg-sky-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  }`}
               >
                 <LayoutDashboard className="h-4 w-4 text-primary" />
                 <span>Dashboard</span>
               </Link>
-              <Link 
-                to="/quiz/my" 
-                className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${
-                  location.pathname === '/quiz/my' 
-                    ? 'text-secondary bg-secondary/10 border border-secondary/25 shadow-sm' 
-                    : isLight ? 'text-slate-700 hover:text-secondary hover:bg-sky-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
-                }`}
+              <Link
+                to="/quiz/my"
+                className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${location.pathname === '/quiz/my'
+                  ? 'text-secondary bg-secondary/10 border border-secondary/25 shadow-sm'
+                  : isLight ? 'text-slate-700 hover:text-secondary hover:bg-sky-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  }`}
               >
                 <BookOpen className="h-4 w-4 text-secondary" />
                 <span>My Quizzes</span>
               </Link>
-              <Link 
-                to="/quiz/create" 
-                className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${
-                  location.pathname === '/quiz/create' 
-                    ? 'text-accent bg-accent/10 border border-accent/25 shadow-sm' 
-                    : isLight ? 'text-slate-700 hover:text-accent hover:bg-sky-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
-                }`}
+              <Link
+                to="/quiz/create"
+                className={`flex items-center gap-1.5 text-sm font-bold transition-all relative py-1 px-3 rounded-xl ${location.pathname === '/quiz/create'
+                  ? 'text-accent bg-accent/10 border border-accent/25 shadow-sm'
+                  : isLight ? 'text-slate-700 hover:text-accent hover:bg-sky-50' : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  }`}
               >
                 <PlusCircle className="h-4 w-4 text-accent" />
                 <span>Create Quiz</span>
@@ -229,13 +230,12 @@ export default function Navbar() {
                   key={link.label}
                   type="button"
                   onClick={() => handleNavClick(link.hash)}
-                  className={`font-['Inter'] text-[14px] leading-5 transition-colors cursor-pointer relative py-1 flex flex-col items-center ${
-                    isActive 
-                      ? 'text-[#551BF5] font-semibold' 
-                      : isLight 
-                        ? 'text-[#475569] hover:text-[#551BF5] font-medium' 
-                        : 'text-gray-300 hover:text-white font-medium'
-                  }`}
+                  className={`font-['Inter'] text-[14px] leading-5 transition-colors cursor-pointer relative py-1 flex flex-col items-center ${isActive
+                    ? 'text-[#551BF5] font-semibold'
+                    : isLight
+                      ? 'text-[#475569] hover:text-[#551BF5] font-medium'
+                      : 'text-gray-300 hover:text-white font-medium'
+                    }`}
                 >
                   <span>{link.label}</span>
                   {isActive && (
@@ -280,17 +280,15 @@ export default function Navbar() {
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 10 }}
                       transition={{ duration: 0.15 }}
-                      className={`absolute right-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] rounded-2xl shadow-2xl border p-2 z-50 text-left backdrop-blur-xl ${
-                        isLight ? 'bg-white/95 border-gray-200 text-gray-900' : 'bg-[#12121a]/95 border-white/10 text-white'
-                      }`}
+                      className={`absolute right-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] rounded-2xl shadow-2xl border p-2 z-50 text-left backdrop-blur-xl ${isLight ? 'bg-white/95 border-gray-200 text-gray-900' : 'bg-[#12121a]/95 border-white/10 text-white'
+                        }`}
                     >
                       {/* Host Account Summary Card */}
                       <div
-                        className={`w-full text-left p-2.5 rounded-xl border mb-2 select-none ${
-                          isLight 
-                            ? 'bg-sky-50/70 border-sky-100' 
-                            : 'bg-white/5 border-white/5'
-                        }`}
+                        className={`w-full text-left p-2.5 rounded-xl border mb-2 select-none ${isLight
+                          ? 'bg-sky-50/70 border-sky-100'
+                          : 'bg-white/5 border-white/5'
+                          }`}
                       >
                         <div className="flex items-center gap-2.5 overflow-hidden">
                           <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-extrabold text-xs text-white shrink-0 shadow-sm">
@@ -314,9 +312,8 @@ export default function Navbar() {
                             setProfileDropdownOpen(false);
                             setIsProfileModalOpen(true);
                           }}
-                          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer text-left ${
-                            isLight ? 'hover:bg-purple-50 text-purple-700' : 'hover:bg-purple-950/30 text-purple-300'
-                          }`}
+                          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer text-left ${isLight ? 'hover:bg-purple-50 text-purple-700' : 'hover:bg-purple-950/30 text-purple-300'
+                            }`}
                         >
                           <Edit3 className="h-3.5 w-3.5 text-primary" />
                           <span>Edit Host Profile</span>
@@ -324,9 +321,8 @@ export default function Navbar() {
                         <Link
                           to="/dashboard"
                           onClick={() => setProfileDropdownOpen(false)}
-                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
-                            isLight ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/5 text-gray-300'
-                          }`}
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${isLight ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/5 text-gray-300'
+                            }`}
                         >
                           <LayoutDashboard className="h-3.5 w-3.5 text-primary" />
                           <span>Dashboard Overview</span>
@@ -334,9 +330,8 @@ export default function Navbar() {
                         <Link
                           to="/quiz/my"
                           onClick={() => setProfileDropdownOpen(false)}
-                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
-                            isLight ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/5 text-gray-300'
-                          }`}
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${isLight ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/5 text-gray-300'
+                            }`}
                         >
                           <BookOpen className="h-3.5 w-3.5 text-secondary" />
                           <span>My Quizzes</span>
@@ -344,9 +339,8 @@ export default function Navbar() {
                         <Link
                           to="/quiz/create"
                           onClick={() => setProfileDropdownOpen(false)}
-                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
-                            isLight ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/5 text-gray-300'
-                          }`}
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${isLight ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/5 text-gray-300'
+                            }`}
                         >
                           <PlusCircle className="h-3.5 w-3.5 text-accent" />
                           <span>Create New Quiz</span>
@@ -354,9 +348,8 @@ export default function Navbar() {
                       </div>
 
                       {/* Danger Zone: Delete Account & Logout */}
-                      <div className={`mt-1.5 pt-1.5 border-t space-y-1 ${
-                        isLight ? 'border-gray-100' : 'border-white/5'
-                      }`}>
+                      <div className={`mt-1.5 pt-1.5 border-t space-y-1 ${isLight ? 'border-gray-100' : 'border-white/5'
+                        }`}>
                         <button
                           type="button"
                           onClick={() => {
@@ -401,7 +394,7 @@ export default function Navbar() {
                   <Link
                     to="/join"
                     className="btn-get-started px-6 py-2.5 rounded-full text-[14px] font-['Inter'] font-extrabold !text-white shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center gap-1.5 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap"
-                    style={{ 
+                    style={{
                       background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
                       color: '#ffffff'
                     }}
@@ -420,7 +413,7 @@ export default function Navbar() {
                     <Link
                       to="/register"
                       className="btn-get-started px-5 py-2.5 rounded-full text-[14px] font-['Inter'] font-semibold !text-white shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center gap-1.5 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap"
-                      style={{ 
+                      style={{
                         background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
                         color: '#ffffff'
                       }}
@@ -437,7 +430,7 @@ export default function Navbar() {
                 <Link
                   to="/join"
                   className="btn-get-started md:hidden px-4 py-2 text-xs font-['Inter'] font-extrabold !text-white rounded-full shadow-sm flex items-center gap-1 shrink-0 whitespace-nowrap"
-                  style={{ 
+                  style={{
                     background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
                     color: '#ffffff'
                   }}
@@ -449,7 +442,7 @@ export default function Navbar() {
                 <Link
                   to="/register"
                   className="btn-get-started md:hidden px-3 sm:px-4 py-2 text-xs font-['Inter'] font-bold !text-white rounded-full shadow-sm flex items-center gap-1 shrink-0 whitespace-nowrap"
-                  style={{ 
+                  style={{
                     background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
                     color: '#ffffff'
                   }}
@@ -465,7 +458,7 @@ export default function Navbar() {
 
       {/* Mobile Quick Sub-Navbar when Logged In */}
       {token && (
-        <div 
+        <div
           className="md:hidden border-t px-2 py-1.5 flex items-center justify-around gap-1 overflow-x-auto text-xs font-extrabold"
           style={{
             backgroundColor: isLight ? 'rgba(245, 243, 255, 0.95)' : 'rgba(15, 15, 25, 0.95)',
@@ -475,11 +468,10 @@ export default function Navbar() {
           <Link
             to="/dashboard"
             onClick={closeMobile}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-              location.pathname === '/dashboard'
-                ? 'bg-primary text-white shadow-sm'
-                : isLight ? 'text-gray-700 hover:bg-purple-100/50' : 'text-gray-300 hover:bg-white/10'
-            }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${location.pathname === '/dashboard'
+              ? 'bg-primary text-white shadow-sm'
+              : isLight ? 'text-gray-700 hover:bg-purple-100/50' : 'text-gray-300 hover:bg-white/10'
+              }`}
           >
             <LayoutDashboard className="h-3.5 w-3.5" />
             <span>Dashboard</span>
@@ -488,11 +480,10 @@ export default function Navbar() {
           <Link
             to="/quiz/my"
             onClick={closeMobile}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-              location.pathname === '/quiz/my'
-                ? 'bg-secondary text-white shadow-sm'
-                : isLight ? 'text-gray-700 hover:bg-cyan-100/50' : 'text-gray-300 hover:bg-white/10'
-            }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${location.pathname === '/quiz/my'
+              ? 'bg-secondary text-white shadow-sm'
+              : isLight ? 'text-gray-700 hover:bg-cyan-100/50' : 'text-gray-300 hover:bg-white/10'
+              }`}
           >
             <BookOpen className="h-3.5 w-3.5" />
             <span>My Quizzes</span>
@@ -501,11 +492,10 @@ export default function Navbar() {
           <Link
             to="/quiz/create"
             onClick={closeMobile}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-              location.pathname === '/quiz/create'
-                ? 'bg-accent text-white shadow-sm'
-                : isLight ? 'text-gray-700 hover:bg-pink-100/50' : 'text-gray-300 hover:bg-white/10'
-            }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${location.pathname === '/quiz/create'
+              ? 'bg-accent text-white shadow-sm'
+              : isLight ? 'text-gray-700 hover:bg-pink-100/50' : 'text-gray-300 hover:bg-white/10'
+              }`}
           >
             <PlusCircle className="h-3.5 w-3.5" />
             <span>Create Quiz</span>
@@ -515,21 +505,26 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown (Only for public guests when logged out) */}
       {!token && mobileMenuOpen && (
-        <div
-          className="md:hidden border-t px-4 py-4 space-y-2 animate-in slide-in-from-top duration-200 shadow-2xl"
-          style={{
-            backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(10, 10, 18, 0.98)',
-            borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)',
-            backdropFilter: 'blur(20px)'
-          }}
-        >
+        <>
+          <div
+            className="fixed inset-0 top-20 z-40 bg-black/40 backdrop-blur-xs md:hidden cursor-pointer"
+            onClick={closeMobile}
+            aria-label="Close mobile menu backdrop"
+          />
+          <div
+            className="relative z-50 md:hidden border-t px-4 py-4 space-y-2 animate-in slide-in-from-top duration-200 shadow-2xl max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain"
+            style={{
+              backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(10, 10, 18, 0.98)',
+              borderColor: isLight ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.10)',
+              backdropFilter: 'blur(20px)'
+            }}
+          >
           {navLinks.map((link) => (
             <button
               key={link.label}
               onClick={() => handleNavClick(link.hash)}
-              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-extrabold transition-colors cursor-pointer flex items-center justify-between ${
-                link.highlight ? 'bg-primary/10 border border-primary/25 text-primary' : ''
-              }`}
+              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-extrabold transition-colors cursor-pointer flex items-center justify-between ${link.highlight ? 'bg-primary/10 border border-primary/25 text-primary' : ''
+                }`}
               style={link.highlight ? {} : { color: 'var(--text-main)' }}
             >
               <span>{link.label}</span>
@@ -545,11 +540,10 @@ export default function Navbar() {
             <Link
               to="/login"
               onClick={closeMobile}
-              className={`w-full text-center py-3 rounded-xl border text-sm font-extrabold ${
-                isLight 
-                  ? 'border-purple-300 text-purple-950 hover:bg-purple-50' 
-                  : 'border-white/20 text-white hover:bg-white/10'
-              }`}
+              className={`w-full text-center py-3 rounded-xl border text-sm font-extrabold ${isLight
+                ? 'border-purple-300 text-purple-950 hover:bg-purple-50'
+                : 'border-white/20 text-white hover:bg-white/10'
+                }`}
             >
               Login
             </Link>
@@ -563,6 +557,7 @@ export default function Navbar() {
             </Link>
           </div>
         </div>
+        </>
       )}
 
 

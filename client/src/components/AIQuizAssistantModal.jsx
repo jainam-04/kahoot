@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Sparkles, Send, X, Bot, User, Check, Plus, RefreshCw, 
+import {
+  Sparkles, Send, X, Bot, User, Check, Plus, RefreshCw,
   HelpCircle, Zap, CheckCircle2, ChevronRight, ChevronDown, Sliders,
   Layers, ArrowRight, Clock, AlertCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { generateAIQuiz } from '../services/quizService';
 import { useTheme } from '../context/ThemeContext';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function AIQuizAssistantModal({
   isOpen,
@@ -43,16 +44,15 @@ export default function AIQuizAssistantModal({
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
+  // Lock background scroll when modal is open
+  useScrollLock(isOpen);
+
   useEffect(() => {
     if (isOpen) {
-      document.body.classList.add('mobile-dialog-open');
       const timer = setTimeout(() => inputRef.current?.focus(), 150);
       return () => {
         clearTimeout(timer);
-        document.body.classList.remove('mobile-dialog-open');
       };
-    } else {
-      document.body.classList.remove('mobile-dialog-open');
     }
   }, [isOpen]);
 
@@ -187,7 +187,7 @@ export default function AIQuizAssistantModal({
   };
 
   const handleToggleSelectQuestion = (idx) => {
-    setSelectedIndices(prev => 
+    setSelectedIndices(prev =>
       prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
     );
   };
@@ -222,7 +222,7 @@ export default function AIQuizAssistantModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2.5 sm:p-5 md:p-6 bg-black/75 backdrop-blur-md overflow-hidden">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2.5 sm:p-5 md:p-6 bg-black/75 backdrop-blur-md overflow-hidden overscroll-contain">
         {/* Backdrop click to close */}
         <div className="absolute inset-0" onClick={onClose} />
 
@@ -230,20 +230,18 @@ export default function AIQuizAssistantModal({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className={`relative z-10 w-full max-w-4xl h-[94dvh] sm:h-[86vh] sm:max-h-[760px] rounded-2xl sm:rounded-3xl border overflow-hidden shadow-2xl flex flex-col my-auto transition-all ${
-            isLight
-              ? 'bg-white border-purple-200 text-gray-900 shadow-[0_20px_60px_rgba(98,34,245,0.18)]'
-              : 'bg-[#0e0e16] border-white/10 text-white shadow-2xl'
-          }`}
+          className={`relative z-10 w-full max-w-4xl h-[94dvh] sm:h-[86vh] sm:max-h-[760px] rounded-2xl sm:rounded-3xl border overflow-hidden shadow-2xl flex flex-col my-auto transition-all ${isLight
+            ? 'bg-white border-purple-200 text-gray-900 shadow-[0_20px_60px_rgba(98,34,245,0.18)]'
+            : 'bg-[#0e0e16] border-white/10 text-white shadow-2xl'
+            }`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Top Gradient Ribbon */}
           <div className="h-1 sm:h-1.5 w-full bg-gradient-to-r from-primary via-secondary to-accent shrink-0" />
 
           {/* Modal Header */}
-          <div className={`p-3 sm:p-5 flex items-center justify-between border-b shrink-0 ${
-            isLight ? 'bg-purple-50/60 border-purple-100' : 'bg-white/[0.03] border-white/10'
-          }`}>
+          <div className={`p-3 sm:p-5 flex items-center justify-between border-b shrink-0 ${isLight ? 'bg-purple-50/60 border-purple-100' : 'bg-white/[0.03] border-white/10'
+            }`}>
             <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
               <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-white shadow-md shadow-primary/30 shrink-0">
                 <Bot className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -267,9 +265,8 @@ export default function AIQuizAssistantModal({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className={`p-1.5 sm:p-2 rounded-xl transition-colors cursor-pointer shrink-0 ml-2 ${
-                isLight ? 'hover:bg-gray-200 text-gray-500 hover:text-gray-900' : 'hover:bg-white/10 text-gray-400 hover:text-white'
-              }`}
+              className={`p-1.5 sm:p-2 rounded-xl transition-colors cursor-pointer shrink-0 ml-2 ${isLight ? 'hover:bg-gray-200 text-gray-500 hover:text-gray-900' : 'hover:bg-white/10 text-gray-400 hover:text-white'
+                }`}
             >
               <X className="h-5 w-5" />
             </button>
@@ -288,21 +285,19 @@ export default function AIQuizAssistantModal({
                   </div>
                 )}
 
-                <div className={`max-w-[88%] sm:max-w-[75%] space-y-2.5 sm:space-y-3 ${
-                  msg.sender === 'user'
-                    ? 'bg-primary text-white rounded-2xl rounded-tr-sm p-3 sm:p-4 shadow-md text-xs sm:text-sm font-medium'
-                    : isLight
-                      ? 'bg-gray-50 border border-gray-200 text-gray-800 rounded-2xl rounded-tl-sm p-3.5 sm:p-5 shadow-sm'
-                      : 'glass-panel border-white/10 text-gray-200 rounded-2xl rounded-tl-sm p-3.5 sm:p-5 shadow-sm'
-                }`}>
+                <div className={`max-w-[88%] sm:max-w-[75%] space-y-2.5 sm:space-y-3 ${msg.sender === 'user'
+                  ? 'bg-primary text-white rounded-2xl rounded-tr-sm p-3 sm:p-4 shadow-md text-xs sm:text-sm font-medium'
+                  : isLight
+                    ? 'bg-gray-50 border border-gray-200 text-gray-800 rounded-2xl rounded-tl-sm p-3.5 sm:p-5 shadow-sm'
+                    : 'glass-panel border-white/10 text-gray-200 rounded-2xl rounded-tl-sm p-3.5 sm:p-5 shadow-sm'
+                  }`}>
                   <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap break-words">{msg.text}</p>
 
                   {/* Initial Starter Topics (only on welcome message) */}
                   {msg.id === 'welcome' && (
                     <div className="pt-2.5 space-y-2 border-t border-current/10">
-                      <p className={`text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 ${
-                        isLight ? 'text-gray-500' : 'text-gray-400'
-                      }`}>
+                      <p className={`text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 ${isLight ? 'text-gray-500' : 'text-gray-400'
+                        }`}>
                         <Sparkles className="h-3 w-3 text-secondary" /> Or tap a starter topic:
                       </p>
                       <div className="flex flex-wrap gap-1.5 pt-0.5">
@@ -311,11 +306,10 @@ export default function AIQuizAssistantModal({
                             key={i}
                             type="button"
                             onClick={() => handleSendPrompt(sug.prompt, null, null)}
-                            className={`px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all border cursor-pointer text-left hover:scale-[1.02] active:scale-[0.98] ${
-                              isLight
-                                ? 'bg-white border-gray-200 hover:border-secondary hover:text-secondary text-gray-800 shadow-sm'
-                                : 'bg-white/5 border-white/10 hover:border-secondary hover:text-white text-gray-200'
-                            }`}
+                            className={`px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all border cursor-pointer text-left hover:scale-[1.02] active:scale-[0.98] ${isLight
+                              ? 'bg-white border-gray-200 hover:border-secondary hover:text-secondary text-gray-800 shadow-sm'
+                              : 'bg-white/5 border-white/10 hover:border-secondary hover:text-white text-gray-200'
+                              }`}
                           >
                             {sug.label}
                           </button>
@@ -327,7 +321,7 @@ export default function AIQuizAssistantModal({
                   {/* If this AI message contains generated quiz results */}
                   {msg.result && msg.result.questions && (
                     <div className="space-y-3 pt-3 border-t border-current/10">
-                      
+
                       {/* Controls Bar for this result */}
                       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                         <div className="flex items-center gap-1.5 sm:gap-2">
@@ -356,18 +350,16 @@ export default function AIQuizAssistantModal({
                             <div
                               key={qIdx}
                               onClick={() => handleToggleSelectQuestion(qIdx)}
-                              className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border transition-all cursor-pointer select-none relative ${
-                                isSelected
-                                  ? 'border-secondary bg-secondary/10 shadow-sm'
-                                  : isLight ? 'border-gray-200 bg-white hover:border-gray-300' : 'border-white/5 bg-white/5 hover:border-white/15'
-                              }`}
+                              className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border transition-all cursor-pointer select-none relative ${isSelected
+                                ? 'border-secondary bg-secondary/10 shadow-sm'
+                                : isLight ? 'border-gray-200 bg-white hover:border-gray-300' : 'border-white/5 bg-white/5 hover:border-white/15'
+                                }`}
                             >
                               <div className="flex items-start gap-2.5 sm:gap-3">
-                                <div className={`h-4.5 w-4.5 sm:h-5 sm:w-5 rounded-md flex items-center justify-center mt-0.5 shrink-0 border transition-all ${
-                                  isSelected 
-                                    ? 'bg-secondary text-white border-secondary' 
-                                    : isLight ? 'border-gray-300 bg-gray-100' : 'border-white/20 bg-white/5'
-                                }`}>
+                                <div className={`h-4.5 w-4.5 sm:h-5 sm:w-5 rounded-md flex items-center justify-center mt-0.5 shrink-0 border transition-all ${isSelected
+                                  ? 'bg-secondary text-white border-secondary'
+                                  : isLight ? 'border-gray-300 bg-gray-100' : 'border-white/20 bg-white/5'
+                                  }`}>
                                   {isSelected && <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5 stroke-[3]" />}
                                 </div>
 
@@ -389,11 +381,10 @@ export default function AIQuizAssistantModal({
                                       return (
                                         <div
                                           key={optIdx}
-                                          className={`px-2.5 py-1.5 rounded-xl text-[11px] flex items-center justify-between gap-1.5 border min-w-0 ${
-                                            isCorrect
-                                              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-extrabold'
-                                              : isLight ? 'bg-gray-100/80 border-gray-200 text-gray-700' : 'bg-white/5 border-white/5 text-gray-300'
-                                          }`}
+                                          className={`px-2.5 py-1.5 rounded-xl text-[11px] flex items-center justify-between gap-1.5 border min-w-0 ${isCorrect
+                                            ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-extrabold'
+                                            : isLight ? 'bg-gray-100/80 border-gray-200 text-gray-700' : 'bg-white/5 border-white/5 text-gray-300'
+                                            }`}
                                         >
                                           <span className="truncate">{opt}</span>
                                           {isCorrect && (
@@ -453,9 +444,8 @@ export default function AIQuizAssistantModal({
                 <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg sm:rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0 animate-pulse">
                   <Bot className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </div>
-                <div className={`p-3 sm:p-4 rounded-2xl rounded-tl-sm border flex items-center gap-2.5 sm:gap-3 ${
-                  isLight ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-primary/10 border-primary/20 text-primary-200'
-                }`}>
+                <div className={`p-3 sm:p-4 rounded-2xl rounded-tl-sm border flex items-center gap-2.5 sm:gap-3 ${isLight ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-primary/10 border-primary/20 text-primary-200'
+                  }`}>
                   <div className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin rounded-full border-2 border-primary border-t-transparent shrink-0" />
                   <span className="text-xs font-bold animate-pulse">
                     AI is generating your questions...
@@ -468,9 +458,8 @@ export default function AIQuizAssistantModal({
           </div>
 
           {/* Input & Parameters Bar */}
-          <div className={`px-3.5 py-2.5 sm:px-5 sm:py-3.5 border-t shrink-0 space-y-2.5 ${
-            isLight ? 'bg-[#FAFAFD] border-gray-200' : 'bg-[#101018] border-white/10'
-          }`}>
+          <div className={`px-3.5 py-2.5 sm:px-5 sm:py-3.5 border-t shrink-0 space-y-2.5 ${isLight ? 'bg-[#FAFAFD] border-gray-200' : 'bg-[#101018] border-white/10'
+            }`}>
             {/* Collapsible Ideas Drawer (when toggled via Ideas button) */}
             {showSuggestions && (
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar shrink-0">
@@ -483,11 +472,10 @@ export default function AIQuizAssistantModal({
                       handleSendPrompt(sug.prompt, null, null);
                       setShowSuggestions(false);
                     }}
-                    className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 ${
-                      isLight
-                        ? 'bg-white border-gray-200 hover:border-secondary hover:text-secondary text-gray-700 shadow-xs'
-                        : 'bg-white/5 border-white/10 hover:border-secondary hover:text-white text-gray-300'
-                    }`}
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 ${isLight
+                      ? 'bg-white border-gray-200 hover:border-secondary hover:text-secondary text-gray-700 shadow-xs'
+                      : 'bg-white/5 border-white/10 hover:border-secondary hover:text-white text-gray-300'
+                      }`}
                   >
                     {sug.label}
                   </button>
@@ -506,11 +494,10 @@ export default function AIQuizAssistantModal({
                       setIsCountOpen(prev => !prev);
                       setIsDiffOpen(false);
                     }}
-                    className={`px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer shadow-2xs ${
-                      isLight
-                        ? 'bg-white hover:bg-gray-50 border-gray-200 text-gray-800'
-                        : 'bg-white/5 hover:bg-white/10 border-white/10 text-gray-200'
-                    }`}
+                    className={`px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer shadow-2xs ${isLight
+                      ? 'bg-white hover:bg-gray-50 border-gray-200 text-gray-800'
+                      : 'bg-white/5 hover:bg-white/10 border-white/10 text-gray-200'
+                      }`}
                     aria-label="Question Count"
                   >
                     <Layers className="h-3 w-3 text-secondary" />
@@ -520,11 +507,10 @@ export default function AIQuizAssistantModal({
 
                   {/* Popover Dropdown (Opens upwards above input) */}
                   {isCountOpen && (
-                    <div className={`absolute bottom-full mb-2 left-0 z-50 w-52 rounded-2xl p-1.5 border shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
-                      isLight
-                        ? 'bg-white/98 border-gray-200 text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.14)]'
-                        : 'bg-[#181826]/98 border-white/10 text-gray-200 shadow-[0_12px_30px_rgba(0,0,0,0.6)]'
-                    }`}>
+                    <div className={`absolute bottom-full mb-2 left-0 z-50 w-52 rounded-2xl p-1.5 border shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${isLight
+                      ? 'bg-white/98 border-gray-200 text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.14)]'
+                      : 'bg-[#181826]/98 border-white/10 text-gray-200 shadow-[0_12px_30px_rgba(0,0,0,0.6)]'
+                      }`}>
                       <div className="px-2.5 py-1 text-[9.5px] font-black uppercase tracking-wider text-gray-400">
                         Number of Questions
                       </div>
@@ -539,11 +525,10 @@ export default function AIQuizAssistantModal({
                                 setQuestionCount(opt.value);
                                 setIsCountOpen(false);
                               }}
-                              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
-                                isSelected
-                                  ? isLight ? 'bg-purple-50 text-purple-900 font-bold' : 'bg-purple-900/30 text-purple-200 font-bold'
-                                  : isLight ? 'hover:bg-gray-100/80 text-gray-700' : 'hover:bg-white/5 text-gray-300'
-                              }`}
+                              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${isSelected
+                                ? isLight ? 'bg-purple-50 text-purple-900 font-bold' : 'bg-purple-900/30 text-purple-200 font-bold'
+                                : isLight ? 'hover:bg-gray-100/80 text-gray-700' : 'hover:bg-white/5 text-gray-300'
+                                }`}
                             >
                               <div>
                                 <div className="text-xs leading-none font-bold">{opt.label}</div>
@@ -568,29 +553,26 @@ export default function AIQuizAssistantModal({
                       setIsDiffOpen(prev => !prev);
                       setIsCountOpen(false);
                     }}
-                    className={`px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer shadow-2xs ${
-                      difficulty === 'easy'
-                        ? isLight ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100' : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/25'
-                        : difficulty === 'medium'
-                          ? isLight ? 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100' : 'bg-yellow-500/15 text-yellow-300 border-yellow-500/30 hover:bg-yellow-500/25'
-                          : isLight ? 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100' : 'bg-rose-500/15 text-rose-300 border-rose-500/30 hover:bg-rose-500/25'
-                    }`}
+                    className={`px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer shadow-2xs ${difficulty === 'easy'
+                      ? isLight ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100' : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/25'
+                      : difficulty === 'medium'
+                        ? isLight ? 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100' : 'bg-yellow-500/15 text-yellow-300 border-yellow-500/30 hover:bg-yellow-500/25'
+                        : isLight ? 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100' : 'bg-rose-500/15 text-rose-300 border-rose-500/30 hover:bg-rose-500/25'
+                      }`}
                     aria-label="Difficulty"
                   >
-                    <span className={`w-2 h-2 rounded-full ${
-                      difficulty === 'easy' ? 'bg-emerald-500' : difficulty === 'medium' ? 'bg-amber-500' : 'bg-rose-500'
-                    }`} />
+                    <span className={`w-2 h-2 rounded-full ${difficulty === 'easy' ? 'bg-emerald-500' : difficulty === 'medium' ? 'bg-amber-500' : 'bg-rose-500'
+                      }`} />
                     <span className="capitalize">{difficulty}</span>
                     <ChevronDown className={`h-3 w-3 transition-transform duration-150 ${isDiffOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {/* Popover Dropdown (Opens upwards above input) */}
                   {isDiffOpen && (
-                    <div className={`absolute bottom-full mb-2 left-0 z-50 w-52 rounded-2xl p-1.5 border shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
-                      isLight
-                        ? 'bg-white/98 border-gray-200 text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.14)]'
-                        : 'bg-[#181826]/98 border-white/10 text-gray-200 shadow-[0_12px_30px_rgba(0,0,0,0.6)]'
-                    }`}>
+                    <div className={`absolute bottom-full mb-2 left-0 z-50 w-52 rounded-2xl p-1.5 border shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${isLight
+                      ? 'bg-white/98 border-gray-200 text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.14)]'
+                      : 'bg-[#181826]/98 border-white/10 text-gray-200 shadow-[0_12px_30px_rgba(0,0,0,0.6)]'
+                      }`}>
                       <div className="px-2.5 py-1 text-[9.5px] font-black uppercase tracking-wider text-gray-400">
                         Quiz Difficulty
                       </div>
@@ -605,11 +587,10 @@ export default function AIQuizAssistantModal({
                                 setDifficulty(opt.value);
                                 setIsDiffOpen(false);
                               }}
-                              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
-                                isSelected
-                                  ? isLight ? 'bg-purple-50 text-purple-900 font-bold' : 'bg-purple-900/30 text-purple-200 font-bold'
-                                  : isLight ? 'hover:bg-gray-100/80 text-gray-700' : 'hover:bg-white/5 text-gray-300'
-                              }`}
+                              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${isSelected
+                                ? isLight ? 'bg-purple-50 text-purple-900 font-bold' : 'bg-purple-900/30 text-purple-200 font-bold'
+                                : isLight ? 'hover:bg-gray-100/80 text-gray-700' : 'hover:bg-white/5 text-gray-300'
+                                }`}
                             >
                               <div className="flex items-center gap-2">
                                 <span className={`w-2.5 h-2.5 rounded-full ${opt.dotColor}`} />
@@ -634,11 +615,10 @@ export default function AIQuizAssistantModal({
               <button
                 type="button"
                 onClick={() => setShowSuggestions(prev => !prev)}
-                className={`px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1 border transition-all cursor-pointer shrink-0 ${
-                  showSuggestions
-                    ? 'bg-secondary/20 border-secondary/40 text-secondary'
-                    : isLight ? 'bg-white border-gray-200 text-gray-600 hover:text-gray-900 shadow-2xs' : 'bg-white/5 border-white/10 text-gray-400 hover:text-gray-200'
-                }`}
+                className={`px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1 border transition-all cursor-pointer shrink-0 ${showSuggestions
+                  ? 'bg-secondary/20 border-secondary/40 text-secondary'
+                  : isLight ? 'bg-white border-gray-200 text-gray-600 hover:text-gray-900 shadow-2xs' : 'bg-white/5 border-white/10 text-gray-400 hover:text-gray-200'
+                  }`}
               >
                 <Sparkles className="h-3 w-3 text-secondary" />
                 <span>Ideas</span>
@@ -662,11 +642,10 @@ export default function AIQuizAssistantModal({
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="Type quiz topic (e.g. JavaScript basics)..."
                   disabled={isLoading}
-                  className={`w-full rounded-xl sm:rounded-2xl border px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${
-                    isLight
-                      ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
-                      : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
-                  }`}
+                  className={`w-full rounded-xl sm:rounded-2xl border px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm transition-all focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 ${isLight
+                    ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                    : 'bg-white/5 border-white/10 text-white placeholder-gray-500'
+                    }`}
                 />
               </div>
 

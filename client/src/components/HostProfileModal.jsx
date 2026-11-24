@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  User, Mail, ShieldCheck, Calendar, Lock, Eye, EyeOff, 
+import {
+  User, Mail, ShieldCheck, Calendar, Lock, Eye, EyeOff,
   X, Check, Loader2, Sparkles, KeyRound, AlertCircle, Edit3
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTheme } from '../context/ThemeContext';
 import { updateProfile } from '../services/authService';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
   const { themeMode } = useTheme();
@@ -34,6 +35,9 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [mounted, setMounted] = useState(false);
 
+  // Lock background scroll when modal is open
+  useScrollLock(isOpen);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -55,13 +59,7 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
       setConfirmPassword('');
       setErrorMessage('');
       setIsSaving(false);
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [isOpen]);
 
   // Handle Escape key
@@ -144,7 +142,7 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
         window.dispatchEvent(new CustomEvent('user-profile-updated', { detail: updatedUserData }));
 
         toast.success('Host profile updated successfully!', { id: 'profile-update-toast' });
-        
+
         if (onUpdated) {
           onUpdated(updatedUserData);
         }
@@ -163,14 +161,14 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
   if (!mounted) return null;
 
   const displayInitial = (name.trim() || currentUser?.name || 'H').charAt(0).toUpperCase();
-  const memberSince = currentUser?.createdAt 
+  const memberSince = currentUser?.createdAt
     ? new Date(currentUser.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
     : 'Active Host';
 
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto overscroll-contain bg-black/80 backdrop-blur-md">
           {/* Modal Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -186,16 +184,14 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 15 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className={`relative z-10 w-full max-w-lg my-auto flex flex-col rounded-3xl shadow-2xl border overflow-hidden ${
-              isLight
-                ? 'bg-white border-purple-200 text-gray-900 shadow-purple-500/10'
-                : 'bg-[#12121a] border-purple-500/30 text-white shadow-black/80'
-            }`}
+            className={`relative z-10 w-full max-w-lg my-auto flex flex-col rounded-3xl shadow-2xl border overflow-hidden ${isLight
+              ? 'bg-white border-purple-200 text-gray-900 shadow-purple-500/10'
+              : 'bg-[#12121a] border-purple-500/30 text-white shadow-black/80'
+              }`}
           >
             {/* Header */}
-            <div className={`flex items-center justify-between px-6 py-4 border-b shrink-0 ${
-              isLight ? 'bg-purple-50/80 border-purple-100' : 'bg-purple-950/25 border-purple-500/20'
-            }`}>
+            <div className={`flex items-center justify-between px-6 py-4 border-b shrink-0 ${isLight ? 'bg-purple-50/80 border-purple-100' : 'bg-purple-950/25 border-purple-500/20'
+              }`}>
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-primary to-secondary text-white shadow-md shadow-primary/30">
                   <Edit3 className="h-5 w-5" />
@@ -213,23 +209,21 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
                 type="button"
                 disabled={isSaving}
                 onClick={onClose}
-                className={`p-1.5 rounded-xl transition-colors cursor-pointer ${
-                  isLight ? 'text-gray-400 hover:text-gray-700 hover:bg-gray-100' : 'text-gray-400 hover:text-white hover:bg-white/10'
-                }`}
+                className={`p-1.5 rounded-xl transition-colors cursor-pointer ${isLight ? 'text-gray-400 hover:text-gray-700 hover:bg-gray-100' : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  }`}
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {/* Form Content */}
-            <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto max-h-[calc(88vh-100px)] text-left">
-              
+            <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto overscroll-contain max-h-[calc(88vh-100px)] text-left">
+
               {/* Host Profile Banner / Live Avatar Preview */}
-              <div className={`p-4 rounded-2xl border flex items-center gap-4 ${
-                isLight 
-                  ? 'bg-gradient-to-r from-purple-50 via-indigo-50/50 to-pink-50 border-purple-100' 
-                  : 'bg-gradient-to-r from-purple-950/30 via-indigo-950/20 to-pink-950/20 border-white/10'
-              }`}>
+              <div className={`p-4 rounded-2xl border flex items-center gap-4 ${isLight
+                ? 'bg-gradient-to-r from-purple-50 via-indigo-50/50 to-pink-50 border-purple-100'
+                : 'bg-gradient-to-r from-purple-950/30 via-indigo-950/20 to-pink-950/20 border-white/10'
+                }`}>
                 <div className="relative shrink-0">
                   <div className="h-16 w-16 rounded-2xl bg-gradient-to-tr from-primary via-purple-600 to-secondary flex items-center justify-center font-extrabold text-2xl text-white shadow-lg shadow-primary/25 ring-4 ring-primary/20 transition-all">
                     {displayInitial}
@@ -267,9 +261,8 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
               <div className="space-y-4">
                 {/* Full Name Input */}
                 <div className="space-y-1.5">
-                  <label className={`block text-xs font-bold uppercase tracking-wider ${
-                    isLight ? 'text-gray-700' : 'text-gray-300'
-                  }`}>
+                  <label className={`block text-xs font-bold uppercase tracking-wider ${isLight ? 'text-gray-700' : 'text-gray-300'
+                    }`}>
                     Full Name <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -286,11 +279,10 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
                       }}
                       disabled={isSaving}
                       placeholder="e.g. Vidisha Gawas"
-                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm border transition-all outline-none font-medium ${
-                        isLight
-                          ? 'border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 text-gray-900'
-                          : 'border-white/10 bg-white/5 focus:bg-white/10 focus:border-primary focus:ring-2 focus:ring-primary/20 text-white'
-                      }`}
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm border transition-all outline-none font-medium ${isLight
+                        ? 'border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 text-gray-900'
+                        : 'border-white/10 bg-white/5 focus:bg-white/10 focus:border-primary focus:ring-2 focus:ring-primary/20 text-white'
+                        }`}
                       required
                       maxLength={50}
                     />
@@ -299,9 +291,8 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
 
                 {/* Email Input */}
                 <div className="space-y-1.5">
-                  <label className={`block text-xs font-bold uppercase tracking-wider ${
-                    isLight ? 'text-gray-700' : 'text-gray-300'
-                  }`}>
+                  <label className={`block text-xs font-bold uppercase tracking-wider ${isLight ? 'text-gray-700' : 'text-gray-300'
+                    }`}>
                     Email Address <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -317,11 +308,10 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
                       }}
                       disabled={isSaving}
                       placeholder="e.g. host@example.com"
-                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm border transition-all outline-none font-medium ${
-                        isLight
-                          ? 'border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 text-gray-900'
-                          : 'border-white/10 bg-white/5 focus:bg-white/10 focus:border-primary focus:ring-2 focus:ring-primary/20 text-white'
-                      }`}
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm border transition-all outline-none font-medium ${isLight
+                        ? 'border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 text-gray-900'
+                        : 'border-white/10 bg-white/5 focus:bg-white/10 focus:border-primary focus:ring-2 focus:ring-primary/20 text-white'
+                        }`}
                       required
                     />
                   </div>
@@ -333,11 +323,10 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
                 <button
                   type="button"
                   onClick={() => setShowPasswordSection(!showPasswordSection)}
-                  className={`w-full flex items-center justify-between p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                    showPasswordSection
-                      ? (isLight ? 'bg-primary/10 border-primary/30 text-primary' : 'bg-primary/20 border-primary/40 text-primary')
-                      : (isLight ? 'bg-gray-50 border-gray-200 hover:bg-gray-100 text-gray-700' : 'bg-white/5 border-white/10 hover:bg-white/10 text-gray-300')
-                  }`}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${showPasswordSection
+                    ? (isLight ? 'bg-primary/10 border-primary/30 text-primary' : 'bg-primary/20 border-primary/40 text-primary')
+                    : (isLight ? 'bg-gray-50 border-gray-200 hover:bg-gray-100 text-gray-700' : 'bg-white/5 border-white/10 hover:bg-white/10 text-gray-300')
+                    }`}
                 >
                   <span className="flex items-center gap-2">
                     <KeyRound className="h-4 w-4" />
@@ -372,9 +361,8 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
                             onChange={(e) => setCurrentPassword(e.target.value)}
                             disabled={isSaving}
                             placeholder="Enter current password"
-                            className={`w-full pl-9 pr-9 py-2 rounded-xl text-xs border outline-none ${
-                              isLight ? 'bg-gray-50 border-gray-200 focus:bg-white text-gray-900' : 'bg-white/5 border-white/10 text-white'
-                            }`}
+                            className={`w-full pl-9 pr-9 py-2 rounded-xl text-xs border outline-none ${isLight ? 'bg-gray-50 border-gray-200 focus:bg-white text-gray-900' : 'bg-white/5 border-white/10 text-white'
+                              }`}
                           />
                           <button
                             type="button"
@@ -402,9 +390,8 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
                               onChange={(e) => setNewPassword(e.target.value)}
                               disabled={isSaving}
                               placeholder="Min 6 characters"
-                              className={`w-full pl-9 pr-9 py-2 rounded-xl text-xs border outline-none ${
-                                isLight ? 'bg-gray-50 border-gray-200 focus:bg-white text-gray-900' : 'bg-white/5 border-white/10 text-white'
-                              }`}
+                              className={`w-full pl-9 pr-9 py-2 rounded-xl text-xs border outline-none ${isLight ? 'bg-gray-50 border-gray-200 focus:bg-white text-gray-900' : 'bg-white/5 border-white/10 text-white'
+                                }`}
                             />
                             <button
                               type="button"
@@ -431,9 +418,8 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
                               onChange={(e) => setConfirmPassword(e.target.value)}
                               disabled={isSaving}
                               placeholder="Repeat new password"
-                              className={`w-full pl-9 pr-4 py-2 rounded-xl text-xs border outline-none ${
-                                isLight ? 'bg-gray-50 border-gray-200 focus:bg-white text-gray-900' : 'bg-white/5 border-white/10 text-white'
-                              }`}
+                              className={`w-full pl-9 pr-4 py-2 rounded-xl text-xs border outline-none ${isLight ? 'bg-gray-50 border-gray-200 focus:bg-white text-gray-900' : 'bg-white/5 border-white/10 text-white'
+                                }`}
                             />
                           </div>
                         </div>
@@ -461,11 +447,10 @@ export default function HostProfileModal({ isOpen, onClose, onUpdated }) {
                   type="button"
                   disabled={isSaving}
                   onClick={onClose}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    isLight
-                      ? 'border border-gray-200 text-gray-700 hover:bg-gray-100'
-                      : 'border border-white/10 text-gray-300 hover:bg-white/5'
-                  }`}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${isLight
+                    ? 'border border-gray-200 text-gray-700 hover:bg-gray-100'
+                    : 'border border-white/10 text-gray-300 hover:bg-white/5'
+                    }`}
                 >
                   Cancel
                 </button>

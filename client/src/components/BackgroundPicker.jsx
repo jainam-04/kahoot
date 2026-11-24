@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Image, Upload, Settings, Search, Heart, ZoomIn, ZoomOut, Download, Check, ExternalLink, X, ChevronLeft, ChevronRight, Sparkles, Monitor, Smartphone } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTheme } from '../context/ThemeContext';
+import { useScrollLock } from '../utils/scrollLock';
 
 const BG_PRESETS = {
   Education: [
@@ -946,9 +947,9 @@ const LOCAL_PIXEL_LIBRARY = {
 };
 
 const INAPPROPRIATE_KEYWORDS = [
-  'nude', 'nudes', 'naked', 'bikini', 'bikinis', 'swimsuit', 'swimwear', 'lingerie', 
-  'underwear', 'topless', 'erotic', 'nsfw', 'adult', 'cleavage', 'sexy', 
-  'babe', 'sensual', 'playboy', 'boobs', 'butt', 'breast', 'bust', 'thong', 
+  'nude', 'nudes', 'naked', 'bikini', 'bikinis', 'swimsuit', 'swimwear', 'lingerie',
+  'underwear', 'topless', 'erotic', 'nsfw', 'adult', 'cleavage', 'sexy',
+  'babe', 'sensual', 'playboy', 'boobs', 'butt', 'breast', 'bust', 'thong',
   'panties', 'bra', 'strip', 'porn', 'xxx', 'sex', 'erotica', 'nude art', 'nude photography',
   'ted van pelt', 'water ski', 'water skiing', 'vintage swimsuit', 'retro swimsuit', 'old swimsuit photo',
   'sam droege', 'droege', 'insect', 'insects', 'grasshopper', 'locust', 'gryllidae', 'cicada', 'macro insect', 'bug', 'bugs', 'cockroach', 'beetle'
@@ -962,13 +963,13 @@ const isContentInappropriate = (text) => {
 
 const getLocalImages = (cat, query) => {
   const q = (query || '').toLowerCase().trim();
-  
+
   if (isContentInappropriate(q)) {
     return [];
   }
 
   const filterSafe = (list) => (list || []).filter(img => !isContentInappropriate(`${img.label || ''} ${img.url || ''} ${img.category || ''}`));
-  
+
   if (q) {
     if (q.includes('robot') || q.includes('android') || q.includes('humanoid') || q.includes('cyborg') || q.includes('mech') || q.includes('robotic')) {
       return filterSafe(LOCAL_PIXEL_LIBRARY.robots);
@@ -1002,8 +1003,8 @@ const getLocalImages = (cat, query) => {
     }
 
     const allImages = Object.values(LOCAL_PIXEL_LIBRARY).flat();
-    return filterSafe(allImages.filter(img => 
-      (img.label || '').toLowerCase().includes(q) || 
+    return filterSafe(allImages.filter(img =>
+      (img.label || '').toLowerCase().includes(q) ||
       (img.category || '').toLowerCase().includes(q)
     ));
   }
@@ -1129,56 +1130,56 @@ const compressAndResizeImage = (file) => {
 // Maps each category chip id to SHORT (2-4 word) keyword phrases
 // Openverse works best with concise queries — long strings cause low result counts
 const CATEGORY_QUERIES = {
-  trending:     'trending popular photography',
-  technology:   'modern laptop computer coding software developer workstation',
-  robots:       'humanoid robot machine android mech robotic',
-  coffee:       'coffee espresso latte art cafe coffee beans',
-  nature:       'nature landscape scenic',
-  animals:      'animals wildlife',
-  flowers:      'flowers blooms garden',
-  birds:        'birds wildlife nature',
-  fruits:       'fruits food colorful',
-  food:         'food delicious cuisine',
-  travel:       'travel destinations landmarks',
-  gaming:       'gaming video games',
-  cars:         'cars automobile vehicle',
-  space:        'space galaxy cosmos',
-  education:    'education books classroom stationery pen notebook motivational quote learning',
-  business:     'business professional office',
-  abstract:     'abstract art colorful',
-  minimal:      'minimal clean simple',
-  fantasy:      'fantasy magical mystical',
+  trending: 'trending popular photography',
+  technology: 'modern laptop computer coding software developer workstation',
+  robots: 'humanoid robot machine android mech robotic',
+  coffee: 'coffee espresso latte art cafe coffee beans',
+  nature: 'nature landscape scenic',
+  animals: 'animals wildlife',
+  flowers: 'flowers blooms garden',
+  birds: 'birds wildlife nature',
+  fruits: 'fruits food colorful',
+  food: 'food delicious cuisine',
+  travel: 'travel destinations landmarks',
+  gaming: 'gaming video games',
+  cars: 'cars automobile vehicle',
+  space: 'space galaxy cosmos',
+  education: 'education books classroom stationery pen notebook motivational quote learning',
+  business: 'business professional office',
+  abstract: 'abstract art colorful',
+  minimal: 'minimal clean simple',
+  fantasy: 'fantasy magical mystical',
   architecture: 'architecture buildings design',
-  backgrounds:  'background wallpaper scenic',
-  textures:     'texture surface material',
-  patterns:     'pattern geometric design',
-  ocean:        'ocean sea waves',
-  forest:       'forest trees woodland',
-  mountain:     'mountain peaks alpine',
-  cities:       'city urban skyline',
-  art:          'art painting creative'
+  backgrounds: 'background wallpaper scenic',
+  textures: 'texture surface material',
+  patterns: 'pattern geometric design',
+  ocean: 'ocean sea waves',
+  forest: 'forest trees woodland',
+  mountain: 'mountain peaks alpine',
+  cities: 'city urban skyline',
+  art: 'art painting creative'
 };
 
 // Sub-category quick-search chips shown below main category chips
 const SUB_CATEGORIES = {
   technology: ['Macbook Pro', 'Gaming PC Setup', 'Coding Screen', 'Cyberpunk Tech', 'Developer Workspace', 'Quantum Computing', 'Data Center', 'Tech Hardware', 'Smart Home', 'Virtual Reality'],
-  education:  ['Books', 'Classroom', 'Stationery', 'Pencils', 'Notebook & Pen', 'Motivational Quote', 'Library', 'Graduation', 'Science Lab', 'Mathematics', 'Crayons', 'Globe', 'Study Desk', 'Blackboard', 'Telescope'],
-  coffee:     ['Latte Art', 'Espresso Shot', 'Coffee Cup', 'Cappuccino', 'Coffee Beans', 'Cafe Vibe', 'Iced Coffee', 'Morning Coffee', 'Barista', 'Cold Brew', 'Roastery', 'Coffee Shop'],
-  cities:     ['Paris', 'London', 'Tokyo', 'New York', 'Dubai', 'Sydney', 'Rome', 'Barcelona', 'Mumbai', 'Singapore', 'Istanbul', 'Bangkok'],
-  animals:    ['Panda', 'Lion', 'Tiger', 'Elephant', 'Wolf', 'Dolphin', 'Gorilla', 'Cheetah', 'Giraffe', 'Zebra', 'Penguin', 'Fox'],
-  fruits:     ['Mango', 'Apple', 'Strawberry', 'Orange', 'Banana', 'Watermelon', 'Grapes', 'Pineapple', 'Cherry', 'Coconut', 'Peach', 'Lemon'],
-  flowers:    ['Rose', 'Sunflower', 'Tulip', 'Lavender', 'Orchid', 'Daisy', 'Lotus', 'Jasmine', 'Hibiscus', 'Poppy', 'Lily', 'Dahlia'],
-  birds:      ['Peacock', 'Eagle', 'Parrot', 'Flamingo', 'Owl', 'Toucan', 'Humming Bird', 'Kingfisher', 'Sparrow', 'Pelican', 'Macaw', 'Crane'],
-  food:       ['Pizza', 'Burger', 'Sushi', 'Ramen', 'Pasta', 'Biryani', 'Tacos', 'Ice Cream', 'Cake', 'Sandwich', 'Salad', 'Noodles'],
-  cars:       ['Ferrari', 'Lamborghini', 'Mustang', 'Porsche', 'BMW', 'Mercedes', 'Bugatti', 'Rolls Royce', 'Jeep', 'Truck', 'Race Car', 'Motorcycle'],
-  space:      ['Galaxy', 'Nebula', 'Astronaut', 'Mars', 'Moon', 'Milky Way', 'Black Hole', 'Comet', 'Saturn', 'Jupiter', 'Supernova', 'Aurora'],
-  nature:     ['Sunset', 'Waterfall', 'Rainbow', 'Volcano', 'Desert', 'Glacier', 'River', 'Canyon', 'Cave', 'Meadow', 'Valley', 'Storm'],
-  travel:     ['Eiffel Tower', 'Taj Mahal', 'Colosseum', 'Great Wall', 'Pyramids', 'Santorini', 'Maldives', 'Bali', 'Venice', 'Safari', 'Northern Lights', 'Machu Picchu'],
-  gaming:     ['Minecraft', 'Fortnite', 'Pokemon', 'Mario', 'Zelda', 'Neon Setup', 'Game Controller', 'Esports', 'VR Gaming', 'Pixel Art', 'RPG'],
-  ocean:      ['Coral Reef', 'Jellyfish', 'Shark', 'Whale', 'Turtle', 'Clownfish', 'Octopus', 'Manta Ray', 'Starfish', 'Seahorse', 'Blue Whale', 'Tropical Fish'],
-  forest:     ['Redwood', 'Rainforest', 'Misty Forest', 'Bamboo', 'Pine Forest', 'Autumn Forest', 'Fireflies', 'Mushrooms', 'Mossy Trees', 'Forest Path', 'Tree Canopy', 'Jungle'],
-  mountain:   ['Everest', 'Alps', 'Himalayas', 'Rocky Mountains', 'Dolomites', 'Snowpeak', 'Sunrise Mountain', 'Misty Mountain', 'Volcano', 'Ice Mountain', 'Canyon', 'Cliff'],
-  art:        ['Oil Painting', 'Watercolor', 'Street Art', 'Graffiti', 'Sculpture', 'Abstract Painting', 'Portrait', 'Cubism', 'Digital Art', 'Illustration', 'Calligraphy', 'Mosaic'],
+  education: ['Books', 'Classroom', 'Stationery', 'Pencils', 'Notebook & Pen', 'Motivational Quote', 'Library', 'Graduation', 'Science Lab', 'Mathematics', 'Crayons', 'Globe', 'Study Desk', 'Blackboard', 'Telescope'],
+  coffee: ['Latte Art', 'Espresso Shot', 'Coffee Cup', 'Cappuccino', 'Coffee Beans', 'Cafe Vibe', 'Iced Coffee', 'Morning Coffee', 'Barista', 'Cold Brew', 'Roastery', 'Coffee Shop'],
+  cities: ['Paris', 'London', 'Tokyo', 'New York', 'Dubai', 'Sydney', 'Rome', 'Barcelona', 'Mumbai', 'Singapore', 'Istanbul', 'Bangkok'],
+  animals: ['Panda', 'Lion', 'Tiger', 'Elephant', 'Wolf', 'Dolphin', 'Gorilla', 'Cheetah', 'Giraffe', 'Zebra', 'Penguin', 'Fox'],
+  fruits: ['Mango', 'Apple', 'Strawberry', 'Orange', 'Banana', 'Watermelon', 'Grapes', 'Pineapple', 'Cherry', 'Coconut', 'Peach', 'Lemon'],
+  flowers: ['Rose', 'Sunflower', 'Tulip', 'Lavender', 'Orchid', 'Daisy', 'Lotus', 'Jasmine', 'Hibiscus', 'Poppy', 'Lily', 'Dahlia'],
+  birds: ['Peacock', 'Eagle', 'Parrot', 'Flamingo', 'Owl', 'Toucan', 'Humming Bird', 'Kingfisher', 'Sparrow', 'Pelican', 'Macaw', 'Crane'],
+  food: ['Pizza', 'Burger', 'Sushi', 'Ramen', 'Pasta', 'Biryani', 'Tacos', 'Ice Cream', 'Cake', 'Sandwich', 'Salad', 'Noodles'],
+  cars: ['Ferrari', 'Lamborghini', 'Mustang', 'Porsche', 'BMW', 'Mercedes', 'Bugatti', 'Rolls Royce', 'Jeep', 'Truck', 'Race Car', 'Motorcycle'],
+  space: ['Galaxy', 'Nebula', 'Astronaut', 'Mars', 'Moon', 'Milky Way', 'Black Hole', 'Comet', 'Saturn', 'Jupiter', 'Supernova', 'Aurora'],
+  nature: ['Sunset', 'Waterfall', 'Rainbow', 'Volcano', 'Desert', 'Glacier', 'River', 'Canyon', 'Cave', 'Meadow', 'Valley', 'Storm'],
+  travel: ['Eiffel Tower', 'Taj Mahal', 'Colosseum', 'Great Wall', 'Pyramids', 'Santorini', 'Maldives', 'Bali', 'Venice', 'Safari', 'Northern Lights', 'Machu Picchu'],
+  gaming: ['Minecraft', 'Fortnite', 'Pokemon', 'Mario', 'Zelda', 'Neon Setup', 'Game Controller', 'Esports', 'VR Gaming', 'Pixel Art', 'RPG'],
+  ocean: ['Coral Reef', 'Jellyfish', 'Shark', 'Whale', 'Turtle', 'Clownfish', 'Octopus', 'Manta Ray', 'Starfish', 'Seahorse', 'Blue Whale', 'Tropical Fish'],
+  forest: ['Redwood', 'Rainforest', 'Misty Forest', 'Bamboo', 'Pine Forest', 'Autumn Forest', 'Fireflies', 'Mushrooms', 'Mossy Trees', 'Forest Path', 'Tree Canopy', 'Jungle'],
+  mountain: ['Everest', 'Alps', 'Himalayas', 'Rocky Mountains', 'Dolomites', 'Snowpeak', 'Sunrise Mountain', 'Misty Mountain', 'Volcano', 'Ice Mountain', 'Canyon', 'Cliff'],
+  art: ['Oil Painting', 'Watercolor', 'Street Art', 'Graffiti', 'Sculpture', 'Abstract Painting', 'Portrait', 'Cubism', 'Digital Art', 'Illustration', 'Calligraphy', 'Mosaic'],
 };
 
 export default function BackgroundPicker({ value, onChange, showPreview = true, previewData }) {
@@ -1186,7 +1187,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
 
-    const defaultPreviewData = {};
+  const defaultPreviewData = {};
   const pd = previewData || defaultPreviewData;
   const displayCategory = pd.category || 'Preview Category';
   const displayTime = pd.timeLimit || 20;
@@ -1210,15 +1211,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
   const [dragActive, setDragActive] = useState(false);
 
   // Body scroll lock effect for Pexels Library Portal Modal
-  useEffect(() => {
-    if (isPexelsModalOpen) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [isPexelsModalOpen]);
+  useScrollLock(isPexelsModalOpen);
 
   // ESC key handler for Pexels Modal
   useEffect(() => {
@@ -1249,7 +1242,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
   const [zoomScale, setZoomScale] = useState(1);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [bgAppliedConfirm, setBgAppliedConfirm] = useState(false);
-  
+
   const [recentSearches, setRecentSearches] = useState(() => {
     try {
       const saved = localStorage.getItem('pixel_library_recent_searches');
@@ -1301,7 +1294,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
         baseUrl = `${protocol}//${hostname}:5000/api`;
       }
       const apiUrl = `${baseUrl}/images/search?q=${encodeURIComponent(query)}&page=${page}`;
-      
+
       const headers = {};
       const pexelsKey = customKey || localStorage.getItem('user_pexels_api_key');
       if (pexelsKey) {
@@ -1334,7 +1327,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
       }
       setPixelQuery(trimmed);
       setPixelPage(1);
-      
+
       if (trimmed) {
         setRecentSearches(prev => {
           const filtered = prev.filter(s => s.toLowerCase() !== trimmed.toLowerCase());
@@ -1353,7 +1346,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
       const trendingRes = await fetchImagesFromApi('', 1, userPexelsKey);
       const editorsChoiceRes = await fetchImagesFromApi('aesthetic', 1, userPexelsKey);
       const popularRes = await fetchImagesFromApi('minimalist', 1, userPexelsKey);
-      
+
       setHomeLanesData({
         trending: (trendingRes.photos || []).filter(p => !isContentInappropriate(p.url)).slice(0, 12),
         editorsChoice: (editorsChoiceRes.photos || []).filter(p => !isContentInappropriate(p.url)).slice(0, 12),
@@ -1368,7 +1361,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
   // Main search and category resolver Effect
   useEffect(() => {
     if ((activeBgTab !== 'pixels' && !isPexelsModalOpen) || pixelShowFavoritesOnly) return;
-    
+
     // Empty search query & category all -> Home screen lists shown, grid is hidden
     if (!pixelQuery && pixelCategory === 'all') {
       setPixelImages([]);
@@ -1384,7 +1377,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
 
       setPixelLoading(true);
       const isLoadMore = pixelPage > 1;
-      
+
       let q;
       if (pixelQuery) {
         q = pixelQuery;
@@ -1393,7 +1386,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
       } else {
         q = 'nature beautiful';
       }
-      
+
       const cacheKey = `${q}-${pixelPage}`;
       if (!isLoadMore && searchCache[cacheKey]) {
         setPixelImages(searchCache[cacheKey].images);
@@ -1479,17 +1472,16 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
     <div className="grid gap-8 lg:grid-cols-12">
       {/* Left Column: Editor controls */}
       <div className={`${showPreview ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-6 text-left`}>
-        
+
         {/* Tab Navigation */}
         <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
           <button
             type="button"
             onClick={() => setActiveBgTab('upload')}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-              activeBgTab === 'upload'
-                ? 'bg-primary text-white shadow-premium-glow'
-                : 'text-gray-400 hover:text-white'
-            }`}
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeBgTab === 'upload'
+              ? 'bg-primary text-white shadow-premium-glow'
+              : 'text-gray-400 hover:text-white'
+              }`}
           >
             <span className="flex items-center justify-center gap-1.5">
               <Upload className="h-3.5 w-3.5" />
@@ -1502,11 +1494,10 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
               setActiveBgTab('pixels');
               setIsPexelsModalOpen(true);
             }}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-              activeBgTab === 'pixels'
-                ? 'bg-primary text-white shadow-premium-glow'
-                : 'text-gray-400 hover:text-white'
-            }`}
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeBgTab === 'pixels'
+              ? 'bg-primary text-white shadow-premium-glow'
+              : 'text-gray-400 hover:text-white'
+              }`}
           >
             <span className="flex items-center justify-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5" />
@@ -1517,7 +1508,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
 
         {/* Tab Contents */}
         <div className="min-h-[220px] bg-white/[0.02] border border-white/5 rounded-2xl p-4 sm:p-5 relative">
-          
+
           {/* TAB 2: UPLOAD BACKGROUND */}
           {activeBgTab === 'upload' && (
             <div className="space-y-4">
@@ -1549,13 +1540,12 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                     toast.error('Please drop a valid JPG, PNG or WebP image file.');
                   }
                 }}
-                className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all ${
-                  dragActive
-                    ? 'border-primary bg-primary/5 scale-[0.99]'
-                    : config.url.startsWith('data:')
+                className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all ${dragActive
+                  ? 'border-primary bg-primary/5 scale-[0.99]'
+                  : config.url.startsWith('data:')
                     ? 'border-green-500/35 bg-green-500/5'
                     : 'border-white/10 hover:border-white/20 hover:bg-white/[0.02]'
-                }`}
+                  }`}
               >
                 <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
                 <p className="text-xs font-bold text-gray-300">Drag and drop your image here</p>
@@ -1630,9 +1620,9 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
 
         {/* PEXELS LIBRARY PORTAL MODAL (REMOVED FROM NORMAL DOCUMENT FLOW) */}
         {isPexelsModalOpen && createPortal(
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-6 overflow-hidden">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-6 overflow-hidden overscroll-contain">
             <div className={`${isLight ? 'bg-white border-gray-200' : 'bg-[#121216] border-white/10'} border-0 sm:border rounded-none sm:rounded-2xl w-full max-w-5xl h-full sm:h-[88vh] flex flex-col shadow-2xl overflow-hidden relative text-left`}>
-              
+
               {/* Modal Header */}
               <div className={`flex items-center justify-between px-6 py-4 border-b ${isLight ? 'border-gray-200 bg-gray-50' : 'border-white/10 bg-[#18181f]'} shrink-0`}>
                 <div className="flex items-center gap-2.5">
@@ -1737,11 +1727,11 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                         ✕
                       </button>
                     )}
-                    
+
                     {/* Suggestions Dropdown */}
                     {showSuggestions && (
                       <div className={`absolute top-full left-0 right-0 mt-1 border rounded-xl overflow-hidden shadow-2xl z-40 max-h-52 overflow-y-auto scrollbar-thin ${isLight ? 'bg-white border-gray-200' : 'bg-[#18181f] border-white/10'}`}>
-                        {['Coffee', 'Latte Art', 'Espresso', 'Laptop', 'Coding', 'AI', 'Sunset', 'Nature', 'Forest', 'Ocean', 'Flowers', 'Roses', 'Birds', 'Food', 'Pizza', 'Burger', 'Gaming', 'Space', 'Galaxy', 'Abstract', 'Minimal'].filter(tag => 
+                        {['Coffee', 'Latte Art', 'Espresso', 'Laptop', 'Coding', 'AI', 'Sunset', 'Nature', 'Forest', 'Ocean', 'Flowers', 'Roses', 'Birds', 'Food', 'Pizza', 'Burger', 'Gaming', 'Space', 'Galaxy', 'Abstract', 'Minimal'].filter(tag =>
                           !pixelSearchInput || tag.toLowerCase().startsWith(pixelSearchInput.toLowerCase())
                         ).map(suggestion => (
                           <button
@@ -1765,11 +1755,10 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                     <button
                       type="button"
                       onClick={() => setPixelShowFavoritesOnly(prev => !prev)}
-                      className={`px-3.5 py-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                        pixelShowFavoritesOnly
-                          ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                          : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
-                      }`}
+                      className={`px-3.5 py-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${pixelShowFavoritesOnly
+                        ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                        : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                        }`}
                     >
                       <Heart className={`h-3.5 w-3.5 ${pixelShowFavoritesOnly ? 'fill-current' : ''}`} />
                       <span className="hidden sm:inline">{pixelShowFavoritesOnly ? 'Show All' : `Favorites (${pixelFavorites.length})`}</span>
@@ -1811,34 +1800,34 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 {!pixelShowFavoritesOnly && (
                   <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
                     {[
-                      { id: 'all',          label: '🌍 All Curated' },
-                      { id: 'trending',     label: '🔥 Trending' },
-                      { id: 'technology',   label: '💻 Technology' },
-                      { id: 'robots',       label: '🤖 Robots' },
-                      { id: 'nature',       label: '🌲 Nature' },
-                      { id: 'animals',      label: '🐯 Animals' },
-                      { id: 'flowers',      label: '🌸 Flowers' },
-                      { id: 'birds',        label: '🐦 Birds' },
-                      { id: 'fruits',       label: '🍎 Fruits' },
-                      { id: 'food',         label: '🍕 Food' },
-                      { id: 'travel',       label: '✈️ Travel' },
-                      { id: 'gaming',       label: '🎮 Gaming' },
-                      { id: 'cars',         label: '🚗 Cars' },
-                      { id: 'space',        label: '🚀 Space' },
-                      { id: 'education',    label: '🎓 Education' },
-                      { id: 'business',     label: '💼 Business' },
-                      { id: 'abstract',     label: '🎨 Abstract' },
-                      { id: 'minimal',      label: '⚪ Minimal' },
-                      { id: 'fantasy',      label: '🪄 Fantasy' },
+                      { id: 'all', label: '🌍 All Curated' },
+                      { id: 'trending', label: '🔥 Trending' },
+                      { id: 'technology', label: '💻 Technology' },
+                      { id: 'robots', label: '🤖 Robots' },
+                      { id: 'nature', label: '🌲 Nature' },
+                      { id: 'animals', label: '🐯 Animals' },
+                      { id: 'flowers', label: '🌸 Flowers' },
+                      { id: 'birds', label: '🐦 Birds' },
+                      { id: 'fruits', label: '🍎 Fruits' },
+                      { id: 'food', label: '🍕 Food' },
+                      { id: 'travel', label: '✈️ Travel' },
+                      { id: 'gaming', label: '🎮 Gaming' },
+                      { id: 'cars', label: '🚗 Cars' },
+                      { id: 'space', label: '🚀 Space' },
+                      { id: 'education', label: '🎓 Education' },
+                      { id: 'business', label: '💼 Business' },
+                      { id: 'abstract', label: '🎨 Abstract' },
+                      { id: 'minimal', label: '⚪ Minimal' },
+                      { id: 'fantasy', label: '🪄 Fantasy' },
                       { id: 'architecture', label: '🏛️ Architecture' },
-                      { id: 'backgrounds',  label: '🖼️ Backgrounds' },
-                      { id: 'textures',     label: '✨ Textures' },
-                      { id: 'patterns',     label: '💠 Patterns' },
-                      { id: 'ocean',        label: '🌊 Ocean' },
-                      { id: 'forest',       label: '🌳 Forest' },
-                      { id: 'mountain',     label: '⛰️ Mountain' },
-                      { id: 'cities',       label: '🌆 Cities' },
-                      { id: 'art',          label: '🖌️ Art' }
+                      { id: 'backgrounds', label: '🖼️ Backgrounds' },
+                      { id: 'textures', label: '✨ Textures' },
+                      { id: 'patterns', label: '💠 Patterns' },
+                      { id: 'ocean', label: '🌊 Ocean' },
+                      { id: 'forest', label: '🌳 Forest' },
+                      { id: 'mountain', label: '⛰️ Mountain' },
+                      { id: 'cities', label: '🌆 Cities' },
+                      { id: 'art', label: '🖌️ Art' }
                     ].map(cat => (
                       <button
                         key={cat.id}
@@ -1852,11 +1841,10 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                             setPixelImages([]);
                           }
                         }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-all border cursor-pointer ${
-                          pixelCategory === cat.id
-                            ? 'bg-primary border-primary text-white shadow-premium-glow'
-                            : isLight ? 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
-                        }`}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-all border cursor-pointer ${pixelCategory === cat.id
+                          ? 'bg-primary border-primary text-white shadow-premium-glow'
+                          : isLight ? 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                          }`}
                       >
                         {cat.label}
                       </button>
@@ -1881,11 +1869,10 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                             setPixelPage(1);
                             setPixelImages([]);
                           }}
-                          className={`px-2.5 py-1 rounded-full text-[10px] font-semibold shrink-0 transition-all border cursor-pointer ${
-                            pixelQuery === sub
-                              ? 'bg-primary/20 border-primary text-primary'
-                              : isLight ? 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-400' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30'
-                          }`}
+                          className={`px-2.5 py-1 rounded-full text-[10px] font-semibold shrink-0 transition-all border cursor-pointer ${pixelQuery === sub
+                            ? 'bg-primary/20 border-primary text-primary'
+                            : isLight ? 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-400' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30'
+                            }`}
                         >
                           {sub}
                         </button>
@@ -1956,7 +1943,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 {/* HOME SCREEN LANE LAYOUTS (when no query has been typed) */}
                 {!pixelQuery && pixelCategory === 'all' && !pixelShowFavoritesOnly && (
                   <div className="space-y-6">
-                    
+
                     {/* Category Banner */}
                     <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-primary/30 via-cyan-500/10 to-transparent p-5 border border-white/10 text-left">
                       <h2 className="text-sm font-bold text-white mb-1">Unleash Your Creativity</h2>
@@ -2085,7 +2072,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                       {(pixelShowFavoritesOnly ? pixelFavorites : pixelImages).map(img => {
                         const isApplied = config.url === img.src.large2x;
                         const isFav = pixelFavorites.some(f => f.id === img.id);
-                        
+
                         const minWidth = img.width || 1920;
                         const qTag = minWidth >= 3840 ? '4K' : minWidth >= 2560 ? 'UHD' : 'HD';
 
@@ -2098,13 +2085,12 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                               addToRecents(img);
                               toast.success('Applied image as background! 🌟');
                             }}
-                            className={`relative group aspect-video rounded-xl overflow-hidden border-2 cursor-pointer transition-all ${
-                              isApplied ? 'border-primary scale-[1.02] shadow-premium-glow' : 'border-transparent hover:border-white/20'
-                            }`}
+                            className={`relative group aspect-video rounded-xl overflow-hidden border-2 cursor-pointer transition-all ${isApplied ? 'border-primary scale-[1.02] shadow-premium-glow' : 'border-transparent hover:border-white/20'
+                              }`}
                             title="Double-Click to Apply, Single-Click to Open Preview"
                           >
                             <img src={img.src.medium} alt="Stock" className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" loading="lazy" />
-                            
+
                             <button
                               type="button"
                               onClick={(e) => toggleFavorite(img, e)}
@@ -2150,14 +2136,14 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                     )}
                   </div>
                 )}
-                
+
                 <p className="text-[9px] text-gray-500 italic text-center">Double-click an image to apply it. Single-click to preview. Images provided by Pexels / SourceSplash.</p>
 
                 {/* LARGE PREVIEW MODAL INSIDE PORTAL */}
                 {selectedImageForPreview && (
                   <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/85 backdrop-blur-md p-0 sm:p-6 animate-fade-in">
                     <div className={`${isLight ? 'bg-white border-gray-200' : 'bg-[#121216] border-white/10'} border-0 sm:border rounded-none sm:rounded-2xl w-full max-w-3xl h-full sm:h-auto overflow-hidden shadow-2xl flex flex-col md:flex-row relative text-left`}>
-                      
+
                       {/* Close Button */}
                       <button
                         type="button"
@@ -2206,7 +2192,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                       {/* Right Side: Information Panel */}
                       <div className={`w-full md:w-72 p-5 flex flex-col justify-between border-t md:border-t-0 md:border-l ${isLight ? 'border-gray-200 bg-gray-50' : 'border-white/10 bg-white/[0.01]'} text-left`}>
                         <div className="space-y-4">
-                          
+
                           {/* Header */}
                           <div>
                             <h4 className="text-[10px] font-bold text-primary uppercase tracking-wider">Image Metadata</h4>
@@ -2260,27 +2246,25 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                               setBgAppliedConfirm(true);
                               setTimeout(() => setBgAppliedConfirm(false), 3000);
                             }}
-                            className={`w-full py-2 rounded-xl text-xs font-bold text-white transition-all flex items-center justify-center gap-1.5 shadow-premium-glow cursor-pointer ${
-                              bgAppliedConfirm
-                                ? 'bg-emerald-500 hover:bg-emerald-600'
-                                : 'bg-primary hover:bg-primary-dark'
-                            }`}
+                            className={`w-full py-2 rounded-xl text-xs font-bold text-white transition-all flex items-center justify-center gap-1.5 shadow-premium-glow cursor-pointer ${bgAppliedConfirm
+                              ? 'bg-emerald-500 hover:bg-emerald-600'
+                              : 'bg-primary hover:bg-primary-dark'
+                              }`}
                           >
                             <Check className="h-3.5 w-3.5" />
                             {bgAppliedConfirm ? 'Applied ✓' : 'Apply Background'}
                           </button>
 
                           <button
-                              type="button"
-                              onClick={() => toggleFavorite(selectedImageForPreview)}
-                              className={`w-full py-1.5 rounded-xl border text-[11px] font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                                pixelFavorites.some(f => f.id === selectedImageForPreview.id)
-                                  ? 'bg-red-500/10 border-red-500/25 text-red-400'
-                                  : isLight ? 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                            type="button"
+                            onClick={() => toggleFavorite(selectedImageForPreview)}
+                            className={`w-full py-1.5 rounded-xl border text-[11px] font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${pixelFavorites.some(f => f.id === selectedImageForPreview.id)
+                              ? 'bg-red-500/10 border-red-500/25 text-red-400'
+                              : isLight ? 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
                               }`}
-                            >
-                              <Heart className="h-3.5 w-3.5 fill-current" /> Favorite
-                            </button>
+                          >
+                            <Heart className="h-3.5 w-3.5 fill-current" /> Favorite
+                          </button>
                         </div>
 
                       </div>
@@ -2297,7 +2281,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
 
         {/* Background Adjustment Controls */}
         <div className="grid gap-5 sm:grid-cols-2 bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5">
-          
+
           {/* Sliders */}
           <div className="space-y-4">
             <div className="space-y-1.5 text-left">
@@ -2439,22 +2423,20 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
               <button
                 type="button"
                 onClick={() => setPreviewDevice('desktop')}
-                className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${
-                  previewDevice === 'desktop'
-                    ? 'bg-primary text-white'
-                    : 'text-gray-400 hover:text-white'
-                }`}
+                className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${previewDevice === 'desktop'
+                  ? 'bg-primary text-white'
+                  : 'text-gray-400 hover:text-white'
+                  }`}
               >
                 <span className="flex items-center gap-1"><Monitor className="h-3 w-3" />Desktop</span>
               </button>
               <button
                 type="button"
                 onClick={() => setPreviewDevice('mobile')}
-                className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${
-                  previewDevice === 'mobile'
-                    ? 'bg-primary text-white'
-                    : 'text-gray-400 hover:text-white'
-                }`}
+                className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${previewDevice === 'mobile'
+                  ? 'bg-primary text-white'
+                  : 'text-gray-400 hover:text-white'
+                  }`}
               >
                 <span className="flex items-center gap-1"><Smartphone className="h-3 w-3" />Mobile</span>
               </button>
@@ -2464,9 +2446,8 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
           {/* Preview Screen Frame */}
           <div className="flex-1 flex items-center justify-center bg-black/30 border border-white/10 rounded-2xl p-4 overflow-hidden min-h-[300px] relative">
             <div
-              className={`transition-all duration-500 overflow-hidden relative shadow-2xl rounded-xl border border-white/10 ${
-                previewDevice === 'mobile' ? 'w-[200px] h-[340px]' : 'w-full h-[340px]'
-              }`}
+              className={`transition-all duration-500 overflow-hidden relative shadow-2xl rounded-xl border border-white/10 ${previewDevice === 'mobile' ? 'w-[200px] h-[340px]' : 'w-full h-[340px]'
+                }`}
             >
               {/* Background representation */}
               <div
@@ -2474,14 +2455,14 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 style={
                   config.url
                     ? {
-                        backgroundImage: `url(${config.url})`,
-                        backgroundPosition: config.position,
-                        backgroundSize: config.fit,
-                        filter: `blur(${config.blur}px) brightness(${config.brightness}%)`,
-                      }
+                      backgroundImage: `url(${config.url})`,
+                      backgroundPosition: config.position,
+                      backgroundSize: config.fit,
+                      filter: `blur(${config.blur}px) brightness(${config.brightness}%)`,
+                    }
                     : {
-                        background: 'linear-gradient(135deg, #1e1b4b, #111827)'
-                      }
+                      background: 'linear-gradient(135deg, #1e1b4b, #111827)'
+                    }
                 }
               />
 
@@ -2510,7 +2491,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
 
               {/* Mock Quiz UI Container */}
               <div className={`absolute inset-0 flex flex-col justify-center p-3 relative z-10 select-none ${previewDevice === 'mobile' ? 'gap-1' : 'gap-0'}`}>
-                
+
                 {/* Top Section */}
                 <div className="flex flex-col">
                   {/* Header Indicator */}
@@ -2548,13 +2529,12 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                       'bg-[#d89e00] border-[#d89e00]',
                       'bg-[#26890c] border-[#26890c]'
                     ];
-                    
+
                     return (
-                      <div 
-                        key={optIdx} 
-                        className={`rounded-md p-1.5 text-[7px] flex items-center justify-between gap-1 border text-white shadow-sm ${optionBgClasses[optIdx]} ${
-                          isCorrect ? 'ring-2 ring-white/50 scale-[1.01]' : 'opacity-90'
-                        }`}
+                      <div
+                        key={optIdx}
+                        className={`rounded-md p-1.5 text-[7px] flex items-center justify-between gap-1 border text-white shadow-sm ${optionBgClasses[optIdx]} ${isCorrect ? 'ring-2 ring-white/50 scale-[1.01]' : 'opacity-90'
+                          }`}
                       >
                         <div className="flex items-center gap-1.5 min-w-0">
                           {optionShapes[optIdx]}

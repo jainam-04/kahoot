@@ -11,11 +11,15 @@ import Logo from './Logo';
 import { register as registerUser } from '../services/authService';
 import { setAuthSession } from '../utils/auth';
 import { useTheme } from '../context/ThemeContext';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function QuickRegisterModal({ isOpen, onClose, onSuccess }) {
   const navigate = useNavigate();
   const { themeMode } = useTheme();
   const isLight = themeMode === 'light';
+
+  // Lock background scroll when modal is open
+  useScrollLock(isOpen);
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -98,14 +102,14 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess }) {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md overflow-y-auto">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md overflow-y-auto overscroll-contain">
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
           className={`relative w-full max-w-lg rounded-3xl border overflow-hidden shadow-2xl my-auto ${isLight
-              ? 'bg-white border-purple-100 text-gray-900'
-              : 'bg-[#0e0e14] border-white/10 text-white'
+            ? 'bg-white border-purple-100 text-gray-900'
+            : 'bg-[#0e0e14] border-white/10 text-white'
             }`}
         >
           {/* Top Gradient Ribbon */}

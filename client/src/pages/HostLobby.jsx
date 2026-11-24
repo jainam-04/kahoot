@@ -30,6 +30,7 @@ import { getGame as fetchGameDetails, startQuestion } from '../services/gameServ
 import { connectSocket, getSocket, emitJoinRoom } from '../services/socketService';
 import { getStoredUser } from '../utils/auth';
 import { copyToClipboard, copyBlobToClipboard } from '../utils/clipboard';
+import { useScrollLock } from '../utils/scrollLock';
 import tunnelData from '../tunnel.json';
 import hostLobbyRocket from '../assets/host-lobby-rocket.png';
 import './HostLobby.css';
@@ -95,6 +96,9 @@ export default function HostLobby() {
 
   const [isPlayersModalOpen, setIsPlayersModalOpen] = useState(false);
   const [modalSearchQuery, setModalSearchQuery] = useState('');
+
+  // Lock background scroll when players in lobby modal is open
+  useScrollLock(isPlayersModalOpen);
   const [modalSortOrder, setModalSortOrder] = useState('latest'); // 'latest' | 'alpha'
   const [mobileTab, setMobileTab] = useState('players'); // 'players' | 'qr'
 

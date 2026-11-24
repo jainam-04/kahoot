@@ -5,6 +5,7 @@ import { Trash2, AlertTriangle, Lock, Eye, EyeOff, X, Loader2, ShieldAlert } fro
 import toast from 'react-hot-toast';
 import { useTheme } from '../context/ThemeContext';
 import { deleteAccount } from '../services/authService';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function DeleteAccountModal({ isOpen, onClose, onSuccess }) {
   const { themeMode } = useTheme();
@@ -15,6 +16,9 @@ export default function DeleteAccountModal({ isOpen, onClose, onSuccess }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [mounted, setMounted] = useState(false);
+
+  // Lock background scroll when modal is open
+  useScrollLock(isOpen);
 
   useEffect(() => {
     setMounted(true);
@@ -27,13 +31,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onSuccess }) {
       setShowPassword(false);
       setErrorMsg('');
       setIsDeleting(false);
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [isOpen]);
 
   // Handle Escape key to close modal
@@ -80,7 +78,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onSuccess }) {
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto overscroll-contain bg-black/80 backdrop-blur-md">
           {/* Modal Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -132,7 +130,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onSuccess }) {
             </div>
 
             {/* Form Content */}
-            <form onSubmit={handleDelete} className="p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-100px)] text-left">
+            <form onSubmit={handleDelete} className="p-6 space-y-4 overflow-y-auto overscroll-contain max-h-[calc(90vh-100px)] text-left">
               {/* Warning Box */}
               <div className={`p-4 rounded-2xl border text-xs leading-relaxed space-y-2 ${
                 isLight

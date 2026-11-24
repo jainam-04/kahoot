@@ -14,6 +14,7 @@ import {
 import toast from 'react-hot-toast';
 import Logo from './Logo';
 import { clearAuthSession } from '../utils/auth';
+import { useScrollLock } from '../utils/scrollLock';
 
 export default function AppSidebar({
   isOpen,
@@ -36,16 +37,7 @@ export default function AppSidebar({
   const isReportsActive = activeNav ? activeNav === 'reports' : currentPath.startsWith('/reports');
 
   // Lock body scroll when mobile sidebar drawer is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+  useScrollLock(isOpen);
 
   const handleLogout = () => {
     clearAuthSession();
@@ -83,7 +75,7 @@ export default function AppSidebar({
     <>
       {/* ─── FIXED DESKTOP (230px) & MOBILE DRAWER ASIDE ─── */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-[70] w-[230px] bg-[#FDFDFE] border-r border-[#ECEFF5] shadow-[1px_0px_4px_rgba(0,0,0,0.06)] flex flex-col overflow-y-auto transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-[70] w-[230px] bg-[#FDFDFE] border-r border-[#ECEFF5] shadow-[1px_0px_4px_rgba(0,0,0,0.06)] flex flex-col overflow-y-auto overscroll-contain transition-transform duration-300 lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -112,11 +104,10 @@ export default function AppSidebar({
               <Link
                 to="/dashboard"
                 onClick={onClose}
-                className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${
-                  isDashboardActive
-                    ? 'rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]'
-                    : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
-                }`}
+                className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${isDashboardActive
+                  ? 'rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]'
+                  : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
+                  }`}
               >
                 <Home className={`w-5 h-5 ${isDashboardActive ? 'text-white' : 'text-[#94A3B8]'}`} />
                 <span>Dashboard</span>
@@ -126,11 +117,10 @@ export default function AppSidebar({
               <Link
                 to="/quiz/my"
                 onClick={onClose}
-                className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${
-                  isMyQuizzesActive
-                    ? 'rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]'
-                    : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
-                }`}
+                className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${isMyQuizzesActive
+                  ? 'rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]'
+                  : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
+                  }`}
               >
                 <Layers className={`w-5 h-5 ${isMyQuizzesActive ? 'text-white' : 'text-[#94A3B8]'}`} />
                 <span>My Quizzes</span>
@@ -140,11 +130,10 @@ export default function AppSidebar({
               <Link
                 to="/quiz/create"
                 onClick={onClose}
-                className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${
-                  isCreateQuizActive
-                    ? 'rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]'
-                    : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
-                }`}
+                className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${isCreateQuizActive
+                  ? 'rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]'
+                  : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
+                  }`}
               >
                 <PlusCircle className={`w-5 h-5 ${isCreateQuizActive ? 'text-white' : 'text-[#94A3B8]'}`} />
                 <span>Create Quiz</span>
@@ -154,11 +143,10 @@ export default function AppSidebar({
               <Link
                 to="/reports"
                 onClick={onClose}
-                className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${
-                  isReportsActive
-                    ? 'rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]'
-                    : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
-                }`}
+                className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${isReportsActive
+                  ? 'rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]'
+                  : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
+                  }`}
               >
                 <BarChart2 className={`w-5 h-5 ${isReportsActive ? 'text-white' : 'text-[#94A3B8]'}`} />
                 <span>Reports</span>
