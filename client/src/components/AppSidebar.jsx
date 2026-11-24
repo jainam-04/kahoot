@@ -89,17 +89,17 @@ export default function AppSidebar({
       >
         <div className="flex flex-col justify-between min-h-full">
           {/* Top Brand & Navigation Area */}
-          <div className="px-4 pt-5 pb-3 flex flex-col items-start gap-3">
+          <div className="px-4 pt-5 pb-3 flex flex-col items-center gap-3 w-full">
             {/* Mascot Brand Logo */}
-            <div className="w-full flex items-center justify-between pb-3 border-b border-[#F1F5F9]/80">
-              <Link to="/dashboard" className="flex items-center gap-2 group" onClick={onClose}>
-                <Logo className="h-9 w-auto object-contain transition-transform group-hover:scale-105" />
+            <div className="relative w-full flex items-center justify-center pb-3 border-b border-[#F1F5F9]/80">
+              <Link to="/dashboard" className="flex items-center justify-center gap-2 group mx-auto" onClick={onClose}>
+                <Logo className="h-10 w-auto object-contain transition-transform group-hover:scale-105" />
               </Link>
               {/* Close Drawer Button on Mobile */}
               <button
                 type="button"
                 onClick={onClose}
-                className="lg:hidden p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
+                className="lg:hidden absolute right-0 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
                 aria-label="Close navigation menu"
               >
                 <X className="w-5 h-5" />
