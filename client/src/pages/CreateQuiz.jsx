@@ -1661,7 +1661,7 @@ export default function CreateQuiz() {
 
         {/* 2. PEXELS / PRESET LIBRARY MODAL */}
         {showPexelsModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200">
             <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl p-4 sm:p-7 shadow-2xl border border-[#E2E8F0] overflow-y-auto space-y-4 text-left relative">
               <div className="flex items-center justify-between pb-2.5 border-b border-[#F1F5F9]">
                 <div>
@@ -1698,7 +1698,7 @@ export default function CreateQuiz() {
 
         {/* 3. QUESTION BACKGROUND CUSTOMIZER MODAL */}
         {bgModalTarget !== null && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200">
             <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl p-4 sm:p-7 shadow-2xl border border-[#E2E8F0] overflow-y-auto space-y-4 text-left relative">
               <div className="flex items-center justify-between pb-2.5 border-b border-[#F1F5F9]">
                 <div>

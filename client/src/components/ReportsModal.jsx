@@ -39,7 +39,7 @@ export default function ReportsModal({ isOpen, onClose, quiz, results = [], isLo
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[9999] overflow-y-auto flex items-center justify-center p-4">
         {/* Backdrop overlay */}
         <motion.div 
           initial={{ opacity: 0 }}

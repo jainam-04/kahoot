@@ -222,16 +222,20 @@ export default function AIQuizAssistantModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md overflow-hidden">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2.5 sm:p-5 md:p-6 bg-black/75 backdrop-blur-md overflow-hidden">
+        {/* Backdrop click to close */}
+        <div className="absolute inset-0" onClick={onClose} />
+
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className={`relative w-full sm:max-w-4xl h-[100dvh] sm:h-[90vh] sm:max-h-[850px] rounded-none sm:rounded-3xl border-0 sm:border overflow-hidden shadow-2xl flex flex-col my-auto ${
+          className={`relative z-10 w-full max-w-4xl h-[94dvh] sm:h-[86vh] sm:max-h-[760px] rounded-2xl sm:rounded-3xl border overflow-hidden shadow-2xl flex flex-col my-auto transition-all ${
             isLight
-              ? 'bg-white border-purple-200 text-gray-900'
-              : 'bg-[#0e0e16] border-white/10 text-white'
+              ? 'bg-white border-purple-200 text-gray-900 shadow-[0_20px_60px_rgba(98,34,245,0.18)]'
+              : 'bg-[#0e0e16] border-white/10 text-white shadow-2xl'
           }`}
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Top Gradient Ribbon */}
           <div className="h-1 sm:h-1.5 w-full bg-gradient-to-r from-primary via-secondary to-accent shrink-0" />
@@ -464,8 +468,8 @@ export default function AIQuizAssistantModal({
           </div>
 
           {/* Input & Parameters Bar */}
-          <div className={`px-3 py-2 sm:px-5 sm:py-3 border-t shrink-0 space-y-2 ${
-            isLight ? 'bg-white border-gray-200' : 'bg-[#101018] border-white/10'
+          <div className={`px-3.5 py-2.5 sm:px-5 sm:py-3.5 border-t shrink-0 space-y-2.5 ${
+            isLight ? 'bg-[#FAFAFD] border-gray-200' : 'bg-[#101018] border-white/10'
           }`}>
             {/* Collapsible Ideas Drawer (when toggled via Ideas button) */}
             {showSuggestions && (
@@ -481,7 +485,7 @@ export default function AIQuizAssistantModal({
                     }}
                     className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 ${
                       isLight
-                        ? 'bg-white border-gray-200 hover:border-secondary hover:text-secondary text-gray-700 shadow-sm'
+                        ? 'bg-white border-gray-200 hover:border-secondary hover:text-secondary text-gray-700 shadow-xs'
                         : 'bg-white/5 border-white/10 hover:border-secondary hover:text-white text-gray-300'
                     }`}
                   >
@@ -492,8 +496,8 @@ export default function AIQuizAssistantModal({
             )}
 
             {/* Compact Single-Row Quick Parameters Bar */}
-            <div className="flex items-center justify-between gap-2 text-xs">
-              <div className="flex items-center gap-1.5">
+            <div className="flex items-center justify-between gap-2 text-xs flex-wrap sm:flex-nowrap">
+              <div className="flex items-center gap-2">
                 {/* Custom Question Count Dropdown Pill */}
                 <div className="relative shrink-0" ref={countRef}>
                   <button
@@ -502,9 +506,9 @@ export default function AIQuizAssistantModal({
                       setIsCountOpen(prev => !prev);
                       setIsDiffOpen(false);
                     }}
-                    className={`px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer shadow-2xs ${
+                    className={`px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer shadow-2xs ${
                       isLight
-                        ? 'bg-gray-100 hover:bg-gray-200/80 border-gray-200 text-gray-800'
+                        ? 'bg-white hover:bg-gray-50 border-gray-200 text-gray-800'
                         : 'bg-white/5 hover:bg-white/10 border-white/10 text-gray-200'
                     }`}
                     aria-label="Question Count"
@@ -518,8 +522,8 @@ export default function AIQuizAssistantModal({
                   {isCountOpen && (
                     <div className={`absolute bottom-full mb-2 left-0 z-50 w-52 rounded-2xl p-1.5 border shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
                       isLight
-                        ? 'bg-white/95 border-gray-200 text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.14)]'
-                        : 'bg-[#181826]/95 border-white/10 text-gray-200 shadow-[0_12px_30px_rgba(0,0,0,0.6)]'
+                        ? 'bg-white/98 border-gray-200 text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.14)]'
+                        : 'bg-[#181826]/98 border-white/10 text-gray-200 shadow-[0_12px_30px_rgba(0,0,0,0.6)]'
                     }`}>
                       <div className="px-2.5 py-1 text-[9.5px] font-black uppercase tracking-wider text-gray-400">
                         Number of Questions
@@ -564,7 +568,7 @@ export default function AIQuizAssistantModal({
                       setIsDiffOpen(prev => !prev);
                       setIsCountOpen(false);
                     }}
-                    className={`px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer shadow-2xs ${
+                    className={`px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer shadow-2xs ${
                       difficulty === 'easy'
                         ? isLight ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100' : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/25'
                         : difficulty === 'medium'
@@ -584,8 +588,8 @@ export default function AIQuizAssistantModal({
                   {isDiffOpen && (
                     <div className={`absolute bottom-full mb-2 left-0 z-50 w-52 rounded-2xl p-1.5 border shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
                       isLight
-                        ? 'bg-white/95 border-gray-200 text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.14)]'
-                        : 'bg-[#181826]/95 border-white/10 text-gray-200 shadow-[0_12px_30px_rgba(0,0,0,0.6)]'
+                        ? 'bg-white/98 border-gray-200 text-gray-800 shadow-[0_12px_30px_rgba(0,0,0,0.14)]'
+                        : 'bg-[#181826]/98 border-white/10 text-gray-200 shadow-[0_12px_30px_rgba(0,0,0,0.6)]'
                     }`}>
                       <div className="px-2.5 py-1 text-[9.5px] font-black uppercase tracking-wider text-gray-400">
                         Quiz Difficulty
@@ -630,10 +634,10 @@ export default function AIQuizAssistantModal({
               <button
                 type="button"
                 onClick={() => setShowSuggestions(prev => !prev)}
-                className={`px-2 py-1 rounded-lg text-[11px] sm:text-xs font-bold flex items-center gap-1 border transition-all cursor-pointer shrink-0 ${
+                className={`px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1 border transition-all cursor-pointer shrink-0 ${
                   showSuggestions
                     ? 'bg-secondary/20 border-secondary/40 text-secondary'
-                    : isLight ? 'bg-gray-100 border-gray-200 text-gray-600 hover:text-gray-900' : 'bg-white/5 border-white/10 text-gray-400 hover:text-gray-200'
+                    : isLight ? 'bg-white border-gray-200 text-gray-600 hover:text-gray-900 shadow-2xs' : 'bg-white/5 border-white/10 text-gray-400 hover:text-gray-200'
                 }`}
               >
                 <Sparkles className="h-3 w-3 text-secondary" />
