@@ -29,6 +29,7 @@ import Logo from '../components/Logo';
 import { getGame as fetchGameDetails, startQuestion } from '../services/gameService';
 import { connectSocket, getSocket, emitJoinRoom } from '../services/socketService';
 import { getStoredUser } from '../utils/auth';
+import { copyToClipboard, copyBlobToClipboard } from '../utils/clipboard';
 import tunnelData from '../tunnel.json';
 import hostLobbyRocket from '../assets/host-lobby-rocket.png';
 import './HostLobby.css';
@@ -321,23 +322,34 @@ export default function HostLobby() {
     toast.success('Join URL updated!');
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(customUrl);
-    setCopiedLink(true);
-    toast.success('Join link copied!');
-    setTimeout(() => setCopiedLink(false), 2000);
+  const handleCopyLink = async () => {
+    const success = await copyToClipboard(customUrl);
+    if (success) {
+      setCopiedLink(true);
+      toast.success('Join link copied!');
+      setTimeout(() => setCopiedLink(false), 2000);
+    } else {
+      toast.error('Could not copy link automatically. Please copy it manually.');
+    }
   };
 
   const handleCopyQRCode = async () => {
     try {
       const response = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(customUrl)}`);
       const blob = await response.blob();
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          [blob.type]: blob
-        })
-      ]);
-      toast.success('QR Code copied as image! Paste it into WhatsApp.');
+      const success = await copyBlobToClipboard(blob);
+      if (success) {
+        toast.success('QR Code copied as image! Paste it into WhatsApp.');
+      } else {
+        // Fallback for non-HTTPS / LAN IP origins: download QR code image
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `gubbi-quiz-qr-${pin}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        toast.success('QR Code downloaded! ✨');
+      }
     } catch (err) {
       console.error(err);
       toast.error('Could not copy QR image directly. Share the link instead!');
@@ -537,9 +549,11 @@ export default function HostLobby() {
 
                     <div
                       className="host-lobby-pin-block cursor-pointer select-none"
-                      onClick={() => {
-                        navigator.clipboard.writeText(pin);
-                        toast.success(`PIN ${pin} copied!`, { icon: '📋' });
+                      onClick={async () => {
+                        const success = await copyToClipboard(pin);
+                        if (success) {
+                          toast.success(`PIN ${pin} copied!`, { icon: '📋' });
+                        }
                       }}
                       title="Tap to copy PIN"
                     >

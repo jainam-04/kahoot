@@ -1,6 +1,7 @@
 import React from 'react';
 import { Download, Copy, FileSpreadsheet, Info, UploadCloud } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { copyToClipboard } from '../utils/clipboard';
 import { useTheme } from '../context/ThemeContext';
 
 export default function UploadBaseTemplate({ onTriggerUpload }) {
@@ -83,8 +84,12 @@ What is the capital of France?,London,Paris,Berlin,Madrid,2,20
 Which element has chemical symbol 'O'?,Gold,Oxygen,Osmium,Hydrogen,2,30
 What is 15 multiplied by 4?,45,50,60,75,3,15`;
 
-      navigator.clipboard.writeText(csvString);
-      toast.success('CSV Base Template copied to clipboard!');
+      const success = await copyToClipboard(csvString);
+      if (success) {
+        toast.success('CSV Base Template copied to clipboard!');
+      } else {
+        toast.error('Failed to copy to clipboard');
+      }
     } catch (err) {
       toast.error('Failed to copy to clipboard');
     }

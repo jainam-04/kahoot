@@ -21,6 +21,7 @@ import Logo from '../components/Logo';
 import { connectSocket, emitJoinRoom, emitLeaveRoom } from '../services/socketService';
 import { useGame } from '../context/GameContext';
 import { getGame, joinGame, leaveGame } from '../services/gameService';
+import { copyToClipboard } from '../utils/clipboard';
 import './WaitingRoom.css';
 
 const avatarOptions = [
@@ -228,12 +229,12 @@ export default function WaitingRoom() {
   };
 
   const handleCopyPin = async () => {
-    try {
-      await navigator.clipboard.writeText(pin);
+    const success = await copyToClipboard(pin);
+    if (success) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
       toast.success('Arena PIN copied!');
-    } catch {
+    } else {
       toast.error('Could not copy the PIN. Please copy it manually.');
     }
   };
@@ -249,8 +250,12 @@ export default function WaitingRoom() {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        await navigator.clipboard.writeText(`${shareData.text}\n${joinUrl}`);
-        toast.success('Invite link copied. Share it with your friends!');
+        const success = await copyToClipboard(`${shareData.text}\n${joinUrl}`);
+        if (success) {
+          toast.success('Invite link copied. Share it with your friends!');
+        } else {
+          toast.error('Could not copy the invite link.');
+        }
       }
     } catch (error) {
       if (error.name !== 'AbortError') {

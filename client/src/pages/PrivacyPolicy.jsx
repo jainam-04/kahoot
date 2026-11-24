@@ -10,6 +10,7 @@ import {
   ArrowUp, Server, UserX, Cpu, Bell, CheckSquare, Zap, BookOpen, Layers
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { copyToClipboard } from '../utils/clipboard';
 import AnimatedPage from '../components/AnimatedPage';
 import ThemeBackground from '../components/ThemeBackground';
 import { useTheme } from '../context/ThemeContext';
@@ -592,22 +593,26 @@ export default function PrivacyPolicy() {
   };
 
   // Copy direct link to section
-  const handleCopySectionLink = (id, title) => {
+  const handleCopySectionLink = async (id, title) => {
     const url = `${window.location.origin}${window.location.pathname}#${id}`;
-    navigator.clipboard.writeText(url).then(() => {
+    const success = await copyToClipboard(url);
+    if (success) {
       setCopiedSectionId(id);
       toast.success(`Copied link to "${title}"`);
       setTimeout(() => setCopiedSectionId(null), 2500);
-    }).catch(() => {
+    } else {
       toast.error('Failed to copy link');
-    });
+    }
   };
 
   // Copy full page link
-  const handleSharePage = () => {
-    navigator.clipboard.writeText(window.location.href).then(() => {
+  const handleSharePage = async () => {
+    const success = await copyToClipboard(window.location.href);
+    if (success) {
       toast.success('Privacy policy link copied to clipboard!');
-    });
+    } else {
+      toast.error('Failed to copy link');
+    }
   };
 
   // Trigger print dialog
