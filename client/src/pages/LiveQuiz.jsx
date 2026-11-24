@@ -364,6 +364,19 @@ export default function LiveQuiz() {
       const correctIdx = Number(data.correctAnswerIndex ?? currentQ?.correctAnswer ?? 0);
       const correctText = data.correctAnswerText || (data.options && data.options[correctIdx]) || (currentQ?.options && currentQ.options[correctIdx]) || '';
 
+      const qData = {
+        questionText: currentQ?.questionText || data?.questionText || '',
+        options: (currentQ?.options && currentQ.options.length) ? currentQ.options : (data?.options || []),
+        correctAnswer: correctIdx,
+        correctAnswerText: correctText,
+        category: currentQ?.category || data?.category || category || 'General',
+        questionNumber: currentQ?.questionNumber || data?.questionNumber || (currentQIndex + 1),
+        totalQuestions: totalQuestions || currentQ?.totalQuestions || data?.totalQuestions || 0
+      };
+
+      localStorage.setItem('last_questionData', JSON.stringify(qData));
+      localStorage.setItem('last_questionNumber', String(qData.questionNumber));
+      localStorage.setItem('last_totalQuestions', String(qData.totalQuestions));
       localStorage.setItem('last_correctAnswerIndex', String(correctIdx));
       if (correctText) {
         localStorage.setItem('last_correctAnswerText', correctText);
@@ -371,7 +384,7 @@ export default function LiveQuiz() {
       localStorage.setItem('last_answerStats', JSON.stringify(data.answerStats || []));
       localStorage.setItem('last_leaderboard', JSON.stringify(data.leaderboard || []));
       localStorage.setItem('last_isLastQuestion', data.isLastQuestion ? 'true' : 'false');
-      localStorage.setItem('last_category', category);
+      localStorage.setItem('last_category', qData.category);
 
       if (!isUserHost) {
         const target = (localPlayer || '').trim().toLowerCase();
@@ -388,7 +401,14 @@ export default function LiveQuiz() {
       }
 
       setTimeout(() => {
-        navigate(`/result/answer/${pin}`);
+        navigate(`/result/answer/${pin}`, {
+          state: {
+            questionData: qData,
+            answerStats: data.answerStats,
+            leaderboard: data.leaderboard,
+            isLastQuestion: data.isLastQuestion
+          }
+        });
       }, 500);
     });
 

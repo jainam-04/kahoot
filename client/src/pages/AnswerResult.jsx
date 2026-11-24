@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Trophy,
@@ -22,6 +22,7 @@ import {
   HelpCircle,
   XCircle,
   Users,
+  LogOut,
   Cpu,
   Monitor,
   Keyboard,
@@ -147,40 +148,91 @@ export default function AnswerResult() {
   // Active navigation tab: 'my-result' or 'standings'
   const [activeTab, setActiveTab] = useState('standings');
 
-  // Retrieved stats from local storage & live state
+  const location = useLocation();
+
+  // Retrieved stats from local storage, location.state & live state
   const [isHost, setIsHost] = useState(() => {
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
-    return !!hostToken && hostedPin === pin;
+    return !!hostToken && (hostedPin === pin || localStorage.getItem('is_host') === 'true');
   });
+
+  const [questionData, setQuestionData] = useState(() => {
+    if (location.state?.questionData) return location.state.questionData;
+    try {
+      const saved = localStorage.getItem('last_questionData');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [questionNumber, setQuestionNumber] = useState(() => {
+    if (location.state?.questionData?.questionNumber) return Number(location.state.questionData.questionNumber);
+    const saved = localStorage.getItem('last_questionNumber');
+    return saved ? Number(saved) : 1;
+  });
+
+  const [totalQuestions, setTotalQuestions] = useState(() => {
+    if (location.state?.questionData?.totalQuestions) return Number(location.state.questionData.totalQuestions);
+    const saved = localStorage.getItem('last_totalQuestions');
+    return saved ? Number(saved) : 0;
+  });
+
+  const [category, setCategory] = useState(() => {
+    return location.state?.questionData?.category || localStorage.getItem('last_category') || 'General';
+  });
+
   const [correctAnswerIdx, setCorrectAnswerIdx] = useState(() => {
+    if (location.state?.questionData?.correctAnswer !== undefined) return Number(location.state.questionData.correctAnswer);
     const saved = localStorage.getItem('last_correctAnswerIndex');
     return saved !== null ? Number(saved) : 0;
   });
+
   const [correctAnswerText, setCorrectAnswerText] = useState(() => {
+    if (location.state?.questionData?.correctAnswerText) return location.state.questionData.correctAnswerText;
     return localStorage.getItem('last_correctAnswerText') || '';
   });
+
   const [isCorrect, setIsCorrect] = useState(() => localStorage.getItem('last_isCorrect') === 'true');
   const [pointsEarned, setPointsEarned] = useState(() => Number(localStorage.getItem('last_pointsEarned') || 0));
   const [currentScore, setCurrentScore] = useState(() => Number(localStorage.getItem('last_score') || 0));
   const [timeTaken, setTimeTaken] = useState(() => localStorage.getItem('last_timeTaken') || '0.00');
-  const [answerStats, setAnswerStats] = useState([]);
-  const [leaderboard, setLeaderboard] = useState([]);
-  const [isLastQuestion, setIsLastQuestion] = useState(() => localStorage.getItem('last_isLastQuestion') === 'true');
+
+  const [answerStats, setAnswerStats] = useState(() => {
+    if (location.state?.answerStats) return location.state.answerStats;
+    try {
+      const saved = localStorage.getItem('last_answerStats');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [leaderboard, setLeaderboard] = useState(() => {
+    if (location.state?.leaderboard) return location.state.leaderboard;
+    try {
+      const saved = localStorage.getItem('last_leaderboard');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [isLastQuestion, setIsLastQuestion] = useState(() => {
+    if (location.state?.isLastQuestion !== undefined) return Boolean(location.state.isLastQuestion);
+    return localStorage.getItem('last_isLastQuestion') === 'true';
+  });
+
   const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState(() => localStorage.getItem('last_answerSubmitted') === 'true');
   const [isLoading, setIsLoading] = useState(false);
-  
 
   // Player result states
   const [isLeaving, setIsLeaving] = useState(false);
   const [isShowingLeaderboard, setIsShowingLeaderboard] = useState(false);
 
   // Host dashboard states
-  const [category, setCategory] = useState('general');
   const [mobileTab, setMobileTab] = useState('feedback');
-  const [questionData, setQuestionData] = useState(null);
-  const [questionNumber, setQuestionNumber] = useState(0);
-  const [totalQuestions, setTotalQuestions] = useState(0);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -191,7 +243,6 @@ export default function AnswerResult() {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       return user.name || user.username || 'Host';
     } catch (error) {
-      console.error('Failed to parse user for answer breakdown header', error);
       return 'Host';
     }
   });
@@ -214,7 +265,6 @@ export default function AnswerResult() {
   }, [isLight]);
 
   useEffect(() => {
-    
     let user = null;
     try {
       const userStr = localStorage.getItem('user');
@@ -223,7 +273,13 @@ export default function AnswerResult() {
       console.error('Failed to parse user from localStorage', e);
     }
     
-    let isUserHost = false;
+    const hostToken = localStorage.getItem('token');
+    const hostedPin = localStorage.getItem('current_hosted_pin');
+    let isUserHost = Boolean(
+      (hostToken && hostedPin === pin) ||
+      (hostToken && localStorage.getItem('is_host') === 'true')
+    );
+    setIsHost(isUserHost);
 
     // Read stored variables from localStorage
     const savedIsCorrect = localStorage.getItem('last_isCorrect');
@@ -236,9 +292,11 @@ export default function AnswerResult() {
       setIsCorrect(savedIsCorrect === 'true');
       setPointsEarned(Number(savedPoints || 0));
       setCurrentScore(Number(savedScore || 0));
-      setCorrectAnswerIdx(Number(savedCorrectIdx || 0));
+      if (correctAnswerIdx === 0 && savedCorrectIdx) {
+        setCorrectAnswerIdx(Number(savedCorrectIdx));
+      }
     }
-    if (savedCorrectText) {
+    if (savedCorrectText && !correctAnswerText) {
       setCorrectAnswerText(savedCorrectText);
     }
     const savedHasSubmitted = localStorage.getItem('last_answerSubmitted');
@@ -251,131 +309,145 @@ export default function AnswerResult() {
     }
     setIsLastQuestion(localStorage.getItem('last_isLastQuestion') === 'true');
 
-    try {
-      setAnswerStats(JSON.parse(localStorage.getItem('last_answerStats') || '[]'));
-      setLeaderboard(JSON.parse(localStorage.getItem('last_leaderboard') || '[]'));
-    } catch (e) {
-      console.error('Error parsing stats:', e);
-    }
-
     // Fetch live state to ensure accuracy
     const fetchLiveState = async () => {
       try {
         const response = await getGame(pin);
         if (response.success && response.game) {
           const game = response.game;
-          isUserHost = !!hostToken && (user && (game.host === user.id || game.host?._id === user.id));
+          const hostId = (game.host?._id || game.host)?.toString();
+          const currentUserId = (user?.id || user?._id)?.toString();
+          isUserHost = Boolean(
+            (hostToken && hostedPin === pin) ||
+            (hostToken && currentUserId && hostId && hostId === currentUserId) ||
+            (hostToken && localStorage.getItem('is_host') === 'true')
+          );
           setIsHost(isUserHost);
-          const currentIdx = game.currentQuestion - 1;
+          if (isUserHost) {
+            localStorage.setItem('current_hosted_pin', pin);
+          }
+
+          const currentIdx = Math.max(0, (game.currentQuestion || 1) - 1);
           const currentQuestion = game.quiz?.questions?.[currentIdx];
-          setQuestionData(currentQuestion || null);
-          setQuestionNumber(game.currentQuestion || 0);
+          if (currentQuestion) {
+            setQuestionData(currentQuestion);
+            localStorage.setItem('last_questionData', JSON.stringify(currentQuestion));
+            const cIdx = Number(currentQuestion.correctAnswer ?? 0);
+            setCorrectAnswerIdx(cIdx);
+            const cText = currentQuestion.options?.[cIdx] || '';
+            if (cText) {
+              setCorrectAnswerText(cText);
+              localStorage.setItem('last_correctAnswerText', cText);
+            }
+            setCategory(currentQuestion.category || game.quiz?.category || 'General');
+
+            // Calculate stats for chart from game.players
+            if (currentQuestion.options) {
+              const stats = currentQuestion.options.map((_, optIdx) => 
+                game.players?.reduce((count, player) => {
+                  const ans = player.answers?.find(a => a.questionIndex === currentIdx);
+                  return count + (ans && Number(ans.answerIndex) === optIdx ? 1 : 0);
+                }, 0) || 0
+              );
+              setAnswerStats(stats);
+              localStorage.setItem('last_answerStats', JSON.stringify(stats));
+            }
+          }
+
+          setQuestionNumber(game.currentQuestion || (currentIdx + 1));
           setTotalQuestions(game.quiz?.questions?.length || 0);
+
           const globalBg = game.quiz?.backgroundImage || '';
           const currentBg = currentQuestion?.backgroundImage || globalBg;
           setBgImage(currentBg);
           localStorage.setItem('quiz_global_bg_image', globalBg);
           localStorage.setItem('last_bg_image', currentBg);
-          setIsLastQuestion(game.currentQuestion === game.quiz?.questions?.length);
-          if (currentQuestion) {
-            const correctIdx = Number(currentQuestion.correctAnswer ?? 0);
-            setCorrectAnswerIdx(correctIdx);
-            const correctText = currentQuestion.options?.[correctIdx] || '';
-            if (correctText) {
-              setCorrectAnswerText(correctText);
-              localStorage.setItem('last_correctAnswerText', correctText);
-            }
-            
-            // Calculate stats for chart
-            const stats = currentQuestion.options?.map((_, optIdx) => 
-              game.players?.reduce((count, player) => {
-                const ans = player.answers?.find(a => a.questionIndex === currentIdx);
-                return count + (ans && Number(ans.answerIndex) === optIdx ? 1 : 0);
-              }, 0) || 0
-            ) || [];
-            setAnswerStats(stats);
-            
-            // Find player record
-            if (!isUserHost && localPlayer) {
-              const myPlayerRecord = game.players?.find(p => p.name.toLowerCase() === localPlayer.toLowerCase());
-              if (myPlayerRecord) {
-                const myAnswer = myPlayerRecord.answers?.find(a => a.questionIndex === currentIdx);
-                const submittedAnswer = myAnswer && !isUnansweredAnswer(myAnswer);
-                
-                const didSubmit = Boolean(submittedAnswer) || localStorage.getItem('last_answerSubmitted') === 'true';
-                const correct = submittedAnswer ? myAnswer.isCorrect : localStorage.getItem('last_isCorrect') === 'true';
-                
-                setHasSubmittedAnswer(didSubmit);
-                setIsCorrect(correct);
-                setPointsEarned(submittedAnswer ? myAnswer.score : Number(localStorage.getItem('last_pointsEarned') || 0));
-                setCurrentScore(myPlayerRecord.totalScore || Number(localStorage.getItem('last_score') || 0));
-                setTimeTaken(submittedAnswer ? (myAnswer.timeTaken / 1000).toFixed(2) : localStorage.getItem('last_timeTaken') || '0.00');
-                
-                if (correct && !confettiFiredRef.current) {
-                  confettiFiredRef.current = true;
-                  confetti({
-                    particleCount: 150,
-                    spread: 80,
-                    origin: { y: 0.6 }
-                  });
-                }
+
+          if (game.quiz?.questions?.length) {
+            setIsLastQuestion((game.currentQuestion || 1) >= game.quiz.questions.length);
+          }
+
+          // Build leaderboard from actual players
+          if (game.players && game.players.length > 0) {
+            const sortedPlayers = [...game.players].sort((a, b) => {
+              const aScore = a.totalScore || 0;
+              const bScore = b.totalScore || 0;
+              if (aScore !== bScore) return bScore - aScore;
+
+              const aCorrect = a.answers?.filter(ans => ans.isCorrect).length || 0;
+              const bCorrect = b.answers?.filter(ans => ans.isCorrect).length || 0;
+
+              if (aCorrect !== bCorrect) return bCorrect - aCorrect;
+
+              const aTime = a.answers?.reduce(
+                (acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0
+              ) || 0;
+
+              const bTime = b.answers?.reduce(
+                (acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0
+              ) || 0;
+
+              if (aTime !== bTime) return aTime - bTime;
+
+              return new Date(a.joinedAt || 0) - new Date(b.joinedAt || 0);
+            });
+
+            const leaderboardData = sortedPlayers.map((p, idx) => {
+              const totalCorrect =
+                p.answers?.filter(a => a.isCorrect).length || 0;
+
+              const totalTimeCorrect = p.answers?.reduce(
+                (acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0),
+                0
+              ) || 0;
+
+              const currentAns = p.answers?.find(
+                a => a.questionIndex === currentIdx
+              );
+
+              return {
+                username: p.name || p.username || `Player ${idx + 1}`,
+                avatar: p.avatar,
+                rank: idx + 1,
+                correctAnswers: totalCorrect,
+                totalScore: p.totalScore || 0,
+                timeCorrect: (totalTimeCorrect / 1000).toFixed(2),
+                lastTimeTaken: currentAns?.timeTaken !== undefined
+                  ? (currentAns.timeTaken / 1000).toFixed(2)
+                  : '0.0'
+              };
+            });
+
+            setLeaderboard(leaderboardData);
+            localStorage.setItem('last_leaderboard', JSON.stringify(leaderboardData));
+          }
+
+          // Find player record
+          if (!isUserHost && localPlayer) {
+            const myPlayerRecord = game.players?.find(p => (p.name || '').toLowerCase() === localPlayer.toLowerCase());
+            if (myPlayerRecord) {
+              const myAnswer = myPlayerRecord.answers?.find(a => a.questionIndex === currentIdx);
+              const submittedAnswer = myAnswer && !isUnansweredAnswer(myAnswer);
+              
+              const didSubmit = Boolean(submittedAnswer) || localStorage.getItem('last_answerSubmitted') === 'true';
+              const correct = submittedAnswer ? myAnswer.isCorrect : localStorage.getItem('last_isCorrect') === 'true';
+              
+              setHasSubmittedAnswer(didSubmit);
+              setIsCorrect(correct);
+              setPointsEarned(submittedAnswer ? myAnswer.score : Number(localStorage.getItem('last_pointsEarned') || 0));
+              setCurrentScore(myPlayerRecord.totalScore || Number(localStorage.getItem('last_score') || 0));
+              setTimeTaken(submittedAnswer ? (myAnswer.timeTaken / 1000).toFixed(2) : localStorage.getItem('last_timeTaken') || '0.00');
+              
+              if (correct && !confettiFiredRef.current) {
+                confettiFiredRef.current = true;
+                confetti({
+                  particleCount: 150,
+                  spread: 80,
+                  origin: { y: 0.6 }
+                });
               }
             }
           }
-
-          
-          // Build leaderboard
-          const sortedPlayers = [...(game.players || [])].sort((a, b) => {
-            const aScore = a.totalScore || 0;
-            const bScore = b.totalScore || 0;
-
-            if (aScore !== bScore) return bScore - aScore;
-
-            const aCorrect = a.answers?.filter(ans => ans.isCorrect).length || 0;
-            const bCorrect = b.answers?.filter(ans => ans.isCorrect).length || 0;
-
-            if (aCorrect !== bCorrect) return bCorrect - aCorrect;
-
-            const aTime = a.answers?.reduce(
-              (acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0
-            ) || 0;
-
-            const bTime = b.answers?.reduce(
-              (acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0
-            ) || 0;
-
-            if (aTime !== bTime) return aTime - bTime;
-
-            return new Date(a.joinedAt || 0) - new Date(b.joinedAt || 0);
-          });
-
-          const leaderboardData = sortedPlayers.map((p, idx) => {
-            const totalCorrect =
-              p.answers?.filter(a => a.isCorrect).length || 0;
-
-            const totalTimeCorrect = p.answers?.reduce(
-              (acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0),
-              0
-            ) || 0;
-
-            const currentAns = p.answers?.find(
-              a => a.questionIndex === currentIdx
-            );
-
-            return {
-              username: p.name,
-              avatar: p.avatar,
-              rank: idx + 1,
-              correctAnswers: totalCorrect,
-              totalScore: p.totalScore,
-              timeCorrect: (totalTimeCorrect / 1000).toFixed(2),
-              lastTimeTaken: currentAns?.timeTaken !== undefined
-                ? (currentAns.timeTaken / 1000).toFixed(2)
-                : '0.0'
-            };
-          });
-
-          setLeaderboard(leaderboardData);
         }
       } catch (err) {
         console.error('Error fetching live state:', err);
@@ -583,7 +655,7 @@ export default function AnswerResult() {
     }
   ];
 
-  const effectiveRoster = leaderboard.length >= 3
+  const effectiveRoster = leaderboard.length > 0
     ? leaderboard.map((p, idx) => ({
         ...p,
         rank: idx + 1,
@@ -591,16 +663,16 @@ export default function AnswerResult() {
           (p.username || '').trim().toLowerCase() ===
           (localPlayer || '').trim().toLowerCase()
       }))
-    : defaultRoster;
+    : (isHost ? [] : defaultRoster);
 
   const firstPlace =
-    effectiveRoster.find(p => p.rank === 1) || defaultRoster[0];
+    effectiveRoster.find(p => p.rank === 1) || (isHost ? null : defaultRoster[0]);
 
   const secondPlace =
-    effectiveRoster.find(p => p.rank === 2) || defaultRoster[1];
+    effectiveRoster.find(p => p.rank === 2) || (isHost ? null : defaultRoster[1]);
 
   const thirdPlace =
-    effectiveRoster.find(p => p.rank === 3) || defaultRoster[2];
+    effectiveRoster.find(p => p.rank === 3) || (isHost ? null : defaultRoster[2]);
 
   const myLeaderboardEntry =
     effectiveRoster.find(p => p.isMe) ||
@@ -624,6 +696,11 @@ export default function AnswerResult() {
     0
   );
 
+  const correctCount = Number(answerStats[correctAnswerIdx]) || 0;
+  const questionAccuracy = totalSubmissions > 0
+    ? Math.round((correctCount / totalSubmissions) * 100)
+    : 0;
+
   const filteredLeaderboard = leaderboard.filter(player =>
     (player.username || '')
       .toLowerCase()
@@ -633,320 +710,452 @@ export default function AnswerResult() {
   if (isHost) {
     return (
       <AnimatedPage>
-        <div className="answer-breakdown-shell">
+        <div className="min-h-screen flex flex-col font-['Inter',sans-serif] antialiased bg-[#FDFDFE] text-slate-800">
           <AppSidebar
             isOpen={isMobileNavOpen}
             onClose={() => setIsMobileNavOpen(false)}
             onOpenProfile={() => navigate('/dashboard')}
             onOpenUpgrade={() => navigate('/dashboard')}
             onOpenSessions={() => navigate('/dashboard')}
-            activeNav="my-quizzes"
+            activeNav=""
           />
 
-          <div className="answer-breakdown-main">
-            <header className="answer-breakdown-header">
-              <div className="answer-breakdown-mobile-brand">
+          <div className="flex-1 flex flex-col lg:pl-[230px] w-full min-w-0 transition-all">
+            {/* Header: Sticky 74px matching Figma /reports & /dashboard */}
+            <header className="sticky top-0 z-30 h-[74px] max-h-[74px] px-4 sm:px-8 backdrop-blur-md border-b flex items-center justify-between gap-4 bg-white/90 border-[#EEF0F6]">
+              {/* Left: Mobile Drawer Hamburger Button */}
+              <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  className="answer-breakdown-menu-button"
-                  aria-label="Open navigation menu"
                   onClick={() => setIsMobileNavOpen(true)}
+                  className="lg:hidden p-2 rounded-xl border border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                  aria-label="Open navigation menu"
                 >
-                  <Menu />
+                  <Menu className="w-5 h-5" />
                 </button>
-                <span>Gubbi</span>
               </div>
 
-              <label className="answer-breakdown-search">
-                <Search aria-hidden="true" />
-                <input
-                  type="search"
-                  value={searchQuery}
-                  onChange={event => setSearchQuery(event.target.value)}
-                  placeholder="Search quizzes, topics, or participants..."
-                  aria-label="Search quizzes, topics, or participants"
-                />
-              </label>
-
-              <div className="answer-breakdown-header-actions">
-                <div className="answer-breakdown-popover-wrap">
-                  <button
-                    type="button"
-                    className="answer-breakdown-notification-button"
-                    aria-label="Notifications"
-                    aria-expanded={isNotificationsOpen}
-                    onClick={() => {
-                      setIsNotificationsOpen(open => !open);
-                      setIsProfileDropdownOpen(false);
-                    }}
-                  >
-                    <Bell />
-                  </button>
-                  {isNotificationsOpen && (
-                    <div className="answer-breakdown-popover">
-                      <strong>Notifications</strong>
-                      <span>You&apos;re all caught up.</span>
-                    </div>
+              {/* Center: Live Session Status Pill */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-2 sm:gap-2.5 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#FAF5FF] border border-[#EDE9FE] shadow-2xs">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  </span>
+                  <span className="text-[10px] sm:text-xs font-black text-[#6320EE] uppercase tracking-wider">
+                    LIVE SESSION
+                  </span>
+                  <span className="text-slate-300 font-light text-xs">|</span>
+                  <span className="text-[11px] sm:text-xs font-bold text-slate-700 font-mono">
+                    PIN: {pin}
+                  </span>
+                  <span className="text-slate-300 font-light text-xs hidden sm:inline">|</span>
+                  <span className="text-xs font-bold text-[#6320EE] hidden sm:inline">
+                    Question {questionNumber || 1} {totalQuestions ? `of ${totalQuestions}` : ''}
+                  </span>
+                  {category && (
+                    <>
+                      <span className="text-slate-300 font-light text-xs hidden md:inline">|</span>
+                      <span className="text-xs font-bold text-slate-500 hidden md:inline">
+                        {category}
+                      </span>
+                    </>
                   )}
                 </div>
+              </div>
 
-                <div className="answer-breakdown-popover-wrap">
-                  <button
-                    type="button"
-                    className="answer-breakdown-profile-button"
-                    aria-expanded={isProfileDropdownOpen}
-                    onClick={() => {
-                      setIsProfileDropdownOpen(open => !open);
-                      setIsNotificationsOpen(false);
-                    }}
-                  >
-                    <span className="answer-breakdown-profile-avatar">
-                      {(headerUserName.charAt(0) || 'H').toUpperCase()}
-                    </span>
-                    <span className="answer-breakdown-profile-name">{headerUserName}</span>
-                    <ChevronDown aria-hidden="true" />
-                  </button>
-                  {isProfileDropdownOpen && (
-                    <div className="answer-breakdown-popover">
-                      <strong>{headerUserName}</strong>
-                      <button type="button" onClick={() => navigate('/dashboard')}>Account settings</button>
-                      <button type="button" onClick={handleHostExit}>End quiz and return to dashboard</button>
-                    </div>
-                  )}
-                </div>
+              {/* Right: End Quiz Button */}
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleHostExit}
+                  className="h-[38px] px-3.5 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs active:scale-95"
+                  title="End Quiz & Return to Dashboard"
+                >
+                  <LogOut className="w-3.5 h-3.5 text-rose-600" />
+                  <span className="hidden sm:inline">End Quiz</span>
+                </button>
               </div>
             </header>
 
-            <main className={`answer-breakdown-content ${mobileTab === 'standings' ? 'is-standings-view' : ''}`}>
-              <div className="answer-breakdown-tabs" role="tablist" aria-label="Quiz results">
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={mobileTab === 'feedback'}
-                  onClick={() => setMobileTab('feedback')}
-                  className={mobileTab === 'feedback' ? 'is-active' : ''}
-                >
-                  <BarChart3 aria-hidden="true" />
-                  <span>Answer Breakdown</span>
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={mobileTab === 'standings'}
-                  onClick={() => setMobileTab('standings')}
-                  className={mobileTab === 'standings' ? 'is-active' : ''}
-                >
-                  <Trophy aria-hidden="true" />
-                  <span>Lobby Standings</span>
-                </button>
+            {/* Main Stage Content */}
+            <main className="flex-1 p-3.5 sm:p-6 lg:p-8 space-y-6 max-w-[1120px] w-full mx-auto text-left">
+              
+              {/* Segmented Controller: Answer Breakdown vs Lobby Standings */}
+              <div className="flex justify-center">
+                <div className="inline-flex p-1.5 rounded-full bg-white border border-[#EDE9FE] shadow-sm gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setMobileTab('feedback')}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer select-none ${
+                      mobileTab === 'feedback'
+                        ? 'bg-gradient-to-r from-[#6320EE] to-[#7C3AED] text-white shadow-md shadow-[#6320EE]/20'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
+                  >
+                    <BarChart3 className="w-4 h-4" />
+                    <span>Answer Breakdown</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setMobileTab('standings')}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer select-none ${
+                      mobileTab === 'standings'
+                        ? 'bg-gradient-to-r from-[#6320EE] to-[#7C3AED] text-white shadow-md shadow-[#6320EE]/20'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
+                  >
+                    <Trophy className="w-4 h-4" />
+                    <span>Lobby Standings {leaderboard.length > 0 && `(${leaderboard.length})`}</span>
+                  </button>
+                </div>
               </div>
 
+              {/* View 1: Answer Breakdown */}
               {mobileTab === 'feedback' ? (
-                <section className="answer-breakdown-card" role="tabpanel">
-                  <div className="answer-breakdown-card-header">
-                    <h1>Answer Breakdown</h1>
-                    <div className="answer-breakdown-submissions">
-                      <span>Total Submissions</span>
-                      <strong>{totalSubmissions} Players</strong>
+                <div className="bg-white rounded-3xl border border-[#EDE9FE] shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] p-5 sm:p-8 space-y-6">
+                  {/* Top Bar: Title & Total Submissions */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-5">
+                    <div>
+                      <h1 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#1E1B4B] tracking-tight">
+                        Answer Breakdown
+                      </h1>
+                      <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                        Review participant responses and accuracy for this question
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-slate-50 border border-slate-200/80">
+                        <Users className="w-4 h-4 text-slate-500" />
+                        <div className="text-left">
+                          <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Submissions</span>
+                          <span className="text-xs sm:text-sm font-extrabold text-[#1E1B4B]">
+                            {totalSubmissions} {totalSubmissions === 1 ? 'Player' : 'Players'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {totalSubmissions > 0 && (
+                        <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-emerald-50 border border-emerald-200">
+                          <div className="text-left">
+                            <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-600">Accuracy</span>
+                            <span className="text-xs sm:text-sm font-extrabold text-emerald-800">
+                              {questionAccuracy}%
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  <div className="answer-breakdown-question">
-                    <div className="answer-breakdown-question-category">
-                      <HelpCircle aria-hidden="true" />
-                      <span>
-                        Question {questionNumber || 1}
-                        {questionData?.category || category
-                          ? ` \u2022 ${questionData?.category || category}`
-                          : ''}
+                  {/* Question Box */}
+                  <div className="rounded-2xl bg-gradient-to-r from-[#FAF5FF] via-white to-[#F5F3FF] border border-[#EDE9FE] p-5 sm:p-6 shadow-2xs">
+                    <div className="flex flex-wrap items-center gap-2 mb-2.5">
+                      <span className="px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider bg-[#6320EE]/10 text-[#6320EE] border border-[#6320EE]/20 flex items-center gap-1.5">
+                        <HelpCircle className="w-3.5 h-3.5" />
+                        Question {questionNumber || 1} {totalQuestions ? `of ${totalQuestions}` : ''}
                       </span>
+                      {category && (
+                        <span className="px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider bg-white text-slate-600 border border-slate-200 shadow-2xs">
+                          {category}
+                        </span>
+                      )}
                     </div>
-                    <p>{questionData?.questionText || 'Loading question...'}</p>
-                  </div>
 
-                  <div className="answer-breakdown-options">
-                    {(questionData?.options || []).map((option, idx) => {
-                      const count = Number(answerStats[idx]) || 0;
-                      const percentage = totalSubmissions
-                        ? Math.round((count / totalSubmissions) * 100)
-                        : 0;
-                      const isCorrectOption = correctAnswerIdx === idx;
+                    <h2 className="text-lg sm:text-2xl font-bold text-[#1E1B4B] leading-snug">
+                      {questionData?.questionText || 'Loading question...'}
+                    </h2>
 
-                      return (
-                        <article
-                          key={`${idx}-${option}`}
-                          className={`answer-breakdown-option ${isCorrectOption ? 'is-correct' : ''}`}
-                        >
-                          <div className="answer-breakdown-option-details">
-                            <div className="answer-breakdown-option-label">
-                              <strong>Option {optionLetters[idx]}</strong>
-                              <span aria-hidden="true">GÇó</span>
-                              <span className="answer-breakdown-option-text">{option}</span>
-                              {isCorrectOption && (
-                                <span className="answer-breakdown-correct-badge">
-                                  <CheckCircle aria-hidden="true" /> Correct
-                                </span>
-                              )}
-                            </div>
-                            <div className="answer-breakdown-option-count">
-                              <strong>{count}</strong>
-                              <span>{percentage}%</span>
-                            </div>
-                          </div>
-                          <div
-                            className="answer-breakdown-progress"
-                            role="progressbar"
-                            aria-label={`Option ${optionLetters[idx]} responses`}
-                            aria-valuemin={0}
-                            aria-valuemax={100}
-                            aria-valuenow={percentage}
-                          >
-                            <span style={{ width: `${percentage}%` }} />
-                          </div>
-                        </article>
-                      );
-                    })}
-                    {!questionData?.options?.length && (
-                      <p className="answer-breakdown-empty">Question options are unavailable.</p>
+                    {questionData?.image && (
+                      <div className="mt-4 max-w-md mx-auto rounded-xl overflow-hidden border border-slate-200 shadow-xs">
+                        <img src={questionData.image} alt="Question visual" className="w-full max-h-60 object-contain bg-slate-50" />
+                      </div>
                     )}
                   </div>
 
-                  <div className="answer-breakdown-actions">
+                  {/* Options Breakdown Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(questionData?.options || []).map((option, idx) => {
+                      const count = Number(answerStats[idx]) || 0;
+                      const percentage = totalSubmissions > 0
+                        ? Math.round((count / totalSubmissions) * 100)
+                        : 0;
+                      const isCorrectOption = correctAnswerIdx === idx;
+                      const letter = optionLetters[idx] || String.fromCharCode(65 + idx);
+
+                      const badgeStyles = [
+                        'bg-rose-500 text-white shadow-rose-500/20',
+                        'bg-blue-500 text-white shadow-blue-500/20',
+                        'bg-amber-500 text-white shadow-amber-500/20',
+                        'bg-emerald-500 text-white shadow-emerald-500/20'
+                      ][idx % 4];
+
+                      return (
+                        <div
+                          key={`${idx}-${option}`}
+                          className={`relative rounded-2xl border-2 p-4 sm:p-5 transition-all shadow-sm ${
+                            isCorrectOption
+                              ? 'border-emerald-500 bg-gradient-to-br from-emerald-50/70 via-white to-emerald-50/30 ring-2 ring-emerald-500/20 shadow-emerald-500/10'
+                              : 'border-slate-200/90 bg-white hover:border-slate-300'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm shadow-xs shrink-0 ${badgeStyles}`}>
+                                {letter}
+                              </span>
+                              <span className={`text-sm sm:text-base font-bold break-words ${isCorrectOption ? 'text-emerald-950 font-extrabold' : 'text-slate-800'}`}>
+                                {option}
+                              </span>
+                            </div>
+
+                            {isCorrectOption && (
+                              <span className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500 text-white shadow-xs flex items-center gap-1 shrink-0 animate-in fade-in">
+                                <CheckCircle className="w-3.5 h-3.5" /> Correct
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Progress Bar & Response Count */}
+                          <div className="space-y-1.5 mt-4">
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="font-semibold text-slate-500">
+                                {count} {count === 1 ? 'Player' : 'Players'}
+                              </span>
+                              <span className={`font-bold ${isCorrectOption ? 'text-emerald-700' : 'text-slate-700'}`}>
+                                {percentage}%
+                              </span>
+                            </div>
+                            <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden border border-slate-200/50 flex">
+                              <div
+                                className={`h-full rounded-full transition-all duration-700 ${
+                                  isCorrectOption
+                                    ? 'bg-gradient-to-r from-emerald-500 to-green-500 shadow-xs'
+                                    : 'bg-gradient-to-r from-[#6320EE] to-[#7C3AED]'
+                                }`}
+                                style={{ width: `${Math.max(percentage, count > 0 ? 5 : 0)}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {(!questionData?.options || questionData.options.length === 0) && (
+                      <div className="col-span-full py-12 text-center space-y-3">
+                        <Loader2 className="w-8 h-8 animate-spin text-[#6320EE] mx-auto" />
+                        <p className="text-sm font-semibold text-slate-500">Compiling question details and player responses...</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions Row */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
                     <button
                       type="button"
                       onClick={handleShowLeaderboard}
                       disabled={isShowingLeaderboard || isLoading}
-                      className="answer-breakdown-leaderboard-button"
+                      className="w-full sm:w-auto px-6 py-3.5 rounded-2xl border-2 border-[#6320EE]/20 hover:border-[#6320EE] bg-white text-[#6320EE] font-bold text-sm shadow-xs hover:bg-[#FAF5FF] active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
                     >
                       {isShowingLeaderboard ? (
-                        <Loader2 className="animate-spin" aria-hidden="true" />
+                        <Loader2 className="w-4 h-4 animate-spin text-[#6320EE]" />
                       ) : (
-                        <Trophy aria-hidden="true" />
+                        <Trophy className="w-4 h-4 text-[#6320EE]" />
                       )}
                       <span>Show Leaderboard Arena</span>
                     </button>
+
                     <button
                       type="button"
                       onClick={handleNextStep}
                       disabled={isLoading || isShowingLeaderboard}
-                      className="answer-breakdown-next-button"
+                      className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-[#6320EE] to-[#7C3AED] hover:from-[#5218cc] hover:to-[#6d28d9] text-white font-bold text-sm shadow-md shadow-[#6320EE]/25 active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
                     >
                       {isLoading ? (
-                        <Loader2 className="animate-spin" aria-hidden="true" />
+                        <Loader2 className="w-4 h-4 animate-spin text-white" />
                       ) : (
                         <>
-                          <span>{isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}</span>
-                          <ArrowRight aria-hidden="true" />
+                          <span className="font-extrabold">
+                            {isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}
+                          </span>
+                          <ArrowRight className="w-4 h-4 text-white" />
                         </>
                       )}
                     </button>
                   </div>
-                </section>
+                </div>
               ) : (
-                <section className="answer-breakdown-card answer-breakdown-standings-card" role="tabpanel">
-                  <div className="answer-breakdown-card-header">
-                    <div className="answer-breakdown-standings-title">
-                      <span className="answer-breakdown-trophy-icon"><Trophy aria-hidden="true" /></span>
+                /* View 2: Lobby Standings */
+                <div className="bg-white rounded-3xl border border-[#EDE9FE] shadow-[0px_4px_24px_-2px_rgba(99,32,238,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.03)] p-5 sm:p-8 space-y-6">
+                  {/* Top Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center shadow-2xs">
+                        <Trophy className="w-5 h-5 text-amber-600" />
+                      </div>
                       <div>
-                        <h1>Lobby Standings</h1>
-                        <p>See how challengers rank against each other in real time.</p>
+                        <h1 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#1E1B4B] tracking-tight">
+                          Lobby Standings
+                        </h1>
+                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                          Real-time challenger rankings after Question {questionNumber || 1}
+                        </p>
                       </div>
                     </div>
-                    <div className="answer-breakdown-standings-summary">
-                      <span className="answer-breakdown-live"><span aria-hidden="true" /> LIVE</span>
-                      <strong>{leaderboard.length} Challengers</strong>
-                      <span className="answer-breakdown-top-count">
-                        Top {Math.min(10, leaderboard.length)} of {leaderboard.length}
+
+                    <div className="flex items-center gap-2">
+                      <span className="px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]">
+                        {leaderboard.length} {leaderboard.length === 1 ? 'Challenger' : 'Challengers'}
                       </span>
                     </div>
                   </div>
-                  <div className="answer-breakdown-standings-body">
-                    <div className="answer-breakdown-podium" aria-label="Top three challengers">
-                      {[secondPlace, firstPlace, thirdPlace].map((player, index) => {
-                        const rank = index === 0 ? 2 : index === 1 ? 1 : 3;
-                        if (!player) return <div className="answer-breakdown-podium-slot" key={rank} />;
-                        const playerName = player.username || player.name || 'Player';
-                        return (
-                          <div className={`answer-breakdown-podium-slot rank-${rank}`} key={rank}>
-                            <div className="answer-breakdown-podium-avatar">
-                              {player.avatar
-                                ? <Avatar emoji={player.avatar} />
-                                : <span>{playerName.charAt(0).toUpperCase()}</span>}
-                              {rank === 1 && <Crown aria-label="First place" />}
-                            </div>
-                            <strong className="answer-breakdown-podium-name">{playerName}</strong>
-                            <span className="answer-breakdown-podium-score">{player.totalScore || 0} pts</span>
-                            <div className="answer-breakdown-podium-bar">
-                              <span>{rank}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      {!leaderboard.length && (
-                        <p className="answer-breakdown-podium-empty">Standings will appear when players score points.</p>
-                      )}
-                    </div>
 
-                    <div className="answer-breakdown-ranking-list" aria-label="Top ranked challengers">
-                      {filteredLeaderboard.slice(0, 10).map(player => {
-                        const playerName = player.username || player.name || 'Player';
-                        return (
-                          <div
-                            className={`answer-breakdown-ranking-row rank-${player.rank} ${player.rank <= 3 ? 'is-podium-rank' : ''}`}
-                            key={player.rank}
-                          >
-                            <span className="answer-breakdown-ranking-position">{player.rank}</span>
-                            <span className="answer-breakdown-ranking-avatar">
-                              {player.avatar
-                                ? <Avatar emoji={player.avatar} />
-                                : playerName.charAt(0).toUpperCase()}
-                            </span>
-                            <span className="answer-breakdown-ranking-player">
-                              <strong>{playerName}</strong>
-                              <span>
-                                {player.correctAnswers || 0}
-                                {totalQuestions ? `/${totalQuestions}` : ''} correct
+                  {/* Top 3 Podium (Only real players!) */}
+                  {effectiveRoster.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                      {/* 2nd Place */}
+                      {secondPlace ? (
+                        <div className="order-2 sm:order-1 rounded-2xl bg-slate-50/80 border border-slate-200 p-5 text-center flex flex-col items-center justify-between shadow-2xs">
+                          <div className="w-12 h-12 rounded-full bg-slate-200 text-slate-700 font-extrabold text-lg flex items-center justify-center mb-2">
+                            {secondPlace.avatar ? <Avatar emoji={secondPlace.avatar} /> : (secondPlace.username || 'P').charAt(0).toUpperCase()}
+                          </div>
+                          <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700 uppercase">
+                            2nd Place
+                          </span>
+                          <h4 className="font-bold text-slate-900 mt-2 text-base truncate max-w-full">
+                            {secondPlace.username}
+                          </h4>
+                          <span className="text-xl font-extrabold text-[#6320EE] mt-1">
+                            {secondPlace.totalScore || 0} pts
+                          </span>
+                          <span className="text-xs text-slate-500 mt-1">
+                            {secondPlace.correctAnswers || 0} correct
+                          </span>
+                        </div>
+                      ) : <div className="hidden sm:block order-1" />}
+
+                      {/* 1st Place */}
+                      {firstPlace && (
+                        <div className="order-1 sm:order-2 rounded-2xl bg-gradient-to-b from-amber-50 to-white border-2 border-amber-300 p-6 text-center flex flex-col items-center justify-between shadow-md relative sm:-mt-3">
+                          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-amber-400 text-white rounded-full p-1.5 shadow-xs">
+                            <Crown className="w-4 h-4 fill-white" />
+                          </div>
+                          <div className="w-14 h-14 rounded-full bg-amber-100 text-amber-800 font-extrabold text-xl flex items-center justify-center mb-2 ring-4 ring-amber-200">
+                            {firstPlace.avatar ? <Avatar emoji={firstPlace.avatar} /> : (firstPlace.username || 'P').charAt(0).toUpperCase()}
+                          </div>
+                          <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 uppercase tracking-wide">
+                            1st Place
+                          </span>
+                          <h4 className="font-extrabold text-slate-900 mt-2 text-lg truncate max-w-full">
+                            {firstPlace.username}
+                          </h4>
+                          <span className="text-2xl font-black text-[#6320EE] mt-1">
+                            {firstPlace.totalScore || 0} pts
+                          </span>
+                          <span className="text-xs font-semibold text-slate-500 mt-1">
+                            {firstPlace.correctAnswers || 0} correct • {firstPlace.lastTimeTaken || '0.0'}s
+                          </span>
+                        </div>
+                      )}
+
+                      {/* 3rd Place */}
+                      {thirdPlace ? (
+                        <div className="order-3 rounded-2xl bg-slate-50/80 border border-slate-200 p-5 text-center flex flex-col items-center justify-between shadow-2xs">
+                          <div className="w-12 h-12 rounded-full bg-amber-100/70 text-amber-900 font-extrabold text-lg flex items-center justify-center mb-2">
+                            {thirdPlace.avatar ? <Avatar emoji={thirdPlace.avatar} /> : (thirdPlace.username || 'P').charAt(0).toUpperCase()}
+                          </div>
+                          <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 uppercase">
+                            3rd Place
+                          </span>
+                          <h4 className="font-bold text-slate-900 mt-2 text-base truncate max-w-full">
+                            {thirdPlace.username}
+                          </h4>
+                          <span className="text-xl font-extrabold text-[#6320EE] mt-1">
+                            {thirdPlace.totalScore || 0} pts
+                          </span>
+                          <span className="text-xs text-slate-500 mt-1">
+                            {thirdPlace.correctAnswers || 0} correct
+                          </span>
+                        </div>
+                      ) : <div className="hidden sm:block order-3" />}
+                    </div>
+                  ) : (
+                    <div className="py-12 text-center text-slate-500">
+                      <Trophy className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+                      <p className="text-sm font-semibold">No player scores recorded yet.</p>
+                    </div>
+                  )}
+
+                  {/* Full Rankings List */}
+                  {effectiveRoster.length > 0 && (
+                    <div className="rounded-2xl border border-slate-200 overflow-hidden">
+                      <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <span>Challenger</span>
+                        <div className="flex items-center gap-6">
+                          <span>Accuracy</span>
+                          <span className="w-20 text-right">Score</span>
+                        </div>
+                      </div>
+                      <div className="divide-y divide-slate-100">
+                        {effectiveRoster.map((player) => (
+                          <div key={player.rank} className="px-4 py-3.5 flex items-center justify-between hover:bg-slate-50/60 transition-colors">
+                            <div className="flex items-center gap-3">
+                              <span className={`w-6 text-center text-xs font-extrabold ${player.rank === 1 ? 'text-amber-500' : player.rank === 2 ? 'text-slate-500' : player.rank === 3 ? 'text-amber-700' : 'text-slate-400'}`}>
+                                #{player.rank}
                               </span>
-                            </span>
-                            <strong className="answer-breakdown-ranking-score">{player.totalScore || 0} pts</strong>
-                            <span className="answer-breakdown-ranking-time">{player.lastTimeTaken || '0.0'}s</span>
+                              <div className="w-8 h-8 rounded-full bg-[#FAF5FF] text-[#6320EE] font-bold text-xs flex items-center justify-center border border-[#EDE9FE]">
+                                {player.avatar ? <Avatar emoji={player.avatar} /> : (player.username || 'P').charAt(0).toUpperCase()}
+                              </div>
+                              <span className="text-sm font-bold text-slate-800">
+                                {player.username}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-6">
+                              <span className="text-xs text-slate-500">
+                                {player.correctAnswers || 0} {totalQuestions ? `/${totalQuestions}` : ''} correct
+                              </span>
+                              <span className="w-20 text-right font-extrabold text-sm text-[#6320EE]">
+                                {player.totalScore || 0} pts
+                              </span>
+                            </div>
                           </div>
-                        );
-                      })}
-                      {!filteredLeaderboard.length && (
-                        <p className="answer-breakdown-empty">
-                          {leaderboard.length ? 'No players match your search.' : 'No score values logged.'}
-                        </p>
-                      )}
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="answer-breakdown-actions">
+                  {/* Actions Row */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
                     <button
                       type="button"
                       onClick={() => setMobileTab('feedback')}
-                      className="answer-breakdown-leaderboard-button"
+                      className="w-full sm:w-auto px-6 py-3.5 rounded-2xl border-2 border-slate-200 hover:border-slate-300 bg-white text-slate-700 font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <ArrowLeft aria-hidden="true" />
+                      <ArrowLeft className="w-4 h-4" />
                       <span>Back to Answer Breakdown</span>
                     </button>
+
                     <button
                       type="button"
                       onClick={handleNextStep}
                       disabled={isLoading}
-                      className="answer-breakdown-next-button"
+                      className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-[#6320EE] to-[#7C3AED] hover:from-[#5218cc] hover:to-[#6d28d9] text-white font-bold text-sm shadow-md shadow-[#6320EE]/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
                     >
                       {isLoading ? (
-                        <Loader2 className="animate-spin" aria-hidden="true" />
+                        <Loader2 className="w-4 h-4 animate-spin text-white" />
                       ) : (
                         <>
-                          <span>{isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}</span>
-                          <ArrowRight aria-hidden="true" />
+                          <span className="font-extrabold">
+                            {isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}
+                          </span>
+                          <ArrowRight className="w-4 h-4 text-white" />
                         </>
                       )}
                     </button>
                   </div>
-                </section>
+                </div>
               )}
             </main>
           </div>

@@ -881,6 +881,10 @@ const endQuestion = async (req, res) => {
         const io = req.app.get('io');
         if (io) {
             const payload = {
+                questionText: currentQuestion.questionText || '',
+                questionNumber: game.currentQuestionIndex + 1,
+                totalQuestions: game.quizId?.questions?.length || 0,
+                category: currentQuestion.category || (game.quizId?.category || 'General'),
                 correctAnswerIndex: currentQuestion.correctAnswer,
                 correctAnswerText: currentQuestion.options ? (currentQuestion.options[currentQuestion.correctAnswer] || '') : '',
                 options: currentQuestion.options || [],
