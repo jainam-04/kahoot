@@ -586,10 +586,34 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 2px 8px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #ded4fc transparent;
+}
+
+.host-lobby-avatar-strip::-webkit-scrollbar {
+  height: 4px;
+}
+
+.host-lobby-avatar-strip::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.host-lobby-avatar-strip::-webkit-scrollbar-thumb {
+  background: #ded4fc;
+  border-radius: 999px;
+}
+
+.host-lobby-avatar-strip::-webkit-scrollbar-thumb:hover {
+  background: #6222f5;
 }
 
 .host-lobby-avatar-chip {
+  flex: 0 0 38px;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -599,6 +623,13 @@
   font-weight: 700;
   position: relative;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.host-lobby-avatar-chip:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(98, 34, 245, 0.18);
 }
 
 .host-lobby-online-dot {
@@ -613,16 +644,25 @@
 }
 
 .host-lobby-avatar-more {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   height: 32px;
   padding: 0 12px;
+  border: 1px solid #e9d5ff;
   border-radius: 999px;
   background: #f4effe;
   color: #6222f5;
   font-size: 11.5px;
   font-weight: 700;
   white-space: nowrap;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.host-lobby-avatar-more:hover {
+  background: #6222f5;
+  color: #ffffff;
 }
 
 /* ─── PLAYER LIST ITEMS ─── */
@@ -631,6 +671,30 @@
   flex-direction: column;
   gap: 0;
   padding: 2px 0 4px;
+  max-height: 270px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+
+.host-lobby-player-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.host-lobby-player-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.host-lobby-player-list::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 999px;
+}
+
+.host-lobby-player-list::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
 }
 
 .host-lobby-player {
@@ -1893,6 +1957,34 @@
   .host-lobby-player-count {
     padding: 4px 10px;
     font-size: 11.5px;
+  }
+
+  .host-lobby-avatar-strip {
+    gap: 8px;
+    padding: 2px 1px 6px;
+  }
+
+  .host-lobby-avatar-chip {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+
+  .host-lobby-online-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .host-lobby-avatar-more {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 10.5px;
+  }
+
+  .host-lobby-player-list {
+    max-height: 230px;
+    padding-right: 2px;
   }
 
   .host-lobby-player {

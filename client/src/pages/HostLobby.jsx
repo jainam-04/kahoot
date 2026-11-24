@@ -373,12 +373,11 @@ export default function HostLobby() {
   }, [hostName, userName, user, activeChallengers]);
 
   const totalParticipantCount = fullPlayerRoster.length; // e.g. 34
-  const visibleRoster = showAllPlayers ? fullPlayerRoster : fullPlayerRoster.slice(0, 3);
-  const remainingLobbyCount = Math.max(0, totalParticipantCount - 3);
+  const visibleRoster = showAllPlayers ? fullPlayerRoster : fullPlayerRoster.slice(0, 5);
+  const remainingLobbyCount = Math.max(0, totalParticipantCount - 5);
 
-  // Top Avatar Strip: up to 6 avatars
-  const avatarStripList = fullPlayerRoster.slice(0, 6);
-  const additionalAvatarCount = Math.max(0, totalParticipantCount - 6);
+  // Live Avatar Strip: all participants in scrollable/adaptable strip
+  const avatarStripList = fullPlayerRoster;
 
   // Filtered Roster for Modal Search & Sort
   const filteredModalRoster = useMemo(() => {
@@ -579,14 +578,14 @@ export default function HostLobby() {
                       {/* Live Lobby Avatars Sub-Heading */}
                       <div className="host-lobby-avatar-section">
                         <div className="host-lobby-avatar-label">
-                          <span>LIVE LOBBY AVATARS</span>
+                          <span>LIVE LOBBY AVATARS ({totalParticipantCount})</span>
                           <span className="host-lobby-ready-label">
                             <i />
                             {totalParticipantCount} ready
                           </span>
                         </div>
 
-                        {/* Circular Avatar Strip with Green Online Dots */}
+                        {/* Circular Avatar Strip with Green Online Dots (Scrollable & Adaptable) */}
                         <div className="host-lobby-avatar-strip">
                           {avatarStripList.map((player, idx) => {
                             const palette = getAvatarTheme(player, idx);
@@ -605,17 +604,19 @@ export default function HostLobby() {
                             );
                           })}
 
-                          {additionalAvatarCount > 0 && (
-                            <span 
+                          {totalParticipantCount > 8 && (
+                            <button 
+                              type="button"
                               className="host-lobby-avatar-more cursor-pointer"
                               onClick={() => setIsPlayersModalOpen(true)}
+                              title="View all connected players"
                             >
-                              +{additionalAvatarCount} more
-                            </span>
+                              +{Math.max(0, totalParticipantCount - 8)} more
+                            </button>
                           )}
 
                           {totalParticipantCount === 0 && (
-                            <span className="text-xs text-slate-400 font-medium italic">
+                            <span className="text-xs text-slate-400 font-medium italic py-1">
                               No players connected yet
                             </span>
                           )}
@@ -675,13 +676,16 @@ export default function HostLobby() {
                       </div>
 
                       {/* Footer Roster Toggle Row */}
-                      {totalParticipantCount > 3 && (
+                      {totalParticipantCount > 5 && (
                         <div className="host-lobby-roster-footer">
                           <span 
-                            onClick={() => setIsPlayersModalOpen(true)} 
+                            onClick={() => setShowAllPlayers(!showAllPlayers)} 
                             className="host-lobby-more-lobby-text cursor-pointer hover:underline"
                           >
-                            +{remainingLobbyCount} more players in lobby
+                            {showAllPlayers 
+                              ? 'Show fewer players' 
+                              : `+${remainingLobbyCount} more players in lobby`
+                            }
                           </span>
                           <button
                             type="button"
@@ -689,7 +693,7 @@ export default function HostLobby() {
                             onClick={() => setIsPlayersModalOpen(true)}
                             aria-expanded={isPlayersModalOpen}
                           >
-                            <span>View All</span>
+                            <span>View All ({totalParticipantCount})</span>
                             <ChevronDown className="h-3.5 w-3.5" />
                           </button>
                         </div>
