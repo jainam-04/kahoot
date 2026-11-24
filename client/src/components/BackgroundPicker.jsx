@@ -1474,19 +1474,19 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
       <div className={`${showPreview ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-6 text-left`}>
 
         {/* Tab Navigation */}
-        <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+        <div className={`flex ${isLight ? 'bg-gray-100/90 border-gray-200' : 'bg-white/5 border-white/10'} p-1 rounded-xl border`}>
           <button
             type="button"
             onClick={() => setActiveBgTab('upload')}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeBgTab === 'upload'
+            className={`flex-1 min-h-[38px] sm:min-h-[40px] flex items-center justify-center gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer ${activeBgTab === 'upload'
               ? 'bg-primary text-white shadow-premium-glow'
-              : 'text-gray-400 hover:text-white'
+              : isLight
+                ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
           >
-            <span className="flex items-center justify-center gap-1.5">
-              <Upload className="h-3.5 w-3.5" />
-              Upload Background
-            </span>
+            <Upload className="w-3.5 h-3.5 shrink-0" />
+            <span className="whitespace-nowrap">Upload Background</span>
           </button>
           <button
             type="button"
@@ -1494,20 +1494,20 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
               setActiveBgTab('pixels');
               setIsPexelsModalOpen(true);
             }}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeBgTab === 'pixels'
+            className={`flex-1 min-h-[38px] sm:min-h-[40px] flex items-center justify-center gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer ${activeBgTab === 'pixels'
               ? 'bg-primary text-white shadow-premium-glow'
-              : 'text-gray-400 hover:text-white'
+              : isLight
+                ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
           >
-            <span className="flex items-center justify-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5" />
-              Pexels Library
-            </span>
+            <Sparkles className="w-3.5 h-3.5 shrink-0" />
+            <span className="whitespace-nowrap">Pexels Library</span>
           </button>
         </div>
 
         {/* Tab Contents */}
-        <div className="min-h-[220px] bg-white/[0.02] border border-white/5 rounded-2xl p-4 sm:p-5 relative">
+        <div className={`min-h-[220px] ${isLight ? 'bg-gray-50/50 border-gray-200' : 'bg-white/[0.02] border-white/5'} border rounded-2xl p-4 sm:p-5 relative`}>
 
           {/* TAB 2: UPLOAD BACKGROUND */}
           {activeBgTab === 'upload' && (
@@ -1544,17 +1544,20 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                   ? 'border-primary bg-primary/5 scale-[0.99]'
                   : config.url.startsWith('data:')
                     ? 'border-green-500/35 bg-green-500/5'
-                    : 'border-white/10 hover:border-white/20 hover:bg-white/[0.02]'
+                    : isLight
+                      ? 'border-gray-300 hover:border-purple-300 hover:bg-purple-50/20'
+                      : 'border-white/10 hover:border-white/20 hover:bg-white/[0.02]'
                   }`}
               >
                 <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                <p className="text-xs font-bold text-gray-300">Drag and drop your image here</p>
-                <p className="text-[10px] text-gray-500 mt-1">Supports JPG, PNG, or WebP formats</p>
+                <p className={`text-xs font-bold ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>Drag and drop your image here</p>
+                <p className={`text-[10px] ${isLight ? 'text-gray-500' : 'text-gray-500'} mt-1`}>Supports JPG, PNG, or WebP formats</p>
                 <div className="mt-4 flex items-center justify-center gap-3">
-                  <label className="btn-premium px-4 py-2 text-xs font-bold text-white cursor-pointer shadow-md"
+                  <label 
+                    className="btn-premium inline-flex items-center justify-center px-5 py-2 text-xs font-bold text-white cursor-pointer shadow-md shrink-0 select-none"
                     style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', border: 'none' }}
                   >
-                    Choose File
+                    <span>Choose File</span>
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
@@ -1585,7 +1588,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                     <button
                       type="button"
                       onClick={() => updateField('url', '')}
-                      className="btn-premium px-4 py-2 text-xs font-bold text-white"
+                      className="btn-premium inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-white shrink-0 cursor-pointer"
                       style={{ background: '#dc2626', border: 'none' }}
                     >
                       Remove
@@ -2280,12 +2283,12 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
         )}
 
         {/* Background Adjustment Controls */}
-        <div className="grid gap-5 sm:grid-cols-2 bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5">
+        <div className={`grid gap-5 sm:grid-cols-2 ${isLight ? 'bg-gray-50/70 border-gray-200 text-gray-800' : 'bg-white/5 border-white/10'} rounded-2xl p-4 sm:p-5 border`}>
 
           {/* Sliders */}
           <div className="space-y-4">
             <div className="space-y-1.5 text-left">
-              <div className="flex justify-between text-xs font-bold text-gray-400">
+              <div className={`flex justify-between text-xs font-bold ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                 <span>Blur Intensity</span>
                 <span className="text-primary">{config.blur}px</span>
               </div>
@@ -2295,12 +2298,12 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 max="20"
                 value={config.blur}
                 onChange={(e) => updateField('blur', Number(e.target.value))}
-                className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                className={`w-full h-1 ${isLight ? 'bg-gray-200' : 'bg-white/10'} rounded-lg appearance-none cursor-pointer accent-primary`}
               />
             </div>
 
             <div className="space-y-1.5 text-left">
-              <div className="flex justify-between text-xs font-bold text-gray-400">
+              <div className={`flex justify-between text-xs font-bold ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                 <span>Brightness</span>
                 <span className="text-primary">{config.brightness}%</span>
               </div>
@@ -2310,12 +2313,12 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 max="150"
                 value={config.brightness}
                 onChange={(e) => updateField('brightness', Number(e.target.value))}
-                className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                className={`w-full h-1 ${isLight ? 'bg-gray-200' : 'bg-white/10'} rounded-lg appearance-none cursor-pointer accent-primary`}
               />
             </div>
 
             <div className="space-y-1.5 text-left">
-              <div className="flex justify-between text-xs font-bold text-gray-400">
+              <div className={`flex justify-between text-xs font-bold ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                 <span>Overlay Opacity</span>
                 <span className="text-primary">{config.overlayOpacity}%</span>
               </div>
@@ -2325,7 +2328,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 max="100"
                 value={config.overlayOpacity}
                 onChange={(e) => updateField('overlayOpacity', Number(e.target.value))}
-                className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                className={`w-full h-1 ${isLight ? 'bg-gray-200' : 'bg-white/10'} rounded-lg appearance-none cursor-pointer accent-primary`}
               />
             </div>
           </div>
@@ -2338,7 +2341,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 <select
                   value={config.fit}
                   onChange={(e) => updateField('fit', e.target.value)}
-                  className="w-full rounded-lg bg-[#111115] border border-white/10 px-2.5 py-1.5 text-xs text-white focus:outline-none"
+                  className={`w-full rounded-lg ${isLight ? 'bg-white border-gray-300 text-gray-800' : 'bg-[#111115] border-white/10 text-white'} border px-2.5 py-1.5 text-xs focus:outline-none`}
                 >
                   <option value="cover">Cover (Default)</option>
                   <option value="contain">Contain</option>
@@ -2351,7 +2354,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 <select
                   value={config.position}
                   onChange={(e) => updateField('position', e.target.value)}
-                  className="w-full rounded-lg bg-[#111115] border border-white/10 px-2.5 py-1.5 text-xs text-white focus:outline-none"
+                  className={`w-full rounded-lg ${isLight ? 'bg-white border-gray-300 text-gray-800' : 'bg-[#111115] border-white/10 text-white'} border px-2.5 py-1.5 text-xs focus:outline-none`}
                 >
                   <option value="center">Center</option>
                   <option value="top">Top</option>
@@ -2363,8 +2366,8 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
             </div>
 
             <div className="grid grid-cols-2 gap-3 pt-1">
-              <div className="flex items-center justify-between bg-[#111115] border border-white/10 px-3 py-2 rounded-xl">
-                <span className="text-[11px] font-bold text-gray-400">Dark Overlay</span>
+              <div className={`flex items-center justify-between ${isLight ? 'bg-white border-gray-300' : 'bg-[#111115] border-white/10'} border px-3 py-2 rounded-xl`}>
+                <span className={`text-[11px] font-bold ${isLight ? 'text-gray-700' : 'text-gray-400'}`}>Dark Overlay</span>
                 <input
                   type="checkbox"
                   checked={config.darkOverlay}
@@ -2377,7 +2380,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 <select
                   value={config.gradientOverlay}
                   onChange={(e) => updateField('gradientOverlay', e.target.value)}
-                  className="w-full rounded-lg bg-[#111115] border border-white/10 px-2.5 py-1.5 text-xs text-white focus:outline-none"
+                  className={`w-full rounded-lg ${isLight ? 'bg-white border-gray-300 text-gray-800' : 'bg-[#111115] border-white/10 text-white'} border px-2.5 py-1.5 text-xs focus:outline-none`}
                 >
                   <option value="none">No Gradient Overlay</option>
                   <option value="linear">Linear Gradient</option>

@@ -39,6 +39,19 @@ export default function CreateQuiz() {
   // Lock background scroll when modals are active
   useScrollLock(Boolean(activeModal || showPexelsModal || bgModalTarget !== null));
 
+  // ESC key handler for Pexels Modal and Background Customizer
+  useEffect(() => {
+    if (!showPexelsModal && bgModalTarget === null) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (showPexelsModal) setShowPexelsModal(false);
+        if (bgModalTarget !== null) setBgModalTarget(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showPexelsModal, bgModalTarget]);
+
   // Active question index in question editor
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
 
@@ -1639,70 +1652,97 @@ export default function CreateQuiz() {
 
         {/* 2. PEXELS / PRESET LIBRARY MODAL */}
         {showPexelsModal && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200 overscroll-contain">
-            <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl p-4 sm:p-7 shadow-2xl border border-[#E2E8F0] overflow-y-auto space-y-4 text-left relative">
-              <div className="flex items-center justify-between pb-2.5 border-b border-[#F1F5F9]">
-                <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-[#0F172A] flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#7C3AED]" />
-                    <span>Pexels & High-Resolution Backgrounds</span>
+          <div 
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 overscroll-contain animate-in fade-in duration-200"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setShowPexelsModal(false);
+            }}
+          >
+            <div 
+              className="w-full max-w-4xl max-h-[90dvh] sm:max-h-[90vh] bg-white rounded-3xl shadow-2xl border border-[#E2E8F0] flex flex-col overflow-hidden text-left relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Fixed Modal Header */}
+              <div className="shrink-0 flex items-center justify-between px-4 sm:px-7 py-3 sm:py-4 border-b border-[#F1F5F9] bg-white z-10">
+                <div className="min-w-0 pr-2">
+                  <h3 className="text-base sm:text-xl font-bold text-[#0F172A] flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#7C3AED] shrink-0" />
+                    <span className="truncate">Pexels & High-Resolution Backgrounds</span>
                   </h3>
-                  <p className="text-[11px] text-[#64748B] mt-0.5">
+                  <p className="text-[11px] sm:text-xs text-[#64748B] mt-0.5 truncate sm:whitespace-normal">
                     Browse curated HD background photos to enhance your live interactive quizzes.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowPexelsModal(false)}
-                  className="w-8 h-8 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
+                  className="w-8 h-8 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer shrink-0"
+                  aria-label="Close"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* BackgroundPicker component embedded for full Pexels presets & search */}
-              <BackgroundPicker
-                value={watch('backgroundImage')}
-                onChange={(val) => {
-                  setValue('backgroundImage', val, { shouldDirty: true });
-                  setShowPexelsModal(false);
-                  toast.success('Background selected from library! ✨');
-                }}
-                showPreview={false}
-              />
+              {/* Scrollable Modal Content Body */}
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-7 space-y-4 touch-pan-y scrollbar-thin">
+                {/* BackgroundPicker component embedded for full Pexels presets & search */}
+                <BackgroundPicker
+                  value={watch('backgroundImage')}
+                  onChange={(val) => {
+                    setValue('backgroundImage', val, { shouldDirty: true });
+                    setShowPexelsModal(false);
+                    toast.success('Background selected from library! ✨');
+                  }}
+                  showPreview={false}
+                />
+              </div>
             </div>
           </div>
         )}
 
         {/* 3. QUESTION BACKGROUND CUSTOMIZER MODAL */}
         {bgModalTarget !== null && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in duration-200 overscroll-contain">
-            <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl p-4 sm:p-7 shadow-2xl border border-[#E2E8F0] overflow-y-auto space-y-4 text-left relative">
-              <div className="flex items-center justify-between pb-2.5 border-b border-[#F1F5F9]">
-                <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-[#0F172A]">
+          <div 
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 overscroll-contain animate-in fade-in duration-200"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setBgModalTarget(null);
+            }}
+          >
+            <div 
+              className="w-full max-w-4xl max-h-[90dvh] sm:max-h-[90vh] bg-white rounded-3xl shadow-2xl border border-[#E2E8F0] flex flex-col overflow-hidden text-left relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Fixed Modal Header */}
+              <div className="shrink-0 flex items-center justify-between px-4 sm:px-7 py-3 sm:py-4 border-b border-[#F1F5F9] bg-white z-10">
+                <div className="min-w-0 pr-2">
+                  <h3 className="text-base sm:text-xl font-bold text-[#0F172A] truncate">
                     Customize Question {bgModalTarget + 1} Background
                   </h3>
-                  <p className="text-[11px] text-[#64748B] mt-0.5">
+                  <p className="text-[11px] sm:text-xs text-[#64748B] mt-0.5 truncate sm:whitespace-normal">
                     Set a distinct visual background, filter or image specifically for this question.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setBgModalTarget(null)}
-                  className="w-8 h-8 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer"
+                  className="w-8 h-8 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] cursor-pointer shrink-0"
+                  aria-label="Close"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <BackgroundPicker
-                value={watch(`questions.${bgModalTarget}.backgroundImage`)}
-                onChange={(val) => setValue(`questions.${bgModalTarget}.backgroundImage`, val, { shouldDirty: true })}
-                showPreview={false}
-              />
+              {/* Scrollable Modal Content Body */}
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-7 space-y-4 touch-pan-y scrollbar-thin">
+                <BackgroundPicker
+                  value={watch(`questions.${bgModalTarget}.backgroundImage`)}
+                  onChange={(val) => setValue(`questions.${bgModalTarget}.backgroundImage`, val, { shouldDirty: true })}
+                  showPreview={false}
+                />
+              </div>
 
-              <div className="flex justify-end gap-2 pt-2.5 border-t border-[#F1F5F9]">
+              {/* Modal Footer Controls */}
+              <div className="shrink-0 flex justify-end gap-2 px-4 sm:px-7 py-3 border-t border-[#F1F5F9] bg-white">
                 <button
                   type="button"
                   onClick={() => {

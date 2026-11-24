@@ -101,8 +101,8 @@ function handleTouchMove(e) {
   }
 
   // If inside scrollable container, prevent overscroll / scroll chaining at boundaries
-  const isAtTop = vScrollable.scrollTop <= 0 && deltaY > 0;
-  const isAtBottom = vScrollable.scrollTop + vScrollable.clientHeight >= vScrollable.scrollHeight - 1 && deltaY < 0;
+  const isAtTop = vScrollable.scrollTop <= 1 && deltaY > 0;
+  const isAtBottom = Math.ceil(vScrollable.scrollTop + vScrollable.clientHeight) >= vScrollable.scrollHeight - 1 && deltaY < 0;
 
   if ((isAtTop || isAtBottom) && e.cancelable) {
     e.preventDefault();
@@ -131,8 +131,8 @@ function handleWheel(e) {
   }
 
   // Prevent scroll chaining at top/bottom boundaries
-  const isAtTop = vScrollable.scrollTop <= 0 && e.deltaY < 0;
-  const isAtBottom = vScrollable.scrollTop + vScrollable.clientHeight >= vScrollable.scrollHeight - 1 && e.deltaY > 0;
+  const isAtTop = vScrollable.scrollTop <= 1 && e.deltaY < 0;
+  const isAtBottom = Math.ceil(vScrollable.scrollTop + vScrollable.clientHeight) >= vScrollable.scrollHeight - 1 && e.deltaY > 0;
 
   if ((isAtTop || isAtBottom) && e.cancelable) {
     e.preventDefault();
