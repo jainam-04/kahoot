@@ -569,10 +569,10 @@ export default function CreateQuiz() {
                   className="flex items-center gap-1.5 p-1 sm:px-3 sm:py-1 rounded-full border border-[#E7E9F2] bg-white hover:bg-[#F8FAFC] transition-colors cursor-pointer"
                 >
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#6C38FF] text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
-                    {user?.name ? user.name[0]?.toUpperCase() : 'M'}
+                    {user?.name ? user.name[0]?.toUpperCase() : (user?.username ? user.username[0]?.toUpperCase() : 'U')}
                   </div>
                   <span className="text-xs font-semibold text-[#1E293B] max-w-[90px] truncate hidden md:inline">
-                    {user?.name || 'Mohsin'}
+                    {user?.name || user?.username || 'User'}
                   </span>
                   <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] hidden sm:inline" />
                 </button>
@@ -581,8 +581,8 @@ export default function CreateQuiz() {
                 {isProfileDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white border border-[#EEF0F6] shadow-xl p-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150">
                     <div className="px-3 py-2 border-b border-[#F1F5F9]">
-                      <p className="text-xs font-bold text-[#0F172A] truncate">{user?.name || 'Mohsin'}</p>
-                      <p className="text-[11px] text-[#64748B] truncate">{user?.email || 'mohsin@example.com'}</p>
+                      <p className="text-xs font-bold text-[#0F172A] truncate">{user?.name || user?.username || 'User'}</p>
+                      <p className="text-[11px] text-[#64748B] truncate">{user?.email || 'user@example.com'}</p>
                     </div>
                     <div className="py-1">
                       <button

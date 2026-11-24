@@ -384,8 +384,8 @@ export default function Reports() {
     setCurrentPage(1);
   }, [searchQuery, headerSearch, selectedCategory, selectedDateRange]);
 
-  const userInitial = (user?.name || user?.fullName || 'Mohsin').charAt(0).toUpperCase();
-  const userName = user?.name || user?.fullName || 'Mohsin';
+  const userInitial = (user?.name || user?.fullName || 'U').charAt(0).toUpperCase();
+  const userName = user?.name || user?.fullName || 'User';
 
   // Helper for row icon rendering
   const renderRowIcon = (type) => {

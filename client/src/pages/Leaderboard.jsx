@@ -24,11 +24,15 @@ export default function Leaderboard() {
   const { playerName } = useGame();
   const { themeMode } = useTheme();
   const isLight = themeMode !== 'dark';
-  const localPlayer = playerName || localStorage.getItem('guest_playerName');
+  const localPlayer = playerName || localStorage.getItem('guest_playerName') || '';
 
   // Component State
   const [leaderboard, setLeaderboard] = useState([]);
-  const [isHost, setIsHost] = useState(false);
+  const [isHost, setIsHost] = useState(() => {
+    const hostToken = localStorage.getItem('token');
+    const hostedPin = localStorage.getItem('current_hosted_pin');
+    return !!hostToken && (hostedPin === pin || localStorage.getItem('is_host') === 'true');
+  });
   const [isLastQuestion, setIsLastQuestion] = useState(false);
   const [isLoadingNext, setIsLoadingNext] = useState(false);
   const [myRank, setMyRank] = useState(null);
@@ -48,7 +52,7 @@ export default function Leaderboard() {
   useEffect(() => {
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
-    const isUserHost = !!hostToken && hostedPin === pin;
+    const isUserHost = !!hostToken && (hostedPin === pin || localStorage.getItem('is_host') === 'true');
     setIsHost(isUserHost);
 
     setIsLastQuestion(localStorage.getItem('last_isLastQuestion') === 'true');
@@ -59,7 +63,12 @@ export default function Leaderboard() {
       try {
         const response = await getLeaderboard(pin);
         if (response.success) {
-          const board = response.leaderboard || [];
+          let board = response.leaderboard || [];
+          // Filter out phantom/ghost players that have 0 score and 0 answers when active participants exist
+          const hasScoredPlayers = board.some(p => (p.totalScore && p.totalScore > 0) || (p.answers && p.answers.length > 0) || (p.correctAnswers && p.correctAnswers > 0));
+          if (hasScoredPlayers) {
+            board = board.filter(p => (p.totalScore && p.totalScore > 0) || (p.answers && p.answers.length > 0) || (p.correctAnswers && p.correctAnswers > 0));
+          }
           setLeaderboard(board);
 
           if (localPlayer) {
@@ -76,7 +85,7 @@ export default function Leaderboard() {
 
     // 2. Connect Socket and Listen
     const socket = connectSocket();
-    const roleOrName = isUserHost ? 'Host' : localPlayer;
+    const roleOrName = isUserHost ? 'Host' : (localPlayer || 'Player');
     emitJoinRoom(pin, roleOrName);
 
     socket.on('question_started', (data) => {
@@ -288,10 +297,12 @@ export default function Leaderboard() {
             Leaderboard Arena
           </h2>
 
-          <div className="flex items-end justify-center gap-2 sm:gap-6 w-full max-w-lg h-60 mt-4 sm:mt-8">
+          <div className={`flex items-end justify-center gap-2 sm:gap-6 w-full ${
+            leaderboard.length === 1 ? 'max-w-[220px]' : leaderboard.length === 2 ? 'max-w-sm' : 'max-w-lg'
+          } h-60 mt-4 sm:mt-8`}>
             
             {/* 2ND PLACE PODIUM */}
-            {secondPlace ? (
+            {secondPlace && (
               <div className="flex flex-col items-center flex-1 min-w-0">
                 <span className={`text-[11px] sm:text-xs font-bold truncate w-full text-center max-w-[75px] sm:max-w-[90px] ${
                   isLight ? 'text-slate-800' : 'text-gray-200'
@@ -312,10 +323,10 @@ export default function Leaderboard() {
                   <Medal className={`h-5 w-5 sm:h-6 sm:w-6 ${isLight ? 'text-slate-600' : 'text-gray-400'}`} />
                 </motion.div>
               </div>
-            ) : <div className="flex-1" />}
+            )}
 
             {/* 1ST PLACE PODIUM (CROWN & MIDDLE TALL) */}
-            {firstPlace ? (
+            {firstPlace && (
               <div className="flex flex-col items-center flex-1 min-w-0">
                 <Crown className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500 animate-bounce mb-1" />
                 <span className={`text-xs sm:text-sm font-black truncate w-full text-center max-w-[85px] sm:max-w-[105px] podium-rank-1-name ${
@@ -338,10 +349,10 @@ export default function Leaderboard() {
                   <Crown className={`h-6 w-6 sm:h-8 sm:w-8 ${isLight ? 'text-amber-600' : 'text-yellow-400'}`} />
                 </motion.div>
               </div>
-            ) : <div className="flex-1" />}
+            )}
 
             {/* 3RD PLACE PODIUM */}
-            {thirdPlace ? (
+            {thirdPlace && (
               <div className="flex flex-col items-center flex-1 min-w-0">
                 <span className={`text-[11px] sm:text-xs font-bold truncate w-full text-center max-w-[75px] sm:max-w-[90px] ${
                   isLight ? 'text-slate-800' : 'text-gray-200'
@@ -362,7 +373,7 @@ export default function Leaderboard() {
                   <Medal className="h-5 w-5 sm:h-6 sm:w-6 text-amber-700" />
                 </motion.div>
               </div>
-            ) : <div className="flex-1" />}
+            )}
 
           </div>
 

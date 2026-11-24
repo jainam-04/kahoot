@@ -703,12 +703,17 @@ const getLeaderboard = async (req, res) => {
             });
         }
 
-        const rankedPlayers = sortAndRankPlayers(game.players, game.currentQuestionIndex);
+        const hasAnswersLogged = (game.players || []).some(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0));
+        const activePlayers = hasAnswersLogged
+            ? game.players.filter(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0))
+            : (game.players || []);
+
+        const rankedPlayers = sortAndRankPlayers(activePlayers.length > 0 ? activePlayers : (game.players || []), game.currentQuestionIndex);
 
         res.status(200).json({
             success: true,
             currentQuestion: game.currentQuestionIndex + 1,
-            totalPlayers: game.players.length,
+            totalPlayers: (activePlayers.length > 0 ? activePlayers : game.players).length,
             leaderboard: rankedPlayers
         });
 
@@ -740,7 +745,11 @@ const endGame = async (req, res) => {
             });
         }
 
-        const formattedRanked = sortAndRankPlayers(game.players, game.currentQuestionIndex);
+        const hasAnswersLogged = (game.players || []).some(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0));
+        const activePlayers = hasAnswersLogged
+            ? game.players.filter(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0))
+            : (game.players || []);
+        const formattedRanked = sortAndRankPlayers(activePlayers.length > 0 ? activePlayers : (game.players || []), game.currentQuestionIndex);
         const winner = formattedRanked[0]?.name || '';
 
         formattedRanked.forEach((player, index) => {

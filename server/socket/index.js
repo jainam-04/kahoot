@@ -68,48 +68,8 @@ module.exports = (io) => {
                     console.error('Error removing player on leave:', err.message);
                 }
                 return;
-            } else if (playerName) {
-                // Ensure player is in MongoDB if they rejoined (e.g. on reconnect)
-                try {
-                    const escName = playerName.toString().trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                    const updatedGame = await GameSession.findOneAndUpdate(
-                        {
-                            pin: roomPin,
-                            status: { $in: ['waiting', 'active'] },
-                            'players.name': { $not: new RegExp('^' + escName + '$', 'i') }
-                        },
-                        {
-                            $push: {
-                                players: {
-                                    name: playerName.toString().trim(),
-                                    fullName: playerName.toString().trim(),
-                                    nickname: playerName.toString().trim(),
-                                    mobileNumber: '',
-                                    avatar: '👤',
-                                    totalScore: 0,
-                                    answers: []
-                                }
-                            }
-                        },
-                        { new: true }
-                    );
-                    if (updatedGame) {
-                        io.to(`room_${roomPin}`).emit('player_list', {
-                            pin: updatedGame.pin,
-                            players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
-                            roomStatus: updatedGame.status
-                        });
-                        io.to(roomPin).emit('player_list', {
-                            pin: updatedGame.pin,
-                            players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
-                            roomStatus: updatedGame.status
-                        });
-                    }
-                } catch (err) {
-                    console.error('Error ensuring player in DB on join:', err.message);
-                }
-
-                // Notify everyone in room (host + other players) a new player joined
+            } else if (playerName && playerName.toString().trim().toLowerCase() !== 'host') {
+                // Notify everyone in room (host + other players) player connected/reconnected
                 io.to(`room_${roomPin}`).emit('player_connected', {
                     username: playerName,
                     message: `${playerName} joined the game!`

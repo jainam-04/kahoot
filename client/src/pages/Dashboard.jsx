@@ -256,8 +256,8 @@ export default function Dashboard() {
       )
     : userQuizzes;
 
-  const userName = user?.name || user?.username || 'Mohsin';
-  const userInitial = (userName.charAt(0) || 'M').toUpperCase();
+  const userName = user?.name || user?.username || 'User';
+  const userInitial = (userName.charAt(0) || 'U').toUpperCase();
 
   // Helper for Category configuration in Ready Quizzes Grid
   const getCategoryConfig = (category = '') => {

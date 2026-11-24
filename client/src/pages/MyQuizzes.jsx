@@ -269,8 +269,8 @@ export default function MyQuizzes() {
     return true;
   });
 
-  const userName = user?.name || user?.username || 'Mohsin';
-  const userInitial = (userName.charAt(0) || 'M').toUpperCase();
+  const userName = user?.name || user?.username || 'User';
+  const userInitial = (userName.charAt(0) || 'U').toUpperCase();
 
   // Pick category icon based on name
   const getSubjectIcon = (category = '', title = '') => {

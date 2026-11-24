@@ -73,8 +73,8 @@ export default function ResultsAnalytics() {
     navigate('/login');
   };
 
-  const userInitial = (user?.name || user?.fullName || 'Mohsin').charAt(0).toUpperCase();
-  const userName = user?.name || user?.fullName || 'Mohsin';
+  const userInitial = (user?.name || user?.fullName || 'U').charAt(0).toUpperCase();
+  const userName = user?.name || user?.fullName || 'User';
 
   // Fetch Session Results
   const { 
