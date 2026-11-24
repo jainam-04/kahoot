@@ -39,6 +39,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { GameProvider } from './context/GameContext';
 import { queryClient } from './queryClient';
+import { resetScrollLock } from './utils/scrollLock';
 
 // Sleek minimal fallback loader during route transitions
 function PageLoader() {
@@ -99,6 +100,11 @@ function RootRoute() {
 function AnimatedRoutes() {
   const location = useLocation();
   useScrollToHash();
+
+  // Reset any leftover modal scroll locks whenever route changes
+  useEffect(() => {
+    resetScrollLock();
+  }, [location.pathname]);
 
   // Hide Navbar during gameplay and on dedicated application views (Dashboard, My Quizzes, Admin)
   const isGameplayView = [

@@ -10,6 +10,7 @@ import { connectSocket, getSocket, emitJoinRoom, emitLeaveRoom } from '../servic
 import { submitAnswer, getGame, endQuestion, leaveGame } from '../services/gameService';
 import { useGame } from '../context/GameContext';
 import { useTheme } from '../context/ThemeContext';
+import { resetScrollLock } from '../utils/scrollLock';
 
 const parseBgConfig = (bgStr) => {
   if (!bgStr) {
@@ -238,6 +239,16 @@ export default function LiveQuiz() {
   const [isLeaving, setIsLeaving] = useState(false);
 
   useEffect(() => {
+    // Reset any lingering scroll locks and dismiss any stale notifications on mount
+    resetScrollLock();
+    toast.dismiss();
+
+    return () => {
+      resetScrollLock();
+    };
+  }, []);
+
+  useEffect(() => {
     const resolvePlayerName = () => {
       if (playerName) return playerName.trim();
       if (localStorage.getItem('guest_playerName')) return localStorage.getItem('guest_playerName').trim();
@@ -363,6 +374,7 @@ export default function LiveQuiz() {
     });
 
     socket.on('question_started', (data) => {
+      toast.dismiss();
       const q = data.question;
       setQuestion(q);
       setQuestionNumber(data.questionNumber);
@@ -516,9 +528,16 @@ export default function LiveQuiz() {
   };
 
   const handleSelectAnswer = async (index) => {
-    if (hasAnswered || isHost || timeLeft <= 0) return;
+    if (hasAnswered || timeLeft <= 0) return;
 
-    const player = (playerName || localStorage.getItem('guest_playerName') || '').trim();
+    const player = (
+      playerName ||
+      localPlayer ||
+      localStorage.getItem('guest_playerName') ||
+      localStorage.getItem('player_name') ||
+      (isHost ? (localPlayer || 'Host') : '')
+    ).trim();
+
     if (!player) {
       toast.error('Player session not found. Please rejoin.');
       return;
@@ -556,6 +575,7 @@ export default function LiveQuiz() {
         } else {
           toast.error(msg);
           setHasAnswered(false);
+          setSelectedIdx(null);
         }
       }
     } catch (err) {
@@ -566,6 +586,7 @@ export default function LiveQuiz() {
       } else {
         toast.error(msg);
         setHasAnswered(false);
+        setSelectedIdx(null);
       }
     }
   };
@@ -627,7 +648,7 @@ export default function LiveQuiz() {
 
   return (
     <AnimatedPage>
-      <div className="relative h-[100dvh] min-h-screen w-full flex flex-col justify-between gap-3 p-3 sm:p-6 bg-[#F8F5FF] transition-all duration-700 overflow-x-hidden overflow-y-auto select-none">
+      <div className="relative min-h-[100dvh] w-full flex flex-col justify-between gap-3 sm:gap-4 p-3 sm:p-6 bg-[#F8F5FF] overflow-x-hidden overflow-y-auto">
 
         {/* Customized Background Layer (if host uploaded one) or Default Brand Soft Purple */}
         {bgConfig.url ? (
@@ -664,19 +685,19 @@ export default function LiveQuiz() {
             )}
           </div>
         ) : (
-          <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+          <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden will-change-transform transform-gpu">
             {/* Soft Ambient Bubbles/Orbs matching Figma Screenshot */}
-            <div className="absolute top-[5%] left-[8%] w-[380px] h-[380px] rounded-full bg-[#E9D5FF]/40 blur-[90px]" />
-            <div className="absolute bottom-[10%] right-[10%] w-[440px] h-[440px] rounded-full bg-[#DDD6FE]/40 blur-[100px]" />
-            <div className="absolute top-[35%] right-[4%] w-[260px] h-[260px] rounded-full bg-[#EDE9FE]/50 blur-[80px]" />
-            <div className="absolute bottom-[2%] left-[2%] w-[300px] h-[300px] rounded-full bg-[#F3E8FF]/40 blur-[80px]" />
+            <div className="absolute top-[5%] left-[8%] w-[260px] sm:w-[380px] h-[260px] sm:h-[380px] rounded-full bg-[#E9D5FF]/30 blur-[60px] sm:blur-[90px]" />
+            <div className="absolute bottom-[10%] right-[10%] w-[280px] sm:w-[440px] h-[280px] sm:h-[440px] rounded-full bg-[#DDD6FE]/30 blur-[60px] sm:blur-[100px]" />
+            <div className="absolute top-[35%] right-[4%] w-[180px] sm:w-[260px] h-[180px] sm:h-[260px] rounded-full bg-[#EDE9FE]/40 blur-[50px] sm:blur-[80px]" />
+            <div className="absolute bottom-[2%] left-[2%] w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] rounded-full bg-[#F3E8FF]/30 blur-[50px] sm:blur-[80px]" />
           </div>
         )}
 
         {/* ========================================================================= */}
         {/* TOP NAVIGATION BAR: Figma Header - TopNavigationBar (80px)                 */}
         {/* ========================================================================= */}
-        <header className="relative z-30 w-full h-[80px] bg-white/90 border-b border-[#F1F5F9] backdrop-blur-[12px] px-4 sm:px-8">
+        <header className="relative z-30 w-full h-[64px] sm:h-[80px] bg-white/90 border-b border-[#F1F5F9] backdrop-blur-[12px] px-3 sm:px-8 shrink-0">
           <div className="max-w-[1351px] h-full mx-auto flex items-center justify-between">
             {/* Brand Logo Container */}
             <Link
@@ -687,7 +708,7 @@ export default function LiveQuiz() {
               <img
                 src="/gubbi-logo-transparent.png"
                 alt="GuBBi"
-                className="h-10 sm:h-12 w-auto object-contain drop-shadow-xs"
+                className="h-8 sm:h-12 w-auto object-contain drop-shadow-xs"
               />
             </Link>
 
@@ -696,19 +717,19 @@ export default function LiveQuiz() {
               type="button"
               onClick={handleLeaveLobby}
               disabled={isLeaving}
-              className="h-[38px] px-4 py-2 rounded-[12px] bg-[#FFF0F3] border border-[#FECDD3] hover:bg-[#FFE4E8] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs select-none disabled:opacity-50"
+              className="h-[34px] sm:h-[38px] px-3 sm:px-4 py-1.5 sm:py-2 rounded-[12px] bg-[#FFF0F3] border border-[#FECDD3] hover:bg-[#FFE4E8] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs select-none disabled:opacity-50 touch-manipulation"
               title={isHost ? 'Exit Quiz & Return to Dashboard' : 'Leave Quiz Lobby'}
             >
               {isLeaving ? (
-                <Loader2 className="w-4 h-4 text-[#FF4769] animate-spin shrink-0" />
+                <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#FF4769] animate-spin shrink-0" />
               ) : (
-                <svg className="w-4 h-4 text-[#FF4769] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#FF4769] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                   <polyline points="16 17 21 12 16 7" />
                   <line x1="21" y1="12" x2="9" y2="12" />
                 </svg>
               )}
-              <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#FF4769]">
+              <span className="font-['Inter'] font-bold text-[11px] sm:text-[12px] leading-4 text-[#FF4769]">
                 Leave Lobby
               </span>
             </button>
@@ -780,7 +801,7 @@ export default function LiveQuiz() {
           {/* QUIZ CARD CONTAINER (Figma floating rounded-3xl box)                    */}
           {/* ----------------------------------------------------------------------- */}
           <div
-            className="w-full max-w-[1097px] rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 lg:p-12 flex flex-col gap-6 sm:gap-7 transition-all"
+            className="w-full max-w-[1097px] rounded-[20px] sm:rounded-[32px] p-4 sm:p-8 lg:p-12 flex flex-col gap-4 sm:gap-7 transition-all"
             style={{
               background: 'rgba(255, 255, 255, 0.9)',
               border: '1px solid rgba(243, 232, 255, 0.9)',
@@ -858,23 +879,23 @@ export default function LiveQuiz() {
             )}
 
             {/* 2x2 ANSWER OPTIONS GRID (Figma 1:1) */}
-            <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 lg:gap-5">
               {question.options.map((opt, idx) => {
                 const style = optionStyles[idx % optionStyles.length];
                 const isSelected = selectedIdx === idx;
-                const isDisabled = hasAnswered || isHost || timeLeft <= 0;
+                const isDisabled = hasAnswered || timeLeft <= 0;
 
-                let btnClass = `w-full min-h-[58px] sm:min-h-[64px] px-4 sm:px-5 py-3.5 sm:py-4 rounded-[16px] flex items-center justify-between gap-3 text-left transition-all`;
+                let btnClass = `w-full min-h-[56px] sm:min-h-[64px] px-3.5 sm:px-5 py-3 sm:py-4 rounded-[16px] flex items-center justify-between gap-3 text-left transition-all touch-manipulation select-none`;
 
                 if (isSelected) {
                   // Figma Selected Style with gradient background, solid border, and colored glow shadow
-                  btnClass += ` ${style.selectedBg} ${style.selectedBorder} ${style.selectedShadow} scale-[1.005]`;
+                  btnClass += ` ${style.selectedBg} ${style.selectedBorder} ${style.selectedShadow} scale-[1.005] ring-2 ring-[#7C3AED]/30`;
                 } else {
                   btnClass += ` ${style.bg} ${style.border} shadow-[0px_1px_2px_rgba(0,0,0,0.05)]`;
                   if (!isDisabled) {
-                    btnClass += ` ${style.hover} cursor-pointer active:scale-[0.99] hover:scale-[1.01]`;
+                    btnClass += ` ${style.hover} cursor-pointer active:scale-[0.98] hover:scale-[1.01]`;
                   } else {
-                    btnClass += ' cursor-default';
+                    btnClass += ' cursor-default opacity-85';
                   }
                 }
 

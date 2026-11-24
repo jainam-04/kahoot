@@ -495,7 +495,7 @@ export default function AnswerResult() {
     }
 
     socket.on('question_started', (data) => {
-      toast.success('Get ready for the next question!');
+      toast.dismiss();
       navigate(`/live/${pin}`, { state: { socketQuestionData: data } });
     });
 
@@ -1743,234 +1743,234 @@ export default function AnswerResult() {
                     </div>
 
                     {/* Base Platform Bar beneath columns */}
-                      <div className={`w-full ${effectiveRoster.length === 1
-                        ? 'max-w-[180px]'
-                        : effectiveRoster.length === 2
-                          ? 'max-w-[320px]'
-                          : 'max-w-[430px]'
-                        } h-3.5 bg-white/95 border border-white/80 rounded-full shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] -mt-1.5 z-20`} />
-                    </div>
+                    <div className={`w-full ${effectiveRoster.length === 1
+                      ? 'max-w-[180px]'
+                      : effectiveRoster.length === 2
+                        ? 'max-w-[320px]'
+                        : 'max-w-[430px]'
+                      } h-3.5 bg-white/95 border border-white/80 rounded-full shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] -mt-1.5 z-20`} />
+                  </div>
                 )}
 
-                    {/* 3. Lower Section: Full Live Standings Roster */}
-                    <div className="w-full flex flex-col gap-3">
+                {/* 3. Lower Section: Full Live Standings Roster */}
+                <div className="w-full flex flex-col gap-3">
 
-                      {/* Roster Header */}
-                      <div className="w-full bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-3.5 sm:px-5 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <h4 className="font-['Inter'] font-extrabold text-[13px] sm:text-[14px] leading-5 text-[#1E293B] whitespace-nowrap">
-                            Live Standings
-                          </h4>
-                          <span className="bg-[#EEF2FF] border border-[#E0E7FF] text-[#551BF5] rounded-full px-2 py-0.5 font-['Inter'] font-bold text-[10px] sm:text-[12px] leading-4 shrink-0 whitespace-nowrap">
-                            {totalChallengers} {totalChallengers === 1 ? 'Challenger' : 'Challengers'}
-                          </span>
-                        </div>
-                        <span className="font-['Inter'] font-semibold text-[11px] sm:text-[12px] leading-4 text-[#64748B] whitespace-nowrap">
-                          Showing <strong className="font-bold text-[#0F172A]">Top {effectiveRoster.length}</strong> of {totalChallengers}
-                        </span>
-                      </div>
-
-                      {/* Scrollable Roster Items List */}
-                      <div className="w-full flex flex-col gap-2.5 max-h-[420px] overflow-y-auto pr-0.5 sm:pr-1">
-                        {effectiveRoster.map((player) => {
-                          const isMe = player.isMe || (player.username || '').toLowerCase() === (localPlayer || '').toLowerCase();
-                          const isRank1 = player.rank === 1;
-                          const isRank2 = player.rank === 2;
-                          const isRank3 = player.rank === 3;
-
-                          let rowClass = 'w-full rounded-[16px] p-2.5 sm:p-3.5 transition-all ';
-
-                          if (isMe) {
-                            rowClass += 'bg-[rgba(250,245,255,0.9)] border-2 border-[rgba(85,27,245,0.7)] shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.1)]';
-                          } else if (isRank1) {
-                            rowClass += 'bg-[rgba(255,251,235,0.7)] border border-[rgba(253,230,138,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]';
-                          } else {
-                            rowClass += 'bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]';
-                          }
-
-                          return (
-                            <div key={player.rank} className={rowClass}>
-                              <div className="flex items-center justify-between gap-2 w-full min-w-0">
-                                {/* Left: Rank + Avatar + Name Details */}
-                                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                                  {/* Rank circle badge */}
-                                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-['Inter'] font-black text-[11px] sm:text-[12px] shrink-0 ${isMe
-                                    ? 'bg-[#551BF5] text-white shadow-xs'
-                                    : isRank1
-                                      ? 'bg-[#FBBF24] text-[#451A03] shadow-xs'
-                                      : 'bg-[#F1F5F9] border border-[#E2E8F0] text-[#475569]'
-                                    }`}>
-                                    {player.rank}
-                                  </div>
-
-                                  {/* Avatar circle (Single avatar ONLY!) */}
-                                  <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-['Inter'] font-bold text-[12px] shrink-0 overflow-hidden ${isMe
-                                    ? 'bg-[#551BF5] text-white'
-                                    : isRank1
-                                      ? 'bg-[#FEF3C7] border border-[#FDE68A] text-[#1E293B]'
-                                      : isRank2
-                                        ? 'bg-[#EEF2FF] border border-[#E0E7FF] text-[#1E293B]'
-                                        : isRank3
-                                          ? 'bg-[#FFF7ED] border border-[#FFEDD5] text-[#1E293B]'
-                                          : 'bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669]'
-                                    }`}>
-                                    {(player.avatar || (isMe && localStorage.getItem('guest_avatar'))) ? (
-                                      <Avatar emoji={player.avatar || localStorage.getItem('guest_avatar')} />
-                                    ) : isRank1 ? '👑' : isRank2 ? '⚡' : isRank3 ? '🔥' : (player.username || 'P').charAt(0).toUpperCase()}
-                                  </div>
-
-                                  {/* Name + Badges */}
-                                  <div className="flex flex-col min-w-0">
-                                    <div className="flex items-center gap-1.5 flex-wrap">
-                                      <span className={`font-['Inter'] font-extrabold text-[13px] sm:text-[14px] leading-tight truncate max-w-[90px] xs:max-w-[130px] sm:max-w-[200px] ${isMe ? 'text-[#1E1B4B]' : 'text-[#0F172A]'
-                                        }`}>
-                                        {player.username}
-                                      </span>
-
-                                      {isMe && (
-                                        <span className="bg-[#551BF5] text-white font-['Inter'] font-extrabold text-[9px] leading-3 uppercase px-1.5 py-0.5 rounded-full shrink-0">
-                                          YOU
-                                        </span>
-                                      )}
-                                      {isRank1 && (
-                                        <span className="bg-[rgba(253,230,138,0.7)] text-[#92400E] font-['Inter'] font-bold text-[9px] leading-3 px-1.5 py-0.5 rounded shrink-0">
-                                          1st
-                                        </span>
-                                      )}
-                                    </div>
-                                    <span className="font-['Inter'] font-medium text-[10.5px] sm:text-[12px] leading-4 text-[#64748B] truncate">
-                                      {player.correctAnswers !== undefined ? player.correctAnswers : 0}{totalQuestions ? `/${totalQuestions}` : ''} correct
-                                    </span>
-                                  </div>
-                                </div>
-
-                                {/* Right: Score + Time badge */}
-                                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                                  <div className="flex flex-col items-end">
-                                    <span className={`font-['Inter'] font-black text-[13px] sm:text-[15px] leading-tight tracking-tight ${isMe ? 'text-[#551BF5]' : 'text-[#0F172A]'
-                                      }`}>
-                                      {(player.totalScore || 0).toLocaleString()} pts
-                                    </span>
-                                    <span className="text-[10px] sm:text-[11px] font-semibold text-[#94A3B8]">
-                                      {player.streak && player.streak > 1 ? `${player.streak}🔥 streak` : `Rank #${player.rank}`}
-                                    </span>
-                                  </div>
-
-                                  <div className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-[12px] font-['Inter'] font-bold shrink-0 ${isMe
-                                    ? 'bg-white border border-[#E9D5FF] text-[#551BF5] shadow-2xs'
-                                    : isRank1
-                                      ? 'bg-[rgba(254,243,199,0.9)] border border-[rgba(253,230,138,0.8)] text-[#92400E]'
-                                      : 'bg-[#F1F5F9] text-[#64748B]'
-                                    }`}>
-                                    {player.lastTimeTaken || '0.00'}s
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-
+                  {/* Roster Header */}
+                  <div className="w-full bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-3.5 sm:px-5 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <h4 className="font-['Inter'] font-extrabold text-[13px] sm:text-[14px] leading-5 text-[#1E293B] whitespace-nowrap">
+                        Live Standings
+                      </h4>
+                      <span className="bg-[#EEF2FF] border border-[#E0E7FF] text-[#551BF5] rounded-full px-2 py-0.5 font-['Inter'] font-bold text-[10px] sm:text-[12px] leading-4 shrink-0 whitespace-nowrap">
+                        {totalChallengers} {totalChallengers === 1 ? 'Challenger' : 'Challengers'}
+                      </span>
                     </div>
-
-                    {/* 4. Bottom Persistent User Standing Anchor Bar */}
-                    <div
-                      className="w-full rounded-[16px] sm:rounded-[20px] p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 shadow-[0px_10px_15px_-3px_rgba(147,51,234,0.2)]"
-                      style={{ background: 'linear-gradient(90deg, #551BF5 0%, #4F46E5 100%)' }}
-                    >
-                      {/* Left: Rank Square + Name + Percentile */}
-                      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[12px] bg-white/20 border border-white/20 backdrop-blur-md flex items-center justify-center text-white font-['Inter'] font-black text-[13px] sm:text-[14px] shrink-0">
-                          #{myRank}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                            <span className="font-['Inter'] font-bold text-[13px] sm:text-[14px] leading-5 text-white truncate max-w-[140px] xs:max-w-[180px] sm:max-w-none">
-                              {localPlayer || 'You'} (You)
-                            </span>
-                            <span className="bg-[#34D399] text-[#022C22] font-['Inter'] font-black text-[9px] sm:text-[10px] leading-4 uppercase px-2 py-0.5 rounded-full shrink-0">
-                              {myRank === 1 ? '#1 RANK' : `TOP ${Math.max(1, Math.round((myRank / Math.max(totalChallengers, 1)) * 100))}%`}
-                            </span>
-                          </div>
-                          <p className="font-['Inter'] font-medium text-[11px] sm:text-[12px] leading-4 text-[#E9D5FF] mt-0.5 truncate">
-                            {totalChallengers <= 1
-                              ? 'Currently leading the lobby solo!'
-                              : myRank === 1
-                                ? `Ahead of ${totalChallengers - 1} ${totalChallengers - 1 === 1 ? 'challenger' : 'challengers'} in this lobby`
-                                : `Ahead of ${Math.max(0, totalChallengers - myRank)} ${Math.max(0, totalChallengers - myRank) === 1 ? 'challenger' : 'challengers'}`}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Right: Score + View All Button */}
-                      <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto pt-2 sm:pt-0 border-t border-white/10 sm:border-0">
-                        <div className="flex flex-col items-start sm:items-end">
-                          <span className="font-['Inter'] font-black text-[15px] sm:text-[18px] leading-tight tracking-tight text-white">
-                            {myScore.toLocaleString()} pts
-                          </span>
-                          <span className="font-['Inter'] font-medium text-[10px] sm:text-[11px] leading-3 text-[#E9D5FF]">
-                            Time: {timeTaken || '0.00'}s
-                          </span>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => navigate(`/leaderboard/${pin}`)}
-                          className="h-8 px-3.5 sm:px-4 rounded-[12px] bg-white text-[#551BF5] font-['Inter'] font-bold text-[11px] sm:text-[12px] leading-4 hover:bg-slate-50 active:scale-95 transition-all shadow-sm cursor-pointer whitespace-nowrap shrink-0"
-                        >
-                          {totalChallengers <= 1 ? 'Full Standings' : `View All (${totalChallengers})`}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Host Control Actions if viewing as Host */}
-                    {isHost && (
-                      <div className="flex flex-col sm:flex-row gap-4 pt-2 border-t border-slate-100">
-                        <button
-                          onClick={handleShowLeaderboard}
-                          disabled={isShowingLeaderboard || isLoading}
-                          className="flex-1 py-3 px-4 rounded-xl bg-[#6C38FF] hover:bg-[#5825E3] text-white font-['Inter'] font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer select-none disabled:opacity-50"
-                        >
-                          {isShowingLeaderboard ? (
-                            <Loader2 className="h-4 w-4 animate-spin text-white" />
-                          ) : (
-                            <>
-                              <Trophy className="h-4 w-4 text-white" />
-                              <span>Show Leaderboard Arena</span>
-                            </>
-                          )}
-                        </button>
-                        <button
-                          onClick={handleNextStep}
-                          disabled={isLoading || isShowingLeaderboard}
-                          className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#4F46E5] hover:opacity-95 text-white font-['Inter'] font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer select-none disabled:opacity-50"
-                        >
-                          {isLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin text-white" />
-                          ) : (
-                            <>
-                              <span className="font-extrabold">{isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}</span>
-                              <ArrowRight className="h-4 w-4 text-white" />
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    )}
-
+                    <span className="font-['Inter'] font-semibold text-[11px] sm:text-[12px] leading-4 text-[#64748B] whitespace-nowrap">
+                      Showing <strong className="font-bold text-[#0F172A]">Top {effectiveRoster.length}</strong> of {totalChallengers}
+                    </span>
                   </div>
 
-              {/* Waiting For Host Synchronizer Notice Banner */}
-                <div className="w-full bg-[rgba(250,245,255,0.7)] border border-[rgba(243,232,255,0.9)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-3 flex items-center justify-center gap-2.5">
-                  <Clock className="w-4 h-4 text-[#551BF5]/80 animate-spin shrink-0" />
-                  <span className="font-['Inter'] font-medium text-[12px] leading-4 text-[#551BF5] text-center">
-                    Waiting for Host to trigger next question or end the session...
-                  </span>
+                  {/* Scrollable Roster Items List */}
+                  <div className="w-full flex flex-col gap-2.5 max-h-[420px] overflow-y-auto pr-0.5 sm:pr-1">
+                    {effectiveRoster.map((player) => {
+                      const isMe = player.isMe || (player.username || '').toLowerCase() === (localPlayer || '').toLowerCase();
+                      const isRank1 = player.rank === 1;
+                      const isRank2 = player.rank === 2;
+                      const isRank3 = player.rank === 3;
+
+                      let rowClass = 'w-full rounded-[16px] p-2.5 sm:p-3.5 transition-all ';
+
+                      if (isMe) {
+                        rowClass += 'bg-[rgba(250,245,255,0.9)] border-2 border-[rgba(85,27,245,0.7)] shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.1)]';
+                      } else if (isRank1) {
+                        rowClass += 'bg-[rgba(255,251,235,0.7)] border border-[rgba(253,230,138,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]';
+                      } else {
+                        rowClass += 'bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]';
+                      }
+
+                      return (
+                        <div key={player.rank} className={rowClass}>
+                          <div className="flex items-center justify-between gap-2 w-full min-w-0">
+                            {/* Left: Rank + Avatar + Name Details */}
+                            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                              {/* Rank circle badge */}
+                              <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-['Inter'] font-black text-[11px] sm:text-[12px] shrink-0 ${isMe
+                                ? 'bg-[#551BF5] text-white shadow-xs'
+                                : isRank1
+                                  ? 'bg-[#FBBF24] text-[#451A03] shadow-xs'
+                                  : 'bg-[#F1F5F9] border border-[#E2E8F0] text-[#475569]'
+                                }`}>
+                                {player.rank}
+                              </div>
+
+                              {/* Avatar circle (Single avatar ONLY!) */}
+                              <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-['Inter'] font-bold text-[12px] shrink-0 overflow-hidden ${isMe
+                                ? 'bg-[#551BF5] text-white'
+                                : isRank1
+                                  ? 'bg-[#FEF3C7] border border-[#FDE68A] text-[#1E293B]'
+                                  : isRank2
+                                    ? 'bg-[#EEF2FF] border border-[#E0E7FF] text-[#1E293B]'
+                                    : isRank3
+                                      ? 'bg-[#FFF7ED] border border-[#FFEDD5] text-[#1E293B]'
+                                      : 'bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669]'
+                                }`}>
+                                {(player.avatar || (isMe && localStorage.getItem('guest_avatar'))) ? (
+                                  <Avatar emoji={player.avatar || localStorage.getItem('guest_avatar')} />
+                                ) : isRank1 ? '👑' : isRank2 ? '⚡' : isRank3 ? '🔥' : (player.username || 'P').charAt(0).toUpperCase()}
+                              </div>
+
+                              {/* Name + Badges */}
+                              <div className="flex flex-col min-w-0">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className={`font-['Inter'] font-extrabold text-[13px] sm:text-[14px] leading-tight truncate max-w-[90px] xs:max-w-[130px] sm:max-w-[200px] ${isMe ? 'text-[#1E1B4B]' : 'text-[#0F172A]'
+                                    }`}>
+                                    {player.username}
+                                  </span>
+
+                                  {isMe && (
+                                    <span className="bg-[#551BF5] text-white font-['Inter'] font-extrabold text-[9px] leading-3 uppercase px-1.5 py-0.5 rounded-full shrink-0">
+                                      YOU
+                                    </span>
+                                  )}
+                                  {isRank1 && (
+                                    <span className="bg-[rgba(253,230,138,0.7)] text-[#92400E] font-['Inter'] font-bold text-[9px] leading-3 px-1.5 py-0.5 rounded shrink-0">
+                                      1st
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="font-['Inter'] font-medium text-[10.5px] sm:text-[12px] leading-4 text-[#64748B] truncate">
+                                  {player.correctAnswers !== undefined ? player.correctAnswers : 0}{totalQuestions ? `/${totalQuestions}` : ''} correct
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Right: Score + Time badge */}
+                            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                              <div className="flex flex-col items-end">
+                                <span className={`font-['Inter'] font-black text-[13px] sm:text-[15px] leading-tight tracking-tight ${isMe ? 'text-[#551BF5]' : 'text-[#0F172A]'
+                                  }`}>
+                                  {(player.totalScore || 0).toLocaleString()} pts
+                                </span>
+                                <span className="text-[10px] sm:text-[11px] font-semibold text-[#94A3B8]">
+                                  {player.streak && player.streak > 1 ? `${player.streak}🔥 streak` : `Rank #${player.rank}`}
+                                </span>
+                              </div>
+
+                              <div className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-[12px] font-['Inter'] font-bold shrink-0 ${isMe
+                                ? 'bg-white border border-[#E9D5FF] text-[#551BF5] shadow-2xs'
+                                : isRank1
+                                  ? 'bg-[rgba(254,243,199,0.9)] border border-[rgba(253,230,138,0.8)] text-[#92400E]'
+                                  : 'bg-[#F1F5F9] text-[#64748B]'
+                                }`}>
+                                {player.lastTimeTaken || '0.00'}s
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
                 </div>
 
+                {/* 4. Bottom Persistent User Standing Anchor Bar */}
+                <div
+                  className="w-full rounded-[16px] sm:rounded-[20px] p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 shadow-[0px_10px_15px_-3px_rgba(147,51,234,0.2)]"
+                  style={{ background: 'linear-gradient(90deg, #551BF5 0%, #4F46E5 100%)' }}
+                >
+                  {/* Left: Rank Square + Name + Percentile */}
+                  <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[12px] bg-white/20 border border-white/20 backdrop-blur-md flex items-center justify-center text-white font-['Inter'] font-black text-[13px] sm:text-[14px] shrink-0">
+                      #{myRank}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                        <span className="font-['Inter'] font-bold text-[13px] sm:text-[14px] leading-5 text-white truncate max-w-[140px] xs:max-w-[180px] sm:max-w-none">
+                          {localPlayer || 'You'} (You)
+                        </span>
+                        <span className="bg-[#34D399] text-[#022C22] font-['Inter'] font-black text-[9px] sm:text-[10px] leading-4 uppercase px-2 py-0.5 rounded-full shrink-0">
+                          {myRank === 1 ? '#1 RANK' : `TOP ${Math.max(1, Math.round((myRank / Math.max(totalChallengers, 1)) * 100))}%`}
+                        </span>
+                      </div>
+                      <p className="font-['Inter'] font-medium text-[11px] sm:text-[12px] leading-4 text-[#E9D5FF] mt-0.5 truncate">
+                        {totalChallengers <= 1
+                          ? 'Currently leading the lobby solo!'
+                          : myRank === 1
+                            ? `Ahead of ${totalChallengers - 1} ${totalChallengers - 1 === 1 ? 'challenger' : 'challengers'} in this lobby`
+                            : `Ahead of ${Math.max(0, totalChallengers - myRank)} ${Math.max(0, totalChallengers - myRank) === 1 ? 'challenger' : 'challengers'}`}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right: Score + View All Button */}
+                  <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto pt-2 sm:pt-0 border-t border-white/10 sm:border-0">
+                    <div className="flex flex-col items-start sm:items-end">
+                      <span className="font-['Inter'] font-black text-[15px] sm:text-[18px] leading-tight tracking-tight text-white">
+                        {myScore.toLocaleString()} pts
+                      </span>
+                      <span className="font-['Inter'] font-medium text-[10px] sm:text-[11px] leading-3 text-[#E9D5FF]">
+                        Time: {timeTaken || '0.00'}s
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/leaderboard/${pin}`)}
+                      className="h-8 px-3.5 sm:px-4 rounded-[12px] bg-white text-[#551BF5] font-['Inter'] font-bold text-[11px] sm:text-[12px] leading-4 hover:bg-slate-50 active:scale-95 transition-all shadow-sm cursor-pointer whitespace-nowrap shrink-0"
+                    >
+                      {totalChallengers <= 1 ? 'Full Standings' : `View All (${totalChallengers})`}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Host Control Actions if viewing as Host */}
+                {isHost && (
+                  <div className="flex flex-col sm:flex-row gap-4 pt-2 border-t border-slate-100">
+                    <button
+                      onClick={handleShowLeaderboard}
+                      disabled={isShowingLeaderboard || isLoading}
+                      className="flex-1 py-3 px-4 rounded-xl bg-[#6C38FF] hover:bg-[#5825E3] text-white font-['Inter'] font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer select-none disabled:opacity-50"
+                    >
+                      {isShowingLeaderboard ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-white" />
+                      ) : (
+                        <>
+                          <Trophy className="h-4 w-4 text-white" />
+                          <span>Show Leaderboard Arena</span>
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={handleNextStep}
+                      disabled={isLoading || isShowingLeaderboard}
+                      className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#4F46E5] hover:opacity-95 text-white font-['Inter'] font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer select-none disabled:opacity-50"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-white" />
+                      ) : (
+                        <>
+                          <span className="font-extrabold">{isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}</span>
+                          <ArrowRight className="h-4 w-4 text-white" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
+
               </div>
+
+              {/* Waiting For Host Synchronizer Notice Banner */}
+              <div className="w-full bg-[rgba(250,245,255,0.7)] border border-[rgba(243,232,255,0.9)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-3 flex items-center justify-center gap-2.5">
+                <Clock className="w-4 h-4 text-[#551BF5]/80 animate-spin shrink-0" />
+                <span className="font-['Inter'] font-medium text-[12px] leading-4 text-[#551BF5] text-center">
+                  Waiting for Host to trigger next question or end the session...
+                </span>
+              </div>
+
+            </div>
           )}
 
-            </main>
+        </main>
       </div>
     </AnimatedPage>
   );

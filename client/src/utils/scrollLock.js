@@ -56,6 +56,16 @@ function handleTouchMove(e) {
 
   if (!e.touches || e.touches.length !== 1) return;
 
+  // Only intercept touch movement if the touch is originating inside a modal/dialog overlay
+  const isInsideDialog = Boolean(
+    e.target &&
+    typeof e.target.closest === 'function' &&
+    e.target.closest('[role="dialog"], [aria-modal="true"], .fixed.inset-0, .host-lobby-modal-backdrop, .host-lobby-modal-container')
+  );
+
+  // If outside modal dialogs (normal page elements), never block native touch scroll
+  if (!isInsideDialog) return;
+
   const currentX = e.touches[0].clientX;
   const currentY = e.touches[0].clientY;
   const deltaX = currentX - touchStartX;
@@ -82,7 +92,7 @@ function handleTouchMove(e) {
   // Vertical gesture
   const vScrollable = getScrollableAncestor(e.target, 'vertical');
 
-  // If touch is on backdrop, header, or non-scrollable area, completely block background drag
+  // If touch is on modal backdrop, header, or non-scrollable modal area, block background drag
   if (!vScrollable) {
     if (e.cancelable) {
       e.preventDefault();
@@ -101,6 +111,14 @@ function handleTouchMove(e) {
 
 function handleWheel(e) {
   if (lockCount <= 0) return;
+
+  const isInsideDialog = Boolean(
+    e.target &&
+    typeof e.target.closest === 'function' &&
+    e.target.closest('[role="dialog"], [aria-modal="true"], .fixed.inset-0, .host-lobby-modal-backdrop, .host-lobby-modal-container')
+  );
+
+  if (!isInsideDialog) return;
 
   const vScrollable = getScrollableAncestor(e.target, 'vertical');
 
@@ -180,22 +198,25 @@ export function unlockScroll() {
 export function resetScrollLock() {
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
-  if (lockCount > 0) {
-    lockCount = 0;
-    document.documentElement.classList.remove('gubbi-scroll-locked');
-    document.body.classList.remove('gubbi-scroll-locked');
-    document.body.style.paddingRight = '';
+  lockCount = 0;
+  document.documentElement.classList.remove('gubbi-scroll-locked');
+  document.body.classList.remove('gubbi-scroll-locked');
+  document.body.style.paddingRight = '';
+  document.body.style.overflow = '';
+  document.documentElement.style.overflow = '';
 
-    window.removeEventListener('touchstart', handleTouchStart);
-    window.removeEventListener('touchmove', handleTouchMove);
-    window.removeEventListener('wheel', handleWheel);
+  window.removeEventListener('touchstart', handleTouchStart);
+  window.removeEventListener('touchmove', handleTouchMove);
+  window.removeEventListener('wheel', handleWheel);
 
-    const html = document.documentElement;
-    const prevScrollBehavior = html.style.scrollBehavior;
-    html.style.scrollBehavior = 'auto';
+  const html = document.documentElement;
+  const prevScrollBehavior = html.style.scrollBehavior;
+  html.style.scrollBehavior = 'auto';
+  if (savedScrollY > 0) {
     window.scrollTo(0, savedScrollY);
-    html.style.scrollBehavior = prevScrollBehavior;
   }
+  html.style.scrollBehavior = prevScrollBehavior;
+  savedScrollY = 0;
 }
 
 /**
