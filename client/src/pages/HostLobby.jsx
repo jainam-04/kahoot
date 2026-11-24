@@ -26,6 +26,7 @@ import {
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import AppSidebar from '../components/AppSidebar';
+import Logo from '../components/Logo';
 import { getGame as fetchGameDetails, startQuestion } from '../services/gameService';
 import { connectSocket, getSocket, emitJoinRoom } from '../services/socketService';
 import { getStoredUser } from '../utils/auth';
@@ -96,6 +97,7 @@ export default function HostLobby() {
   const [isPlayersModalOpen, setIsPlayersModalOpen] = useState(false);
   const [modalSearchQuery, setModalSearchQuery] = useState('');
   const [modalSortOrder, setModalSortOrder] = useState('latest'); // 'latest' | 'alpha'
+  const [mobileTab, setMobileTab] = useState('players'); // 'players' | 'qr'
 
   const hasNavigatedRef = React.useRef(false);
   const [customUrl, setCustomUrl] = useState('');
@@ -432,7 +434,7 @@ export default function HostLobby() {
               >
                 <Menu />
               </button>
-              <span className="host-lobby-mobile-title">Gubbi</span>
+              <Logo className="h-7 sm:h-8 w-auto object-contain ml-1" />
             </div>
 
             <label className="host-lobby-search">
@@ -509,18 +511,40 @@ export default function HostLobby() {
                   onClick={handleHostExit}
                   className="host-lobby-exit-button"
                 >
-                  <ArrowLeft className="h-4 w-4" />
-                  <span>Exit Lobby &amp; Return to My Quizzes</span>
+                  <ArrowLeft className="h-4 w-4 shrink-0" />
+                  <span>Exit Lobby<span className="hidden sm:inline"> &amp; Return to My Quizzes</span></span>
                 </button>
 
                 <span className="host-lobby-live-status">
                   <span />
-                  LIVE LOBBY ACTIVE
+                  <span>LIVE LOBBY<span className="hidden xs:inline"> ACTIVE</span></span>
                 </span>
               </div>
 
+              {/* Mobile Tab Switcher (< 1024px) */}
+              <div className="host-lobby-mobile-tabs">
+                <button
+                  type="button"
+                  className={`host-lobby-tab-btn ${mobileTab === 'players' ? 'active' : ''}`}
+                  onClick={() => setMobileTab('players')}
+                >
+                  <Users className="w-4 h-4" />
+                  <span>Players ({totalParticipantCount})</span>
+                  {totalParticipantCount > 0 && <span className="host-lobby-tab-dot" />}
+                </button>
+
+                <button
+                  type="button"
+                  className={`host-lobby-tab-btn ${mobileTab === 'qr' ? 'active' : ''}`}
+                  onClick={() => setMobileTab('qr')}
+                >
+                  <QrCode className="w-4 h-4" />
+                  <span>QR Code &amp; Share</span>
+                </button>
+              </div>
+
               {/* 2-Column Responsive Grid */}
-              <div className="host-lobby-grid">
+              <div className={`host-lobby-grid ${mobileTab === 'qr' ? 'host-lobby-tab-qr-only' : 'host-lobby-tab-players-only'}`}>
 
                 {/* ─── LEFT/CENTER COLUMN: Quiz Info & Players Joined ─── */}
                 <div className="host-lobby-primary">
@@ -538,9 +562,20 @@ export default function HostLobby() {
                       </div>
                     </div>
 
-                    <div className="host-lobby-pin-block">
-                      <span>LOBBY PIN</span>
-                      <div>{pin}</div>
+                    <div 
+                      className="host-lobby-pin-block cursor-pointer select-none"
+                      onClick={() => {
+                        navigator.clipboard.writeText(pin);
+                        toast.success(`PIN ${pin} copied!`, { icon: '📋' });
+                      }}
+                      title="Tap to copy PIN"
+                    >
+                      <div className="host-lobby-pin-label-row">
+                        <span>LOBBY PIN</span>
+                        <Copy className="h-3 w-3 text-[#7C3AED] opacity-75" />
+                      </div>
+                      <div className="host-lobby-pin-value">{pin}</div>
+                      <span className="host-lobby-pin-tap-hint">Tap to copy</span>
                     </div>
                   </div>
 
@@ -808,6 +843,18 @@ export default function HostLobby() {
                   </div>
                 </div>
 
+              </div>
+
+              {/* Sticky Mobile Start Quiz Bar (Mobile only < 680px) */}
+              <div className="host-lobby-mobile-bottom-bar">
+                <button
+                  onClick={handleStartGame}
+                  className="host-lobby-start-button"
+                >
+                  <Play className="h-4 w-4 fill-white" />
+                  <span>Start Quiz</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
               </div>
             </div>
           </main>

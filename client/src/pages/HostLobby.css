@@ -402,9 +402,17 @@
   justify-content: center;
   gap: 6px;
   flex: 0 0 auto;
+  transition: transform 160ms ease;
 }
 
-.host-lobby-pin-block > span {
+.host-lobby-pin-block:hover {
+  transform: scale(1.02);
+}
+
+.host-lobby-pin-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   color: #64748b;
   font-size: 11px;
   font-weight: 700;
@@ -412,6 +420,7 @@
   text-align: center;
 }
 
+.host-lobby-pin-value,
 .host-lobby-pin-block > div {
   border: 1.5px solid #ece4fc;
   border-radius: 16px;
@@ -424,6 +433,14 @@
   line-height: 1.2;
   text-align: center;
   white-space: nowrap;
+}
+
+.host-lobby-pin-tap-hint {
+  display: none;
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
 }
 
 /* ─── CARD 2: PLAYERS JOINED CARD ─── */
@@ -1580,6 +1597,14 @@
 }
 
 /* ─── RESPONSIVE BREAKPOINTS ─── */
+.host-lobby-mobile-tabs {
+  display: none;
+}
+
+.host-lobby-mobile-bottom-bar {
+  display: none;
+}
+
 @media (min-width: 64rem) {
   .host-lobby-shell > aside {
     transform: translateX(0);
@@ -1619,7 +1644,7 @@
   }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1023px) {
   .host-lobby-search {
     width: auto;
     flex: 1 1 auto;
@@ -1629,9 +1654,57 @@
     max-width: 760px;
   }
 
+  .host-lobby-mobile-tabs {
+    display: flex;
+    background: #f1f3f9;
+    padding: 4px;
+    border-radius: 14px;
+    margin: 8px 0 14px;
+    gap: 4px;
+  }
+
+  .host-lobby-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 11px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 180ms ease;
+  }
+
+  .host-lobby-tab-btn.active {
+    background: #ffffff;
+    color: #6222f5;
+    box-shadow: 0 2px 8px rgba(98, 34, 245, 0.12);
+    font-weight: 700;
+  }
+
+  .host-lobby-tab-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+  }
+
   .host-lobby-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  .host-lobby-grid.host-lobby-tab-players-only .host-lobby-qr-card {
+    display: none !important;
+  }
+
+  .host-lobby-grid.host-lobby-tab-qr-only .host-lobby-players-card {
+    display: none !important;
   }
 
   .host-lobby-pin-card {
@@ -1640,15 +1713,30 @@
 
   .host-lobby-players-card {
     padding: 22px 20px;
+    min-height: auto;
+  }
+
+  .host-lobby-qr-card {
+    height: auto !important;
+    min-height: auto !important;
+    width: 100% !important;
   }
 }
 
 @media (max-width: 680px) {
   .host-lobby-header {
-    height: 60px;
-    flex-basis: 60px;
+    height: 58px;
+    flex-basis: 58px;
     gap: 10px;
     padding: 0 14px;
+  }
+
+  .host-lobby-search {
+    display: none !important;
+  }
+
+  .host-lobby-mobile-brand {
+    gap: 8px;
   }
 
   .host-lobby-profile-name,
@@ -1657,32 +1745,182 @@
   }
 
   .host-lobby-profile-button {
-    padding-right: 4px;
+    padding: 2px 4px 2px 2px;
+    border: none;
+    background: transparent;
   }
 
   .host-lobby-content {
-    padding: 16px 14px 30px;
+    padding: 12px 12px 28px;
   }
 
+  .host-lobby-page-nav {
+    margin-bottom: 12px;
+  }
+
+  .host-lobby-exit-button {
+    padding: 6px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .host-lobby-live-status {
+    padding: 5px 10px;
+    font-size: 10px;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
+  /* CARD 1: PIN CARD MOBILE */
   .host-lobby-pin-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-    border-radius: 18px;
-    padding: 18px;
+    height: auto !important;
+    min-height: auto !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    border-radius: 18px !important;
+    padding: 16px !important;
+  }
+
+  .host-lobby-quiz-details {
+    gap: 12px;
+  }
+
+  .host-lobby-rocket-circle {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+  }
+
+  .host-lobby-rocket-image {
+    width: 32px;
+    height: 32px;
+  }
+
+  .host-lobby-quiz-text h2 {
+    font-size: 16px;
+    line-height: 1.3;
+  }
+
+  .host-lobby-quiz-text p {
+    font-size: 11.5px;
   }
 
   .host-lobby-pin-block {
     width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
-    border-top: 1px solid #f1f3f9;
-    padding-top: 14px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: #fbf9ff;
+    border: 1.5px dashed #ded4fc;
+    border-radius: 14px;
+    padding: 10px 14px;
+    margin-top: 2px;
   }
 
-  .host-lobby-players-card,
+  .host-lobby-pin-label-row {
+    color: #7c3aed;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+
+  .host-lobby-pin-value,
+  .host-lobby-pin-block > div {
+    border: none;
+    background: transparent;
+    padding: 2px 0;
+    font-size: 30px;
+    letter-spacing: 0.14em;
+    color: #6222f5;
+  }
+
+  .host-lobby-pin-tap-hint {
+    display: inline-block;
+  }
+
+  /* CARD 2: PLAYERS CARD MOBILE */
+  .host-lobby-players-card {
+    min-height: auto !important;
+    border-radius: 18px !important;
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+
+  .host-lobby-players-heading {
+    padding-bottom: 10px;
+  }
+
+  .host-lobby-players-title h3 {
+    font-size: 13.5px;
+  }
+
+  .host-lobby-players-title p {
+    font-size: 11px;
+  }
+
+  .host-lobby-player-count {
+    padding: 4px 10px;
+    font-size: 11.5px;
+  }
+
+  .host-lobby-player {
+    padding: 8px 10px;
+  }
+
+  /* CARD 3: QR CARD MOBILE */
   .host-lobby-qr-card {
-    border-radius: 18px;
-    padding: 18px;
+    border-radius: 18px !important;
+    padding: 18px 16px !important;
+    gap: 12px !important;
+  }
+
+  .host-lobby-qr-frame {
+    width: 190px;
+    height: 190px;
+    padding: 8px;
+  }
+
+  .host-lobby-qr-image {
+    width: 174px;
+    height: 174px;
+  }
+
+  .host-lobby-qr-actions {
+    width: 100%;
+  }
+
+  .host-lobby-copy-actions {
+    width: 100%;
+  }
+
+  .host-lobby-whatsapp-button {
+    width: 100%;
+  }
+
+  /* Bottom sticky Start Quiz button on phone screens */
+  .host-lobby-start-divider {
+    display: none;
+  }
+
+  .host-lobby-mobile-bottom-bar {
+    display: block;
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 25;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #f1f3f9;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08);
+  }
+
+  .host-lobby-mobile-bottom-bar .host-lobby-start-button {
+    height: 48px;
+    font-size: 14.5px;
+    border-radius: 12px;
   }
 }
