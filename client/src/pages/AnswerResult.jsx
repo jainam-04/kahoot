@@ -142,7 +142,12 @@ export default function AnswerResult() {
   const { playerName } = useGame();
   const { themeMode } = useTheme();
   const isLight = themeMode !== 'dark';
-  const localPlayer = playerName || localStorage.getItem('guest_playerName') || 'Mohsin';
+  const localPlayer =
+    playerName ||
+    localStorage.getItem('guest_playerName') ||
+    localStorage.getItem('player_name') ||
+    localStorage.getItem('username') ||
+    '';
   const optionLetters = ['A', 'B', 'C', 'D'];
 
   // Active navigation tab: 'my-result' or 'standings'
@@ -601,92 +606,49 @@ export default function AnswerResult() {
   const bgConfig = parseBgConfig(bgImage);
   const isUnanswered = !hasSubmittedAnswer;
 
-  // Build complete player roster for result and standings UI
-  const defaultRoster = [
-    {
-      username: 'Vidi',
-      rank: 1,
-      totalScore: 1176,
-      lastTimeTaken: '16.47',
-      correctAnswers: 10,
-      totalQuestions: 10,
-      streak: 10
-    },
-    {
-      username: 'Viper',
-      rank: 2,
-      totalScore: 1020,
-      lastTimeTaken: '17.1',
-      correctAnswers: 9,
-      totalQuestions: 10
-    },
-    {
-      username: 'Tanmay',
-      rank: 3,
-      totalScore: 985,
-      lastTimeTaken: '17.8',
-      correctAnswers: 9,
-      totalQuestions: 10
-    },
-    {
-      username: localPlayer || 'Mohsin',
-      rank: 4,
-      totalScore: currentScore || 940,
-      lastTimeTaken: timeTaken || '18.2',
-      correctAnswers: 8,
-      totalQuestions: 10,
-      isMe: true
-    },
-    {
-      username: 'Aarav S.',
-      rank: 5,
-      totalScore: 915,
-      lastTimeTaken: '19.0',
-      correctAnswers: 8,
-      totalQuestions: 10
-    },
-    {
-      username: 'Priya K.',
-      rank: 6,
-      totalScore: 890,
-      lastTimeTaken: '19.5',
-      correctAnswers: 7,
-      totalQuestions: 10
-    }
-  ];
-
-  const effectiveRoster = leaderboard.length > 0
+  // Build complete player roster for result and standings UI (strictly dynamic, zero fake players)
+  const effectiveRoster = (leaderboard && leaderboard.length > 0)
     ? leaderboard.map((p, idx) => ({
         ...p,
-        rank: idx + 1,
-        isMe:
-          (p.username || '').trim().toLowerCase() ===
-          (localPlayer || '').trim().toLowerCase()
+        rank: p.rank || idx + 1,
+        username: p.username || p.name || `Player ${idx + 1}`,
+        totalScore: p.totalScore !== undefined ? p.totalScore : (p.score || 0),
+        lastTimeTaken: p.lastTimeTaken || (p.timeTaken ? (Number(p.timeTaken) > 100 ? (p.timeTaken / 1000).toFixed(2) : Number(p.timeTaken).toFixed(2)) : '0.00'),
+        correctAnswers: p.correctAnswers !== undefined ? p.correctAnswers : 0,
+        isMe: localPlayer
+          ? (p.username || p.name || '').trim().toLowerCase() === localPlayer.trim().toLowerCase()
+          : false
       }))
-    : (isHost ? [] : defaultRoster);
+    : (localPlayer && !isHost ? [{
+        username: localPlayer,
+        rank: 1,
+        totalScore: currentScore || 0,
+        lastTimeTaken: timeTaken || '0.00',
+        correctAnswers: isCorrect ? 1 : 0,
+        isMe: true
+      }] : []);
 
   const firstPlace =
-    effectiveRoster.find(p => p.rank === 1) || (isHost ? null : defaultRoster[0]);
+    effectiveRoster.find(p => p.rank === 1) || (effectiveRoster.length > 0 ? effectiveRoster[0] : null);
 
   const secondPlace =
-    effectiveRoster.find(p => p.rank === 2) || (isHost ? null : defaultRoster[1]);
+    effectiveRoster.find(p => p.rank === 2) || (effectiveRoster.length > 1 ? effectiveRoster[1] : null);
 
   const thirdPlace =
-    effectiveRoster.find(p => p.rank === 3) || (isHost ? null : defaultRoster[2]);
+    effectiveRoster.find(p => p.rank === 3) || (effectiveRoster.length > 2 ? effectiveRoster[2] : null);
 
   const myLeaderboardEntry =
     effectiveRoster.find(p => p.isMe) ||
-    effectiveRoster[3] ||
-    { rank: 4, totalScore: 940, lastTimeTaken: '18.2' };
+    (effectiveRoster.length > 0 ? effectiveRoster[0] : null);
 
-  const myRank = myLeaderboardEntry?.rank || 4;
+  const myRank = myLeaderboardEntry?.rank || 1;
 
   const myScore =
     myLeaderboardEntry?.totalScore !== undefined
       ? myLeaderboardEntry.totalScore
-      : (currentScore || 940);
+      : (currentScore || 0);
 
-  const totalChallengers = Math.max(effectiveRoster.length, 50);
+  const totalChallengers = effectiveRoster.length;
 
   // Host dashboard calculations
   const runnersUp = leaderboard.filter(p => p.rank > 3);
@@ -1007,17 +969,25 @@ export default function AnswerResult() {
 
                     <div className="flex items-center gap-2">
                       <span className="px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]">
-                        {leaderboard.length} {leaderboard.length === 1 ? 'Challenger' : 'Challengers'}
+                        {effectiveRoster.length} {effectiveRoster.length === 1 ? 'Challenger' : 'Challengers'}
                       </span>
                     </div>
                   </div>
 
-                  {/* Top 3 Podium (Only real players!) */}
+                  {/* Top Podium (100% Dynamic based on player count!) */}
                   {effectiveRoster.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div
+                      className={`grid ${
+                        effectiveRoster.length === 1
+                          ? 'grid-cols-1 max-w-sm mx-auto'
+                          : effectiveRoster.length === 2
+                          ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto'
+                          : 'grid-cols-1 sm:grid-cols-3'
+                      } gap-4 pt-2`}
+                    >
                       {/* 2nd Place */}
-                      {secondPlace ? (
-                        <div className="order-2 sm:order-1 rounded-2xl bg-slate-50/80 border border-slate-200 p-5 text-center flex flex-col items-center justify-between shadow-2xs">
+                      {secondPlace && (
+                        <div className={`${effectiveRoster.length === 2 ? 'order-2' : 'order-2 sm:order-1'} rounded-2xl bg-slate-50/80 border border-slate-200 p-5 text-center flex flex-col items-center justify-between shadow-2xs`}>
                           <div className="w-12 h-12 rounded-full bg-slate-200 text-slate-700 font-extrabold text-lg flex items-center justify-center mb-2">
                             {secondPlace.avatar ? <Avatar emoji={secondPlace.avatar} /> : (secondPlace.username || 'P').charAt(0).toUpperCase()}
                           </div>
@@ -1034,7 +1004,7 @@ export default function AnswerResult() {
                             {secondPlace.correctAnswers || 0} correct
                           </span>
                         </div>
-                      ) : <div className="hidden sm:block order-1" />}
+                      )}
 
                       {/* 1st Place */}
                       {firstPlace && (
@@ -1046,7 +1016,7 @@ export default function AnswerResult() {
                             {firstPlace.avatar ? <Avatar emoji={firstPlace.avatar} /> : (firstPlace.username || 'P').charAt(0).toUpperCase()}
                           </div>
                           <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 uppercase tracking-wide">
-                            1st Place
+                            1st Place {effectiveRoster.length === 1 && '• Champion'}
                           </span>
                           <h4 className="font-extrabold text-slate-900 mt-2 text-lg truncate max-w-full">
                             {firstPlace.username}
@@ -1061,7 +1031,7 @@ export default function AnswerResult() {
                       )}
 
                       {/* 3rd Place */}
-                      {thirdPlace ? (
+                      {thirdPlace && (
                         <div className="order-3 rounded-2xl bg-slate-50/80 border border-slate-200 p-5 text-center flex flex-col items-center justify-between shadow-2xs">
                           <div className="w-12 h-12 rounded-full bg-amber-100/70 text-amber-900 font-extrabold text-lg flex items-center justify-center mb-2">
                             {thirdPlace.avatar ? <Avatar emoji={thirdPlace.avatar} /> : (thirdPlace.username || 'P').charAt(0).toUpperCase()}
@@ -1079,7 +1049,7 @@ export default function AnswerResult() {
                             {thirdPlace.correctAnswers || 0} correct
                           </span>
                         </div>
-                      ) : <div className="hidden sm:block order-3" />}
+                      )}
                     </div>
                   ) : (
                     <div className="py-12 text-center text-slate-500">
@@ -1575,131 +1545,164 @@ export default function AnswerResult() {
                   {/* Right: Room Meta Badge */}
                   <div className="bg-[rgba(250,245,255,0.8)] border border-[#F3E8FF] rounded-[16px] px-4 py-2 flex items-center gap-3 shrink-0 self-start sm:self-auto shadow-xs">
                     <div className="flex items-center -space-x-2">
-                      <div className="w-6 h-6 rounded-full bg-[#FBBF24] ring-2 ring-white flex items-center justify-center text-white text-[10px] font-bold">
-                        V
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-[#818CF8] ring-2 ring-white flex items-center justify-center text-white text-[10px] font-bold">
-                        V
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-[#FB923C] ring-2 ring-white flex items-center justify-center text-white text-[10px] font-bold">
-                        T
-                      </div>
+                      {effectiveRoster.slice(0, 3).map((p, idx) => (
+                        <div
+                          key={p.rank || idx}
+                          className={`w-6 h-6 rounded-full ring-2 ring-white flex items-center justify-center text-white text-[10px] font-bold ${
+                            idx === 0 ? 'bg-[#FBBF24]' : idx === 1 ? 'bg-[#818CF8]' : 'bg-[#FB923C]'
+                          }`}
+                        >
+                          {p.avatar ? <Avatar emoji={p.avatar} /> : (p.username || 'P').charAt(0).toUpperCase()}
+                        </div>
+                      ))}
                     </div>
                     <span className="font-['Inter'] font-semibold text-[12px] leading-4 text-[#581C87]">
-                      {totalChallengers} Challengers Battling
+                      {totalChallengers} {totalChallengers === 1 ? 'Challenger' : 'Challengers'} Battling
                     </span>
                   </div>
                 </div>
 
-                {/* 2. Upper Showcase: The Grand 3D Podium (Top 3 Celebratory Showcase) */}
-                <div className="w-full bg-gradient-to-b from-[rgba(250,245,255,0.6)] to-[rgba(255,255,255,0.9)] border border-[rgba(243,232,255,0.9)] rounded-[24px] shadow-xs pt-6 pb-4 px-4 sm:px-8 relative overflow-hidden flex flex-col items-center">
-                  
-                  {/* Decorative Sparkles & Stars */}
-                  <div className="absolute top-6 left-12 text-[#D8B4FE] pointer-events-none select-none text-xs">★</div>
-                  <div className="absolute top-10 right-14 text-[#FBBF24] pointer-events-none select-none text-sm">✦</div>
-                  <div className="absolute top-14 left-1/4 text-[#818CF8] pointer-events-none select-none text-xs">★</div>
-                  <div className="absolute top-12 right-1/4 text-[#FCD34D] pointer-events-none select-none text-xs">★</div>
-
-                  {/* Section Label: Top 3 Players */}
-                  <h3 className="font-['Inter'] font-extrabold text-[16px] leading-6 text-[#1E293B] text-center mb-6 z-10">
-                    Top 3 Players
-                  </h3>
-
-                  {/* 3D Podium Construct */}
-                  <div className="w-full max-w-[480px] flex items-end justify-center gap-3 sm:gap-4 z-10 relative">
+                {/* 2. Upper Showcase: The Grand 3D Podium (Dynamic Celebratory Showcase) */}
+                {effectiveRoster.length > 0 && (
+                  <div className="w-full bg-gradient-to-b from-[rgba(250,245,255,0.6)] to-[rgba(255,255,255,0.9)] border border-[rgba(243,232,255,0.9)] rounded-[24px] shadow-xs pt-6 pb-4 px-4 sm:px-8 relative overflow-hidden flex flex-col items-center">
                     
-                    {/* Rank 2 (Silver) */}
-                    <div className="flex-1 flex flex-col items-center">
-                      <div className="w-14 h-14 rounded-full bg-[#E8F0FE] shadow-[0px_4px_12px_rgba(184,206,248,0.45)] flex items-center justify-center mb-2 shrink-0">
-                        <Crown className="w-7 h-7 text-[#5C7094]" />
-                      </div>
-                      <span className="font-['Inter'] font-extrabold text-[16px] leading-6 tracking-[-0.4px] text-[#1E293B] truncate max-w-[120px] text-center">
-                        {secondPlace.username}
-                      </span>
-                      <div className="flex items-center gap-1.5 mt-0.5 mb-2.5">
-                        <span className="font-['Inter'] font-black text-[12px] leading-4 text-[#334155]">
-                          {secondPlace.totalScore || 0} pts
-                        </span>
-                        <span className="bg-[rgba(241,245,249,0.9)] border border-[rgba(226,232,240,0.6)] rounded-full px-2 py-0.5 text-[11px] font-semibold text-[#64748B]">
-                          {secondPlace.lastTimeTaken || '17.1'}s
-                        </span>
-                      </div>
+                    {/* Decorative Sparkles & Stars */}
+                    <div className="absolute top-6 left-12 text-[#D8B4FE] pointer-events-none select-none text-xs">★</div>
+                    <div className="absolute top-10 right-14 text-[#FBBF24] pointer-events-none select-none text-sm">✦</div>
+                    <div className="absolute top-14 left-1/4 text-[#818CF8] pointer-events-none select-none text-xs">★</div>
+                    <div className="absolute top-12 right-1/4 text-[#FCD34D] pointer-events-none select-none text-xs">★</div>
+
+                    {/* Section Label */}
+                    <h3 className="font-['Inter'] font-extrabold text-[16px] leading-6 text-[#1E293B] text-center mb-6 z-10">
+                      {effectiveRoster.length === 1 ? 'Leading Champion' : effectiveRoster.length === 2 ? 'Top 2 Players' : 'Top 3 Players'}
+                    </h3>
+
+                    {/* 3D Podium Construct */}
+                    <div className={`w-full ${
+                      effectiveRoster.length === 1 
+                        ? 'max-w-[220px]' 
+                        : effectiveRoster.length === 2 
+                        ? 'max-w-[360px]' 
+                        : 'max-w-[480px]'
+                    } flex items-end justify-center gap-3 sm:gap-4 z-10 relative`}>
                       
-                      {/* Pedestal Block 2 */}
-                      <div 
-                        className="w-full h-[144px] rounded-t-[24px] rounded-b-[12px] flex items-start justify-center pt-5 relative shadow-[0px_10px_24px_-4px_rgba(184,206,248,0.6)]"
-                        style={{ background: 'linear-gradient(180deg, #D4E2FC 0%, #B8CEF8 100%)' }}
-                      >
-                        <div className="w-11 h-11 rounded-full bg-white/90 border-2 border-white/60 shadow-sm flex items-center justify-center text-[#334155] font-['Inter'] font-black text-[20px]">
-                          2
+                      {/* Rank 2 (Silver) */}
+                      {secondPlace && (
+                        <div className="flex-1 flex flex-col items-center">
+                          <div className="w-14 h-14 rounded-full bg-[#E8F0FE] shadow-[0px_4px_12px_rgba(184,206,248,0.45)] flex items-center justify-center mb-2 shrink-0">
+                            {secondPlace.avatar ? (
+                              <Avatar emoji={secondPlace.avatar} />
+                            ) : (
+                              <Crown className="w-7 h-7 text-[#5C7094]" />
+                            )}
+                          </div>
+                          <span className="font-['Inter'] font-extrabold text-[16px] leading-6 tracking-[-0.4px] text-[#1E293B] truncate max-w-[120px] text-center">
+                            {secondPlace.username}
+                          </span>
+                          <div className="flex items-center gap-1.5 mt-0.5 mb-2.5">
+                            <span className="font-['Inter'] font-black text-[12px] leading-4 text-[#334155]">
+                              {secondPlace.totalScore || 0} pts
+                            </span>
+                            <span className="bg-[rgba(241,245,249,0.9)] border border-[rgba(226,232,240,0.6)] rounded-full px-2 py-0.5 text-[11px] font-semibold text-[#64748B]">
+                              {secondPlace.lastTimeTaken || '0.00'}s
+                            </span>
+                          </div>
+                          
+                          {/* Pedestal Block 2 */}
+                          <div 
+                            className="w-full h-[144px] rounded-t-[24px] rounded-b-[12px] flex items-start justify-center pt-5 relative shadow-[0px_10px_24px_-4px_rgba(184,206,248,0.6)]"
+                            style={{ background: 'linear-gradient(180deg, #D4E2FC 0%, #B8CEF8 100%)' }}
+                          >
+                            <div className="w-11 h-11 rounded-full bg-white/90 border-2 border-white/60 shadow-sm flex items-center justify-center text-[#334155] font-['Inter'] font-black text-[20px]">
+                              2
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      )}
+
+                      {/* Rank 1 (Gold - Elevated Center) */}
+                      {firstPlace && (
+                        <div className="flex-1 flex flex-col items-center -mt-6">
+                          <div 
+                            className="w-16 h-16 rounded-full flex items-center justify-center mb-2 shrink-0 shadow-[0px_8px_24px_-2px_rgba(245,158,11,0.55)]"
+                            style={{ background: 'radial-gradient(91.92% 91.92% at 35% 35%, #FFE270 0%, #FFA800 100%)' }}
+                          >
+                            {firstPlace.avatar ? (
+                              <Avatar emoji={firstPlace.avatar} />
+                            ) : (
+                              <Crown className="w-8 h-8 text-[#5C2B04]" />
+                            )}
+                          </div>
+                          <span className="font-['Inter'] font-black text-[18px] leading-7 tracking-[-0.45px] text-[#0F172A] truncate max-w-[130px] text-center">
+                            {firstPlace.username}
+                          </span>
+                          <div className="flex items-center gap-1.5 mt-0.5 mb-2.5">
+                            <span className="font-['Inter'] font-black text-[14px] leading-5 text-[#78350F]">
+                              {firstPlace.totalScore || 0} pts
+                            </span>
+                            <span className="bg-[#FEF3C7] border border-[rgba(253,230,138,0.8)] shadow-xs rounded-full px-2 py-0.5 text-[12px] font-bold text-[#92400E]">
+                              {firstPlace.lastTimeTaken || '0.00'}s
+                            </span>
+                          </div>
+
+                          {/* Pedestal Block 1 */}
+                          <div 
+                            className="w-full h-[208px] rounded-t-[24px] rounded-b-[12px] flex items-start justify-center pt-6 relative shadow-[0px_16px_36px_-4px_rgba(245,158,11,0.45)]"
+                            style={{ background: 'linear-gradient(180deg, #FFCE34 0%, #F59E0B 100%)' }}
+                          >
+                            <div className="w-12 h-12 rounded-full bg-white/95 border-2 border-white/80 shadow-md flex items-center justify-center text-[#78350F] font-['Inter'] font-black text-[24px]">
+                              1
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Rank 3 (Bronze) */}
+                      {thirdPlace && (
+                        <div className="flex-1 flex flex-col items-center">
+                          <div className="w-14 h-14 rounded-full bg-[#FFE3CA] shadow-[0px_4px_12px_rgba(251,146,60,0.4)] flex items-center justify-center mb-2 shrink-0">
+                            {thirdPlace.avatar ? (
+                              <Avatar emoji={thirdPlace.avatar} />
+                            ) : (
+                              <Crown className="w-7 h-7 text-[#833A0B]" />
+                            )}
+                          </div>
+                          <span className="font-['Inter'] font-extrabold text-[16px] leading-6 tracking-[-0.4px] text-[#1E293B] truncate max-w-[120px] text-center">
+                            {thirdPlace.username}
+                          </span>
+                          <div className="flex items-center gap-1.5 mt-0.5 mb-2.5">
+                            <span className="font-['Inter'] font-black text-[12px] leading-4 text-[#334155]">
+                              {thirdPlace.totalScore || 0} pts
+                            </span>
+                            <span className="bg-[rgba(241,245,249,0.9)] border border-[rgba(226,232,240,0.6)] rounded-full px-2 py-0.5 text-[11px] font-semibold text-[#64748B]">
+                              {thirdPlace.lastTimeTaken || '0.00'}s
+                            </span>
+                          </div>
+
+                          {/* Pedestal Block 3 */}
+                          <div 
+                            className="w-full h-[112px] rounded-t-[24px] rounded-b-[12px] flex items-start justify-center pt-4 relative shadow-[0px_10px_24px_-4px_rgba(251,146,60,0.5)]"
+                            style={{ background: 'linear-gradient(180deg, #FFC488 0%, #FB923C 100%)' }}
+                          >
+                            <div className="w-11 h-11 rounded-full bg-white/90 border-2 border-white/60 shadow-sm flex items-center justify-center text-[#7C2D12] font-['Inter'] font-black text-[20px]">
+                              3
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                     </div>
 
-                    {/* Rank 1 (Gold - Elevated Center) */}
-                    <div className="flex-1 flex flex-col items-center -mt-6">
-                      <div 
-                        className="w-16 h-16 rounded-full flex items-center justify-center mb-2 shrink-0 shadow-[0px_8px_24px_-2px_rgba(245,158,11,0.55)]"
-                        style={{ background: 'radial-gradient(91.92% 91.92% at 35% 35%, #FFE270 0%, #FFA800 100%)' }}
-                      >
-                        <Crown className="w-8 h-8 text-[#5C2B04]" />
-                      </div>
-                      <span className="font-['Inter'] font-black text-[18px] leading-7 tracking-[-0.45px] text-[#0F172A] truncate max-w-[130px] text-center">
-                        {firstPlace.username}
-                      </span>
-                      <div className="flex items-center gap-1.5 mt-0.5 mb-2.5">
-                        <span className="font-['Inter'] font-black text-[14px] leading-5 text-[#78350F]">
-                          {firstPlace.totalScore || 0} pts
-                        </span>
-                        <span className="bg-[#FEF3C7] border border-[rgba(253,230,138,0.8)] shadow-xs rounded-full px-2 py-0.5 text-[12px] font-bold text-[#92400E]">
-                          {firstPlace.lastTimeTaken || '16.47'}s
-                        </span>
-                      </div>
-
-                      {/* Pedestal Block 1 */}
-                      <div 
-                        className="w-full h-[208px] rounded-t-[24px] rounded-b-[12px] flex items-start justify-center pt-6 relative shadow-[0px_16px_36px_-4px_rgba(245,158,11,0.45)]"
-                        style={{ background: 'linear-gradient(180deg, #FFCE34 0%, #F59E0B 100%)' }}
-                      >
-                        <div className="w-12 h-12 rounded-full bg-white/95 border-2 border-white/80 shadow-md flex items-center justify-center text-[#78350F] font-['Inter'] font-black text-[24px]">
-                          1
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Rank 3 (Bronze) */}
-                    <div className="flex-1 flex flex-col items-center">
-                      <div className="w-14 h-14 rounded-full bg-[#FFE3CA] shadow-[0px_4px_12px_rgba(251,146,60,0.4)] flex items-center justify-center mb-2 shrink-0">
-                        <Crown className="w-7 h-7 text-[#833A0B]" />
-                      </div>
-                      <span className="font-['Inter'] font-extrabold text-[16px] leading-6 tracking-[-0.4px] text-[#1E293B] truncate max-w-[120px] text-center">
-                        {thirdPlace.username}
-                      </span>
-                      <div className="flex items-center gap-1.5 mt-0.5 mb-2.5">
-                        <span className="font-['Inter'] font-black text-[12px] leading-4 text-[#334155]">
-                          {thirdPlace.totalScore || 0} pts
-                        </span>
-                        <span className="bg-[rgba(241,245,249,0.9)] border border-[rgba(226,232,240,0.6)] rounded-full px-2 py-0.5 text-[11px] font-semibold text-[#64748B]">
-                          {thirdPlace.lastTimeTaken || '17.8'}s
-                        </span>
-                      </div>
-
-                      {/* Pedestal Block 3 */}
-                      <div 
-                        className="w-full h-[112px] rounded-t-[24px] rounded-b-[12px] flex items-start justify-center pt-4 relative shadow-[0px_10px_24px_-4px_rgba(251,146,60,0.5)]"
-                        style={{ background: 'linear-gradient(180deg, #FFC488 0%, #FB923C 100%)' }}
-                      >
-                        <div className="w-11 h-11 rounded-full bg-white/90 border-2 border-white/60 shadow-sm flex items-center justify-center text-[#7C2D12] font-['Inter'] font-black text-[20px]">
-                          3
-                        </div>
-                      </div>
-                    </div>
-
+                    {/* Base Platform Bar beneath columns */}
+                    <div className={`w-full ${
+                      effectiveRoster.length === 1 
+                        ? 'max-w-[180px]' 
+                        : effectiveRoster.length === 2 
+                        ? 'max-w-[320px]' 
+                        : 'max-w-[430px]'
+                    } h-3.5 bg-white/95 border border-white/80 rounded-full shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] -mt-1.5 z-20`} />
                   </div>
-
-                  {/* Base Platform Bar beneath the 3 columns */}
-                  <div className="w-full max-w-[430px] h-3.5 bg-white/95 border border-white/80 rounded-full shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] -mt-1.5 z-20" />
-                </div>
+                )}
 
                 {/* 3. Lower Section: Full Live Standings Roster */}
                 <div className="w-full flex flex-col gap-3">
@@ -1711,7 +1714,7 @@ export default function AnswerResult() {
                         Live Standings
                       </h4>
                       <span className="bg-[#EEF2FF] border border-[#E0E7FF] text-[#551BF5] rounded-full px-2.5 py-0.5 font-['Inter'] font-bold text-[12px] leading-4">
-                        {totalChallengers} Challengers
+                        {totalChallengers} {totalChallengers === 1 ? 'Challenger' : 'Challengers'}
                       </span>
                     </div>
                     <span className="font-['Inter'] font-semibold text-[12px] leading-4 text-[#64748B]">
@@ -1764,7 +1767,7 @@ export default function AnswerResult() {
                                       ? 'bg-[#FFF7ED] border border-[#FFEDD5] text-[#1E293B]'
                                       : 'bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669]'
                             }`}>
-                              {isRank1 ? '👑' : isRank2 ? '⚡' : isRank3 ? '🔥' : player.username.charAt(0).toUpperCase()}
+                              {player.avatar ? <Avatar emoji={player.avatar} /> : isRank1 ? '👑' : isRank2 ? '⚡' : isRank3 ? '🔥' : (player.username || 'P').charAt(0).toUpperCase()}
                             </div>
 
                             {/* Name + Badges */}
@@ -1788,7 +1791,7 @@ export default function AnswerResult() {
                                 )}
                               </div>
                               <span className="font-['Inter'] font-medium text-[12px] leading-4 text-[#64748B]">
-                                {player.correctAnswers || 9}/{player.totalQuestions || 10} correct
+                                {player.correctAnswers !== undefined ? player.correctAnswers : 0}{totalQuestions ? `/${totalQuestions}` : ''} correct
                               </span>
                             </div>
                           </div>
@@ -1801,13 +1804,9 @@ export default function AnswerResult() {
                               }`}>
                                 {(player.totalScore || 0).toLocaleString()} pts
                               </span>
-                              {isMe ? (
-                                <span className="bg-[rgba(209,250,229,0.8)] text-[#059669] font-['Inter'] font-bold text-[10px] px-1.5 rounded">
-                                  Top 8%
-                                </span>
-                              ) : isRank1 ? (
+                              {player.streak && player.streak > 1 ? (
                                 <span className="text-[11px] font-semibold text-[#94A3B8]">
-                                  Streak: 10🔥
+                                  Streak: {player.streak}🔥
                                 </span>
                               ) : (
                                 <span className="text-[11px] font-semibold text-[#94A3B8]">
@@ -1823,7 +1822,7 @@ export default function AnswerResult() {
                                   ? 'bg-[rgba(254,243,199,0.9)] border border-[rgba(253,230,138,0.8)] text-[#92400E]'
                                   : 'bg-[#F1F5F9] text-[#64748B]'
                             }`}>
-                              {player.lastTimeTaken || '16.5'}s
+                              {player.lastTimeTaken || '0.00'}s
                             </div>
                           </div>
                         </div>
@@ -1846,14 +1845,18 @@ export default function AnswerResult() {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-['Inter'] font-bold text-[14px] leading-5 text-white">
-                          {localPlayer} (You)
+                          {localPlayer || 'You'} (You)
                         </span>
                         <span className="bg-[#34D399] text-[#022C22] font-['Inter'] font-black text-[10px] leading-4 uppercase px-2 py-0.5 rounded-full">
-                          TOP 8%
+                          {myRank === 1 ? '#1 RANK' : `TOP ${Math.max(1, Math.round((myRank / Math.max(totalChallengers, 1)) * 100))}%`}
                         </span>
                       </div>
                       <p className="font-['Inter'] font-medium text-[12px] leading-4 text-[#E9D5FF] mt-0.5">
-                        Ahead of {Math.max(totalChallengers - myRank, 46)} players in this lobby
+                        {totalChallengers <= 1
+                          ? 'Currently leading the lobby solo!'
+                          : myRank === 1
+                          ? `Ahead of ${totalChallengers - 1} ${totalChallengers - 1 === 1 ? 'challenger' : 'challengers'} in this lobby`
+                          : `Ahead of ${Math.max(0, totalChallengers - myRank)} ${Math.max(0, totalChallengers - myRank) === 1 ? 'challenger' : 'challengers'} in this lobby`}
                       </p>
                     </div>
                   </div>
@@ -1865,7 +1868,7 @@ export default function AnswerResult() {
                         {myScore.toLocaleString()} pts
                       </span>
                       <span className="font-['Inter'] font-medium text-[11px] leading-4 text-[#E9D5FF]">
-                        Avg: {timeTaken || '18.2'}s
+                        Time: {timeTaken || '0.00'}s
                       </span>
                     </div>
 
