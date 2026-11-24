@@ -49,11 +49,35 @@ export default function FinalResult() {
   const [isHost, setIsHost] = useState(() => {
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
-    const localPlayer = localStorage.getItem('guest_playerName');
+    const localPlayer =
+      localStorage.getItem('guest_playerName') ||
+      localStorage.getItem('player_name') ||
+      (() => {
+        try {
+          const u = JSON.parse(localStorage.getItem('user') || '{}');
+          return u.name || u.username || '';
+        } catch (e) {
+          return '';
+        }
+      })() ||
+      localStorage.getItem('username') ||
+      '';
     return (!!hostToken && (hostedPin === pin || !localPlayer)) || !localPlayer;
   });
   const [isSaved, setIsSaved] = useState(false);
-  const localPlayerName = localStorage.getItem('guest_playerName');
+  const localPlayerName =
+    localStorage.getItem('guest_playerName') ||
+    localStorage.getItem('player_name') ||
+    (() => {
+      try {
+        const u = JSON.parse(localStorage.getItem('user') || '{}');
+        return u.name || u.username || '';
+      } catch (e) {
+        return '';
+      }
+    })() ||
+    localStorage.getItem('username') ||
+    '';
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -185,7 +209,8 @@ export default function FinalResult() {
 
   const questions = game?.quiz?.questions || [];
   const questionCount = questions.length || game?.quiz?.totalQuestions || (Array.isArray(game?.quiz?.questions) ? game.quiz.questions.length : 0) || 12;
-  const currentPlayer = rankedPlayers.find(p => p.name?.toLowerCase() === localPlayerName?.toLowerCase());
+  const currentPlayer = rankedPlayers.find(p => p.name?.toLowerCase() === localPlayerName?.toLowerCase()) ||
+    (!isHost && rankedPlayers.length === 1 ? rankedPlayers[0] : null);
 
   const winner = rankedPlayers[0];
   const second = rankedPlayers[1];

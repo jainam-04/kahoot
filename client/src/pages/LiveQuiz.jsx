@@ -200,7 +200,18 @@ export default function LiveQuiz() {
   const { playerName, setPin, setPlayerName, setCurrentQuestion, setLeaderboard } = useGame();
   const { themeMode } = useTheme();
 
-  const localPlayer = (playerName || localStorage.getItem('guest_playerName') || '').trim();
+  const resolvePlayerName = () => {
+    if (playerName) return playerName.trim();
+    if (localStorage.getItem('guest_playerName')) return localStorage.getItem('guest_playerName').trim();
+    if (localStorage.getItem('player_name')) return localStorage.getItem('player_name').trim();
+    try {
+      const u = JSON.parse(localStorage.getItem('user') || '{}');
+      if (u.name || u.username) return (u.name || u.username).trim();
+    } catch (e) {}
+    if (localStorage.getItem('username')) return localStorage.getItem('username').trim();
+    return '';
+  };
+  const localPlayer = resolvePlayerName();
   const hostToken = localStorage.getItem('token');
   const hostedPin = localStorage.getItem('current_hosted_pin');
   const isUserHost = !!hostToken && hostedPin === pin;
@@ -227,7 +238,18 @@ export default function LiveQuiz() {
   const [isLeaving, setIsLeaving] = useState(false);
 
   useEffect(() => {
-    const localPlayer = (playerName || localStorage.getItem('guest_playerName') || '').trim();
+    const resolvePlayerName = () => {
+    if (playerName) return playerName.trim();
+    if (localStorage.getItem('guest_playerName')) return localStorage.getItem('guest_playerName').trim();
+    if (localStorage.getItem('player_name')) return localStorage.getItem('player_name').trim();
+    try {
+      const u = JSON.parse(localStorage.getItem('user') || '{}');
+      if (u.name || u.username) return (u.name || u.username).trim();
+    } catch (e) {}
+    if (localStorage.getItem('username')) return localStorage.getItem('username').trim();
+    return '';
+  };
+  const localPlayer = resolvePlayerName();
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
     const isUserHost = !!hostToken && hostedPin === pin;
@@ -391,12 +413,13 @@ export default function LiveQuiz() {
         const myData = data.leaderboard?.find(p => {
           const pName = (p.username || p.name || '').trim().toLowerCase();
           return pName === target;
-        });
+        }) || (data.leaderboard?.length === 1 ? data.leaderboard[0] : null);
         if (myData) {
           localStorage.setItem('last_isCorrect', myData.lastAnswerCorrect ? 'true' : 'false');
-          localStorage.setItem('last_pointsEarned', String(myData.pointsEarned));
-          localStorage.setItem('last_score', String(myData.score));
+          localStorage.setItem('last_pointsEarned', String(myData.pointsEarned ?? 0));
+          localStorage.setItem('last_score', String(myData.score ?? myData.totalScore ?? 0));
           localStorage.setItem('last_timeTaken', String(myData.lastTimeTaken || '0.00'));
+          localStorage.setItem('last_myRank', String(myData.rank || 1));
         }
       }
 

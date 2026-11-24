@@ -877,7 +877,8 @@ const endQuestion = async (req, res) => {
         const isLastQuestion = game.currentQuestionIndex === game.quizId.questions.length - 1;
 
         // Calculate ranked players
-        const rankedPlayers = sortAndRankPlayers(game.players, game.currentQuestionIndex);
+        const activePlayers = (game.players || []).filter(p => (p.answers && p.answers.length > 0) || (p.totalScore && p.totalScore > 0));
+        const rankedPlayers = sortAndRankPlayers(activePlayers.length > 0 ? activePlayers : (game.players || []), game.currentQuestionIndex);
 
         // Coerce both sides to Number
         const answerStats = currentQuestion.options.map((_, optIdx) =>

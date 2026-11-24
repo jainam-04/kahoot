@@ -146,6 +146,14 @@ export default function AnswerResult() {
     playerName ||
     localStorage.getItem('guest_playerName') ||
     localStorage.getItem('player_name') ||
+    (() => {
+      try {
+        const u = JSON.parse(localStorage.getItem('user') || '{}');
+        return u.name || u.username || '';
+      } catch (e) {
+        return '';
+      }
+    })() ||
     localStorage.getItem('username') ||
     '';
   const optionLetters = ['A', 'B', 'C', 'D'];
@@ -428,8 +436,9 @@ export default function AnswerResult() {
           }
 
           // Find player record
-          if (!isUserHost && localPlayer) {
-            const myPlayerRecord = game.players?.find(p => (p.name || '').toLowerCase() === localPlayer.toLowerCase());
+          if (!isUserHost) {
+            const myPlayerRecord = (localPlayer && game.players?.find(p => (p.name || '').toLowerCase() === localPlayer.toLowerCase())) ||
+              (game.players?.length === 1 ? game.players[0] : null);
             if (myPlayerRecord) {
               const myAnswer = myPlayerRecord.answers?.find(a => a.questionIndex === currentIdx);
               const submittedAnswer = myAnswer && !isUnansweredAnswer(myAnswer);
@@ -439,8 +448,8 @@ export default function AnswerResult() {
               
               setHasSubmittedAnswer(didSubmit);
               setIsCorrect(correct);
-              setPointsEarned(submittedAnswer ? myAnswer.score : Number(localStorage.getItem('last_pointsEarned') || 0));
-              setCurrentScore(myPlayerRecord.totalScore || Number(localStorage.getItem('last_score') || 0));
+              setPointsEarned(submittedAnswer ? (myAnswer.score ?? 0) : Number(localStorage.getItem('last_pointsEarned') || 0));
+              setCurrentScore(myPlayerRecord.totalScore !== undefined ? myPlayerRecord.totalScore : Number(localStorage.getItem('last_score') || 0));
               setTimeTaken(submittedAnswer ? (myAnswer.timeTaken / 1000).toFixed(2) : localStorage.getItem('last_timeTaken') || '0.00');
               
               if (correct && !confettiFiredRef.current) {
@@ -608,19 +617,23 @@ export default function AnswerResult() {
 
   // Build complete player roster for result and standings UI (strictly dynamic, zero fake players)
   const effectiveRoster = (leaderboard && leaderboard.length > 0)
-    ? leaderboard.map((p, idx) => ({
-        ...p,
-        rank: p.rank || idx + 1,
-        username: p.username || p.name || `Player ${idx + 1}`,
-        totalScore: p.totalScore !== undefined ? p.totalScore : (p.score || 0),
-        lastTimeTaken: p.lastTimeTaken || (p.timeTaken ? (Number(p.timeTaken) > 100 ? (p.timeTaken / 1000).toFixed(2) : Number(p.timeTaken).toFixed(2)) : '0.00'),
-        correctAnswers: p.correctAnswers !== undefined ? p.correctAnswers : 0,
-        isMe: localPlayer
-          ? (p.username || p.name || '').trim().toLowerCase() === localPlayer.trim().toLowerCase()
-          : false
-      }))
-    : (localPlayer && !isHost ? [{
-        username: localPlayer,
+    ? leaderboard.map((p, idx) => {
+        const pName = p.username || p.name || `Player ${idx + 1}`;
+        const isMe = localPlayer
+          ? ((pName || '').trim().toLowerCase() === localPlayer.trim().toLowerCase() || !!p.isMe)
+          : (leaderboard.length === 1 && !isHost);
+        return {
+          ...p,
+          rank: p.rank || idx + 1,
+          username: pName,
+          totalScore: p.totalScore !== undefined ? p.totalScore : (p.score || 0),
+          lastTimeTaken: p.lastTimeTaken || (p.timeTaken ? (Number(p.timeTaken) > 100 ? (p.timeTaken / 1000).toFixed(2) : Number(p.timeTaken).toFixed(2)) : '0.00'),
+          correctAnswers: p.correctAnswers !== undefined ? p.correctAnswers : 0,
+          isMe
+        };
+      })
+    : (!isHost ? [{
+        username: localPlayer || 'You',
         rank: 1,
         totalScore: currentScore || 0,
         lastTimeTaken: timeTaken || '0.00',
@@ -639,14 +652,23 @@ export default function AnswerResult() {
 
   const myLeaderboardEntry =
     effectiveRoster.find(p => p.isMe) ||
-    (effectiveRoster.length > 0 ? effectiveRoster[0] : null);
+    (localPlayer ? effectiveRoster.find(p => (p.username || '').toLowerCase() === localPlayer.toLowerCase()) : null) ||
+    (!isHost && effectiveRoster.length === 1 ? effectiveRoster[0] : null) ||
+    (!isHost && effectiveRoster.length > 0 ? effectiveRoster[0] : null);
 
-  const myRank = myLeaderboardEntry?.rank || 1;
+  const myRank = myLeaderboardEntry?.rank || Number(localStorage.getItem('last_myRank') || 1);
 
   const myScore =
     myLeaderboardEntry?.totalScore !== undefined
       ? myLeaderboardEntry.totalScore
-      : (currentScore || 0);
+      : (currentScore || Number(localStorage.getItem('last_score') || 0));
+
+  const resolvedCorrectAnswerText =
+    correctAnswerText ||
+    questionData?.correctAnswerText ||
+    (questionData?.options && (typeof questionData.options[correctAnswerIdx] === 'string' ? questionData.options[correctAnswerIdx] : questionData.options[correctAnswerIdx]?.text)) ||
+    (questionData?.answers && questionData.answers[correctAnswerIdx]) ||
+    `Option ${optionLetters[correctAnswerIdx] || 'A'}`;
 
   const totalChallengers = effectiveRoster.length;
 
@@ -1438,7 +1460,7 @@ export default function AnswerResult() {
                           :
                         </span>
                         <span className="font-['Inter'] font-bold text-[16px] leading-[24px] text-[#0F172A] break-words">
-                          {correctAnswerText || 'HyperText Markup Language'}
+                          {resolvedCorrectAnswerText}
                         </span>
                       </div>
                     </div>
@@ -1478,7 +1500,7 @@ export default function AnswerResult() {
                         TOTAL SCORE
                       </span>
                       <span className="font-['Inter'] font-extrabold text-[34px] leading-[36px] tracking-[-0.85px] text-[#0284FE] text-center">
-                        {currentScore} pts
+                        {(myScore !== undefined && myScore !== null ? myScore : (currentScore || 0)).toLocaleString()} pts
                       </span>
                     </div>
                   </div>
@@ -1495,7 +1517,7 @@ export default function AnswerResult() {
                         </span>
                         <span className="font-bold text-[16px] text-[#94A3B8]">•</span>
                         <span className="font-['Inter'] font-medium text-[16px] leading-[24px] text-[#334155]">
-                          Total score: <strong className="font-bold text-[18px] text-[#6C47FF]">{myScore} pts</strong>
+                          Total score: <strong className="font-bold text-[18px] text-[#6C47FF]">{(myScore !== undefined && myScore !== null ? myScore : (currentScore || 0)).toLocaleString()} pts</strong>
                         </span>
                       </div>
                     </div>
