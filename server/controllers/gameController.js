@@ -168,16 +168,16 @@ const joinGame = async (req, res) => {
             const prevRegex = new RegExp('^' + escPrev + '$', 'i');
             const removedDoc = await GameSession.findOneAndUpdate(
                 { pin: cleanPin, status: 'waiting' },
-                { 
-                    $pull: { 
-                        players: { 
+                {
+                    $pull: {
+                        players: {
                             $or: [
                                 { name: prevRegex },
                                 { nickname: prevRegex },
                                 { fullName: prevRegex }
-                            ] 
-                        } 
-                    } 
+                            ]
+                        }
+                    }
                 },
                 { new: true }
             );
@@ -988,16 +988,16 @@ const leaveGame = async (req, res) => {
 
         const updatedGame = await GameSession.findOneAndUpdate(
             { pin: cleanPin, status: 'waiting' },
-            { 
-                $pull: { 
-                    players: { 
+            {
+                $pull: {
+                    players: {
                         $or: [
                             { name: nameRegex },
                             { nickname: nameRegex },
                             { fullName: nameRegex }
-                        ] 
-                    } 
-                } 
+                        ]
+                    }
+                }
             },
             { new: true }
         );

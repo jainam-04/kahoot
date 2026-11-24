@@ -356,22 +356,21 @@ export default function HostLobby() {
 
   const activeChallengers = players;
 
-  // Host entry
+  // The roster of actual players who joined to battle (strictly excluding the host)
   const fullPlayerRoster = useMemo(() => {
-    const hostEntry = hostName
-      ? [{
-          username: hostName,
-          isHost: true,
-          joinedLabel: 'Host session',
-          initial: hostName.charAt(0).toUpperCase()
-        }]
-      : [];
-    const challengers = activeChallengers.filter((player) => (
-      !hostName
-      || player.username.toLowerCase() !== hostName.toLowerCase()
-    ));
-    return [...hostEntry, ...challengers];
-  }, [hostName, activeChallengers]);
+    const hostAliases = [
+      hostName,
+      userName,
+      user?.name,
+      user?.username,
+      'host'
+    ].filter(Boolean).map(s => s.trim().toLowerCase());
+
+    return activeChallengers.filter((player) => {
+      const pName = (player.username || player.name || '').trim().toLowerCase();
+      return !hostAliases.includes(pName) && !player.isHost;
+    });
+  }, [hostName, userName, user, activeChallengers]);
 
   const totalParticipantCount = fullPlayerRoster.length; // e.g. 34
   const visibleRoster = showAllPlayers ? fullPlayerRoster : fullPlayerRoster.slice(0, 3);
@@ -605,51 +604,65 @@ export default function HostLobby() {
                               +{additionalAvatarCount} more
                             </span>
                           )}
+
+                          {totalParticipantCount === 0 && (
+                            <span className="text-xs text-slate-400 font-medium italic">
+                              No players connected yet
+                            </span>
+                          )}
                         </div>
                       </div>
 
                       {/* Players List */}
                       <div className="host-lobby-player-list">
-                        <AnimatePresence initial={false}>
-                          {visibleRoster.map((player, idx) => {
-                            const isHost = Boolean(player.isHost);
-                            const palette = getAvatarTheme(player, idx);
-                            const letter = player.initial || player.username?.charAt(0)?.toUpperCase() || 'P';
+                        {totalParticipantCount === 0 ? (
+                          <div className="py-8 flex flex-col items-center justify-center text-center text-slate-400">
+                            <Users className="w-8 h-8 text-slate-300 mb-2 stroke-[1.5]" />
+                            <p className="text-sm font-semibold text-slate-600">Waiting for players to join...</p>
+                            <p className="text-xs text-slate-400 mt-0.5">Players can scan the QR code or enter PIN <span className="font-bold text-[#6320EE] font-mono">{pin}</span></p>
+                          </div>
+                        ) : (
+                          <AnimatePresence initial={false}>
+                            {visibleRoster.map((player, idx) => {
+                              const isHost = Boolean(player.isHost);
+                              const palette = getAvatarTheme(player, idx);
+                              const letter = player.initial || player.username?.charAt(0)?.toUpperCase() || 'P';
 
-                            return (
-                              <motion.div
-                                key={`row-${player.username}-${idx}`}
-                                initial={{ opacity: 0, y: 6 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -6 }}
-                                className="host-lobby-player cursor-pointer hover:bg-[#faf9fe] rounded-lg px-2"
-                                onClick={() => setIsPlayersModalOpen(true)}
-                              >
-                                <span
-                                  className="host-lobby-player-avatar"
-                                  style={{ backgroundColor: palette.bg, color: palette.text }}
+                              return (
+                                <motion.div
+                                  key={`row-${player.username}-${idx}`}
+                                  initial={{ opacity: 0, y: 6 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -6 }}
+                                  className="host-lobby-player cursor-pointer hover:bg-[#faf9fe] rounded-lg px-2"
+                                  onClick={() => setIsPlayersModalOpen(true)}
                                 >
-                                  {letter}
-                                </span>
-
-                                <span className="host-lobby-player-details">
-                                  <span className="host-lobby-player-name">
-                                    <span className="host-lobby-name-text">{player.username}</span>
-                                    {isHost && <span className="host-lobby-host-badge">HOST</span>}
+                                  <span
+                                    className="host-lobby-player-avatar"
+                                    style={{ backgroundColor: palette.bg, color: palette.text }}
+                                  >
+                                    {letter}
                                   </span>
-                                  <span className="host-lobby-player-joined">
-                                    {player.joinedLabel || 'Connected just now'}
-                                  </span>
-                                </span>
 
-                                <span className="host-lobby-player-online">
-                                  <i />
-                                  Online
-                                </span>
-                              </motion.div>
-                            );
-                          })}
-                        </AnimatePresence>
+                                  <span className="host-lobby-player-details">
+                                    <span className="host-lobby-player-name">
+                                      <span className="host-lobby-name-text">{player.username}</span>
+                                      {isHost && <span className="host-lobby-host-badge">HOST</span>}
+                                    </span>
+                                    <span className="host-lobby-player-joined">
+                                      {player.joinedLabel || 'Connected just now'}
+                                    </span>
+                                  </span>
+
+                                  <span className="host-lobby-player-online">
+                                    <i />
+                                    Online
+                                  </span>
+                                </motion.div>
+                              );
+                            })}
+                          </AnimatePresence>
+                        )}
                       </div>
 
                       {/* Footer Roster Toggle Row */}
@@ -951,46 +964,54 @@ export default function HostLobby() {
 
                     {/* 2-Column Cards Grid with Smooth Vertical Scroll */}
                     <div className="host-lobby-modal-roster-grid">
-                      {filteredModalRoster.map((player, idx) => {
-                        const isHost = Boolean(player.isHost);
-                        const palette = getAvatarTheme(player, idx);
-                        const letter = player.initial || player.username?.charAt(0)?.toUpperCase() || 'P';
+                      {filteredModalRoster.length === 0 ? (
+                        <div className="col-span-2 py-8 flex flex-col items-center justify-center text-center text-slate-400">
+                          <Users className="w-8 h-8 text-slate-300 mb-2 stroke-[1.5]" />
+                          <p className="text-sm font-semibold text-slate-600">No players connected yet</p>
+                          <p className="text-xs text-slate-400 mt-0.5">Players who join via PIN {pin} will appear here.</p>
+                        </div>
+                      ) : (
+                        filteredModalRoster.map((player, idx) => {
+                          const isHost = Boolean(player.isHost);
+                          const palette = getAvatarTheme(player, idx);
+                          const letter = player.initial || player.username?.charAt(0)?.toUpperCase() || 'P';
 
-                        return (
-                          <div
-                            key={`modal-card-${player.username}-${idx}`}
-                            className="host-lobby-modal-player-card"
-                          >
-                            <div className="host-lobby-modal-card-left">
-                              <span
-                                className="host-lobby-modal-card-avatar"
-                                style={{ backgroundColor: palette.bg, color: palette.text }}
-                              >
-                                {letter}
-                                <i className="host-lobby-online-dot" />
-                              </span>
-                              <div className="host-lobby-modal-card-details">
-                                <div className="host-lobby-modal-card-name-row">
-                                  <span className="host-lobby-modal-player-name">{player.username}</span>
-                                  {isHost && (
-                                    <span className="host-lobby-modal-card-host-badge">
-                                      ★ HOST
-                                    </span>
-                                  )}
-                                </div>
-                                <span className="host-lobby-modal-card-status-text">
-                                  {player.joinedLabel || 'Connected just now'}
+                          return (
+                            <div
+                              key={`modal-card-${player.username}-${idx}`}
+                              className="host-lobby-modal-player-card"
+                            >
+                              <div className="host-lobby-modal-card-left">
+                                <span
+                                  className="host-lobby-modal-card-avatar"
+                                  style={{ backgroundColor: palette.bg, color: palette.text }}
+                                >
+                                  {letter}
+                                  <i className="host-lobby-online-dot" />
                                 </span>
+                                <div className="host-lobby-modal-card-details">
+                                  <div className="host-lobby-modal-card-name-row">
+                                    <span className="host-lobby-modal-player-name">{player.username}</span>
+                                    {isHost && (
+                                      <span className="host-lobby-modal-card-host-badge">
+                                        ★ HOST
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className="host-lobby-modal-card-status-text">
+                                    {player.joinedLabel || 'Connected just now'}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
 
-                            <span className="host-lobby-modal-ready-badge">
-                              <i />
-                              Ready
-                            </span>
-                          </div>
-                        );
-                      })}
+                              <span className="host-lobby-modal-ready-badge">
+                                <i />
+                                Ready
+                              </span>
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   </div>
                 </div>

@@ -121,7 +121,7 @@ const parseBgConfig = (bgStr) => {
         darkOverlay: config.darkOverlay !== undefined ? !!config.darkOverlay : true
       };
     }
-  } catch (e) {}
+  } catch (e) { }
   return {
     url: typeof bgStr === 'string' ? bgStr : (bgStr?.url || ''),
     blur: 0,
@@ -285,7 +285,7 @@ export default function AnswerResult() {
     } catch (e) {
       console.error('Failed to parse user from localStorage', e);
     }
-    
+
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
     let isUserHost = Boolean(
@@ -356,7 +356,7 @@ export default function AnswerResult() {
 
             // Calculate stats for chart from game.players
             if (currentQuestion.options) {
-              const stats = currentQuestion.options.map((_, optIdx) => 
+              const stats = currentQuestion.options.map((_, optIdx) =>
                 game.players?.reduce((count, player) => {
                   const ans = player.answers?.find(a => a.questionIndex === currentIdx);
                   return count + (ans && Number(ans.answerIndex) === optIdx ? 1 : 0);
@@ -442,16 +442,16 @@ export default function AnswerResult() {
             if (myPlayerRecord) {
               const myAnswer = myPlayerRecord.answers?.find(a => a.questionIndex === currentIdx);
               const submittedAnswer = myAnswer && !isUnansweredAnswer(myAnswer);
-              
+
               const didSubmit = Boolean(submittedAnswer) || localStorage.getItem('last_answerSubmitted') === 'true';
               const correct = submittedAnswer ? myAnswer.isCorrect : localStorage.getItem('last_isCorrect') === 'true';
-              
+
               setHasSubmittedAnswer(didSubmit);
               setIsCorrect(correct);
               setPointsEarned(submittedAnswer ? (myAnswer.score ?? 0) : Number(localStorage.getItem('last_pointsEarned') || 0));
               setCurrentScore(myPlayerRecord.totalScore !== undefined ? myPlayerRecord.totalScore : Number(localStorage.getItem('last_score') || 0));
               setTimeTaken(submittedAnswer ? (myAnswer.timeTaken / 1000).toFixed(2) : localStorage.getItem('last_timeTaken') || '0.00');
-              
+
               if (correct && !confettiFiredRef.current) {
                 confettiFiredRef.current = true;
                 confetti({
@@ -483,7 +483,7 @@ export default function AnswerResult() {
     // Connect Socket and listen for navigation events
     const socket = connectSocket();
     const roleOrName = isUserHost ? 'Host' : localPlayer;
-    
+
     const joinRoom = () => {
       emitJoinRoom(pin, roleOrName);
     };
@@ -556,7 +556,7 @@ export default function AnswerResult() {
     } catch (e) {
       console.error('Socket leave error:', e);
     }
-    leaveGame(pin, localPlayer).catch(() => {});
+    leaveGame(pin, localPlayer).catch(() => { });
     localStorage.removeItem('guest_pin');
     localStorage.removeItem('guest_playerName');
     localStorage.removeItem('guest_avatar');
@@ -618,28 +618,28 @@ export default function AnswerResult() {
   // Build complete player roster for result and standings UI (strictly dynamic, zero fake players)
   const effectiveRoster = (leaderboard && leaderboard.length > 0)
     ? leaderboard.map((p, idx) => {
-        const pName = p.username || p.name || `Player ${idx + 1}`;
-        const isMe = localPlayer
-          ? ((pName || '').trim().toLowerCase() === localPlayer.trim().toLowerCase() || !!p.isMe)
-          : (leaderboard.length === 1 && !isHost);
-        return {
-          ...p,
-          rank: p.rank || idx + 1,
-          username: pName,
-          totalScore: p.totalScore !== undefined ? p.totalScore : (p.score || 0),
-          lastTimeTaken: p.lastTimeTaken || (p.timeTaken ? (Number(p.timeTaken) > 100 ? (p.timeTaken / 1000).toFixed(2) : Number(p.timeTaken).toFixed(2)) : '0.00'),
-          correctAnswers: p.correctAnswers !== undefined ? p.correctAnswers : 0,
-          isMe
-        };
-      })
+      const pName = p.username || p.name || `Player ${idx + 1}`;
+      const isMe = localPlayer
+        ? ((pName || '').trim().toLowerCase() === localPlayer.trim().toLowerCase() || !!p.isMe)
+        : (leaderboard.length === 1 && !isHost);
+      return {
+        ...p,
+        rank: p.rank || idx + 1,
+        username: pName,
+        totalScore: p.totalScore !== undefined ? p.totalScore : (p.score || 0),
+        lastTimeTaken: p.lastTimeTaken || (p.timeTaken ? (Number(p.timeTaken) > 100 ? (p.timeTaken / 1000).toFixed(2) : Number(p.timeTaken).toFixed(2)) : '0.00'),
+        correctAnswers: p.correctAnswers !== undefined ? p.correctAnswers : 0,
+        isMe
+      };
+    })
     : (!isHost ? [{
-        username: localPlayer || 'You',
-        rank: 1,
-        totalScore: currentScore || 0,
-        lastTimeTaken: timeTaken || '0.00',
-        correctAnswers: isCorrect ? 1 : 0,
-        isMe: true
-      }] : []);
+      username: localPlayer || 'You',
+      rank: 1,
+      totalScore: currentScore || 0,
+      lastTimeTaken: timeTaken || '0.00',
+      correctAnswers: isCorrect ? 1 : 0,
+      isMe: true
+    }] : []);
 
   const firstPlace =
     effectiveRoster.find(p => p.rank === 1) || (effectiveRoster.length > 0 ? effectiveRoster[0] : null);
@@ -764,18 +764,17 @@ export default function AnswerResult() {
 
             {/* Main Stage Content */}
             <main className="flex-1 p-3.5 sm:p-6 lg:p-8 space-y-6 max-w-[1120px] w-full mx-auto text-left">
-              
+
               {/* Segmented Controller: Answer Breakdown vs Lobby Standings */}
               <div className="flex justify-center">
                 <div className="inline-flex p-1.5 rounded-full bg-white border border-[#EDE9FE] shadow-sm gap-1.5">
                   <button
                     type="button"
                     onClick={() => setMobileTab('feedback')}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer select-none ${
-                      mobileTab === 'feedback'
-                        ? 'bg-gradient-to-r from-[#6320EE] to-[#7C3AED] text-white shadow-md shadow-[#6320EE]/20'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer select-none ${mobileTab === 'feedback'
+                      ? 'bg-gradient-to-r from-[#6320EE] to-[#7C3AED] text-white shadow-md shadow-[#6320EE]/20'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      }`}
                   >
                     <BarChart3 className="w-4 h-4" />
                     <span>Answer Breakdown</span>
@@ -784,11 +783,10 @@ export default function AnswerResult() {
                   <button
                     type="button"
                     onClick={() => setMobileTab('standings')}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer select-none ${
-                      mobileTab === 'standings'
-                        ? 'bg-gradient-to-r from-[#6320EE] to-[#7C3AED] text-white shadow-md shadow-[#6320EE]/20'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer select-none ${mobileTab === 'standings'
+                      ? 'bg-gradient-to-r from-[#6320EE] to-[#7C3AED] text-white shadow-md shadow-[#6320EE]/20'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      }`}
                   >
                     <Trophy className="w-4 h-4" />
                     <span>Lobby Standings {leaderboard.length > 0 && `(${leaderboard.length})`}</span>
@@ -879,11 +877,10 @@ export default function AnswerResult() {
                       return (
                         <div
                           key={`${idx}-${option}`}
-                          className={`relative rounded-2xl border-2 p-4 sm:p-5 transition-all shadow-sm ${
-                            isCorrectOption
-                              ? 'border-emerald-500 bg-gradient-to-br from-emerald-50/70 via-white to-emerald-50/30 ring-2 ring-emerald-500/20 shadow-emerald-500/10'
-                              : 'border-slate-200/90 bg-white hover:border-slate-300'
-                          }`}
+                          className={`relative rounded-2xl border-2 p-4 sm:p-5 transition-all shadow-sm ${isCorrectOption
+                            ? 'border-emerald-500 bg-gradient-to-br from-emerald-50/70 via-white to-emerald-50/30 ring-2 ring-emerald-500/20 shadow-emerald-500/10'
+                            : 'border-slate-200/90 bg-white hover:border-slate-300'
+                            }`}
                         >
                           <div className="flex items-start justify-between gap-3 mb-3">
                             <div className="flex items-center gap-2.5 min-w-0">
@@ -914,11 +911,10 @@ export default function AnswerResult() {
                             </div>
                             <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden border border-slate-200/50 flex">
                               <div
-                                className={`h-full rounded-full transition-all duration-700 ${
-                                  isCorrectOption
-                                    ? 'bg-gradient-to-r from-emerald-500 to-green-500 shadow-xs'
-                                    : 'bg-gradient-to-r from-[#6320EE] to-[#7C3AED]'
-                                }`}
+                                className={`h-full rounded-full transition-all duration-700 ${isCorrectOption
+                                  ? 'bg-gradient-to-r from-emerald-500 to-green-500 shadow-xs'
+                                  : 'bg-gradient-to-r from-[#6320EE] to-[#7C3AED]'
+                                  }`}
                                 style={{ width: `${Math.max(percentage, count > 0 ? 5 : 0)}%` }}
                               />
                             </div>
@@ -999,13 +995,12 @@ export default function AnswerResult() {
                   {/* Top Podium (100% Dynamic based on player count!) */}
                   {effectiveRoster.length > 0 ? (
                     <div
-                      className={`grid ${
-                        effectiveRoster.length === 1
-                          ? 'grid-cols-1 max-w-sm mx-auto'
-                          : effectiveRoster.length === 2
+                      className={`grid ${effectiveRoster.length === 1
+                        ? 'grid-cols-1 max-w-sm mx-auto'
+                        : effectiveRoster.length === 2
                           ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto'
                           : 'grid-cols-1 sm:grid-cols-3'
-                      } gap-4 pt-2`}
+                        } gap-4 pt-2`}
                     >
                       {/* 2nd Place */}
                       {secondPlace && (
@@ -1159,7 +1154,7 @@ export default function AnswerResult() {
   return (
     <AnimatedPage>
       <div className="relative min-h-screen w-full flex flex-col bg-[#F8F5FF] overflow-x-hidden select-none">
-        
+
         {/* Customized Background Layer or Default Brand Soft Purple */}
         {bgConfig.url ? (
           <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000 ease-out animate-fade-in">
@@ -1249,7 +1244,7 @@ export default function AnswerResult() {
         {/* MAIN STAGE: Segmented Controller + Grand Container Card                   */}
         {/* ========================================================================= */}
         <main className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 pt-6 pb-12 w-full max-w-[1351px] mx-auto">
-          
+
           {/* Section - Segmented Navigation Controller (830px Figma 1:1) */}
           <div className="w-full max-w-[830px] mb-6">
             <div className="w-full h-[58px] p-[6px] bg-white/70 border border-white/60 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] backdrop-blur-[12px] rounded-[22px] flex items-center gap-2 drop-shadow-[0px_2px_15px_rgba(0,0,0,0.06)]">
@@ -1257,11 +1252,10 @@ export default function AnswerResult() {
               <button
                 type="button"
                 onClick={() => setActiveTab('my-result')}
-                className={`flex-1 h-[46px] rounded-[18px] flex items-center justify-center gap-2 text-[12px] font-['Inter'] font-bold transition-all duration-200 cursor-pointer select-none ${
-                  activeTab === 'my-result'
-                    ? 'bg-gradient-to-r from-[#2563EB] to-[#4F46E5] text-white shadow-[0px_4px_14px_rgba(79,70,229,0.25)]'
-                    : 'text-[#64748B] hover:text-[#334155] bg-transparent'
-                }`}
+                className={`flex-1 h-[46px] rounded-[18px] flex items-center justify-center gap-2 text-[12px] font-['Inter'] font-bold transition-all duration-200 cursor-pointer select-none ${activeTab === 'my-result'
+                  ? 'bg-gradient-to-r from-[#2563EB] to-[#4F46E5] text-white shadow-[0px_4px_14px_rgba(79,70,229,0.25)]'
+                  : 'text-[#64748B] hover:text-[#334155] bg-transparent'
+                  }`}
               >
                 <BarChart2 className={`w-4 h-4 ${activeTab === 'my-result' ? 'text-white' : 'text-[#64748B]'}`} />
                 <span>{isHost ? 'Answer Breakdown' : 'My Result'}</span>
@@ -1271,11 +1265,10 @@ export default function AnswerResult() {
               <button
                 type="button"
                 onClick={() => setActiveTab('standings')}
-                className={`flex-1 h-[46px] rounded-[18px] flex items-center justify-center gap-2 text-[12px] font-['Inter'] font-bold transition-all duration-200 cursor-pointer select-none ${
-                  activeTab === 'standings'
-                    ? 'bg-gradient-to-r from-[#2563EB] to-[#4F46E5] text-white shadow-[0px_4px_14px_rgba(79,70,229,0.25)]'
-                    : 'text-[#64748B] hover:text-[#334155] bg-transparent'
-                }`}
+                className={`flex-1 h-[46px] rounded-[18px] flex items-center justify-center gap-2 text-[12px] font-['Inter'] font-bold transition-all duration-200 cursor-pointer select-none ${activeTab === 'standings'
+                  ? 'bg-gradient-to-r from-[#2563EB] to-[#4F46E5] text-white shadow-[0px_4px_14px_rgba(79,70,229,0.25)]'
+                  : 'text-[#64748B] hover:text-[#334155] bg-transparent'
+                  }`}
               >
                 <Trophy className={`w-4 h-4 ${activeTab === 'standings' ? 'text-white' : 'text-[#64748B]'}`} />
                 <span>Lobby Standings</span>
@@ -1288,7 +1281,7 @@ export default function AnswerResult() {
             /* VIEW A: MY RESULT CONTENT CARD (953px)                                   */
             /* ======================================================================= */
             <div className="relative w-full max-w-[953px] bg-white border border-[#F3E8FF]/60 shadow-[0px_20px_25px_-5px_rgba(59,7,100,0.05),0px_8px_10px_-6px_rgba(59,7,100,0.05)] backdrop-blur-[4px] rounded-[32px] px-6 sm:px-10 py-7 sm:py-10 transition-all duration-300 overflow-hidden isolate">
-              
+
               {/* Corner gradient blobs */}
               <div className="absolute w-[224px] h-[224px] -right-[63px] -top-[63px] bg-[rgba(255,228,230,0.4)] blur-[64px] rounded-full pointer-events-none z-0" />
               <div className="absolute w-[224px] h-[224px] -left-[63px] -top-[63px] bg-[rgba(243,232,255,0.4)] blur-[64px] rounded-full pointer-events-none z-0" />
@@ -1322,12 +1315,11 @@ export default function AnswerResult() {
                             </span>
                           </div>
                           <div className="w-full rounded-full h-3 overflow-hidden bg-slate-100 border border-slate-200 flex">
-                            <div 
-                              className={`h-full transition-all duration-1000 ${
-                                isCorrectOption 
-                                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 ring-1 ring-emerald-400/50 shadow-[0_0_10px_rgba(34,197,94,0.4)]' 
-                                  : 'bg-gradient-to-r from-slate-200 to-slate-300'
-                              }`} 
+                            <div
+                              className={`h-full transition-all duration-1000 ${isCorrectOption
+                                ? 'bg-gradient-to-r from-green-500 to-emerald-600 ring-1 ring-emerald-400/50 shadow-[0_0_10px_rgba(34,197,94,0.4)]'
+                                : 'bg-gradient-to-r from-slate-200 to-slate-300'
+                                }`}
                               style={{ width: `${percentage}%` }}
                             />
                           </div>
@@ -1370,7 +1362,7 @@ export default function AnswerResult() {
               ) : (
                 /* Player View: Result Feedback */
                 <div className="relative z-10 flex flex-col items-center text-center">
-                  
+
                   {/* Feedback Badge */}
                   <div className="relative w-[112px] h-[112px] flex items-center justify-center mb-4 isolate">
                     {!isCorrect && !isUnanswered && (
@@ -1393,20 +1385,18 @@ export default function AnswerResult() {
                       </>
                     )}
 
-                    <div className={`w-[112px] h-[112px] rounded-full flex items-center justify-center transition-all ${
-                      isUnanswered
-                        ? 'bg-[rgba(255,237,213,0.7)] shadow-[0px_0px_45px_8px_rgba(249,115,22,0.22)]'
-                        : isCorrect
-                          ? 'bg-[rgba(209,250,229,0.7)] shadow-[0px_0px_45px_8px_rgba(34,197,94,0.22)]'
-                          : 'bg-[rgba(254,226,226,0.7)] shadow-[0px_0px_45px_8px_rgba(239,68,68,0.22)]'
-                    }`}>
-                      <div className={`w-[92px] h-[92px] rounded-full flex items-center justify-center border-[4px] border-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)] transition-all ${
-                        isUnanswered
-                          ? 'bg-[#F97316]'
-                          : isCorrect
-                            ? 'bg-gradient-to-b from-[#22C55E] to-[#10B981]'
-                            : 'bg-[#EF4444]'
+                    <div className={`w-[112px] h-[112px] rounded-full flex items-center justify-center transition-all ${isUnanswered
+                      ? 'bg-[rgba(255,237,213,0.7)] shadow-[0px_0px_45px_8px_rgba(249,115,22,0.22)]'
+                      : isCorrect
+                        ? 'bg-[rgba(209,250,229,0.7)] shadow-[0px_0px_45px_8px_rgba(34,197,94,0.22)]'
+                        : 'bg-[rgba(254,226,226,0.7)] shadow-[0px_0px_45px_8px_rgba(239,68,68,0.22)]'
                       }`}>
+                      <div className={`w-[92px] h-[92px] rounded-full flex items-center justify-center border-[4px] border-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)] transition-all ${isUnanswered
+                        ? 'bg-[#F97316]'
+                        : isCorrect
+                          ? 'bg-gradient-to-b from-[#22C55E] to-[#10B981]'
+                          : 'bg-[#EF4444]'
+                        }`}>
                         {isUnanswered ? (
                           <AlertCircle className="w-10 h-10 text-white stroke-[3.5]" />
                         ) : isCorrect ? (
@@ -1538,9 +1528,9 @@ export default function AnswerResult() {
             /* VIEW B: GRAND CONTAINER CARD (1232px Figma 1:1 Lobby Standings)          */
             /* ======================================================================= */
             <div className="w-full max-w-[1232px] flex flex-col gap-6">
-              
+
               <div className="w-full bg-[rgba(255,255,255,0.96)] border border-white/80 shadow-[0px_20px_25px_-5px_rgba(168,85,247,0.05),0px_8px_10px_-6px_rgba(168,85,247,0.05)] backdrop-blur-[16px] rounded-[24px] p-6 sm:p-8 flex flex-col gap-6 sm:gap-8 transition-all">
-                
+
                 {/* 1. Header: View Selector & Live Room Badge */}
                 <div className="w-full border-b border-[#F1F5F9] pb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   {/* Left: Icon + Title + Live Badge */}
@@ -1570,10 +1560,10 @@ export default function AnswerResult() {
                       {effectiveRoster.slice(0, 3).map((p, idx) => (
                         <div
                           key={p.rank || idx}
-                          className={`w-6 h-6 rounded-full ring-2 ring-white flex items-center justify-center text-white text-[10px] font-bold ${
-                            idx === 0 ? 'bg-[#FBBF24]' : idx === 1 ? 'bg-[#818CF8]' : 'bg-[#FB923C]'
-                          }`}
+                          className={`w-6 h-6 rounded-full ring-2 ring-white flex items-center justify-center text-white text-[10px] font-bold ${idx === 0 ? 'bg-[#FBBF24]' : idx === 1 ? 'bg-[#818CF8]' : 'bg-[#FB923C]'
+                            }`}
                         >
+                          {p.avatar ? <Avatar emoji={p.avatar} /> : (p.username || 'P').charAt(0).toUpperCase()}
                           {(p.avatar || (p.isMe && localStorage.getItem('guest_avatar'))) ? (
                             <Avatar emoji={p.avatar || localStorage.getItem('guest_avatar')} />
                           ) : (
@@ -1591,7 +1581,7 @@ export default function AnswerResult() {
                 {/* 2. Upper Showcase: The Grand 3D Podium (Dynamic Celebratory Showcase) */}
                 {effectiveRoster.length > 0 && (
                   <div className="w-full bg-gradient-to-b from-[rgba(250,245,255,0.6)] to-[rgba(255,255,255,0.9)] border border-[rgba(243,232,255,0.9)] rounded-[24px] shadow-xs pt-6 pb-4 px-4 sm:px-8 relative overflow-hidden flex flex-col items-center">
-                    
+
                     {/* Decorative Sparkles & Stars */}
                     <div className="absolute top-6 left-12 text-[#D8B4FE] pointer-events-none select-none text-xs">★</div>
                     <div className="absolute top-10 right-14 text-[#FBBF24] pointer-events-none select-none text-sm">✦</div>
@@ -1604,14 +1594,13 @@ export default function AnswerResult() {
                     </h3>
 
                     {/* 3D Podium Construct */}
-                    <div className={`w-full ${
-                      effectiveRoster.length === 1 
-                        ? 'max-w-[220px]' 
-                        : effectiveRoster.length === 2 
-                        ? 'max-w-[360px]' 
+                    <div className={`w-full ${effectiveRoster.length === 1
+                      ? 'max-w-[220px]'
+                      : effectiveRoster.length === 2
+                        ? 'max-w-[360px]'
                         : 'max-w-[480px]'
-                    } flex items-end justify-center gap-3 sm:gap-4 z-10 relative`}>
-                      
+                      } flex items-end justify-center gap-3 sm:gap-4 z-10 relative`}>
+
                       {/* Rank 2 (Silver) - shown on left when 3+ players */}
                       {secondPlace && effectiveRoster.length > 2 && (
                         <div className="flex-1 flex flex-col items-center">
@@ -1633,9 +1622,9 @@ export default function AnswerResult() {
                               {secondPlace.lastTimeTaken || '0.00'}s
                             </span>
                           </div>
-                          
+
                           {/* Pedestal Block 2 */}
-                          <div 
+                          <div
                             className="w-full h-[144px] rounded-t-[24px] rounded-b-[12px] flex items-start justify-center pt-5 relative shadow-[0px_10px_24px_-4px_rgba(184,206,248,0.6)]"
                             style={{ background: 'linear-gradient(180deg, #D4E2FC 0%, #B8CEF8 100%)' }}
                           >
@@ -1649,7 +1638,7 @@ export default function AnswerResult() {
                       {/* Rank 1 (Gold - Elevated Center for 3+ or solo champion) */}
                       {firstPlace && (
                         <div className={`flex-1 flex flex-col items-center ${effectiveRoster.length === 1 ? 'mt-0' : '-mt-6'}`}>
-                          <div 
+                          <div
                             className="w-16 h-16 rounded-full flex items-center justify-center mb-2 shrink-0 shadow-[0px_8px_24px_-2px_rgba(245,158,11,0.55)]"
                             style={{ background: 'radial-gradient(91.92% 91.92% at 35% 35%, #FFE270 0%, #FFA800 100%)' }}
                           >
@@ -1672,7 +1661,7 @@ export default function AnswerResult() {
                           </div>
 
                           {/* Pedestal Block 1 */}
-                          <div 
+                          <div
                             className="w-full h-[208px] rounded-t-[24px] rounded-b-[12px] flex items-start justify-center pt-6 relative shadow-[0px_16px_36px_-4px_rgba(245,158,11,0.45)]"
                             style={{ background: 'linear-gradient(180deg, #FFCE34 0%, #F59E0B 100%)' }}
                           >
@@ -1704,9 +1693,9 @@ export default function AnswerResult() {
                               {secondPlace.lastTimeTaken || '0.00'}s
                             </span>
                           </div>
-                          
+
                           {/* Pedestal Block 2 */}
-                          <div 
+                          <div
                             className="w-full h-[144px] rounded-t-[24px] rounded-b-[12px] flex items-start justify-center pt-5 relative shadow-[0px_10px_24px_-4px_rgba(184,206,248,0.6)]"
                             style={{ background: 'linear-gradient(180deg, #D4E2FC 0%, #B8CEF8 100%)' }}
                           >
@@ -1740,7 +1729,7 @@ export default function AnswerResult() {
                           </div>
 
                           {/* Pedestal Block 3 */}
-                          <div 
+                          <div
                             className="w-full h-[112px] rounded-t-[24px] rounded-b-[12px] flex items-start justify-center pt-4 relative shadow-[0px_10px_24px_-4px_rgba(251,146,60,0.5)]"
                             style={{ background: 'linear-gradient(180deg, #FFC488 0%, #FB923C 100%)' }}
                           >
@@ -1754,244 +1743,240 @@ export default function AnswerResult() {
                     </div>
 
                     {/* Base Platform Bar beneath columns */}
-                    <div className={`w-full ${
-                      effectiveRoster.length === 1 
-                        ? 'max-w-[180px]' 
-                        : effectiveRoster.length === 2 
-                        ? 'max-w-[320px]' 
-                        : 'max-w-[430px]'
-                    } h-3.5 bg-white/95 border border-white/80 rounded-full shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] -mt-1.5 z-20`} />
-                  </div>
+                      <div className={`w-full ${effectiveRoster.length === 1
+                        ? 'max-w-[180px]'
+                        : effectiveRoster.length === 2
+                          ? 'max-w-[320px]'
+                          : 'max-w-[430px]'
+                        } h-3.5 bg-white/95 border border-white/80 rounded-full shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] -mt-1.5 z-20`} />
+                    </div>
                 )}
 
-                {/* 3. Lower Section: Full Live Standings Roster */}
-                <div className="w-full flex flex-col gap-3">
-                  
-                  {/* Roster Header */}
-                  <div className="w-full bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <h4 className="font-['Inter'] font-extrabold text-[14px] leading-5 text-[#1E293B]">
-                        Live Standings
-                      </h4>
-                      <span className="bg-[#EEF2FF] border border-[#E0E7FF] text-[#551BF5] rounded-full px-2.5 py-0.5 font-['Inter'] font-bold text-[12px] leading-4">
-                        {totalChallengers} {totalChallengers === 1 ? 'Challenger' : 'Challengers'}
-                      </span>
-                    </div>
-                    <span className="font-['Inter'] font-semibold text-[12px] leading-4 text-[#64748B]">
-                      Showing <strong className="font-bold text-[#0F172A]">Top {effectiveRoster.length}</strong> of {totalChallengers}
-                    </span>
-                  </div>
+                    {/* 3. Lower Section: Full Live Standings Roster */}
+                    <div className="w-full flex flex-col gap-3">
 
-                  {/* Scrollable Roster Items List */}
-                  <div className="w-full flex flex-col gap-2.5 max-h-[420px] overflow-y-auto pr-1">
-                    {effectiveRoster.map((player) => {
-                      const isMe = player.isMe || (player.username || '').toLowerCase() === (localPlayer || '').toLowerCase();
-                      const isRank1 = player.rank === 1;
-                      const isRank2 = player.rank === 2;
-                      const isRank3 = player.rank === 3;
-
-                      let rowClass = 'w-full rounded-[16px] p-3.5 flex items-center justify-between transition-all ';
-
-                      if (isMe) {
-                        rowClass += 'bg-[rgba(250,245,255,0.9)] border-2 border-[rgba(85,27,245,0.7)] shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.1)]';
-                      } else if (isRank1) {
-                        rowClass += 'bg-[rgba(255,251,235,0.7)] border border-[rgba(253,230,138,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]';
-                      } else {
-                        rowClass += 'bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]';
-                      }
-
-                      return (
-                        <div key={player.rank} className={rowClass}>
-                          {/* Left: Rank badge + Avatar + Name + Subtext */}
-                          <div className="flex items-center gap-3.5 min-w-0">
-                            {/* Rank circle badge */}
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-['Inter'] font-black text-[12px] shrink-0 ${
-                              isMe
-                                ? 'bg-[#551BF5] text-white shadow-xs'
-                                : isRank1
-                                  ? 'bg-[#FBBF24] text-[#451A03] shadow-xs'
-                                  : 'bg-[#F1F5F9] border border-[#E2E8F0] text-[#475569]'
-                            }`}>
-                              {player.rank}
-                            </div>
-
-                            {/* Avatar circle */}
-                            <div className={`w-9 h-9 rounded-full flex items-center justify-center font-['Inter'] font-bold text-[12px] shrink-0 ${
-                              isMe
-                                ? 'bg-[#551BF5] text-white'
-                                : isRank1
-                                  ? 'bg-[#FEF3C7] border border-[#FDE68A] text-[#1E293B]'
-                                  : isRank2
-                                    ? 'bg-[#EEF2FF] border border-[#E0E7FF] text-[#1E293B]'
-                                    : isRank3
-                                      ? 'bg-[#FFF7ED] border border-[#FFEDD5] text-[#1E293B]'
-                                      : 'bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669]'
-                            }`}>
-                              {(player.avatar || (isMe && localStorage.getItem('guest_avatar'))) ? (
-                                <Avatar emoji={player.avatar || localStorage.getItem('guest_avatar')} />
-                              ) : isRank1 ? '👑' : isRank2 ? '⚡' : isRank3 ? '🔥' : (player.username || 'P').charAt(0).toUpperCase()}
-                            </div>
-
-                            {/* Name + Badges */}
-                            <div className="flex flex-col min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className={`font-['Inter'] font-extrabold text-[14px] leading-5 truncate ${
-                                  isMe ? 'text-[#1E1B4B]' : 'text-[#0F172A]'
-                                }`}>
-                                  {player.username}
-                                </span>
-                                
-                                {isRank1 && (
-                                  <span className="bg-[rgba(253,230,138,0.6)] text-[#92400E] font-['Inter'] font-bold text-[10px] leading-4 px-1.5 rounded">
-                                    1st Place
-                                  </span>
-                                )}
-                                {isMe && (
-                                  <span className="bg-[#551BF5] text-white font-['Inter'] font-extrabold text-[10px] leading-4 uppercase px-2 py-0.5 rounded-full">
-                                    YOU
-                                  </span>
-                                )}
-                              </div>
-                              <span className="font-['Inter'] font-medium text-[12px] leading-4 text-[#64748B]">
-                                {player.correctAnswers !== undefined ? player.correctAnswers : 0}{totalQuestions ? `/${totalQuestions}` : ''} correct
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Right: Score + Time badge */}
-                          <div className="flex items-center gap-3 shrink-0">
-                            <div className="flex flex-col items-end">
-                              <span className={`font-['Inter'] font-black text-[14px] sm:text-[16px] leading-5 tracking-[-0.35px] ${
-                                isMe ? 'text-[#551BF5]' : 'text-[#0F172A]'
-                              }`}>
-                                {(player.totalScore || 0).toLocaleString()} pts
-                              </span>
-                              {player.streak && player.streak > 1 ? (
-                                <span className="text-[11px] font-semibold text-[#94A3B8]">
-                                  Streak: {player.streak}🔥
-                                </span>
-                              ) : (
-                                <span className="text-[11px] font-semibold text-[#94A3B8]">
-                                  Rank #{player.rank}
-                                </span>
-                              )}
-                            </div>
-
-                            <div className={`px-2.5 py-1 rounded-xl text-[12px] font-['Inter'] font-bold shrink-0 ${
-                              isMe
-                                ? 'bg-white border border-[#E9D5FF] text-[#551BF5] shadow-xs'
-                                : isRank1
-                                  ? 'bg-[rgba(254,243,199,0.9)] border border-[rgba(253,230,138,0.8)] text-[#92400E]'
-                                  : 'bg-[#F1F5F9] text-[#64748B]'
-                            }`}>
-                              {player.lastTimeTaken || '0.00'}s
-                            </div>
-                          </div>
+                      {/* Roster Header */}
+                      <div className="w-full bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-3 flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <h4 className="font-['Inter'] font-extrabold text-[14px] leading-5 text-[#1E293B]">
+                            Live Standings
+                          </h4>
+                          <span className="bg-[#EEF2FF] border border-[#E0E7FF] text-[#551BF5] rounded-full px-2.5 py-0.5 font-['Inter'] font-bold text-[12px] leading-4">
+                            {totalChallengers} {totalChallengers === 1 ? 'Challenger' : 'Challengers'}
+                          </span>
                         </div>
-                      );
-                    })}
-                  </div>
-
-                </div>
-
-                {/* 4. Bottom Persistent User Standing Anchor Bar */}
-                <div 
-                  className="w-full rounded-[16px] p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-[0px_10px_15px_-3px_rgba(147,51,234,0.2)]"
-                  style={{ background: 'linear-gradient(90deg, #551BF5 0%, #4F46E5 100%)' }}
-                >
-                  {/* Left: Rank Square + Name + Percentile */}
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 rounded-[12px] bg-white/20 border border-white/20 backdrop-blur-md flex items-center justify-center text-white font-['Inter'] font-black text-[14px] shrink-0">
-                      #{myRank}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-['Inter'] font-bold text-[14px] leading-5 text-white">
-                          {localPlayer || 'You'} (You)
-                        </span>
-                        <span className="bg-[#34D399] text-[#022C22] font-['Inter'] font-black text-[10px] leading-4 uppercase px-2 py-0.5 rounded-full">
-                          {myRank === 1 ? '#1 RANK' : `TOP ${Math.max(1, Math.round((myRank / Math.max(totalChallengers, 1)) * 100))}%`}
+                        <span className="font-['Inter'] font-semibold text-[12px] leading-4 text-[#64748B]">
+                          Showing <strong className="font-bold text-[#0F172A]">Top {effectiveRoster.length}</strong> of {totalChallengers}
                         </span>
                       </div>
-                      <p className="font-['Inter'] font-medium text-[12px] leading-4 text-[#E9D5FF] mt-0.5">
-                        {totalChallengers <= 1
-                          ? 'Currently leading the lobby solo!'
-                          : myRank === 1
-                          ? `Ahead of ${totalChallengers - 1} ${totalChallengers - 1 === 1 ? 'challenger' : 'challengers'} in this lobby`
-                          : `Ahead of ${Math.max(0, totalChallengers - myRank)} ${Math.max(0, totalChallengers - myRank) === 1 ? 'challenger' : 'challengers'} in this lobby`}
-                      </p>
+
+                      {/* Scrollable Roster Items List */}
+                      <div className="w-full flex flex-col gap-2.5 max-h-[420px] overflow-y-auto pr-1">
+                        {effectiveRoster.map((player) => {
+                          const isMe = player.isMe || (player.username || '').toLowerCase() === (localPlayer || '').toLowerCase();
+                          const isRank1 = player.rank === 1;
+                          const isRank2 = player.rank === 2;
+                          const isRank3 = player.rank === 3;
+
+                          let rowClass = 'w-full rounded-[16px] p-3.5 flex items-center justify-between transition-all ';
+
+                          if (isMe) {
+                            rowClass += 'bg-[rgba(250,245,255,0.9)] border-2 border-[rgba(85,27,245,0.7)] shadow-[0px_4px_6px_-1px_rgba(168,85,247,0.1)]';
+                          } else if (isRank1) {
+                            rowClass += 'bg-[rgba(255,251,235,0.7)] border border-[rgba(253,230,138,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]';
+                          } else {
+                            rowClass += 'bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]';
+                          }
+
+                          return (
+                            <div key={player.rank} className={rowClass}>
+                              {/* Left: Rank badge + Avatar + Name + Subtext */}
+                              <div className="flex items-center gap-3.5 min-w-0">
+                                {/* Rank circle badge */}
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-['Inter'] font-black text-[12px] shrink-0 ${isMe
+                                  ? 'bg-[#551BF5] text-white shadow-xs'
+                                  : isRank1
+                                    ? 'bg-[#FBBF24] text-[#451A03] shadow-xs'
+                                    : 'bg-[#F1F5F9] border border-[#E2E8F0] text-[#475569]'
+                                  }`}>
+                                  {player.rank}
+                                </div>
+
+                                {/* Avatar circle */}
+                                <div className={`w-9 h-9 rounded-full flex items-center justify-center font-['Inter'] font-bold text-[12px] shrink-0 ${isMe
+                                  ? 'bg-[#551BF5] text-white'
+                                  : isRank1
+                                    ? 'bg-[#FEF3C7] border border-[#FDE68A] text-[#1E293B]'
+                                    : isRank2
+                                      ? 'bg-[#EEF2FF] border border-[#E0E7FF] text-[#1E293B]'
+                                      : isRank3
+                                        ? 'bg-[#FFF7ED] border border-[#FFEDD5] text-[#1E293B]'
+                                        : 'bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669]'
+                                  }`}>
+                                  {player.avatar ? <Avatar emoji={player.avatar} /> : isRank1 ? '👑' : isRank2 ? '⚡' : isRank3 ? '🔥' : (player.username || 'P').charAt(0).toUpperCase()}
+                                  {(player.avatar || (isMe && localStorage.getItem('guest_avatar'))) ? (
+                                    <Avatar emoji={player.avatar || localStorage.getItem('guest_avatar')} />
+                                  ) : isRank1 ? '👑' : isRank2 ? '⚡' : isRank3 ? '🔥' : (player.username || 'P').charAt(0).toUpperCase()}
+                                </div>
+
+                                {/* Name + Badges */}
+                                <div className="flex flex-col min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <span className={`font-['Inter'] font-extrabold text-[14px] leading-5 truncate ${isMe ? 'text-[#1E1B4B]' : 'text-[#0F172A]'
+                                      }`}>
+                                      {player.username}
+                                    </span>
+
+                                    {isRank1 && (
+                                      <span className="bg-[rgba(253,230,138,0.6)] text-[#92400E] font-['Inter'] font-bold text-[10px] leading-4 px-1.5 rounded">
+                                        1st Place
+                                      </span>
+                                    )}
+                                    {isMe && (
+                                      <span className="bg-[#551BF5] text-white font-['Inter'] font-extrabold text-[10px] leading-4 uppercase px-2 py-0.5 rounded-full">
+                                        YOU
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className="font-['Inter'] font-medium text-[12px] leading-4 text-[#64748B]">
+                                    {player.correctAnswers !== undefined ? player.correctAnswers : 0}{totalQuestions ? `/${totalQuestions}` : ''} correct
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Right: Score + Time badge */}
+                              <div className="flex items-center gap-3 shrink-0">
+                                <div className="flex flex-col items-end">
+                                  <span className={`font-['Inter'] font-black text-[14px] sm:text-[16px] leading-5 tracking-[-0.35px] ${isMe ? 'text-[#551BF5]' : 'text-[#0F172A]'
+                                    }`}>
+                                    {(player.totalScore || 0).toLocaleString()} pts
+                                  </span>
+                                  {player.streak && player.streak > 1 ? (
+                                    <span className="text-[11px] font-semibold text-[#94A3B8]">
+                                      Streak: {player.streak}🔥
+                                    </span>
+                                  ) : (
+                                    <span className="text-[11px] font-semibold text-[#94A3B8]">
+                                      Rank #{player.rank}
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className={`px-2.5 py-1 rounded-xl text-[12px] font-['Inter'] font-bold shrink-0 ${isMe
+                                  ? 'bg-white border border-[#E9D5FF] text-[#551BF5] shadow-xs'
+                                  : isRank1
+                                    ? 'bg-[rgba(254,243,199,0.9)] border border-[rgba(253,230,138,0.8)] text-[#92400E]'
+                                    : 'bg-[#F1F5F9] text-[#64748B]'
+                                  }`}>
+                                  {player.lastTimeTaken || '0.00'}s
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
                     </div>
-                  </div>
 
-                  {/* Right: Score + View All Button */}
-                  <div className="flex items-center gap-4 self-end sm:self-auto">
-                    <div className="flex flex-col items-end">
-                      <span className="font-['Inter'] font-black text-[18px] leading-tight tracking-[-0.45px] text-white">
-                        {myScore.toLocaleString()} pts
-                      </span>
-                      <span className="font-['Inter'] font-medium text-[11px] leading-4 text-[#E9D5FF]">
-                        Time: {timeTaken || '0.00'}s
-                      </span>
+                    {/* 4. Bottom Persistent User Standing Anchor Bar */}
+                    <div
+                      className="w-full rounded-[16px] p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-[0px_10px_15px_-3px_rgba(147,51,234,0.2)]"
+                      style={{ background: 'linear-gradient(90deg, #551BF5 0%, #4F46E5 100%)' }}
+                    >
+                      {/* Left: Rank Square + Name + Percentile */}
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-10 h-10 rounded-[12px] bg-white/20 border border-white/20 backdrop-blur-md flex items-center justify-center text-white font-['Inter'] font-black text-[14px] shrink-0">
+                          #{myRank}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-['Inter'] font-bold text-[14px] leading-5 text-white">
+                              {localPlayer || 'You'} (You)
+                            </span>
+                            <span className="bg-[#34D399] text-[#022C22] font-['Inter'] font-black text-[10px] leading-4 uppercase px-2 py-0.5 rounded-full">
+                              {myRank === 1 ? '#1 RANK' : `TOP ${Math.max(1, Math.round((myRank / Math.max(totalChallengers, 1)) * 100))}%`}
+                            </span>
+                          </div>
+                          <p className="font-['Inter'] font-medium text-[12px] leading-4 text-[#E9D5FF] mt-0.5">
+                            {totalChallengers <= 1
+                              ? 'Currently leading the lobby solo!'
+                              : myRank === 1
+                                ? `Ahead of ${totalChallengers - 1} ${totalChallengers - 1 === 1 ? 'challenger' : 'challengers'} in this lobby`
+                                : `Ahead of ${Math.max(0, totalChallengers - myRank)} ${Math.max(0, totalChallengers - myRank) === 1 ? 'challenger' : 'challengers'} in this lobby`}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right: Score + View All Button */}
+                      <div className="flex items-center gap-4 self-end sm:self-auto">
+                        <div className="flex flex-col items-end">
+                          <span className="font-['Inter'] font-black text-[18px] leading-tight tracking-[-0.45px] text-white">
+                            {myScore.toLocaleString()} pts
+                          </span>
+                          <span className="font-['Inter'] font-medium text-[11px] leading-4 text-[#E9D5FF]">
+                            Time: {timeTaken || '0.00'}s
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/leaderboard/${pin}`)}
+                          className="h-8 px-4 rounded-[12px] bg-white text-[#551BF5] font-['Inter'] font-bold text-[12px] leading-4 hover:bg-slate-50 active:scale-95 transition-all shadow-sm cursor-pointer whitespace-nowrap"
+                        >
+                          View All {totalChallengers}
+                          {totalChallengers <= 1 ? 'Full Standings' : `View All ${totalChallengers}`}
+                        </button>
+                      </div>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => navigate(`/leaderboard/${pin}`)}
-                      className="h-8 px-4 rounded-[12px] bg-white text-[#551BF5] font-['Inter'] font-bold text-[12px] leading-4 hover:bg-slate-50 active:scale-95 transition-all shadow-sm cursor-pointer whitespace-nowrap"
-                    >
-                      {totalChallengers <= 1 ? 'Full Standings' : `View All ${totalChallengers}`}
-                    </button>
-                  </div>
-                </div>
+                    {/* Host Control Actions if viewing as Host */}
+                    {isHost && (
+                      <div className="flex flex-col sm:flex-row gap-4 pt-2 border-t border-slate-100">
+                        <button
+                          onClick={handleShowLeaderboard}
+                          disabled={isShowingLeaderboard || isLoading}
+                          className="flex-1 py-3 px-4 rounded-xl bg-[#6C38FF] hover:bg-[#5825E3] text-white font-['Inter'] font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer select-none disabled:opacity-50"
+                        >
+                          {isShowingLeaderboard ? (
+                            <Loader2 className="h-4 w-4 animate-spin text-white" />
+                          ) : (
+                            <>
+                              <Trophy className="h-4 w-4 text-white" />
+                              <span>Show Leaderboard Arena</span>
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={handleNextStep}
+                          disabled={isLoading || isShowingLeaderboard}
+                          className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#4F46E5] hover:opacity-95 text-white font-['Inter'] font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer select-none disabled:opacity-50"
+                        >
+                          {isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin text-white" />
+                          ) : (
+                            <>
+                              <span className="font-extrabold">{isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}</span>
+                              <ArrowRight className="h-4 w-4 text-white" />
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
 
-                {/* Host Control Actions if viewing as Host */}
-                {isHost && (
-                  <div className="flex flex-col sm:flex-row gap-4 pt-2 border-t border-slate-100">
-                    <button
-                      onClick={handleShowLeaderboard}
-                      disabled={isShowingLeaderboard || isLoading}
-                      className="flex-1 py-3 px-4 rounded-xl bg-[#6C38FF] hover:bg-[#5825E3] text-white font-['Inter'] font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer select-none disabled:opacity-50"
-                    >
-                      {isShowingLeaderboard ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-white" />
-                      ) : (
-                        <>
-                          <Trophy className="h-4 w-4 text-white" />
-                          <span>Show Leaderboard Arena</span>
-                        </>
-                      )}
-                    </button>
-                    <button
-                      onClick={handleNextStep}
-                      disabled={isLoading || isShowingLeaderboard}
-                      className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#4F46E5] hover:opacity-95 text-white font-['Inter'] font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer select-none disabled:opacity-50"
-                    >
-                      {isLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-white" />
-                      ) : (
-                        <>
-                          <span className="font-extrabold">{isLastQuestion ? 'Show Final Standings' : 'Next Question Directly'}</span>
-                          <ArrowRight className="h-4 w-4 text-white" />
-                        </>
-                      )}
-                    </button>
                   </div>
-                )}
-
-              </div>
 
               {/* Waiting For Host Synchronizer Notice Banner */}
-              <div className="w-full bg-[rgba(250,245,255,0.7)] border border-[rgba(243,232,255,0.9)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-3 flex items-center justify-center gap-2.5">
-                <Clock className="w-4 h-4 text-[#551BF5]/80 animate-spin shrink-0" />
-                <span className="font-['Inter'] font-medium text-[12px] leading-4 text-[#551BF5] text-center">
-                  Waiting for Host to trigger next question or end the session...
-                </span>
-              </div>
+                <div className="w-full bg-[rgba(250,245,255,0.7)] border border-[rgba(243,232,255,0.9)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-3 flex items-center justify-center gap-2.5">
+                  <Clock className="w-4 h-4 text-[#551BF5]/80 animate-spin shrink-0" />
+                  <span className="font-['Inter'] font-medium text-[12px] leading-4 text-[#551BF5] text-center">
+                    Waiting for Host to trigger next question or end the session...
+                  </span>
+                </div>
 
-            </div>
+              </div>
           )}
 
-        </main>
+            </main>
       </div>
     </AnimatedPage>
   );

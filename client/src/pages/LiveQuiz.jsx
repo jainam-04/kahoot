@@ -207,7 +207,7 @@ export default function LiveQuiz() {
     try {
       const u = JSON.parse(localStorage.getItem('user') || '{}');
       if (u.name || u.username) return (u.name || u.username).trim();
-    } catch (e) {}
+    } catch (e) { }
     if (localStorage.getItem('username')) return localStorage.getItem('username').trim();
     return '';
   };
@@ -239,17 +239,17 @@ export default function LiveQuiz() {
 
   useEffect(() => {
     const resolvePlayerName = () => {
-    if (playerName) return playerName.trim();
-    if (localStorage.getItem('guest_playerName')) return localStorage.getItem('guest_playerName').trim();
-    if (localStorage.getItem('player_name')) return localStorage.getItem('player_name').trim();
-    try {
-      const u = JSON.parse(localStorage.getItem('user') || '{}');
-      if (u.name || u.username) return (u.name || u.username).trim();
-    } catch (e) {}
-    if (localStorage.getItem('username')) return localStorage.getItem('username').trim();
-    return '';
-  };
-  const localPlayer = resolvePlayerName();
+      if (playerName) return playerName.trim();
+      if (localStorage.getItem('guest_playerName')) return localStorage.getItem('guest_playerName').trim();
+      if (localStorage.getItem('player_name')) return localStorage.getItem('player_name').trim();
+      try {
+        const u = JSON.parse(localStorage.getItem('user') || '{}');
+        if (u.name || u.username) return (u.name || u.username).trim();
+      } catch (e) { }
+      if (localStorage.getItem('username')) return localStorage.getItem('username').trim();
+      return '';
+    };
+    const localPlayer = resolvePlayerName();
     const hostToken = localStorage.getItem('token');
     const hostedPin = localStorage.getItem('current_hosted_pin');
     const isUserHost = !!hostToken && hostedPin === pin;
@@ -626,7 +626,7 @@ export default function LiveQuiz() {
 
   return (
     <AnimatedPage>
-            <div className="relative h-[100dvh] min-h-screen w-full flex flex-col justify-between gap-3 p-3 sm:p-6 bg-[#F8F5FF] transition-all duration-700 overflow-x-hidden overflow-y-auto select-none">
+      <div className="relative h-[100dvh] min-h-screen w-full flex flex-col justify-between gap-3 p-3 sm:p-6 bg-[#F8F5FF] transition-all duration-700 overflow-x-hidden overflow-y-auto select-none">
 
         {/* Customized Background Layer (if host uploaded one) or Default Brand Soft Purple */}
         {bgConfig.url ? (
