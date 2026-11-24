@@ -251,25 +251,30 @@ export default function Navbar() {
         <div className="flex items-center gap-1 sm:gap-3">
           {token ? (
             <>
-              {/* Profile Badge & Account Menu Dropdown */}
+              {/* Profile Badge & Account Menu Dropdown (Modern Gubbi Purple UI) */}
               <div className="relative" ref={profileDropdownRef}>
                 <button
                   type="button"
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="flex items-center gap-1.5 sm:gap-2 rounded-xl px-2 py-1 sm:px-2.5 sm:py-1.5 border transition-all cursor-pointer hover:border-primary/50 select-none active:scale-95"
+                  className="h-[36px] sm:h-[40px] pl-1.5 pr-2.5 sm:pl-2 sm:pr-3 rounded-full border transition-all cursor-pointer select-none active:scale-95 flex items-center gap-2 shadow-xs hover:shadow-sm"
                   style={{
-                    background: isLight ? 'rgba(224, 242, 254, 0.7)' : 'rgba(255,255,255,0.05)',
-                    borderColor: isLight ? 'rgba(186, 230, 253, 0.9)' : 'rgba(255,255,255,0.10)',
+                    background: isLight ? 'rgba(250, 245, 255, 0.95)' : 'rgba(255, 255, 255, 0.06)',
+                    borderColor: isLight ? 'rgba(233, 213, 255, 0.9)' : 'rgba(255, 255, 255, 0.12)',
                   }}
                   title="Host Profile & Settings"
                 >
-                  <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-[10px] shrink-0 border border-primary/30">
+                  {/* Modern Gradient Avatar with Initial */}
+                  <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-gradient-to-tr from-[#6C28FE] to-[#8B5CF6] text-white flex items-center justify-center font-['Inter'] font-extrabold text-[11px] sm:text-[12px] shrink-0 shadow-xs ring-1 ring-white/80">
                     {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                   </div>
-                  <span className="text-xs font-bold truncate max-w-[60px] sm:max-w-[120px]" style={{ color: 'var(--text-main)' }}>
+
+                  {/* Host Name - Responsive max width so full name fits without awkward truncation */}
+                  <span className="font-['Inter'] font-bold text-xs sm:text-[13px] leading-tight text-[#0F172A] dark:text-white truncate max-w-[100px] sm:max-w-[140px]">
                     {user?.name || 'Host'}
                   </span>
-                  <ChevronDown className={`h-3 w-3 text-muted transition-transform duration-200 ${profileDropdownOpen ? 'rotate-180 text-primary' : ''}`} />
+
+                  {/* Modern Purple Chevron */}
+                  <ChevronDown className={`h-3.5 w-3.5 text-[#6C28FE] shrink-0 transition-transform duration-200 ${profileDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Account Dropdown Menu */}
@@ -283,22 +288,24 @@ export default function Navbar() {
                       className={`absolute right-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] rounded-2xl shadow-2xl border p-2 z-50 text-left backdrop-blur-xl ${isLight ? 'bg-white/95 border-gray-200 text-gray-900' : 'bg-[#12121a]/95 border-white/10 text-white'
                         }`}
                     >
-                      {/* Host Account Summary Card */}
+                      {/* Host Account Summary Card (Gubbi Purple Styling) */}
                       <div
-                        className={`w-full text-left p-2.5 rounded-xl border mb-2 select-none ${isLight
-                          ? 'bg-sky-50/70 border-sky-100'
+                        className={`w-full text-left p-3 rounded-xl border mb-2 select-none ${isLight
+                          ? 'bg-gradient-to-br from-[#FAF8FF] to-[#F3E8FF]/60 border-[#E9D5FF]'
                           : 'bg-white/5 border-white/5'
                           }`}
                       >
-                        <div className="flex items-center gap-2.5 overflow-hidden">
-                          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-extrabold text-xs text-white shrink-0 shadow-sm">
+                        <div className="flex items-center gap-3 overflow-hidden">
+                          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-[#6C28FE] to-[#8B5CF6] flex items-center justify-center font-extrabold text-sm text-white shrink-0 shadow-sm ring-1 ring-white/80">
                             {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                           </div>
                           <div className="overflow-hidden min-w-0">
-                            <h4 className="font-outfit font-bold text-xs truncate text-foreground">{user?.name || 'Host Account'}</h4>
-                            <p className="text-[10px] text-muted truncate">{user?.email || 'Logged In Host'}</p>
-                            <span className="inline-block text-[9px] uppercase font-extrabold px-1.5 py-0.5 rounded bg-primary/15 text-primary mt-0.5">
-                              Quiz Moderator
+                            <h4 className="font-['Inter'] font-extrabold text-[13px] truncate text-[#0F172A] dark:text-white">
+                              {user?.name || 'Host Account'}
+                            </h4>
+                            <p className="text-[11px] font-medium text-[#64748B] truncate">{user?.email || 'Logged In Host'}</p>
+                            <span className="inline-block text-[9.5px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-[#EDE9FE] text-[#6C28FE] border border-[#DDD6FE] mt-1">
+                              Quiz Host
                             </span>
                           </div>
                         </div>
@@ -312,37 +319,37 @@ export default function Navbar() {
                             setProfileDropdownOpen(false);
                             setIsProfileModalOpen(true);
                           }}
-                          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer text-left ${isLight ? 'hover:bg-purple-50 text-purple-700' : 'hover:bg-purple-950/30 text-purple-300'
+                          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer text-left ${isLight ? 'hover:bg-[#F3E8FF] text-[#551BF5]' : 'hover:bg-purple-950/30 text-purple-300'
                             }`}
                         >
-                          <Edit3 className="h-3.5 w-3.5 text-primary" />
+                          <Edit3 className="h-3.5 w-3.5 text-[#6C28FE]" />
                           <span>Edit Host Profile</span>
                         </button>
                         <Link
                           to="/dashboard"
                           onClick={() => setProfileDropdownOpen(false)}
-                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${isLight ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/5 text-gray-300'
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${isLight ? 'hover:bg-slate-100 text-[#334155]' : 'hover:bg-white/5 text-gray-300'
                             }`}
                         >
-                          <LayoutDashboard className="h-3.5 w-3.5 text-primary" />
+                          <LayoutDashboard className="h-3.5 w-3.5 text-[#6C28FE]" />
                           <span>Dashboard Overview</span>
                         </Link>
                         <Link
                           to="/quiz/my"
                           onClick={() => setProfileDropdownOpen(false)}
-                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${isLight ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/5 text-gray-300'
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${isLight ? 'hover:bg-slate-100 text-[#334155]' : 'hover:bg-white/5 text-gray-300'
                             }`}
                         >
-                          <BookOpen className="h-3.5 w-3.5 text-secondary" />
+                          <BookOpen className="h-3.5 w-3.5 text-[#0284C7]" />
                           <span>My Quizzes</span>
                         </Link>
                         <Link
                           to="/quiz/create"
                           onClick={() => setProfileDropdownOpen(false)}
-                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${isLight ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/5 text-gray-300'
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${isLight ? 'hover:bg-slate-100 text-[#334155]' : 'hover:bg-white/5 text-gray-300'
                             }`}
                         >
-                          <PlusCircle className="h-3.5 w-3.5 text-accent" />
+                          <PlusCircle className="h-3.5 w-3.5 text-[#EC4899]" />
                           <span>Create New Quiz</span>
                         </Link>
                       </div>
@@ -456,52 +463,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Quick Sub-Navbar when Logged In */}
-      {token && (
-        <div
-          className="md:hidden border-t px-2 py-1.5 flex items-center justify-around gap-1 overflow-x-auto text-xs font-extrabold"
-          style={{
-            backgroundColor: isLight ? 'rgba(245, 243, 255, 0.95)' : 'rgba(15, 15, 25, 0.95)',
-            borderColor: isLight ? 'rgba(139, 92, 246, 0.12)' : 'rgba(255, 255, 255, 0.08)'
-          }}
-        >
-          <Link
-            to="/dashboard"
-            onClick={closeMobile}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${location.pathname === '/dashboard'
-              ? 'bg-primary text-white shadow-sm'
-              : isLight ? 'text-gray-700 hover:bg-purple-100/50' : 'text-gray-300 hover:bg-white/10'
-              }`}
-          >
-            <LayoutDashboard className="h-3.5 w-3.5" />
-            <span>Dashboard</span>
-          </Link>
 
-          <Link
-            to="/quiz/my"
-            onClick={closeMobile}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${location.pathname === '/quiz/my'
-              ? 'bg-secondary text-white shadow-sm'
-              : isLight ? 'text-gray-700 hover:bg-cyan-100/50' : 'text-gray-300 hover:bg-white/10'
-              }`}
-          >
-            <BookOpen className="h-3.5 w-3.5" />
-            <span>My Quizzes</span>
-          </Link>
-
-          <Link
-            to="/quiz/create"
-            onClick={closeMobile}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${location.pathname === '/quiz/create'
-              ? 'bg-accent text-white shadow-sm'
-              : isLight ? 'text-gray-700 hover:bg-pink-100/50' : 'text-gray-300 hover:bg-white/10'
-              }`}
-          >
-            <PlusCircle className="h-3.5 w-3.5" />
-            <span>Create Quiz</span>
-          </Link>
-        </div>
-      )}
 
       {/* Mobile Menu Dropdown (Only for public guests when logged out) */}
       {!token && mobileMenuOpen && (
