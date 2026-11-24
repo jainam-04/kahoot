@@ -563,9 +563,9 @@ export default function Reports() {
           </header>
 
           {/* ========================================================================= */}
-          {/* MAIN BODY CONTENT (Exact Figma spacing, max-width: 1280px) */}
+          {/* MAIN BODY CONTENT (Exact Figma spacing, max-width: 1340px) */}
           {/* ========================================================================= */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1280px] w-full mx-auto text-left">
+          <main className="flex-1 p-4 sm:p-6 lg:p-7 space-y-6 max-w-[1340px] w-full mx-auto text-left">
             
             {/* ── SECTION 1: HERO BANNER (Responsive on mobile) ── */}
             <section className="min-h-[110px] sm:min-h-[146px] p-4 sm:p-6 sm:px-8 rounded-[20px] sm:rounded-[24px] bg-gradient-to-r from-[#F2EDFF] via-[#F4EFFF] to-[#EDE5FF] border border-[#F3E8FF]/70 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 relative overflow-hidden">
@@ -804,32 +804,32 @@ export default function Reports() {
             </section>
 
             {/* ── SECTION 4: REPORTS TABLE (Desktop) & CARDS (Mobile) ── */}
-            <section className="rounded-[20px] sm:rounded-[24px] bg-white border border-[#F1F5F9] shadow-[0px_4px_20px_-2px_rgba(99,32,238,0.06),0px_2px_6px_-1px_rgba(0,0,0,0.03)] p-3 sm:p-7 flex flex-col gap-4">
+            <section className="rounded-[20px] sm:rounded-[24px] bg-white border border-[#F1F5F9] shadow-[0px_4px_20px_-2px_rgba(99,32,238,0.06),0px_2px_6px_-1px_rgba(0,0,0,0.03)] p-3 sm:p-5 lg:p-6 flex flex-col gap-4">
               
               {/* DESKTOP TABLE VIEW (Visible on tablet & desktop) */}
               <div className="hidden md:block w-full overflow-x-auto">
-                <table className="w-full min-w-[960px] text-left border-collapse">
+                <table className="w-full text-left border-collapse">
                   
                   {/* Table Header Row */}
                   <thead>
                     <tr className="border-b border-[#6C38FF] text-[#1E1B4B]">
-                      <th className="py-3.5 px-3 text-left font-bold text-sm w-[28%]">Quiz Title</th>
-                      <th className="py-3.5 px-3 text-center font-bold text-sm w-[13%]">Category</th>
-                      <th className="py-3.5 px-3 text-center font-bold text-sm w-[9%]">Questions</th>
-                      <th className="py-3.5 px-3 text-center font-bold text-sm w-[9%]">Sessions</th>
-                      <th className="py-3.5 px-3 text-center font-bold text-sm w-[11%]">Participants</th>
-                      <th className="py-3.5 px-3 text-center font-bold text-sm w-[10%]">Avg. Score</th>
+                      <th className="py-3 px-2 sm:px-3 text-left font-bold text-xs sm:text-sm w-[25%]">Quiz Title</th>
+                      <th className="py-3 px-2 sm:px-2.5 text-center font-bold text-xs sm:text-sm w-[12%]">Category</th>
+                      <th className="py-3 px-1.5 sm:px-2 text-center font-bold text-xs sm:text-sm w-[8%]">Questions</th>
+                      <th className="py-3 px-1.5 sm:px-2 text-center font-bold text-xs sm:text-sm w-[8%]">Sessions</th>
+                      <th className="py-3 px-1.5 sm:px-2 text-center font-bold text-xs sm:text-sm w-[10%]">Participants</th>
+                      <th className="py-3 px-1.5 sm:px-2 text-center font-bold text-xs sm:text-sm w-[9%]">Avg. Score</th>
                       <th 
-                        className="py-3.5 px-3 text-center font-bold text-sm w-[10%] cursor-pointer hover:text-[#6C38FF] transition-colors select-none"
+                        className="py-3 px-2 sm:px-2.5 text-center font-bold text-xs sm:text-sm w-[11%] cursor-pointer hover:text-[#6C38FF] transition-colors select-none"
                         onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
                         title="Click to reverse date sort"
                       >
-                        <span className="inline-flex items-center gap-1 justify-center">
+                        <span className="inline-flex items-center gap-1 justify-center whitespace-nowrap">
                           <span>Date</span>
                           <span>{sortOrder === 'desc' ? '↓' : '↑'}</span>
                         </span>
                       </th>
-                      <th className="py-3.5 px-3 text-right font-bold text-sm w-[10%] pr-4">Report</th>
+                      <th className="py-3 px-2 sm:px-3 text-right font-bold text-xs sm:text-sm w-[17%] whitespace-nowrap pr-2 sm:pr-3">Report</th>
                     </tr>
                   </thead>
 
@@ -850,42 +850,42 @@ export default function Reports() {
                           className="hover:bg-[#FAF9FD]/70 transition-colors group"
                         >
                           {/* Quiz Title & Icon */}
-                          <td className="py-4 px-3 align-middle">
-                            <div className="flex items-center gap-3.5">
-                              <div className="w-10 h-10 rounded-2xl bg-[#FAF5FF] flex items-center justify-center shrink-0 border border-[#F3E8FF]/60 shadow-2xs">
+                          <td className="py-3.5 px-2 sm:px-3 align-middle">
+                            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#FAF5FF] flex items-center justify-center shrink-0 border border-[#F3E8FF]/60 shadow-2xs">
                                 {renderRowIcon(report.iconType)}
                               </div>
-                              <span className="font-bold text-sm text-[#1E1B4B] leading-snug line-clamp-2 max-w-[240px]">
+                              <span className="font-bold text-xs sm:text-sm text-[#1E1B4B] leading-snug line-clamp-2 max-w-[200px] xl:max-w-[260px]">
                                 {report.title}
                               </span>
                             </div>
                           </td>
 
                           {/* Category Badge */}
-                          <td className="py-4 px-3 text-center align-middle">
-                            <span className={`inline-flex items-center justify-center px-3.5 py-1 rounded-full text-xs font-semibold ${getCategoryBadgeClass(report.category)}`}>
+                          <td className="py-3.5 px-2 sm:px-2.5 text-center align-middle">
+                            <span className={`inline-flex items-center justify-center px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap ${getCategoryBadgeClass(report.category)}`}>
                               {report.category}
                             </span>
                           </td>
 
                           {/* Questions Count */}
-                          <td className="py-4 px-3 text-center align-middle text-sm font-medium text-[#334155]">
+                          <td className="py-3.5 px-1.5 sm:px-2 text-center align-middle text-xs sm:text-sm font-medium text-[#334155]">
                             {report.questionsCount}
                           </td>
 
                           {/* Sessions Count */}
-                          <td className="py-4 px-3 text-center align-middle text-sm font-medium text-[#334155]">
+                          <td className="py-3.5 px-1.5 sm:px-2 text-center align-middle text-xs sm:text-sm font-medium text-[#334155]">
                             {report.sessionsCount}
                           </td>
 
                           {/* Participants Count */}
-                          <td className="py-4 px-3 text-center align-middle text-sm font-medium text-[#334155]">
+                          <td className="py-3.5 px-1.5 sm:px-2 text-center align-middle text-xs sm:text-sm font-medium text-[#334155]">
                             {report.participantsCount}
                           </td>
 
                           {/* Avg. Score Pill */}
-                          <td className="py-4 px-3 text-center align-middle">
-                            <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold ${
+                          <td className="py-3.5 px-1.5 sm:px-2 text-center align-middle">
+                            <span className={`inline-flex items-center justify-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-bold whitespace-nowrap ${
                               report.avgScore >= 75
                                 ? 'bg-[#ECFDF5] text-[#059669]'
                                 : 'bg-[#FFFBEB] text-[#D97706]'
@@ -895,18 +895,18 @@ export default function Reports() {
                           </td>
 
                           {/* Date */}
-                          <td className="py-4 px-3 text-center align-middle text-sm font-medium text-[#475569]">
+                          <td className="py-3.5 px-2 sm:px-2.5 text-center align-middle text-xs sm:text-sm font-medium text-[#475569] whitespace-nowrap">
                             {formatDate(report.date)}
                           </td>
 
                           {/* Report Button */}
-                          <td className="py-4 px-3 text-right align-middle pr-4">
+                          <td className="py-3.5 px-2 sm:px-3 text-right align-middle pr-2 sm:pr-3">
                             <button
                               type="button"
                               onClick={() => handleViewReport(report)}
-                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FAF5FF] hover:bg-[#F3E8FF] border border-[#EDE9FE] text-[#6320EE] text-xs font-bold transition-all shadow-2xs cursor-pointer ml-auto active:scale-95"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FAF5FF] hover:bg-[#F3E8FF] border border-[#EDE9FE] text-[#6320EE] text-xs font-bold transition-all shadow-2xs cursor-pointer ml-auto active:scale-95 whitespace-nowrap shrink-0"
                             >
-                              <BarChart2 className="w-3.5 h-3.5 text-[#6320EE]" />
+                              <BarChart2 className="w-3.5 h-3.5 text-[#6320EE] shrink-0" />
                               <span>
                                 {report.sessionsCount > 1 
                                   ? `View Reports (${report.sessionsCount})` 
