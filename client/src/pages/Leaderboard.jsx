@@ -252,7 +252,7 @@ export default function Leaderboard() {
             {/* Back to Standings button (keeps flow seamless) */}
             <button
               type="button"
-              onClick={() => navigate(`/result/answer/${pin}`)}
+              onClick={() => navigate(`/result/answer/${pin}`, { state: { defaultTab: 'standings' } })}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer active:scale-95 border ${
                 isLight
                   ? 'bg-white hover:bg-purple-50 text-[#551BF5] border-purple-200 shadow-2xs'
@@ -468,7 +468,7 @@ export default function Leaderboard() {
               <div className="pt-2">
                 <button
                   type="button"
-                  onClick={() => navigate(`/result/answer/${pin}`)}
+                  onClick={() => navigate(`/result/answer/${pin}`, { state: { defaultTab: 'standings' } })}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#FAF5FF] hover:bg-[#F3E8FF] border border-[#EDE9FE] text-[#6320EE] transition-all active:scale-95 cursor-pointer shadow-2xs"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />

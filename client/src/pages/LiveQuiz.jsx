@@ -429,7 +429,8 @@ export default function LiveQuiz() {
             questionData: qData,
             answerStats: data.answerStats,
             leaderboard: data.leaderboard,
-            isLastQuestion: data.isLastQuestion
+            isLastQuestion: data.isLastQuestion,
+            defaultTab: 'my-result'
           }
         });
       }, 500);

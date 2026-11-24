@@ -157,11 +157,12 @@ export default function AnswerResult() {
     localStorage.getItem('username') ||
     '';
   const optionLetters = ['A', 'B', 'C', 'D'];
-
-  // Active navigation tab: 'my-result' or 'standings'
-  const [activeTab, setActiveTab] = useState('standings');
-
   const location = useLocation();
+
+  // Active navigation tab: 'my-result' (default for player feedback) or 'standings'
+  const [activeTab, setActiveTab] = useState(() => {
+    return location.state?.defaultTab || 'my-result';
+  });
 
   // Retrieved stats from local storage, location.state & live state
   const [isHost, setIsHost] = useState(() => {
@@ -1243,21 +1244,21 @@ export default function AnswerResult() {
         {/* ========================================================================= */}
         {/* MAIN STAGE: Segmented Controller + Grand Container Card                   */}
         {/* ========================================================================= */}
-        <main className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 pt-6 pb-12 w-full max-w-[1351px] mx-auto">
+        <main className="relative z-10 flex-1 flex flex-col items-center justify-start px-3 sm:px-4 pt-3 sm:pt-6 pb-8 sm:pb-12 w-full max-w-[1351px] mx-auto">
 
           {/* Section - Segmented Navigation Controller (830px Figma 1:1) */}
-          <div className="w-full max-w-[830px] mb-6">
-            <div className="w-full h-[58px] p-[6px] bg-white/70 border border-white/60 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] backdrop-blur-[12px] rounded-[22px] flex items-center gap-2 drop-shadow-[0px_2px_15px_rgba(0,0,0,0.06)]">
+          <div className="w-full max-w-[830px] mb-3.5 sm:mb-6">
+            <div className="w-full h-[48px] sm:h-[58px] p-1 sm:p-[6px] bg-white/70 border border-white/60 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] backdrop-blur-[12px] rounded-[18px] sm:rounded-[22px] flex items-center gap-1.5 sm:gap-2 drop-shadow-[0px_2px_15px_rgba(0,0,0,0.06)]">
               {/* Tab 1: My Result */}
               <button
                 type="button"
                 onClick={() => setActiveTab('my-result')}
-                className={`flex-1 h-[46px] rounded-[18px] flex items-center justify-center gap-2 text-[12px] font-['Inter'] font-bold transition-all duration-200 cursor-pointer select-none ${activeTab === 'my-result'
+                className={`flex-1 h-[38px] sm:h-[46px] rounded-[14px] sm:rounded-[18px] flex items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-[12px] font-['Inter'] font-bold transition-all duration-200 cursor-pointer select-none ${activeTab === 'my-result'
                   ? 'bg-gradient-to-r from-[#2563EB] to-[#4F46E5] text-white shadow-[0px_4px_14px_rgba(79,70,229,0.25)]'
                   : 'text-[#64748B] hover:text-[#334155] bg-transparent'
                   }`}
               >
-                <BarChart2 className={`w-4 h-4 ${activeTab === 'my-result' ? 'text-white' : 'text-[#64748B]'}`} />
+                <BarChart2 className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${activeTab === 'my-result' ? 'text-white' : 'text-[#64748B]'}`} />
                 <span>{isHost ? 'Answer Breakdown' : 'My Result'}</span>
               </button>
 
@@ -1265,12 +1266,12 @@ export default function AnswerResult() {
               <button
                 type="button"
                 onClick={() => setActiveTab('standings')}
-                className={`flex-1 h-[46px] rounded-[18px] flex items-center justify-center gap-2 text-[12px] font-['Inter'] font-bold transition-all duration-200 cursor-pointer select-none ${activeTab === 'standings'
+                className={`flex-1 h-[38px] sm:h-[46px] rounded-[14px] sm:rounded-[18px] flex items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-[12px] font-['Inter'] font-bold transition-all duration-200 cursor-pointer select-none ${activeTab === 'standings'
                   ? 'bg-gradient-to-r from-[#2563EB] to-[#4F46E5] text-white shadow-[0px_4px_14px_rgba(79,70,229,0.25)]'
                   : 'text-[#64748B] hover:text-[#334155] bg-transparent'
                   }`}
               >
-                <Trophy className={`w-4 h-4 ${activeTab === 'standings' ? 'text-white' : 'text-[#64748B]'}`} />
+                <Trophy className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${activeTab === 'standings' ? 'text-white' : 'text-[#64748B]'}`} />
                 <span>Lobby Standings</span>
               </button>
             </div>
@@ -1280,7 +1281,7 @@ export default function AnswerResult() {
             /* ======================================================================= */
             /* VIEW A: MY RESULT CONTENT CARD (953px)                                   */
             /* ======================================================================= */
-            <div className="relative w-full max-w-[953px] bg-white border border-[#F3E8FF]/60 shadow-[0px_20px_25px_-5px_rgba(59,7,100,0.05),0px_8px_10px_-6px_rgba(59,7,100,0.05)] backdrop-blur-[4px] rounded-[32px] px-6 sm:px-10 py-7 sm:py-10 transition-all duration-300 overflow-hidden isolate">
+            <div className="relative w-full max-w-[953px] bg-white border border-[#F3E8FF]/60 shadow-[0px_20px_25px_-5px_rgba(59,7,100,0.05),0px_8px_10px_-6px_rgba(59,7,100,0.05)] backdrop-blur-[4px] rounded-[24px] sm:rounded-[32px] px-3.5 sm:px-10 py-5 sm:py-10 transition-all duration-300 overflow-hidden isolate">
 
               {/* Corner gradient blobs */}
               <div className="absolute w-[224px] h-[224px] -right-[63px] -top-[63px] bg-[rgba(255,228,230,0.4)] blur-[64px] rounded-full pointer-events-none z-0" />
@@ -1364,7 +1365,7 @@ export default function AnswerResult() {
                 <div className="relative z-10 flex flex-col items-center text-center">
 
                   {/* Feedback Badge */}
-                  <div className="relative w-[112px] h-[112px] flex items-center justify-center mb-4 isolate">
+                  <div className="relative w-[84px] h-[84px] sm:w-[112px] sm:h-[112px] flex items-center justify-center mb-3 sm:mb-4 isolate">
                     {!isCorrect && !isUnanswered && (
                       <>
                         <div className="absolute w-[6px] h-[12px] -left-[15px] -top-[12.5px] bg-[#F87171] rounded-full -rotate-[40deg] pointer-events-none z-0" />
@@ -1385,31 +1386,31 @@ export default function AnswerResult() {
                       </>
                     )}
 
-                    <div className={`w-[112px] h-[112px] rounded-full flex items-center justify-center transition-all ${isUnanswered
-                      ? 'bg-[rgba(255,237,213,0.7)] shadow-[0px_0px_45px_8px_rgba(249,115,22,0.22)]'
+                    <div className={`w-[84px] h-[84px] sm:w-[112px] sm:h-[112px] rounded-full flex items-center justify-center transition-all ${isUnanswered
+                      ? 'bg-[rgba(255,237,213,0.7)] shadow-[0px_0px_35px_6px_rgba(249,115,22,0.22)]'
                       : isCorrect
-                        ? 'bg-[rgba(209,250,229,0.7)] shadow-[0px_0px_45px_8px_rgba(34,197,94,0.22)]'
-                        : 'bg-[rgba(254,226,226,0.7)] shadow-[0px_0px_45px_8px_rgba(239,68,68,0.22)]'
+                        ? 'bg-[rgba(209,250,229,0.7)] shadow-[0px_0px_35px_6px_rgba(34,197,94,0.22)]'
+                        : 'bg-[rgba(254,226,226,0.7)] shadow-[0px_0px_35px_6px_rgba(239,68,68,0.22)]'
                       }`}>
-                      <div className={`w-[92px] h-[92px] rounded-full flex items-center justify-center border-[4px] border-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)] transition-all ${isUnanswered
+                      <div className={`w-[68px] h-[68px] sm:w-[92px] sm:h-[92px] rounded-full flex items-center justify-center border-[3px] sm:border-[4px] border-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1),0px_2px_4px_-2px_rgba(0,0,0,0.1)] transition-all ${isUnanswered
                         ? 'bg-[#F97316]'
                         : isCorrect
                           ? 'bg-gradient-to-b from-[#22C55E] to-[#10B981]'
                           : 'bg-[#EF4444]'
                         }`}>
                         {isUnanswered ? (
-                          <AlertCircle className="w-10 h-10 text-white stroke-[3.5]" />
+                          <AlertCircle className="w-7 h-7 sm:w-10 sm:h-10 text-white stroke-[3.5]" />
                         ) : isCorrect ? (
-                          <Check className="w-10 h-10 text-white stroke-[3.5]" />
+                          <Check className="w-7 h-7 sm:w-10 sm:h-10 text-white stroke-[3.5]" />
                         ) : (
-                          <X className="w-10 h-10 text-white stroke-[3.5]" />
+                          <X className="w-7 h-7 sm:w-10 sm:h-10 text-white stroke-[3.5]" />
                         )}
                       </div>
                     </div>
                   </div>
 
                   {/* Heading 1 */}
-                  <h2 className="font-['Inter'] font-extrabold text-[36px] leading-[40px] tracking-[-0.9px] text-center mt-2">
+                  <h2 className="font-['Inter'] font-extrabold text-[22px] sm:text-[36px] leading-[26px] sm:leading-[40px] tracking-[-0.6px] sm:tracking-[-0.9px] text-center mt-1 sm:mt-2">
                     {isUnanswered ? (
                       <>
                         <span className="text-[#EA580C]">Answer Not</span> <span className="text-[#0F172A]">Submitted</span>
@@ -1423,7 +1424,7 @@ export default function AnswerResult() {
                     )}
                   </h2>
 
-                  <p className="font-['Inter'] font-medium text-[16px] leading-[24px] text-[#64748B] text-center mt-1.5">
+                  <p className="font-['Inter'] font-medium text-[13px] sm:text-[16px] leading-[18px] sm:leading-[24px] text-[#64748B] text-center mt-1 sm:mt-1.5">
                     {isUnanswered
                       ? 'No answer was recorded before the timer ended.'
                       : isCorrect
@@ -1433,88 +1434,88 @@ export default function AnswerResult() {
 
                   {/* The Correct Answer Revealed Banner */}
                   {(!isCorrect || isUnanswered) && (
-                    <div className="w-full max-w-[871px] min-h-[55px] bg-[rgba(255,241,242,0.7)] border border-[rgba(254,205,211,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-3 flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-5">
-                      <span className="font-['Inter'] font-bold text-[14px] leading-[20px] tracking-[0.7px] uppercase text-[#64748B]">
+                    <div className="w-full max-w-[871px] bg-[rgba(255,241,242,0.7)] border border-[rgba(254,205,211,0.8)] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] sm:rounded-[16px] px-3 sm:px-5 py-2 sm:py-3 flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-3 sm:mt-5 text-center">
+                      <span className="font-['Inter'] font-bold text-[11px] sm:text-[14px] leading-tight tracking-[0.6px] uppercase text-[#64748B]">
                         THE CORRECT ANSWER IS
                       </span>
 
-                      <div className="h-[32px] px-4 py-1.5 bg-[#EF4444] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-full flex items-center gap-1.5 shrink-0">
+                      <div className="h-[26px] sm:h-[32px] px-2.5 sm:px-4 py-1 sm:py-1.5 bg-[#EF4444] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-full flex items-center gap-1.5 shrink-0">
                         <div className="w-1.5 h-1.5 bg-white rounded-[1px] rotate-45 shrink-0" />
-                        <span className="font-['Inter'] font-bold text-[14px] leading-[20px] text-white">
+                        <span className="font-['Inter'] font-bold text-[12px] sm:text-[14px] text-white">
                           Option {optionLetters[correctAnswerIdx] || 'A'}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="font-['Inter'] font-extrabold text-[18px] leading-[28px] text-[#FB7185]">
+                        <span className="font-['Inter'] font-extrabold text-[15px] sm:text-[18px] text-[#FB7185]">
                           :
                         </span>
-                        <span className="font-['Inter'] font-bold text-[16px] leading-[24px] text-[#0F172A] break-words">
+                        <span className="font-['Inter'] font-bold text-[13px] sm:text-[16px] text-[#0F172A] break-words">
                           {resolvedCorrectAnswerText}
                         </span>
                       </div>
                     </div>
                   )}
 
-                  {/* Performance Metrics */}
-                  <div className="w-full max-w-[871px] grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mt-6">
-                    <div className="relative bg-[#F6F4FE] border border-[#E9E4FC] rounded-[24px] p-5 sm:p-6 flex flex-col items-center justify-center shadow-[0px_8px_24px_-4px_rgba(79,70,229,0.05)]">
-                      <div className="w-12 h-12 rounded-full bg-[#E8E2FD] flex items-center justify-center mb-3">
-                        <Clock className="w-6 h-6 text-[#6C47FF] stroke-[2.2]" />
+                  {/* Performance Metrics - Compact Horizontal Row on Mobile */}
+                  <div className="w-full max-w-[871px] grid grid-cols-3 gap-1.5 xs:gap-2.5 sm:gap-5 mt-4 sm:mt-6">
+                    <div className="relative bg-[#F6F4FE] border border-[#E9E4FC] rounded-[16px] sm:rounded-[24px] p-2 xs:p-2.5 sm:p-6 flex flex-col items-center justify-center shadow-[0px_8px_24px_-4px_rgba(79,70,229,0.05)]">
+                      <div className="w-7 h-7 sm:w-12 sm:h-12 rounded-full bg-[#E8E2FD] flex items-center justify-center mb-1.5 sm:mb-3">
+                        <Clock className="w-3.5 h-3.5 sm:w-6 sm:h-6 text-[#6C47FF] stroke-[2.2]" />
                       </div>
-                      <span className="font-['Inter'] font-bold text-[12px] leading-[18px] tracking-[0.6px] text-[#5B557A] uppercase text-center mb-1">
+                      <span className="font-['Inter'] font-bold text-[9px] xs:text-[10px] sm:text-[12px] leading-tight tracking-[0.4px] sm:tracking-[0.6px] text-[#5B557A] uppercase text-center mb-1">
                         SOLVE TIME
                       </span>
-                      <span className="font-['Inter'] font-extrabold text-[34px] leading-[36px] tracking-[-0.85px] text-[#6C47FF] text-center">
+                      <span className="font-['Inter'] font-extrabold text-[14px] xs:text-[17px] sm:text-[34px] leading-tight tracking-[-0.5px] sm:tracking-[-0.85px] text-[#6C47FF] text-center">
                         {timeTaken}s
                       </span>
                     </div>
 
-                    <div className="relative bg-[#EDFBF4] border border-[#D5F5E4] rounded-[24px] p-5 sm:p-6 flex flex-col items-center justify-center shadow-[0px_8px_24px_-4px_rgba(79,70,229,0.05)]">
-                      <div className="w-12 h-12 rounded-full bg-[#D4F7E4] flex items-center justify-center mb-3">
-                        <Star className="w-6 h-6 text-[#059669] fill-[#059669]" />
+                    <div className="relative bg-[#EDFBF4] border border-[#D5F5E4] rounded-[16px] sm:rounded-[24px] p-2 xs:p-2.5 sm:p-6 flex flex-col items-center justify-center shadow-[0px_8px_24px_-4px_rgba(79,70,229,0.05)]">
+                      <div className="w-7 h-7 sm:w-12 sm:h-12 rounded-full bg-[#D4F7E4] flex items-center justify-center mb-1.5 sm:mb-3">
+                        <Star className="w-3.5 h-3.5 sm:w-6 sm:h-6 text-[#059669] fill-[#059669]" />
                       </div>
-                      <span className="font-['Inter'] font-bold text-[12px] leading-[18px] tracking-[0.6px] text-[#356B52] uppercase text-center mb-1">
-                        POINTS RECEIVED
+                      <span className="font-['Inter'] font-bold text-[9px] xs:text-[10px] sm:text-[12px] leading-tight tracking-[0.4px] sm:tracking-[0.6px] text-[#356B52] uppercase text-center mb-1">
+                        POINTS
                       </span>
-                      <span className="font-['Inter'] font-extrabold text-[34px] leading-[36px] tracking-[-0.85px] text-[#059669] text-center">
+                      <span className="font-['Inter'] font-extrabold text-[14px] xs:text-[17px] sm:text-[34px] leading-tight tracking-[-0.5px] sm:tracking-[-0.85px] text-[#059669] text-center">
                         {isUnanswered ? '+0' : isCorrect ? `+${pointsEarned}` : '+0'}
                       </span>
                     </div>
 
-                    <div className="relative bg-[#F0F7FF] border border-[#DDECFC] rounded-[24px] p-5 sm:p-6 flex flex-col items-center justify-center shadow-[0px_8px_24px_-4px_rgba(79,70,229,0.05)]">
-                      <div className="w-12 h-12 rounded-full bg-[#DCECFD] flex items-center justify-center mb-3">
-                        <Trophy className="w-6 h-6 text-[#0284C7] stroke-[2]" />
+                    <div className="relative bg-[#F0F7FF] border border-[#DDECFC] rounded-[16px] sm:rounded-[24px] p-2 xs:p-2.5 sm:p-6 flex flex-col items-center justify-center shadow-[0px_8px_24px_-4px_rgba(79,70,229,0.05)]">
+                      <div className="w-7 h-7 sm:w-12 sm:h-12 rounded-full bg-[#DCECFD] flex items-center justify-center mb-1.5 sm:mb-3">
+                        <Trophy className="w-3.5 h-3.5 sm:w-6 sm:h-6 text-[#0284C7] stroke-[2]" />
                       </div>
-                      <span className="font-['Inter'] font-bold text-[12px] leading-[18px] tracking-[0.6px] text-[#47607B] uppercase text-center mb-1">
+                      <span className="font-['Inter'] font-bold text-[9px] xs:text-[10px] sm:text-[12px] leading-tight tracking-[0.4px] sm:tracking-[0.6px] text-[#47607B] uppercase text-center mb-1">
                         TOTAL SCORE
                       </span>
-                      <span className="font-['Inter'] font-extrabold text-[34px] leading-[36px] tracking-[-0.85px] text-[#0284FE] text-center">
-                        {(myScore !== undefined && myScore !== null ? myScore : (currentScore || 0)).toLocaleString()} pts
+                      <span className="font-['Inter'] font-extrabold text-[13px] xs:text-[15px] sm:text-[34px] leading-tight tracking-[-0.5px] sm:tracking-[-0.85px] text-[#0284FE] text-center break-all sm:break-normal">
+                        {(myScore !== undefined && myScore !== null ? myScore : (currentScore || 0)).toLocaleString()} <span className="text-[10px] sm:text-[16px] font-bold">pts</span>
                       </span>
                     </div>
                   </div>
 
                   {/* Status Indicator Banners */}
-                  <div className="w-full max-w-[871px] flex flex-col gap-3 mt-6">
-                    <div className="w-full min-h-[45px] bg-[#F3F1FD] border border-[#E7E2FA] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[16px] px-5 py-2.5 flex items-center justify-center gap-3.5">
-                      <div className="w-8 h-8 rounded-full bg-[#6C47FF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center text-white shrink-0">
-                        <BarChart2 className="w-4 h-4 text-white" />
+                  <div className="w-full max-w-[871px] flex flex-col gap-2 sm:gap-3 mt-4 sm:mt-6">
+                    <div className="w-full min-h-[40px] sm:min-h-[45px] bg-[#F3F1FD] border border-[#E7E2FA] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] sm:rounded-[16px] px-3.5 sm:px-5 py-2 sm:py-2.5 flex items-center justify-center gap-2.5 sm:gap-3.5">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#6C47FF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center text-white shrink-0">
+                        <BarChart2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                       </div>
-                      <div className="flex flex-wrap items-center justify-center gap-2 text-center">
-                        <span className="font-['Inter'] font-medium text-[16px] leading-[24px] text-[#334155]">
-                          Lobby rank: <strong className="font-bold text-[18px] text-[#6C47FF]">#{myRank}</strong>
+                      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-center">
+                        <span className="font-['Inter'] font-medium text-[12px] sm:text-[16px] leading-tight text-[#334155]">
+                          Lobby rank: <strong className="font-bold text-[13px] sm:text-[18px] text-[#6C47FF]">#{myRank}</strong>
                         </span>
-                        <span className="font-bold text-[16px] text-[#94A3B8]">•</span>
-                        <span className="font-['Inter'] font-medium text-[16px] leading-[24px] text-[#334155]">
-                          Total score: <strong className="font-bold text-[18px] text-[#6C47FF]">{(myScore !== undefined && myScore !== null ? myScore : (currentScore || 0)).toLocaleString()} pts</strong>
+                        <span className="font-bold text-[12px] sm:text-[16px] text-[#94A3B8]">•</span>
+                        <span className="font-['Inter'] font-medium text-[12px] sm:text-[16px] leading-tight text-[#334155]">
+                          Total score: <strong className="font-bold text-[13px] sm:text-[18px] text-[#6C47FF]">{(myScore !== undefined && myScore !== null ? myScore : (currentScore || 0)).toLocaleString()} pts</strong>
                         </span>
                       </div>
                     </div>
 
-                    <div className="w-full min-h-[46px] bg-[#F7F5FE] border border-[#ECE7FC] rounded-[16px] px-5 py-2.5 flex items-center justify-center gap-2.5">
-                      <Hourglass className="w-4 h-4 text-[#6C47FF] animate-spin shrink-0" />
-                      <span className="font-['Inter'] font-semibold text-[14px] leading-[20px] text-[#6C47FF] text-center">
+                    <div className="w-full min-h-[38px] sm:min-h-[46px] bg-[#F7F5FE] border border-[#ECE7FC] rounded-[12px] sm:rounded-[16px] px-3.5 sm:px-5 py-2 sm:py-2.5 flex items-center justify-center gap-2 sm:gap-2.5">
+                      <Hourglass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#6C47FF] animate-spin shrink-0" />
+                      <span className="font-['Inter'] font-semibold text-[12px] sm:text-[14px] leading-tight text-[#6C47FF] text-center">
                         Waiting for Host to trigger next action...
                       </span>
                     </div>
