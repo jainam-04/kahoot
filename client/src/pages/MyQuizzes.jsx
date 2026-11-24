@@ -838,50 +838,52 @@ export default function MyQuizzes() {
                         </div>
 
                         {/* Bottom Actions Row */}
-                        <div className="w-full md:w-auto flex items-center justify-end gap-2.5 pt-3.5 border-t border-slate-100/90 md:border-0 md:pt-0 shrink-0">
-                          {/* If Published: Edit icon + "▶ Host Room" */}
+                        <div className="w-full md:w-auto flex items-center justify-between sm:justify-end gap-2 pt-3 border-t border-slate-100/90 md:border-0 md:pt-0 shrink-0">
+                          {/* If Published: Edit icon on left + Reports & Host on right */}
                           {!isDraft ? (
                             <>
                               <button
                                 type="button"
                                 onClick={() => navigate(`/quiz/edit/${quiz._id}`)}
-                                className="w-[38px] h-[38px] rounded-xl border border-[#E6E4EE] bg-white flex items-center justify-center text-[#4B5563] hover:text-[#6222F5] hover:bg-slate-50 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors cursor-pointer shrink-0"
+                                className="w-[36px] h-[36px] sm:w-[38px] sm:h-[38px] rounded-xl border border-[#E6E4EE] bg-white flex items-center justify-center text-[#4B5563] hover:text-[#6222F5] hover:bg-purple-50 hover:border-purple-200 shadow-2xs transition-all active:scale-95 cursor-pointer shrink-0"
                                 title="Edit Quiz"
                               >
-                                <Pencil className="w-4 h-4" />
+                                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                               </button>
 
-                              {quizSessions.length > 0 && (
+                              <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+                                {quizSessions.length > 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedQuizForReports({ title: quiz.title, _id: quiz._id, sessions: quizSessions });
+                                      setIsReportsModalOpen(true);
+                                    }}
+                                    className="h-[36px] sm:h-[40px] px-2.5 sm:px-4 rounded-xl bg-[#FAF5FF] hover:bg-[#F3E8FF] border border-[#EDE9FE] text-[#6320EE] font-bold text-[11px] sm:text-[13px] shadow-2xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
+                                    title="View Battle Reports"
+                                  >
+                                    <BarChart2 className="w-3.5 h-3.5 text-[#6320EE]" />
+                                    <span>REPORTS ({quizSessions.length})</span>
+                                  </button>
+                                )}
+
                                 <button
                                   type="button"
-                                  onClick={() => {
-                                    setSelectedQuizForReports({ title: quiz.title, _id: quiz._id, sessions: quizSessions });
-                                    setIsReportsModalOpen(true);
-                                  }}
-                                  className="h-[40px] px-3.5 sm:px-4 rounded-xl bg-[#FAF5FF] hover:bg-[#F3E8FF] border border-[#EDE9FE] text-[#6320EE] font-bold text-xs sm:text-[13px] shadow-2xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
-                                  title="View Battle Reports"
+                                  onClick={() => handleHostGame(quiz)}
+                                  className="h-[36px] sm:h-[40px] px-3.5 sm:px-5 rounded-xl bg-[#6222F5] hover:bg-[#5015E0] text-white font-bold text-xs sm:text-[14px] shadow-[0px_4px_6px_-1px_rgba(98,34,245,0.25),0px_2px_4px_-2px_rgba(98,34,245,0.25)] flex items-center justify-center gap-1.5 sm:gap-2 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
                                 >
-                                  <BarChart2 className="w-3.5 h-3.5 text-[#6320EE]" />
-                                  <span>REPORTS ({quizSessions.length})</span>
+                                  <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-white" />
+                                  <span>Host Room</span>
                                 </button>
-                              )}
-
-                              <button
-                                type="button"
-                                onClick={() => handleHostGame(quiz)}
-                                className="h-[40px] px-5 rounded-xl bg-[#6222F5] hover:bg-[#5015E0] text-white font-bold text-[14px] shadow-[0px_4px_6px_-1px_rgba(98,34,245,0.25),0px_2px_4px_-2px_rgba(98,34,245,0.25)] flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
-                              >
-                                <Play className="w-3.5 h-3.5 fill-white" />
-                                <span>Host Room</span>
-                              </button>
+                              </div>
                             </>
                           ) : (
                             /* If Draft: "Publish" pill + "✏️ Edit Quiz" */
-                            <>
+                            <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
                               <button
                                 type="button"
                                 onClick={() => handlePublish(quiz)}
-                                className="h-[38px] px-5 rounded-full border border-[#E6E4EE] bg-white hover:bg-purple-50 hover:border-purple-300 text-[#374151] hover:text-[#6222F5] font-bold text-[14px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all cursor-pointer whitespace-nowrap"
+                                className="h-[36px] sm:h-[38px] px-4 sm:px-5 rounded-full border border-[#E6E4EE] bg-white hover:bg-purple-50 hover:border-purple-300 text-[#374151] hover:text-[#6222F5] font-bold text-xs sm:text-[14px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all cursor-pointer whitespace-nowrap flex-1 sm:flex-initial"
                               >
                                 Publish
                               </button>
@@ -889,12 +891,12 @@ export default function MyQuizzes() {
                               <button
                                 type="button"
                                 onClick={() => navigate(`/quiz/edit/${quiz._id}`)}
-                                className="h-[40px] px-5 rounded-xl bg-[#F3EFFF] hover:bg-[#EAE4FF] border border-[#E5DBFD] text-[#6222F5] font-bold text-[14px] flex items-center justify-center gap-2 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all active:scale-95 cursor-pointer whitespace-nowrap"
+                                className="h-[36px] sm:h-[40px] px-4 sm:px-5 rounded-xl bg-[#F3EFFF] hover:bg-[#EAE4FF] border border-[#E5DBFD] text-[#6222F5] font-bold text-xs sm:text-[14px] flex items-center justify-center gap-1.5 sm:gap-2 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all active:scale-95 cursor-pointer whitespace-nowrap flex-1 sm:flex-initial"
                               >
-                                <Pencil className="w-4 h-4" />
+                                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                 <span>Edit Quiz</span>
                               </button>
-                            </>
+                            </div>
                           )}
                         </div>
 
