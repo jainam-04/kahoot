@@ -1574,7 +1574,11 @@ export default function AnswerResult() {
                             idx === 0 ? 'bg-[#FBBF24]' : idx === 1 ? 'bg-[#818CF8]' : 'bg-[#FB923C]'
                           }`}
                         >
-                          {p.avatar ? <Avatar emoji={p.avatar} /> : (p.username || 'P').charAt(0).toUpperCase()}
+                          {(p.avatar || (p.isMe && localStorage.getItem('guest_avatar'))) ? (
+                            <Avatar emoji={p.avatar || localStorage.getItem('guest_avatar')} />
+                          ) : (
+                            (p.username || 'P').charAt(0).toUpperCase()
+                          )}
                         </div>
                       ))}
                     </div>
@@ -1608,12 +1612,12 @@ export default function AnswerResult() {
                         : 'max-w-[480px]'
                     } flex items-end justify-center gap-3 sm:gap-4 z-10 relative`}>
                       
-                      {/* Rank 2 (Silver) */}
-                      {secondPlace && (
+                      {/* Rank 2 (Silver) - shown on left when 3+ players */}
+                      {secondPlace && effectiveRoster.length > 2 && (
                         <div className="flex-1 flex flex-col items-center">
                           <div className="w-14 h-14 rounded-full bg-[#E8F0FE] shadow-[0px_4px_12px_rgba(184,206,248,0.45)] flex items-center justify-center mb-2 shrink-0">
-                            {secondPlace.avatar ? (
-                              <Avatar emoji={secondPlace.avatar} />
+                            {(secondPlace.avatar || (secondPlace.isMe && localStorage.getItem('guest_avatar'))) ? (
+                              <Avatar emoji={secondPlace.avatar || localStorage.getItem('guest_avatar')} />
                             ) : (
                               <Crown className="w-7 h-7 text-[#5C7094]" />
                             )}
@@ -1623,7 +1627,7 @@ export default function AnswerResult() {
                           </span>
                           <div className="flex items-center gap-1.5 mt-0.5 mb-2.5">
                             <span className="font-['Inter'] font-black text-[12px] leading-4 text-[#334155]">
-                              {secondPlace.totalScore || 0} pts
+                              {(secondPlace.totalScore || 0).toLocaleString()} pts
                             </span>
                             <span className="bg-[rgba(241,245,249,0.9)] border border-[rgba(226,232,240,0.6)] rounded-full px-2 py-0.5 text-[11px] font-semibold text-[#64748B]">
                               {secondPlace.lastTimeTaken || '0.00'}s
@@ -1642,28 +1646,28 @@ export default function AnswerResult() {
                         </div>
                       )}
 
-                      {/* Rank 1 (Gold - Elevated Center) */}
+                      {/* Rank 1 (Gold - Elevated Center for 3+ or solo champion) */}
                       {firstPlace && (
-                        <div className="flex-1 flex flex-col items-center -mt-6">
+                        <div className={`flex-1 flex flex-col items-center ${effectiveRoster.length === 1 ? 'mt-0' : '-mt-6'}`}>
                           <div 
                             className="w-16 h-16 rounded-full flex items-center justify-center mb-2 shrink-0 shadow-[0px_8px_24px_-2px_rgba(245,158,11,0.55)]"
                             style={{ background: 'radial-gradient(91.92% 91.92% at 35% 35%, #FFE270 0%, #FFA800 100%)' }}
                           >
-                            {firstPlace.avatar ? (
-                              <Avatar emoji={firstPlace.avatar} />
+                            {(firstPlace.avatar || (firstPlace.isMe && localStorage.getItem('guest_avatar'))) ? (
+                              <Avatar emoji={firstPlace.avatar || localStorage.getItem('guest_avatar')} />
                             ) : (
                               <Crown className="w-8 h-8 text-[#5C2B04]" />
                             )}
                           </div>
                           <span className="font-['Inter'] font-black text-[18px] leading-7 tracking-[-0.45px] text-[#0F172A] truncate max-w-[130px] text-center">
-                            {firstPlace.username}
+                            {firstPlace.username || localPlayer || 'You'}
                           </span>
                           <div className="flex items-center gap-1.5 mt-0.5 mb-2.5">
                             <span className="font-['Inter'] font-black text-[14px] leading-5 text-[#78350F]">
-                              {firstPlace.totalScore || 0} pts
+                              {(firstPlace.totalScore !== undefined ? firstPlace.totalScore : (myScore || currentScore || 0)).toLocaleString()} pts
                             </span>
                             <span className="bg-[#FEF3C7] border border-[rgba(253,230,138,0.8)] shadow-xs rounded-full px-2 py-0.5 text-[12px] font-bold text-[#92400E]">
-                              {firstPlace.lastTimeTaken || '0.00'}s
+                              {firstPlace.lastTimeTaken || timeTaken || '0.00'}s
                             </span>
                           </div>
 
@@ -1679,12 +1683,46 @@ export default function AnswerResult() {
                         </div>
                       )}
 
+                      {/* Rank 2 (Silver) - placed next to Rank 1 when exactly 2 players */}
+                      {secondPlace && effectiveRoster.length === 2 && (
+                        <div className="flex-1 flex flex-col items-center">
+                          <div className="w-14 h-14 rounded-full bg-[#E8F0FE] shadow-[0px_4px_12px_rgba(184,206,248,0.45)] flex items-center justify-center mb-2 shrink-0">
+                            {(secondPlace.avatar || (secondPlace.isMe && localStorage.getItem('guest_avatar'))) ? (
+                              <Avatar emoji={secondPlace.avatar || localStorage.getItem('guest_avatar')} />
+                            ) : (
+                              <Crown className="w-7 h-7 text-[#5C7094]" />
+                            )}
+                          </div>
+                          <span className="font-['Inter'] font-extrabold text-[16px] leading-6 tracking-[-0.4px] text-[#1E293B] truncate max-w-[120px] text-center">
+                            {secondPlace.username}
+                          </span>
+                          <div className="flex items-center gap-1.5 mt-0.5 mb-2.5">
+                            <span className="font-['Inter'] font-black text-[12px] leading-4 text-[#334155]">
+                              {(secondPlace.totalScore || 0).toLocaleString()} pts
+                            </span>
+                            <span className="bg-[rgba(241,245,249,0.9)] border border-[rgba(226,232,240,0.6)] rounded-full px-2 py-0.5 text-[11px] font-semibold text-[#64748B]">
+                              {secondPlace.lastTimeTaken || '0.00'}s
+                            </span>
+                          </div>
+                          
+                          {/* Pedestal Block 2 */}
+                          <div 
+                            className="w-full h-[144px] rounded-t-[24px] rounded-b-[12px] flex items-start justify-center pt-5 relative shadow-[0px_10px_24px_-4px_rgba(184,206,248,0.6)]"
+                            style={{ background: 'linear-gradient(180deg, #D4E2FC 0%, #B8CEF8 100%)' }}
+                          >
+                            <div className="w-11 h-11 rounded-full bg-white/90 border-2 border-white/60 shadow-sm flex items-center justify-center text-[#334155] font-['Inter'] font-black text-[20px]">
+                              2
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Rank 3 (Bronze) */}
                       {thirdPlace && (
                         <div className="flex-1 flex flex-col items-center">
                           <div className="w-14 h-14 rounded-full bg-[#FFE3CA] shadow-[0px_4px_12px_rgba(251,146,60,0.4)] flex items-center justify-center mb-2 shrink-0">
-                            {thirdPlace.avatar ? (
-                              <Avatar emoji={thirdPlace.avatar} />
+                            {(thirdPlace.avatar || (thirdPlace.isMe && localStorage.getItem('guest_avatar'))) ? (
+                              <Avatar emoji={thirdPlace.avatar || localStorage.getItem('guest_avatar')} />
                             ) : (
                               <Crown className="w-7 h-7 text-[#833A0B]" />
                             )}
@@ -1694,7 +1732,7 @@ export default function AnswerResult() {
                           </span>
                           <div className="flex items-center gap-1.5 mt-0.5 mb-2.5">
                             <span className="font-['Inter'] font-black text-[12px] leading-4 text-[#334155]">
-                              {thirdPlace.totalScore || 0} pts
+                              {(thirdPlace.totalScore || 0).toLocaleString()} pts
                             </span>
                             <span className="bg-[rgba(241,245,249,0.9)] border border-[rgba(226,232,240,0.6)] rounded-full px-2 py-0.5 text-[11px] font-semibold text-[#64748B]">
                               {thirdPlace.lastTimeTaken || '0.00'}s
@@ -1789,7 +1827,9 @@ export default function AnswerResult() {
                                       ? 'bg-[#FFF7ED] border border-[#FFEDD5] text-[#1E293B]'
                                       : 'bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669]'
                             }`}>
-                              {player.avatar ? <Avatar emoji={player.avatar} /> : isRank1 ? '👑' : isRank2 ? '⚡' : isRank3 ? '🔥' : (player.username || 'P').charAt(0).toUpperCase()}
+                              {(player.avatar || (isMe && localStorage.getItem('guest_avatar'))) ? (
+                                <Avatar emoji={player.avatar || localStorage.getItem('guest_avatar')} />
+                              ) : isRank1 ? '👑' : isRank2 ? '⚡' : isRank3 ? '🔥' : (player.username || 'P').charAt(0).toUpperCase()}
                             </div>
 
                             {/* Name + Badges */}
@@ -1899,7 +1939,7 @@ export default function AnswerResult() {
                       onClick={() => navigate(`/leaderboard/${pin}`)}
                       className="h-8 px-4 rounded-[12px] bg-white text-[#551BF5] font-['Inter'] font-bold text-[12px] leading-4 hover:bg-slate-50 active:scale-95 transition-all shadow-sm cursor-pointer whitespace-nowrap"
                     >
-                      View All {totalChallengers}
+                      {totalChallengers <= 1 ? 'Full Standings' : `View All ${totalChallengers}`}
                     </button>
                   </div>
                 </div>
