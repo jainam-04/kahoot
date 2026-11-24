@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
   ArrowRight,
-  Bell,
   Check,
   ChevronDown,
   ChevronUp,
@@ -92,7 +91,6 @@ export default function HostLobby() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   
   const [isPlayersModalOpen, setIsPlayersModalOpen] = useState(false);
   const [modalSearchQuery, setModalSearchQuery] = useState('');
@@ -457,34 +455,9 @@ export default function HostLobby() {
               <div className="host-lobby-popover-wrap">
                 <button
                   type="button"
-                  className="host-lobby-notification-button"
-                  aria-label="Notifications"
-                  aria-expanded={isNotificationsOpen}
-                  onClick={() => {
-                    setIsNotificationsOpen((open) => !open);
-                    setIsProfileDropdownOpen(false);
-                  }}
-                >
-                  <Bell />
-                  <span className="host-lobby-notification-dot" />
-                </button>
-                {isNotificationsOpen && (
-                  <div className="host-lobby-popover">
-                    <strong>Notifications</strong>
-                    <span>You&apos;re all caught up.</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="host-lobby-popover-wrap">
-                <button
-                  type="button"
                   className="host-lobby-profile-button"
                   aria-expanded={isProfileDropdownOpen}
-                  onClick={() => {
-                    setIsProfileDropdownOpen((open) => !open);
-                    setIsNotificationsOpen(false);
-                  }}
+                  onClick={() => setIsProfileDropdownOpen((open) => !open)}
                 >
                   <span className="host-lobby-profile-avatar">{userInitial}</span>
                   <span className="host-lobby-profile-name">{userName}</span>
@@ -505,20 +478,21 @@ export default function HostLobby() {
           <main className="host-lobby-content">
             <div className="host-lobby-stage">
 
-              {/* Sub-Header: Exit Return Pill & Live Status Pill */}
+              {/* Sub-Header: Exit Return Button & Live Status Badge */}
               <div className="host-lobby-page-nav">
                 <button
                   onClick={handleHostExit}
                   className="host-lobby-exit-button"
+                  title="Exit lobby and return to quizzes"
                 >
-                  <ArrowLeft className="h-4 w-4 shrink-0" />
-                  <span>Exit Lobby<span className="hidden sm:inline"> &amp; Return to My Quizzes</span></span>
+                  <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
+                  <span>Exit<span className="hidden sm:inline"> Lobby &amp; Return to My Quizzes</span></span>
                 </button>
 
-                <span className="host-lobby-live-status">
-                  <span />
-                  <span>LIVE LOBBY<span className="hidden xs:inline"> ACTIVE</span></span>
-                </span>
+                <div className="host-lobby-live-status">
+                  <span className="host-lobby-live-dot" />
+                  <span>LIVE SESSION</span>
+                </div>
               </div>
 
               {/* Mobile Tab Switcher (< 1024px) */}
