@@ -6,7 +6,7 @@ import {
   Cpu, Monitor, Keyboard, Mouse, Database, Server, Wifi, Terminal, Code2,
   Atom, FlaskConical, Dna, Orbit, Telescope, Microscope,
   Globe, Compass, Map, Scroll, Landmark, Anchor, History,
-  Sparkles, Lightbulb, Gamepad2, BookOpen
+  Sparkles, Lightbulb, Gamepad2, BookOpen, LogOut
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -248,33 +248,52 @@ export default function Leaderboard() {
         <div className={`flex justify-between items-center border-b pb-4 mb-4 relative z-10 ${
           isLight ? 'border-slate-200' : 'border-white/10'
         }`}>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Back to Standings button (keeps flow seamless) */}
+            <button
+              type="button"
+              onClick={() => navigate(`/result/answer/${pin}`)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer active:scale-95 border ${
+                isLight
+                  ? 'bg-white hover:bg-purple-50 text-[#551BF5] border-purple-200 shadow-2xs'
+                  : 'bg-[#551BF5]/20 hover:bg-[#551BF5]/30 text-purple-200 border-[#551BF5]/40'
+              }`}
+              title="Return to Standings"
+            >
+              <ArrowLeft className="h-3.5 w-3.5 text-[#551BF5]" />
+              <span>Back to Standings</span>
+            </button>
+
             {isHost ? (
               <button
+                type="button"
                 onClick={handleHostExit}
-                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer active:scale-95 border ${
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl transition-all cursor-pointer active:scale-95 border ${
                   isLight
-                    ? 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-sm'
-                    : 'bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-md shadow-sm'
+                    ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 shadow-2xs'
+                    : 'bg-white/10 hover:bg-white/20 text-white border-white/20'
                 }`}
+                title="Return to Dashboard"
               >
-                <ArrowLeft className={`h-3.5 w-3.5 shrink-0 ${isLight ? 'text-slate-700' : 'text-white'}`} />
-                <span>Return to Dashboard</span>
+                <LogOut className="h-3 w-3 text-slate-500" />
+                <span className="hidden sm:inline">Dashboard</span>
               </button>
             ) : (
               <button
+                type="button"
                 onClick={handlePlayerExit}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer active:scale-95 border ${
+                className={`flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-xl transition-all cursor-pointer active:scale-95 border ${
                   isLight
-                    ? 'bg-white hover:bg-rose-50 text-rose-600 border-rose-200 shadow-xs'
+                    ? 'bg-white hover:bg-rose-50 text-rose-600 border-rose-200 shadow-2xs'
                     : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border-rose-500/20'
                 }`}
+                title="Leave Game Lobby"
               >
-                <ArrowLeft className="h-3.5 w-3.5" />
+                <LogOut className="h-3 w-3 text-rose-500" />
                 <span>Leave</span>
               </button>
             )}
-            <span className={`text-xs font-extrabold uppercase tracking-widest ${
+            <span className={`text-xs font-extrabold uppercase tracking-widest hidden md:inline ${
               isLight ? 'text-slate-500' : 'text-gray-400'
             }`}>Scoreboard Standings</span>
           </div>
@@ -427,7 +446,7 @@ export default function Leaderboard() {
               )}
             </button>
           ) : (
-            <div className={`p-4 sm:p-5 rounded-2xl border text-center space-y-1.5 shadow-sm transition-all ${
+            <div className={`p-4 sm:p-5 rounded-2xl border text-center space-y-2 shadow-sm transition-all ${
               isLight 
                 ? 'bg-white border-slate-200 shadow-sm' 
                 : 'bg-white/5 border-white/10 backdrop-blur-md'
@@ -445,6 +464,17 @@ export default function Leaderboard() {
               }`}>
                 Waiting for host to commence next question...
               </p>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => navigate(`/result/answer/${pin}`)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#FAF5FF] hover:bg-[#F3E8FF] border border-[#EDE9FE] text-[#6320EE] transition-all active:scale-95 cursor-pointer shadow-2xs"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back to Standings</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
