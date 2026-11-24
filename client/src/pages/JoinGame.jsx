@@ -166,36 +166,36 @@ export default function JoinGame() {
         =============================================================================
       */}
       <div 
-        className="join-game-background relative min-h-[calc(max(100vh-var(--main-header-height,80px),760px))] w-full flex items-start justify-center px-3 py-4 sm:py-6 lg:py-0 bg-cover bg-bottom bg-no-repeat"
+        className="join-game-background relative min-h-[calc(max(100vh-var(--main-header-height,80px),760px))] w-full flex items-start justify-center px-3 py-4 sm:py-6 lg:py-0 bg-cover bg-bottom bg-no-repeat overflow-x-hidden"
         style={{
           backgroundImage: `url(${joinBattleBg})`,
           backgroundColor: '#F7F4FD',
         }}
       >
-        <div className="relative z-10 w-full max-w-[1351px] mx-auto px-4 sm:px-6 lg:pl-12 xl:pl-[96px] 2xl:pl-[111px] lg:pr-8 xl:pr-[128px] 2xl:pr-[158px] pt-4 sm:pt-6 lg:pt-[32px] pb-12">
+        <div className="relative z-10 w-full max-w-[1351px] mx-auto px-2 sm:px-6 lg:pl-12 xl:pl-[96px] 2xl:pl-[111px] lg:pr-8 xl:pr-[128px] 2xl:pr-[158px] pt-4 sm:pt-6 lg:pt-[32px] pb-12 overflow-x-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_481px] gap-6 lg:gap-[25px] items-start">
             
             {/* ===================================================================== */}
             {/* LEFT COLUMN: "Join the BATTLE!" Heading + Pill Subtitle (Figma 1:1)   */}
             {/* Positioned comfortably in the open sky safely above the boy's head    */}
             {/* ===================================================================== */}
-            <section className="flex flex-col items-center lg:items-start text-center lg:text-left pt-1 lg:pt-0 z-10">
+            <section className="flex flex-col items-center lg:items-start text-center lg:text-left pt-1 lg:pt-0 z-10 w-full max-w-full">
               {endedMessage && (
-                <div className="mb-3 p-3 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-600 text-xs font-bold flex items-center gap-2 shadow-sm">
+                <div className="mb-3 p-2.5 sm:p-3 max-w-full rounded-2xl bg-red-500/10 border border-red-500/30 text-red-600 text-xs font-bold flex items-center justify-center text-center gap-2 shadow-sm">
                   <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
-                  <span>{endedMessage}</span>
+                  <span className="break-words">{endedMessage}</span>
                 </div>
               )}
 
               {/* Exact Figma Heading Block: width: 576px, gap: 16px */}
-              <div className="flex flex-col items-center lg:items-start gap-4 w-full max-w-[576px]">
+              <div className="flex flex-col items-center lg:items-start gap-3 sm:gap-4 w-full max-w-[576px]">
                 {/* Heading 1: gap: 6px */}
-                <div className="flex flex-col items-center lg:items-start gap-1.5 w-full">
-                  <h1 className="font-['Inter'] font-extrabold text-[36px] sm:text-[48px] lg:text-[60px] leading-none tracking-[-1.5px] text-[#020617] m-0 p-0">
+                <div className="flex flex-col items-center lg:items-start gap-1 sm:gap-1.5 w-full">
+                  <h1 className="font-['Inter'] font-extrabold text-[32px] sm:text-[48px] lg:text-[60px] leading-none tracking-[-1px] sm:tracking-[-1.5px] text-[#020617] m-0 p-0">
                     Join the
                   </h1>
                   <div 
-                    className="font-['Inter'] font-black text-[36px] sm:text-[48px] lg:text-[60px] leading-none tracking-[-1.5px] bg-clip-text text-transparent select-none m-0 p-0"
+                    className="font-['Inter'] font-black text-[32px] sm:text-[48px] lg:text-[60px] leading-none tracking-[-1px] sm:tracking-[-1.5px] bg-clip-text text-transparent select-none m-0 p-0"
                     style={{
                       backgroundImage: 'linear-gradient(95.95deg, #6C28FE 0%, #4D1AE0 50%, #2A56F6 100%)',
                       WebkitBackgroundClip: 'text',
@@ -206,17 +206,17 @@ export default function JoinGame() {
                   </div>
                 </div>
 
-                {/* Exact Figma Pill Subtitle: 411.8px x 42px, radius 16px, background rgba(255,255,255,0.8), border rgba(255,255,255,0.9) */}
+                {/* Responsive Pill Subtitle: wraps cleanly on small phone screens */}
                 <div 
-                  className="inline-flex items-center px-5 py-2.5 rounded-[16px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] select-none"
+                  className="inline-flex items-center justify-center max-w-full px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-[14px] sm:rounded-[16px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] select-none text-center"
                   style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.85)',
                     border: '1px solid rgba(255, 255, 255, 0.9)',
                     backdropFilter: 'blur(4px)',
                     WebkitBackdropFilter: 'blur(4px)',
                   }}
                 >
-                  <span className="font-['Inter'] font-semibold text-[13px] sm:text-[14px] leading-5 text-[#1E293B] whitespace-nowrap">
+                  <span className="font-['Inter'] font-semibold text-[12px] sm:text-[14px] leading-snug sm:leading-5 text-[#1E293B] text-center sm:whitespace-nowrap">
                     Enter the Game PIN or Scan QR code to enter the arena
                   </span>
                 </div>
