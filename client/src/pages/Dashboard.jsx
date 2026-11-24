@@ -461,7 +461,7 @@ export default function Dashboard() {
             </div>
 
             {/* Mobile StatCardsRow: Compact Side-by-Side Cards Matching Figma Image */}
-            <div className="sm:hidden flex items-stretch gap-2.5 overflow-x-auto pb-1.5 -mx-4 px-4 scrollbar-none snap-x">
+            <div className="sm:hidden flex items-stretch gap-2.5 overflow-x-auto pb-1.5 -mx-3 px-3 scroll-px-3 scrollbar-none snap-x">
               {/* Card 1: Quizzes */}
               <div className="shrink-0 w-[calc(33.333%-7px)] min-w-[108px] snap-start bg-white border border-[#EEF0F6] rounded-[20px] p-3 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col justify-between h-[110px]">
                 <div className="flex items-center justify-between z-10">
