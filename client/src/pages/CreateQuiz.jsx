@@ -15,7 +15,7 @@ import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import Logo from '../components/Logo';
 import HostProfileModal from '../components/HostProfileModal';
-import PlanComparisonTable from '../components/PlanComparisonTable';
+import UpgradeModal from '../components/UpgradeModal';
 import AIQuizAssistantModal from '../components/AIQuizAssistantModal';
 import BackgroundPicker from '../components/BackgroundPicker';
 import AppSidebar from '../components/AppSidebar';
@@ -1765,75 +1765,10 @@ export default function CreateQuiz() {
         />
 
         {/* 5. PRO UPGRADE MODAL */}
-        {activeModal === 'upgrade' && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="relative my-auto rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 bg-white text-slate-900 text-left">
-              <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-purple-50 via-white to-purple-50">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-amber-100 text-amber-600 rounded-xl shadow-sm">
-                    <Crown className="h-5 w-5 fill-amber-500 text-amber-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-slate-900">Upgrade to Gubbi Pro</h3>
-                    <p className="text-xs text-slate-500">Unlock unlimited multiplayer rooms, export reports, and custom trivia sets.</p>
-                  </div>
-                </div>
-                <button 
-                  type="button"
-                  onClick={() => setActiveModal(null)}
-                  className="p-2 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="p-6 overflow-y-auto space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Pro Plan Card */}
-                  <div className="p-5 rounded-2xl border-2 border-purple-500 bg-purple-50/30 flex flex-col justify-between space-y-4">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded-full">
-                        Educator Pro
-                      </span>
-                      <h4 className="text-2xl font-black text-slate-900 mt-2">₹499 <span className="text-xs font-normal text-slate-500">/ month</span></h4>
-                      <p className="text-xs text-slate-600 mt-1">Built for classroom teachers, coaching institutes, and active event hosts.</p>
-                      
-                      <ul className="mt-4 space-y-2 text-xs text-slate-700">
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Unlimited quiz creation</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Unlimited live multiplayer participants</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> PDF &amp; Excel performance export</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-500 shrink-0" /> Priority email support</li>
-                      </ul>
-                    </div>
-
-                    <a 
-                      href="mailto:info@fouriseindia.com?subject=Gubbi%20Pro%20Upgrade%20Inquiry"
-                      className="w-full py-2.5 rounded-xl bg-[#6C38FF] hover:bg-[#5827e8] text-white text-xs font-bold text-center shadow-md transition-all block cursor-pointer"
-                    >
-                      Contact for Pro Access
-                    </a>
-                  </div>
-
-                  {/* Plan Comparison Table Section inside modal */}
-                  <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between space-y-4">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 bg-slate-200 px-2.5 py-0.5 rounded-full">
-                        Feature Overview
-                      </span>
-                      <div className="mt-3 overflow-x-auto text-xs">
-                        <PlanComparisonTable />
-                      </div>
-                    </div>
-
-                    <div className="text-[11px] text-slate-500 text-center">
-                      Need custom institutional pricing? Email <span className="font-semibold text-purple-600">info@fouriseindia.com</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <UpgradeModal
+          isOpen={activeModal === 'upgrade'}
+          onClose={() => setActiveModal(null)}
+        />
 
       </div>
     </AnimatedPage>
