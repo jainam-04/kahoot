@@ -336,9 +336,9 @@ export default function LiveQuiz() {
       localStorage.setItem('last_hasAnswered', 'false');
       localStorage.setItem('last_answerSubmitted', 'false');
       setSelectedIdx(null);
-    } else {
-      fetchCurrentState();
     }
+    // Always fetch current state to get fresh active players count and prevent stale player counts
+    fetchCurrentState();
 
     // 2. Connect Socket and Register Listeners
     const socket = connectSocket();

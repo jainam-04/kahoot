@@ -184,11 +184,16 @@ module.exports = (io) => {
                 const game = await GameSession.findOne({ pin });
                 if (!game) return;
 
-                const totalPlayers = game.players.length;
+                const hasAnswers = (game.players || []).some(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0));
+                const effectivePlayers = (hasAnswers && (game.currentQuestionIndex > 0 || game.status !== 'waiting'))
+                    ? game.players.filter(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0))
+                    : (game.players || []);
+
+                const totalPlayers = effectivePlayers.length;
                 const currentQIndex = game.currentQuestionIndex;
 
                 // Count how many answered this question
-                const answeredCount = game.players.filter(player =>
+                const answeredCount = effectivePlayers.filter(player =>
                     player.answers.some(a => a.questionIndex === currentQIndex)
                 ).length;
 

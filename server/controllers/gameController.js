@@ -356,7 +356,10 @@ const startQuestion = async (req, res) => {
                     currentQuestionIndex: nextIndex,
                     questionStartTime: questionStartTime,
                     status: 'active'
-                }
+                },
+                ...(nextIndex > 0 ? {
+                    $pull: { players: { totalScore: 0, answers: { $size: 0 } } }
+                } : {})
             }
         );
 
@@ -649,7 +652,12 @@ const submitAnswer = async (req, res) => {
         const io = req.app.get('io');
         if (io) {
             const currentGame = updatedGame || game;
-            const answeredCount = currentGame.players.filter(p =>
+            const hasAnswers = (currentGame.players || []).some(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0));
+            const effectivePlayers = (hasAnswers && (game.currentQuestionIndex > 0 || game.status !== 'waiting'))
+                ? currentGame.players.filter(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0))
+                : (currentGame.players || []);
+
+            const answeredCount = effectivePlayers.filter(p =>
                 p.answers.some(a => a.questionIndex === game.currentQuestionIndex)
             ).length;
 
@@ -657,7 +665,7 @@ const submitAnswer = async (req, res) => {
                 username: player.name,
                 playerName: player.name,
                 answeredCount,
-                totalPlayers: currentGame.players.length
+                totalPlayers: effectivePlayers.length
             };
 
             io.to(`room_${cleanPin}`).emit('player_answered', payload);
@@ -825,6 +833,11 @@ const getGame = async (req, res) => {
         const joinUrl = `http://${localIP}:5173/join?pin=${game.pin}`;
         const hostnameUrl = `http://${hostname}.local:5173/join?pin=${game.pin}`;
 
+        const hasAnswers = (game.players || []).some(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0));
+        const effectivePlayers = (hasAnswers && (game.currentQuestionIndex > 0 || game.status !== 'waiting'))
+            ? game.players.filter(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0))
+            : (game.players || []);
+
         res.status(200).json({
             success: true,
             game: {
@@ -834,7 +847,7 @@ const getGame = async (req, res) => {
                 joinUrl: joinUrl,
                 hostnameUrl: hostnameUrl,
                 status: game.status,
-                players: game.players,
+                players: effectivePlayers,
                 currentQuestion: game.currentQuestionIndex + 1,
                 questionStartTime: game.questionStartTime,
                 quiz: game.quizId,
