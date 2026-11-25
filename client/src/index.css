@@ -1798,6 +1798,7 @@ body.gubbi-scroll-locked {
 
 @media (max-width: 767px) {
   .join-game-background {
-    background-image: none !important;
+    background-position: right bottom !important;
+    background-size: cover !important;
   }
 }

@@ -1553,7 +1553,7 @@ export default function BackgroundPicker({ value, onChange, showPreview = true, 
                 <p className={`text-xs font-bold ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>Drag and drop your image here</p>
                 <p className={`text-[10px] ${isLight ? 'text-gray-500' : 'text-gray-500'} mt-1`}>Supports JPG, PNG, or WebP formats</p>
                 <div className="mt-4 flex items-center justify-center gap-3">
-                  <label 
+                  <label
                     className="btn-premium inline-flex items-center justify-center px-5 py-2 text-xs font-bold text-white cursor-pointer shadow-md shrink-0 select-none"
                     style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', border: 'none' }}
                   >

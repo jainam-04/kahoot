@@ -166,14 +166,14 @@ export default function JoinGame() {
         =============================================================================
       */}
       <div 
-        className="join-game-background relative min-h-[calc(max(100vh-var(--main-header-height,80px),760px))] w-full flex items-start justify-center px-3 py-4 sm:py-6 lg:py-0 bg-cover bg-bottom bg-no-repeat overflow-x-hidden"
+        className="join-game-background relative min-h-[calc(100dvh-var(--main-header-height,64px))] lg:min-h-[calc(max(100vh-var(--main-header-height,80px),760px))] w-full flex items-start justify-center px-2.5 sm:px-3 py-3 sm:py-6 lg:py-0 bg-cover bg-bottom bg-no-repeat overflow-x-hidden"
         style={{
           backgroundImage: `url(${joinBattleBg})`,
           backgroundColor: '#F7F4FD',
         }}
       >
-        <div className="relative z-10 w-full max-w-[1351px] mx-auto px-2 sm:px-6 lg:pl-12 xl:pl-[96px] 2xl:pl-[111px] lg:pr-8 xl:pr-[128px] 2xl:pr-[158px] pt-4 sm:pt-6 lg:pt-[32px] pb-12 overflow-x-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_481px] gap-6 lg:gap-[25px] items-start">
+        <div className="relative z-10 w-full max-w-[1351px] mx-auto px-0.5 sm:px-6 lg:pl-12 xl:pl-[96px] 2xl:pl-[111px] lg:pr-8 xl:pr-[128px] 2xl:pr-[158px] pt-2 sm:pt-6 lg:pt-[32px] pb-8 sm:pb-12 overflow-x-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_481px] gap-4 sm:gap-6 lg:gap-[25px] items-start">
             
             {/* ===================================================================== */}
             {/* LEFT COLUMN: "Join the BATTLE!" Heading + Pill Subtitle (Figma 1:1)   */}
@@ -188,14 +188,14 @@ export default function JoinGame() {
               )}
 
               {/* Exact Figma Heading Block: width: 576px, gap: 16px */}
-              <div className="flex flex-col items-center lg:items-start gap-3 sm:gap-4 w-full max-w-[576px]">
+              <div className="flex flex-col items-center lg:items-start gap-2.5 sm:gap-4 w-full max-w-[576px]">
                 {/* Heading 1: gap: 6px */}
-                <div className="flex flex-col items-center lg:items-start gap-1 sm:gap-1.5 w-full">
-                  <h1 className="font-['Inter'] font-extrabold text-[32px] sm:text-[48px] lg:text-[60px] leading-none tracking-[-1px] sm:tracking-[-1.5px] text-[#020617] m-0 p-0">
+                <div className="flex flex-col items-center lg:items-start gap-0.5 sm:gap-1.5 w-full">
+                  <h1 className="font-['Inter'] font-extrabold text-[30px] sm:text-[48px] lg:text-[60px] leading-none tracking-[-0.75px] sm:tracking-[-1.5px] text-[#020617] m-0 p-0">
                     Join the
                   </h1>
                   <div 
-                    className="font-['Inter'] font-black text-[32px] sm:text-[48px] lg:text-[60px] leading-none tracking-[-1px] sm:tracking-[-1.5px] bg-clip-text text-transparent select-none m-0 p-0"
+                    className="font-['Inter'] font-black text-[30px] sm:text-[48px] lg:text-[60px] leading-none tracking-[-0.75px] sm:tracking-[-1.5px] bg-clip-text text-transparent select-none m-0 p-0"
                     style={{
                       backgroundImage: 'linear-gradient(95.95deg, #6C28FE 0%, #4D1AE0 50%, #2A56F6 100%)',
                       WebkitBackgroundClip: 'text',
@@ -208,7 +208,7 @@ export default function JoinGame() {
 
                 {/* Responsive Pill Subtitle: wraps cleanly on small phone screens */}
                 <div 
-                  className="inline-flex items-center justify-center max-w-full px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-[14px] sm:rounded-[16px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] select-none text-center"
+                  className="inline-flex items-center justify-center max-w-full px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-[14px] sm:rounded-[16px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] select-none text-center"
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.85)',
                     border: '1px solid rgba(255, 255, 255, 0.9)',
@@ -216,7 +216,7 @@ export default function JoinGame() {
                     WebkitBackdropFilter: 'blur(4px)',
                   }}
                 >
-                  <span className="font-['Inter'] font-semibold text-[12px] sm:text-[14px] leading-snug sm:leading-5 text-[#1E293B] text-center sm:whitespace-nowrap">
+                  <span className="font-['Inter'] font-semibold text-[11.5px] sm:text-[14px] leading-snug sm:leading-5 text-[#1E293B] text-center xl:whitespace-nowrap">
                     Enter the Game PIN or Scan QR code to enter the arena
                   </span>
                 </div>
@@ -230,7 +230,7 @@ export default function JoinGame() {
               initial={{ opacity: 0, y: 20, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ type: 'spring', stiffness: 90, damping: 16 }}
-              className="w-full max-w-[481px] mx-auto rounded-[26px] bg-white p-3.5 sm:p-5 shadow-[0px_10px_35px_-5px_rgba(124,58,237,0.1),0px_0px_0px_1px_rgba(235,230,254,0.8)] border border-[#ECE6FE] relative z-10"
+              className="w-full max-w-[481px] mx-auto rounded-[22px] sm:rounded-[26px] bg-white p-3 sm:p-5 shadow-[0px_10px_35px_-5px_rgba(124,58,237,0.1),0px_0px_0px_1px_rgba(235,230,254,0.8)] border border-[#ECE6FE] relative z-10"
             >
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-2.5 sm:space-y-3">
                 
@@ -261,7 +261,7 @@ export default function JoinGame() {
                           message: 'Lobby PIN must be a 6-digit number',
                         },
                       })}
-                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter'] tracking-wide"
+                      className="min-w-0 w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter'] tracking-wide"
                     />
                   </div>
                   {errors.pin && (
@@ -313,7 +313,7 @@ export default function JoinGame() {
                           setValue('fullName', sanitized, { shouldValidate: true });
                         }
                       })}
-                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter']"
+                      className="min-w-0 w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter']"
                     />
                   </div>
                   {errors.fullName && (
@@ -351,7 +351,7 @@ export default function JoinGame() {
                           message: 'Must be 10 digits starting with 6, 7, 8, or 9',
                         }
                       })}
-                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter'] tracking-wide"
+                      className="min-w-0 w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter'] tracking-wide"
                     />
                   </div>
                   {errors.mobileNumber && (
@@ -391,7 +391,7 @@ export default function JoinGame() {
                           message: 'Letters and numbers only',
                         }
                       })}
-                      className="w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter']"
+                      className="min-w-0 w-full h-full bg-transparent text-[13px] font-semibold text-[#1E293B] placeholder:text-[#C4B5FD] focus:outline-none font-['Inter']"
                     />
                   </div>
                   {errors.nickname && (
@@ -412,7 +412,7 @@ export default function JoinGame() {
                   </div>
 
                   {/* 4x2 Avatar Grid */}
-                  <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
+                  <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5">
                     {avatars.map((avatar) => {
                       const isSelected = selectedAvatar === avatar;
                       return (
@@ -420,13 +420,13 @@ export default function JoinGame() {
                           key={avatar}
                           type="button"
                           onClick={() => setSelectedAvatar(avatar)}
-                          className={`relative h-[52px] sm:h-[58px] rounded-2xl flex items-center justify-center transition-all duration-150 cursor-pointer active:scale-95 ${
+                          className={`relative h-[48px] sm:h-[58px] rounded-2xl flex items-center justify-center transition-all duration-150 cursor-pointer active:scale-95 ${
                             isSelected
                               ? 'bg-purple-50/50 border-2 border-[#8B5CF6] shadow-sm scale-[1.02]'
                               : 'bg-[#F8FAFC]/90 border border-slate-100 hover:bg-slate-100 hover:border-slate-200'
                           }`}
                         >
-                          <Avatar emoji={avatar} className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-xs" />
+                          <Avatar emoji={avatar} className="w-7 h-7 sm:w-9 sm:h-9 object-contain drop-shadow-xs" />
                           {isSelected && (
                             <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#7A38FF] text-white rounded-full shadow-xs ring-1 ring-white flex items-center justify-center">
                               <Check className="w-2.5 h-2.5 stroke-[3]" />

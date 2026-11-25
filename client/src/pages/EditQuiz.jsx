@@ -1734,13 +1734,13 @@ export default function EditQuiz() {
 
         {/* 2. PEXELS / PRESET LIBRARY MODAL */}
         {showPexelsModal && (
-          <div 
+          <div
             className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 overscroll-contain animate-in fade-in duration-200"
             onClick={(e) => {
               if (e.target === e.currentTarget) setShowPexelsModal(false);
             }}
           >
-            <div 
+            <div
               className="w-full max-w-4xl max-h-[90dvh] sm:max-h-[90vh] bg-white rounded-3xl shadow-2xl border border-[#E2E8F0] flex flex-col overflow-hidden text-left relative"
               onClick={(e) => e.stopPropagation()}
             >
@@ -1784,13 +1784,13 @@ export default function EditQuiz() {
 
         {/* 3. QUESTION BACKGROUND CUSTOMIZER MODAL */}
         {bgModalTarget !== null && (
-          <div 
+          <div
             className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 overscroll-contain animate-in fade-in duration-200"
             onClick={(e) => {
               if (e.target === e.currentTarget) setBgModalTarget(null);
             }}
           >
-            <div 
+            <div
               className="w-full max-w-4xl max-h-[90dvh] sm:max-h-[90vh] bg-white rounded-3xl shadow-2xl border border-[#E2E8F0] flex flex-col overflow-hidden text-left relative"
               onClick={(e) => e.stopPropagation()}
             >
