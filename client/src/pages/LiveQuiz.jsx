@@ -528,14 +528,15 @@ export default function LiveQuiz() {
   };
 
   const handleSelectAnswer = async (index) => {
-    if (hasAnswered || timeLeft <= 0) return;
+    // Admin / Host cannot play or submit answers
+    if (hasAnswered || isHost || timeLeft <= 0) return;
 
     const player = (
       playerName ||
       localPlayer ||
       localStorage.getItem('guest_playerName') ||
       localStorage.getItem('player_name') ||
-      (isHost ? (localPlayer || 'Host') : '')
+      ''
     ).trim();
 
     if (!player) {
@@ -883,15 +884,18 @@ export default function LiveQuiz() {
               {question.options.map((opt, idx) => {
                 const style = optionStyles[idx % optionStyles.length];
                 const isSelected = selectedIdx === idx;
-                const isDisabled = hasAnswered || timeLeft <= 0;
+                const isDisabled = hasAnswered || isHost || timeLeft <= 0;
 
-                let btnClass = `w-full min-h-[56px] sm:min-h-[64px] px-3.5 sm:px-5 py-3 sm:py-4 rounded-[16px] flex items-center justify-between gap-3 text-left transition-all touch-manipulation select-none`;
+                let btnClass = `w-full min-h-[56px] sm:min-h-[64px] px-3.5 sm:px-5 py-3 sm:py-4 rounded-[16px] flex items-center justify-between gap-3 text-left transition-all select-none`;
 
-                if (isSelected) {
-                  // Figma Selected Style with gradient background, solid border, and colored glow shadow
-                  btnClass += ` ${style.selectedBg} ${style.selectedBorder} ${style.selectedShadow} scale-[1.005] ring-2 ring-[#7C3AED]/30`;
+                if (isHost) {
+                  // Presentation-only tile for Host/Admin (Host cannot play or select answers)
+                  btnClass += ` ${style.bg} ${style.border} shadow-[0px_1px_2px_rgba(0,0,0,0.05)] cursor-default`;
+                } else if (isSelected) {
+                  // Player Selected Style with gradient background, solid border, and colored glow shadow
+                  btnClass += ` ${style.selectedBg} ${style.selectedBorder} ${style.selectedShadow} scale-[1.005] ring-2 ring-[#7C3AED]/30 touch-manipulation`;
                 } else {
-                  btnClass += ` ${style.bg} ${style.border} shadow-[0px_1px_2px_rgba(0,0,0,0.05)]`;
+                  btnClass += ` ${style.bg} ${style.border} shadow-[0px_1px_2px_rgba(0,0,0,0.05)] touch-manipulation`;
                   if (!isDisabled) {
                     btnClass += ` ${style.hover} cursor-pointer active:scale-[0.98] hover:scale-[1.01]`;
                   } else {
@@ -904,7 +908,7 @@ export default function LiveQuiz() {
                     key={idx}
                     type="button"
                     disabled={isDisabled}
-                    onClick={() => handleSelectAnswer(idx)}
+                    onClick={isHost ? undefined : () => handleSelectAnswer(idx)}
                     className={btnClass}
                   >
                     {/* Left: Shape Icon + Option Text */}
@@ -917,20 +921,22 @@ export default function LiveQuiz() {
                       </span>
                     </div>
 
-                    {/* Right: Radio Selection Target Bullseye (Figma 1:1) */}
-                    <div className="shrink-0 pl-1">
-                      {isSelected ? (
-                        <div
-                          className={`w-7 h-7 rounded-full bg-white border-2 ${style.selectedBullseyeBorder} flex items-center justify-center shrink-0 shadow-xs`}
-                        >
-                          <div className={`w-3.5 h-3.5 rounded-full ${style.selectedBullseyeDot} animate-scale-in`} />
-                        </div>
-                      ) : (
-                        <div
-                          className={`w-6 h-6 rounded-full bg-white/60 border-2 ${style.radioBorder} flex items-center justify-center transition-all`}
-                        />
-                      )}
-                    </div>
+                    {/* Right: Radio Selection Target Bullseye (Only for players who can answer) */}
+                    {!isHost && (
+                      <div className="shrink-0 pl-1">
+                        {isSelected ? (
+                          <div
+                            className={`w-7 h-7 rounded-full bg-white border-2 ${style.selectedBullseyeBorder} flex items-center justify-center shrink-0 shadow-xs`}
+                          >
+                            <div className={`w-3.5 h-3.5 rounded-full ${style.selectedBullseyeDot} animate-scale-in`} />
+                          </div>
+                        ) : (
+                          <div
+                            className={`w-6 h-6 rounded-full bg-white/60 border-2 ${style.radioBorder} flex items-center justify-center transition-all`}
+                          />
+                        )}
+                      </div>
+                    )}
                   </button>
                 );
               })}
