@@ -223,10 +223,11 @@
 
 .final-standings-topline {
   display: flex;
+  flex-wrap: wrap;
   min-height: 34px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px 12px;
   margin-bottom: 16px;
 }
 
