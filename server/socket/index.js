@@ -1,4 +1,5 @@
 const GameSession = require('../models/GameSession');
+const { clearActiveQuestionTimer } = require('../controllers/gameController');
 
 module.exports = (io) => {
 
@@ -242,6 +243,7 @@ module.exports = (io) => {
         // ─── GAME ENDED ───────────────────────────
         socket.on('game-ended', ({ pin, winner, finalLeaderboard }) => {
             const roomName = `room_${pin}`;
+            clearActiveQuestionTimer(pin);
             const payload = {
                 winner,
                 finalLeaderboard,
@@ -260,6 +262,7 @@ module.exports = (io) => {
         // ─── HOST ENDS QUIZ EXPLICITLY ───────────
         socket.on('host-end-quiz', async ({ pin, rawPin }) => {
             const roomPin = rawPin || pin;
+            clearActiveQuestionTimer(roomPin);
             console.log(`⚡ Host explicitly ended quiz for room: ${roomPin}`);
 
             try {

@@ -273,20 +273,18 @@ export default function HostLobby() {
     try {
       const response = await startQuestion(pin);
       if (response.success) {
-        toast.success('Battle commenced!');
-        setTimeout(() => {
-          if (!hasNavigatedRef.current) {
-            hasNavigatedRef.current = true;
-            const socketQuestionData = {
-              question: response.question,
-              questionNumber: response.question.questionNumber,
-              totalQuestions: response.question.totalQuestions,
-              timeLeft: response.question.timeLimit,
-              quizBackgroundImage: response.quizBackgroundImage || ''
-            };
-            navigate(`/live/${pin}`, { state: { socketQuestionData } });
-          }
-        }, 2000);
+        if (!hasNavigatedRef.current) {
+          hasNavigatedRef.current = true;
+          const socketQuestionData = {
+            question: response.question,
+            questionNumber: response.question.questionNumber,
+            totalQuestions: response.question.totalQuestions,
+            timeLeft: response.question.timeLimit,
+            serverTime: response.serverTime || response.question?.startTime || Date.now(),
+            quizBackgroundImage: response.quizBackgroundImage || ''
+          };
+          navigate(`/live/${pin}`, { state: { socketQuestionData } });
+        }
       } else {
         toast.error(response.message || 'Failed to start quiz');
       }

@@ -314,6 +314,17 @@ const joinGame = async (req, res) => {
     }
 };
 
+// Active authoritative room question timers
+const activeQuestionTimers = new Map();
+
+const clearActiveQuestionTimer = (pin) => {
+    const cleanPin = (pin || '').toString().trim();
+    if (activeQuestionTimers.has(cleanPin)) {
+        clearInterval(activeQuestionTimers.get(cleanPin));
+        activeQuestionTimers.delete(cleanPin);
+    }
+};
+
 const startQuestion = async (req, res) => {
     try {
         const { pin } = req.body;
@@ -348,6 +359,9 @@ const startQuestion = async (req, res) => {
         const cleanPin = (pin || '').toString().trim();
         const nextQuestion = quiz.questions[nextIndex];
         const questionStartTime = Date.now();
+
+        // Clear any previous active timer for this pin
+        clearActiveQuestionTimer(cleanPin);
 
         await GameSession.findOneAndUpdate(
             { pin: cleanPin },
@@ -384,13 +398,38 @@ const startQuestion = async (req, res) => {
                 },
                 questionNumber: nextIndex + 1,
                 totalQuestions: quiz.questions.length,
-                timeLeft: nextQuestion.timeLimit
+                timeLeft: nextQuestion.timeLimit,
+                serverTime: questionStartTime
             });
+
+            // Authoritative server-side ticker broadcasting synchronized remaining time every second
+            const timeLimit = nextQuestion.timeLimit || 20;
+            const timerInterval = setInterval(() => {
+                const now = Date.now();
+                const elapsedSeconds = Math.floor((now - questionStartTime) / 1000);
+                const remaining = Math.max(0, timeLimit - elapsedSeconds);
+
+                const timerPayload = {
+                    timeLeft: remaining,
+                    questionIndex: nextIndex,
+                    serverTime: now
+                };
+
+                io.to(`room_${cleanPin}`).emit('timer_update', timerPayload);
+                io.to(cleanPin).emit('timer_update', timerPayload);
+
+                if (remaining <= 0) {
+                    clearActiveQuestionTimer(cleanPin);
+                }
+            }, 1000);
+
+            activeQuestionTimers.set(cleanPin, timerInterval);
         }
 
         res.status(200).json({
             success: true,
             message: 'Question started',
+            serverTime: questionStartTime,
             quizBackgroundImage: quizBg,
             question: {
                 questionIndex: nextIndex,
@@ -736,6 +775,7 @@ const getLeaderboard = async (req, res) => {
 const endGame = async (req, res) => {
     try {
         const cleanPin = (req.body.pin || '').toString().trim();
+        clearActiveQuestionTimer(cleanPin);
 
         const game = await GameSession.findOne({ pin: cleanPin });
 
@@ -840,6 +880,7 @@ const getGame = async (req, res) => {
 
         res.status(200).json({
             success: true,
+            serverTime: Date.now(),
             game: {
                 id: game._id,
                 pin: game.pin,
@@ -868,6 +909,7 @@ const getGame = async (req, res) => {
 const endQuestion = async (req, res) => {
     try {
         const cleanPin = (req.body.pin || '').toString().trim();
+        clearActiveQuestionTimer(cleanPin);
 
         const game = await GameSession.findOne({ pin: cleanPin })
             .populate('quizId');
@@ -1044,5 +1086,6 @@ module.exports = {
     endGame,
     getGame,
     endQuestion,
-    showLeaderboard
+    showLeaderboard,
+    clearActiveQuestionTimer
 };

@@ -294,12 +294,24 @@ export default function LiveQuiz() {
             localStorage.setItem('last_bg_image', currentBg);
 
             if (game.questionStartTime) {
-              const elapsedSeconds = Math.floor((Date.now() - new Date(game.questionStartTime).getTime()) / 1000);
+              // Server-to-client clock synchronization to prevent local clock skew from shifting the timer
+              const serverTime = response.serverTime || Date.now();
+              const serverClockOffset = serverTime - Date.now();
+              const currentServerTime = Date.now() + serverClockOffset;
+              const questionStartMs = new Date(game.questionStartTime).getTime();
+              const elapsedSeconds = Math.max(0, Math.floor((currentServerTime - questionStartMs) / 1000));
               const limit = q.timeLimit || 20;
               const remaining = Math.max(0, limit - elapsedSeconds);
-              setTimeLeft(remaining);
+
+              setTimeLeft((prev) => {
+                if (prev === null || prev === undefined) return remaining;
+                if (remaining === 0) return 0;
+                // If local counter is already ticking within 1s of calibrated server time, don't jitter
+                if (Math.abs(prev - remaining) <= 1) return prev;
+                return remaining;
+              });
             } else {
-              setTimeLeft(q.timeLimit || 20);
+              setTimeLeft((prev) => (prev ?? (q.timeLimit || 20)));
             }
 
             if (!isUserHost && localPlayer) {
@@ -335,7 +347,8 @@ export default function LiveQuiz() {
       setQuestion(q);
       setQuestionNumber(data.questionNumber);
       setTotalQuestions(data.totalQuestions);
-      setTimeLeft(data.timeLeft);
+      const initialLimit = (typeof data.timeLeft === 'number') ? data.timeLeft : (q?.timeLimit || 20);
+      setTimeLeft(initialLimit);
       setCategory(q.category || 'general');
       localStorage.setItem('last_category', q.category || 'general');
       const globalBg = data.quizBackgroundImage || localStorage.getItem('quiz_global_bg_image') || '';
@@ -365,7 +378,9 @@ export default function LiveQuiz() {
     }
 
     socket.on('timer_update', ({ timeLeft: time }) => {
-      setTimeLeft(time);
+      if (typeof time === 'number') {
+        setTimeLeft(time);
+      }
     });
 
     socket.on('player_answered', ({ answeredCount: count, totalPlayers: total }) => {
@@ -379,7 +394,8 @@ export default function LiveQuiz() {
       setQuestion(q);
       setQuestionNumber(data.questionNumber);
       setTotalQuestions(data.totalQuestions);
-      setTimeLeft(data.timeLeft);
+      const initialTime = (typeof data.timeLeft === 'number') ? data.timeLeft : (q?.timeLimit || 20);
+      setTimeLeft(initialTime);
       setCategory(q.category || 'general');
       localStorage.setItem('last_category', q.category || 'general');
       const globalBg = data.quizBackgroundImage || localStorage.getItem('quiz_global_bg_image') || '';
