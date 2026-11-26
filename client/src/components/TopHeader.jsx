@@ -101,7 +101,7 @@ export default function TopHeader({
         >
           <Menu className="w-5 h-5" />
         </button>
-        <Logo className="h-7 sm:h-8 w-auto object-contain" />
+        <Logo size="sm" imgClassName="h-10 sm:h-12 w-auto object-contain" />
       </div>
 
       {/* Center: Global Search Input Container (580px max-width, 46px height pill) */}

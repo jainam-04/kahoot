@@ -733,7 +733,7 @@ export default function LiveQuiz() {
               <img
                 src="/gubbi-logo-transparent.png"
                 alt="GuBBi"
-                className="h-8 sm:h-12 w-auto object-contain drop-shadow-xs"
+                className="h-11 sm:h-14 md:h-16 w-auto object-contain drop-shadow-xs"
               />
             </Link>
 

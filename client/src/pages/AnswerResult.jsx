@@ -1213,7 +1213,7 @@ export default function AnswerResult() {
               <img
                 src="/gubbi-logo-transparent.png"
                 alt="GuBBi"
-                className="h-10 sm:h-12 w-auto object-contain drop-shadow-xs"
+                className="h-12 sm:h-14 md:h-16 w-auto object-contain drop-shadow-xs"
               />
             </Link>
 

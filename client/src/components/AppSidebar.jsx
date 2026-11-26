@@ -83,9 +83,9 @@ export default function AppSidebar({
           {/* Top Brand & Navigation Area */}
           <div className="px-4 pt-5 pb-3 flex flex-col items-center gap-3 w-full">
             {/* Mascot Brand Logo */}
-            <div className="relative w-full flex items-center justify-center pb-3 border-b border-[#F1F5F9]/80">
-              <Link to="/dashboard" className="flex items-center justify-center gap-2 group mx-auto" onClick={onClose}>
-                <Logo className="h-10 w-auto object-contain transition-transform group-hover:scale-105" />
+            <div className="relative w-full flex items-center justify-center pt-1 pb-3 border-b border-[#F1F5F9]/80">
+              <Link to="/dashboard" className="flex items-center justify-center group mx-auto" onClick={onClose}>
+                <Logo size="lg" imgClassName="h-16 sm:h-20 w-auto max-w-[190px]" className="transition-transform group-hover:scale-105" />
               </Link>
               {/* Close Drawer Button on Mobile */}
               <button

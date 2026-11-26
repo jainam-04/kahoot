@@ -180,7 +180,7 @@ export default function Navbar() {
 
           {/* Brand Logo */}
           <Link to={token ? "/dashboard" : "/"} className="flex items-center transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
-            <Logo className="shrink-0" size="md" />
+            <Logo className="shrink-0" size="lg" />
           </Link>
         </div>
 

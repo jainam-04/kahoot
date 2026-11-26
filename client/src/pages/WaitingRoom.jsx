@@ -329,7 +329,7 @@ export default function WaitingRoom() {
     <AnimatedPage>
       <div className="waiting-room-page">
         <header className="waiting-room-header">
-          <Logo size="xs" className="waiting-room-logo" />
+          <Logo size="md" className="waiting-room-logo" />
           <button
             type="button"
             className="waiting-leave-button"

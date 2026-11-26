@@ -445,7 +445,7 @@ export default function HostLobby() {
               >
                 <Menu />
               </button>
-              <Logo className="h-7 sm:h-8 w-auto object-contain ml-1" />
+              <Logo size="sm" imgClassName="h-10 sm:h-12 w-auto object-contain ml-1" />
             </div>
 
             <label className="host-lobby-search">
