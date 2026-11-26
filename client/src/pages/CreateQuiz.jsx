@@ -9,7 +9,8 @@ import {
   Plus, Play, Trash2, Copy, Clock, X, Check, Sparkles,
   FileSpreadsheet, Save, Image, Upload, Sliders, HelpCircle,
   Building2, Grid, Monitor, Smartphone, Menu,
-  Palette, User, ChevronLeft, ChevronRight
+  Palette, User, ChevronLeft, ChevronRight,
+  FileText, LayoutGrid, Pencil, Landmark
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -631,11 +632,12 @@ export default function CreateQuiz() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
 
               {/* ─ COLUMN 1: QUIZ DETAILS PANEL (lg:col-span-3) ─ */}
-              <div className="lg:col-span-3 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-4 sm:p-5 text-left flex flex-col gap-4">
+              <div className="lg:col-span-3 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_4px_20px_rgba(0,0,0,0.06),0px_1px_3px_rgba(0,0,0,0.04)] p-4 sm:p-5 text-left flex flex-col gap-4">
                 {/* Panel Header */}
                 <div className="flex items-center gap-2.5 pb-0.5">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F0F9FF] flex items-center justify-center shrink-0">
-                    <Sliders className="w-4 h-4 text-[#0284C7]" />
+                  <div className="w-8 h-8 rounded-xl bg-[#F0F9FF] flex items-center justify-center shrink-0">
+                    <img src="/quiz-details-icon.png" alt="" className="w-5 h-5 object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'block'; }} />
+                    <Settings className="w-5 h-5 text-[#0284C7] hidden" />
                   </div>
                   <h2 className="text-[15px] sm:text-[16px] font-bold text-[#0F172A] tracking-tight">Quiz Details</h2>
                 </div>
@@ -648,14 +650,14 @@ export default function CreateQuiz() {
                       Quiz Title <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                        <BookOpen className="w-4 h-4 text-[#9333EA]" />
+                      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <FileText className="w-4 h-4 text-[#9333EA]" />
                       </div>
                       <input
                         type="text"
                         placeholder="Enter quiz title"
                         {...register('title', { required: 'Quiz title is required' })}
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] placeholder-[#C084FC]/80 focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30"
+                        className="w-full pl-10 pr-3 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 shadow-[inset_0px_2px_6px_rgba(0,0,0,0.05),0px_1px_2px_rgba(0,0,0,0.02)] text-xs font-normal text-[#1E293B] placeholder:text-[#C084FC]/90 focus:outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-[#7C3AED]/20 transition-all"
                       />
                     </div>
                     {errors.title && (
@@ -669,12 +671,12 @@ export default function CreateQuiz() {
                       Category <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                        <Grid className="w-4 h-4 text-[#9333EA]" />
+                      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <LayoutGrid className="w-4 h-4 text-[#9333EA]" />
                       </div>
                       <select
                         {...register('category')}
-                        className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30 appearance-none cursor-pointer"
+                        className="w-full pl-10 pr-8 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 shadow-[inset_0px_2px_6px_rgba(0,0,0,0.05),0px_1px_2px_rgba(0,0,0,0.02)] text-xs font-normal text-[#1E293B] focus:outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-[#7C3AED]/20 appearance-none cursor-pointer transition-all"
                       >
                         {CATEGORIES.map(cat => (
                           <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -694,10 +696,10 @@ export default function CreateQuiz() {
                         rows={3}
                         placeholder="Describe your quiz (optional)"
                         {...register('description')}
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] placeholder-[#C084FC]/80 focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30 resize-none"
+                        className="w-full pl-10 pr-3 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 shadow-[inset_0px_2px_6px_rgba(0,0,0,0.05),0px_1px_2px_rgba(0,0,0,0.02)] text-xs font-normal text-[#1E293B] placeholder:text-[#C084FC]/90 focus:outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-[#7C3AED]/20 resize-none transition-all"
                       />
-                      <div className="absolute left-3 top-2.5 pointer-events-none">
-                        <HelpCircle className="w-4 h-4 text-[#9333EA]" />
+                      <div className="absolute left-3.5 top-2.5 pointer-events-none">
+                        <Pencil className="w-4 h-4 text-[#9333EA]" />
                       </div>
                     </div>
                   </div>
@@ -705,17 +707,17 @@ export default function CreateQuiz() {
                   {/* School / College / Organization */}
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-[#1E293B] block">
-                      Organization (Optional)
+                      School / College / Organization (Optional)
                     </label>
                     <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                        <Building2 className="w-4 h-4 text-[#9333EA]" />
+                      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <Landmark className="w-4 h-4 text-[#9333EA]" />
                       </div>
                       <input
                         type="text"
-                        placeholder="Enter school or organization"
+                        placeholder="Enter school or organization name"
                         {...register('organizationName')}
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs font-normal text-[#1E293B] placeholder-[#C084FC]/80 focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30"
+                        className="w-full pl-10 pr-3 py-2 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 shadow-[inset_0px_2px_6px_rgba(0,0,0,0.05),0px_1px_2px_rgba(0,0,0,0.02)] text-xs font-normal text-[#1E293B] placeholder:text-[#C084FC]/90 focus:outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-[#7C3AED]/20 transition-all"
                       />
                     </div>
                   </div>
