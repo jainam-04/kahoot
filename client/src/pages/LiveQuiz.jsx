@@ -43,12 +43,12 @@ const parseBgConfig = (bgStr) => {
         blur: typeof config.blur === 'number' ? config.blur : 0,
         brightness: typeof config.brightness === 'number' ? config.brightness : 100,
         overlayOpacity: typeof config.overlayOpacity === 'number' ? config.overlayOpacity : 30,
-        gradientOverlay: config.gradientOverlay || 'none',
+        gradientOverlay: config.gradientOverlay || config.gradient || 'none',
         gradientColor1: config.gradientColor1 || '#7c3aed',
         gradientColor2: config.gradientColor2 || '#06b6d4',
         position: config.position || 'center',
         fit: config.fit || 'cover',
-        darkOverlay: config.darkOverlay !== undefined ? !!config.darkOverlay : true
+        darkOverlay: config.darkOverlay !== undefined ? !!config.darkOverlay : (config.lightOverlay !== undefined ? !!config.lightOverlay : true)
       };
     }
   } catch (e) { void e; }
@@ -667,12 +667,14 @@ export default function LiveQuiz() {
     <AnimatedPage>
       <div className="relative min-h-[100dvh] w-full flex flex-col justify-between gap-3 sm:gap-4 p-3 sm:p-6 bg-[#F8F5FF] overflow-x-hidden overflow-y-auto">
 
-        {/* Customized Background Layer (if host uploaded one) or Default Brand Soft Purple */}
-        {bgConfig.url ? (
+        {/* Customized Background Layer (if host configured one) or Default Brand Soft Purple */}
+        {bgConfig.url || (bgConfig.gradientOverlay && bgConfig.gradientOverlay !== 'none') || bgConfig.blur > 0 ? (
           <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000 ease-out animate-fade-in">
             <div
               style={{
-                backgroundImage: `url(${bgConfig.url})`,
+                backgroundImage: bgConfig.url
+                  ? `url(${bgConfig.url})`
+                  : 'radial-gradient(circle at 20% 20%, #EDE9FE 0%, #E0E7FF 45%, #F5F3FF 100%)',
                 backgroundPosition: bgConfig.position,
                 backgroundSize: bgConfig.fit,
                 backgroundRepeat: 'no-repeat',
@@ -685,7 +687,7 @@ export default function LiveQuiz() {
               <div
                 className="absolute inset-0"
                 style={{
-                  backgroundColor: `rgba(0, 0, 0, ${bgConfig.overlayOpacity / 100})`,
+                  backgroundColor: `rgba(15, 23, 42, ${bgConfig.overlayOpacity / 100})`,
                 }}
               />
             )}
@@ -694,7 +696,13 @@ export default function LiveQuiz() {
                 className="absolute inset-0"
                 style={{
                   background:
-                    bgConfig.gradientOverlay === 'linear'
+                    bgConfig.gradientOverlay === 'subtle'
+                      ? 'linear-gradient(to bottom, rgba(15, 23, 42, 0.25) 0%, rgba(15, 23, 42, 0.65) 100%)'
+                      : bgConfig.gradientOverlay === 'vibrant'
+                      ? 'linear-gradient(135deg, rgba(124, 58, 237, 0.45) 0%, rgba(6, 182, 212, 0.45) 100%)'
+                      : bgConfig.gradientOverlay === 'purple'
+                      ? 'radial-gradient(circle at center, rgba(147, 51, 234, 0.25) 0%, rgba(76, 29, 149, 0.75) 100%)'
+                      : bgConfig.gradientOverlay === 'linear'
                       ? `linear-gradient(135deg, ${bgConfig.gradientColor1}33, ${bgConfig.gradientColor2}33)`
                       : `radial-gradient(circle, ${bgConfig.gradientColor1}33 0%, ${bgConfig.gradientColor2}33 100%)`,
                 }}

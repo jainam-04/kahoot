@@ -64,8 +64,8 @@ export default function EditQuiz() {
   // Active question index in question editor
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
 
-  // Live preview device state
-  const [previewDevice, setPreviewDevice] = useState('mobile'); // 'mobile' | 'desktop'
+  // Live preview device state (defaults to desktop)
+  const [previewDevice, setPreviewDevice] = useState('desktop'); // 'mobile' | 'desktop'
 
   // Advanced Background Settings state
   const [useSameBgForAll, setUseSameBgForAll] = useState(true);
@@ -134,23 +134,26 @@ export default function EditQuiz() {
         }
         config = parsed;
       }
-      return (config && typeof config === 'object' && config.url) ? config : null;
+      return (config && typeof config === 'object') ? config : null;
     } catch (e) {
       return null;
     }
   };
 
   const serializeBgConfig = (cfg) => {
-    if (!cfg || !cfg.url) return '';
+    if (!cfg) return '';
+    if (!cfg.url && (!cfg.gradient || cfg.gradient === 'none') && !cfg.blur && cfg.brightness === 100) return '';
     return JSON.stringify({
-      url: cfg.url,
+      url: cfg.url || '',
       blur: Number(cfg.blur) || 0,
       brightness: Number(cfg.brightness) ?? 100,
       overlayOpacity: Number(cfg.overlayOpacity) ?? 30,
       fit: cfg.fit || 'cover',
       position: cfg.position || 'center',
       gradient: cfg.gradient || 'none',
-      lightOverlay: cfg.lightOverlay !== undefined ? Boolean(cfg.lightOverlay) : true
+      gradientOverlay: cfg.gradient || 'none',
+      lightOverlay: cfg.lightOverlay !== undefined ? Boolean(cfg.lightOverlay) : true,
+      darkOverlay: cfg.lightOverlay !== undefined ? Boolean(cfg.lightOverlay) : true
     });
   };
 
@@ -1175,25 +1178,55 @@ export default function EditQuiz() {
                     : 'w-full rounded-xl border border-[#CBD5E1] shadow-md p-2.5 sm:p-3 min-h-[290px]'
                     }`}
                 >
-                  {/* Optional Background image layer */}
-                  {bgSettings.url && (
+                  {/* Background representation layer (image or default arena backdrop with responsive filters) */}
+                  <div
+                    className="absolute pointer-events-none transition-all duration-300"
+                    style={{
+                      inset: '-20px',
+                      backgroundImage: bgSettings.url
+                        ? `url(${bgSettings.url})`
+                        : 'radial-gradient(circle at 20% 20%, #EDE9FE 0%, #E0E7FF 45%, #F5F3FF 100%)',
+                      backgroundSize: bgSettings.url ? bgSettings.fit : 'cover',
+                      backgroundPosition: bgSettings.url ? bgSettings.position : 'center',
+                      backgroundRepeat: 'no-repeat',
+                      filter: `blur(${bgSettings.blur}px) brightness(${bgSettings.brightness}%)`,
+                    }}
+                  >
+                    {!bgSettings.url && (
+                      <>
+                        <div className="absolute top-[12%] left-[10%] w-36 h-36 bg-[#DDD6FE]/70 rounded-full blur-xl" />
+                        <div className="absolute bottom-[10%] right-[10%] w-44 h-44 bg-[#BAE6FD]/60 rounded-full blur-xl" />
+                        <div className="absolute top-[40%] right-[15%] w-28 h-28 bg-[#FBCFE8]/50 rounded-full blur-lg" />
+                      </>
+                    )}
+                  </div>
+
+                  {/* Gradient Tint Layer */}
+                  {bgSettings.gradient && bgSettings.gradient !== 'none' && (
                     <div
                       className="absolute inset-0 pointer-events-none transition-all duration-300"
                       style={{
-                        backgroundImage: `url(${bgSettings.url})`,
-                        backgroundSize: bgSettings.fit,
-                        backgroundPosition: bgSettings.position,
-                        filter: `blur(${bgSettings.blur}px) brightness(${bgSettings.brightness}%)`,
-                        opacity: 1
+                        zIndex: 1,
+                        background:
+                          bgSettings.gradient === 'subtle'
+                            ? 'linear-gradient(to bottom, rgba(15, 23, 42, 0.25) 0%, rgba(15, 23, 42, 0.65) 100%)'
+                            : bgSettings.gradient === 'vibrant'
+                            ? 'linear-gradient(135deg, rgba(124, 58, 237, 0.45) 0%, rgba(6, 182, 212, 0.45) 100%)'
+                            : bgSettings.gradient === 'purple'
+                            ? 'radial-gradient(circle at center, rgba(147, 51, 234, 0.25) 0%, rgba(76, 29, 149, 0.75) 100%)'
+                            : 'none'
                       }}
                     />
                   )}
 
-                  {/* Gradient / Overlay Layer */}
+                  {/* Contrast / Dark Overlay Layer */}
                   {bgSettings.lightOverlay && (
                     <div
-                      className="absolute inset-0 bg-white pointer-events-none transition-opacity"
-                      style={{ opacity: bgSettings.overlayOpacity / 100 }}
+                      className="absolute inset-0 pointer-events-none transition-all duration-300"
+                      style={{
+                        zIndex: 1,
+                        backgroundColor: `rgba(15, 23, 42, ${bgSettings.overlayOpacity / 100})`
+                      }}
                     />
                   )}
 
