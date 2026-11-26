@@ -151,6 +151,7 @@ export default function CreateQuiz() {
     control,
     watch,
     setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -1373,7 +1374,10 @@ export default function CreateQuiz() {
               </div>
 
               {/* ─ RIGHT SUB-PANEL: QUESTION EDITOR MAIN AREA (lg:col-span-8) ─ */}
-              <div className="lg:col-span-8 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-4 sm:p-6 text-left flex flex-col gap-4">
+              <div
+                key={fields[safeActiveIndex]?.id || `q-panel-${safeActiveIndex}`}
+                className="lg:col-span-8 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-4 sm:p-6 text-left flex flex-col gap-4"
+              >
                 {/* Header row: Question title, type selector pill & clone/delete actions */}
                 <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2.5 border-b border-[#F1F5F9]">
                   <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -1435,9 +1439,11 @@ export default function CreateQuiz() {
                       <HelpCircle className="w-4 h-4 text-[#9333EA]" />
                     </div>
                     <textarea
+                      key={`q-text-${fields[safeActiveIndex]?.id || safeActiveIndex}`}
                       rows={2}
                       placeholder="e.g. What is the capital of France?"
                       {...register(`questions.${safeActiveIndex}.questionText`, { required: 'Question prompt is required' })}
+                      defaultValue={getValues(`questions.${safeActiveIndex}.questionText`) ?? currentQuestions[safeActiveIndex]?.questionText ?? ''}
                       className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#FCFCFF] border border-[#E9D5FF]/90 text-xs sm:text-[13px] text-[#1E293B] placeholder-[#C084FC] focus:outline-none focus:border-[#6222F5] focus:ring-1 focus:ring-[#6222F5]/30 font-medium leading-relaxed resize-y min-h-[58px]"
                     />
                   </div>
@@ -1471,9 +1477,11 @@ export default function CreateQuiz() {
 
                           {/* Option Text Input */}
                           <input
+                            key={`q-opt-${fields[safeActiveIndex]?.id || safeActiveIndex}-${optIdx}`}
                             type="text"
                             placeholder={`Option ${letter}`}
                             {...register(`questions.${safeActiveIndex}.options.${optIdx}`, { required: 'Option is required' })}
+                            defaultValue={getValues(`questions.${safeActiveIndex}.options.${optIdx}`) ?? currentQuestions[safeActiveIndex]?.options?.[optIdx] ?? ''}
                             onClick={(e) => e.stopPropagation()}
                             style={{ backgroundColor: 'transparent', border: 'none', boxShadow: 'none', outline: 'none' }}
                             className="flex-1 bg-transparent border-none shadow-none outline-none option-input text-xs text-[#1E293B] placeholder-[#94A3B8] font-medium min-w-0 p-0 focus:ring-0 focus:outline-none"
@@ -1512,11 +1520,13 @@ export default function CreateQuiz() {
 
                   <div className="flex items-center gap-2.5 flex-1 max-w-[420px]">
                     <input
+                      key={`q-timer-${fields[safeActiveIndex]?.id || safeActiveIndex}`}
                       type="range"
                       min="5"
                       max="120"
                       step="5"
                       {...register(`questions.${safeActiveIndex}.timeLimit`)}
+                      defaultValue={getValues(`questions.${safeActiveIndex}.timeLimit`) ?? currentQuestions[safeActiveIndex]?.timeLimit ?? 20}
                       className="w-full h-1.5 bg-[#E2E8F0] rounded-full accent-[#7C3AED] cursor-pointer"
                     />
                     <div className="px-2.5 py-0.5 rounded-lg bg-[#FAF5FF] border border-[#E9D5FF] text-[#6D28D9] font-bold text-xs shrink-0">
