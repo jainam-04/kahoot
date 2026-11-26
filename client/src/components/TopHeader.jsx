@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Search,
   X,
@@ -197,18 +197,14 @@ export default function TopHeader({
                 <p className="text-[11px] text-[#64748B] truncate">{displayEmail}</p>
               </div>
               <div className="py-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsProfileDropdownOpen(false);
-                    if (onOpenProfile) onOpenProfile();
-                    else navigate('/dashboard');
-                  }}
+                <Link
+                  to="/settings"
+                  onClick={() => setIsProfileDropdownOpen(false)}
                   className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors cursor-pointer"
                 >
                   <Settings className="w-4 h-4 text-[#94A3B8]" />
                   <span>Account Settings</span>
-                </button>
+                </Link>
                 <button
                   type="button"
                   onClick={() => {

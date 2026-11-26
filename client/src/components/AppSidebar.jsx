@@ -35,6 +35,7 @@ export default function AppSidebar({
     ? activeNav === 'create-quiz'
     : (currentPath.startsWith('/quiz/create') || currentPath.startsWith('/quiz/edit'));
   const isReportsActive = activeNav ? activeNav === 'reports' : currentPath.startsWith('/reports');
+  const isSettingsActive = activeNav ? activeNav === 'settings' : currentPath.startsWith('/settings');
 
   // Lock body scroll when mobile sidebar drawer is open
   useScrollLock(isOpen);
@@ -153,14 +154,17 @@ export default function AppSidebar({
               </Link>
 
               {/* Settings */}
-              <button
-                type="button"
-                onClick={handleSettingsClick}
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors text-left cursor-pointer"
+              <Link
+                to="/settings"
+                onClick={onClose}
+                className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${isSettingsActive
+                  ? 'rounded-2xl bg-[#6222F5] text-white shadow-[0px_10px_15px_-3px_rgba(98,34,245,0.25),0px_4px_6px_-4px_rgba(98,34,245,0.25)] font-semibold text-[14px]'
+                  : 'rounded-xl text-[13.5px] font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
+                  }`}
               >
-                <Settings className="w-5 h-5 text-[#94A3B8]" />
+                <Settings className={`w-5 h-5 ${isSettingsActive ? 'text-white' : 'text-[#94A3B8]'}`} />
                 <span>Settings</span>
-              </button>
+              </Link>
             </nav>
           </div>
 
