@@ -555,34 +555,38 @@ export default function CreateQuiz() {
           {/* ─── FORM & PAGE BODY ─── */}
           <main className="flex-1 px-3 sm:px-6 lg:px-8 py-4 sm:py-6 max-w-[1340px] w-full mx-auto space-y-4 sm:space-y-6">
 
-            {/* ─── PAGE TITLE & ACTION TOOLBAR (Perfect 2x2 grid on mobile) ─── */}
-            <div className="rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-3.5 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3.5 text-left">
+            {/* ─── PAGE TITLE & ACTION TOOLBAR (Figma 1080x58 Bar on desktop, responsive on mobile) ─── */}
+            <div className="rounded-[16px] bg-white border border-[#E2E8F0]/90 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-3 sm:p-3.5 xl:py-0 xl:pl-[10px] xl:pr-[24px] xl:h-[58px] flex flex-col xl:flex-row xl:items-center justify-between gap-3 xl:gap-[68px] text-left">
               {/* Left branding & back button */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-[14px] shrink-0">
                 <button
                   type="button"
                   onClick={() => navigate('/quiz/my')}
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white border border-[#E2E8F0] shadow-xs flex items-center justify-center text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-all cursor-pointer shrink-0"
+                  className="w-10 h-10 rounded-[12px] bg-white border border-[#E2E8F0] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-all cursor-pointer shrink-0"
                   aria-label="Go Back"
                 >
-                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <ArrowLeft className="w-5 h-5 text-[#475569]" />
                 </button>
-                <div className="min-w-0">
-                  <h1 className="text-lg sm:text-2xl font-extrabold text-[#0F172A] tracking-tight truncate">Create Quiz</h1>
-                  <p className="text-[11px] sm:text-xs text-[#64748B] truncate">Design customized questions and timers.</p>
+                <div className="min-w-0 flex flex-col justify-center">
+                  <h1 className="text-[20px] sm:text-[24px] font-extrabold text-[#0F172A] tracking-[-0.6px] leading-tight sm:leading-6 truncate font-['Inter',sans-serif]">
+                    Create Quiz
+                  </h1>
+                  <p className="text-[12px] font-medium text-[#64748B] leading-4 truncate font-['Inter',sans-serif]">
+                    Design customized questions and timers.
+                  </p>
                 </div>
               </div>
 
-              {/* Right Action Buttons: 2x2 Clean Grid on mobile, inline flex on desktop */}
-              <div className="grid grid-cols-2 gap-2 w-full md:w-auto md:flex md:flex-wrap md:items-center">
+              {/* Right Action Buttons: 2x2 grid on mobile, 4-col on tablet, flex row on desktop */}
+              <div className="grid grid-cols-2 gap-2 w-full sm:grid-cols-4 xl:flex xl:items-center xl:w-auto xl:gap-[10px]">
                 {/* 1. AI Assistant */}
                 <button
                   type="button"
                   onClick={() => setShowAIModal(true)}
-                  className="w-full md:w-auto justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-white font-bold text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full xl:w-[156px] h-[40px] sm:h-[42px] px-3 sm:px-4 rounded-[16px] text-white font-bold text-[12px] leading-4 shadow-[0px_10px_25px_-3px_rgba(108,40,254,0.35)] flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] font-['Plus_Jakarta_Sans',sans-serif] shrink-0"
                   style={{ background: 'linear-gradient(90deg, #6C28FE 0%, #4F46E5 50%, #D946EF 100%)' }}
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-yellow-300 shrink-0" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#E9D5FF] shrink-0" />
                   <span className="truncate">AI Assistant</span>
                 </button>
 
@@ -597,7 +601,7 @@ export default function CreateQuiz() {
                 <button
                   type="button"
                   onClick={() => excelInputRef.current?.click()}
-                  className="w-full md:w-auto justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-[#F8F9FE] border border-[#E9D5FF]/80 text-[#6C28FE] font-bold text-xs hover:bg-[#F1F3FE] shadow-xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                  className="w-full xl:w-[157px] h-[40px] sm:h-[42px] px-3 sm:px-4 rounded-[16px] bg-[#F8F9FE] border border-[rgba(233,213,255,0.8)] text-[#6C28FE] font-bold text-[12px] leading-4 hover:bg-[#F1F3FE] flex items-center justify-center gap-2 cursor-pointer transition-colors font-['Plus_Jakarta_Sans',sans-serif] shrink-0"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5 text-[#7C3AED] shrink-0" />
                   <span className="truncate">Import CSV</span>
@@ -608,7 +612,7 @@ export default function CreateQuiz() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={handleSubmit((data) => onSubmit(data, 'draft', false), onInvalid)}
-                  className="w-full md:w-auto justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white border border-[#E9D5FF] text-[#6C28FE] font-bold text-xs shadow-xs hover:bg-[#FAF5FF] flex items-center gap-1.5 cursor-pointer transition-all"
+                  className="w-full xl:w-[173px] h-[40px] sm:h-[42px] px-3 sm:px-4 rounded-[16px] bg-white border border-[#E9D5FF] text-[#6C28FE] font-bold text-[12px] leading-4 shadow-[0px_8px_30px_rgba(108,40,254,0.06)] hover:bg-[#FAF5FF] flex items-center justify-center gap-2 cursor-pointer transition-all font-['Plus_Jakarta_Sans',sans-serif] shrink-0"
                 >
                   <Save className="w-3.5 h-3.5 text-[#7C3AED] shrink-0" />
                   <span className="truncate">Save Draft</span>
@@ -619,10 +623,10 @@ export default function CreateQuiz() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={handleSubmit((data) => onSubmit(data, 'published', true), onInvalid)}
-                  className="w-full md:w-auto justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-white font-bold text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full xl:w-[173px] h-[40px] sm:h-[42px] px-3 sm:px-4 rounded-[16px] text-white font-bold text-[12px] leading-4 shadow-[0px_10px_25px_-3px_rgba(108,40,254,0.35)] flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] font-['Plus_Jakarta_Sans',sans-serif] shrink-0"
                   style={{ background: 'linear-gradient(90deg, #6C28FE 0%, #4F46E5 50%, #6640E8 100%)' }}
                 >
-                  <Play className="w-3.5 h-3.5 fill-white shrink-0" />
+                  <Play className="w-3.5 h-3.5 fill-white text-white shrink-0" />
                   <span className="truncate">Publish & Launch</span>
                 </button>
               </div>
