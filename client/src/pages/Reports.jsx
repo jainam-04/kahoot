@@ -38,6 +38,7 @@ import Logo from '../components/Logo';
 import HostProfileModal from '../components/HostProfileModal';
 import PlanComparisonTable from '../components/PlanComparisonTable';
 import AppSidebar from '../components/AppSidebar';
+import TopHeader from '../components/TopHeader';
 import ReportsModal from '../components/ReportsModal';
 import { getMyQuizzes } from '../services/quizService';
 import { getMyResults } from '../services/resultService';
@@ -438,7 +439,7 @@ export default function Reports() {
 
   return (
     <AnimatedPage>
-      <div className="min-h-screen bg-[#FDFDFE] flex flex-col font-['Inter',sans-serif] text-slate-800 antialiased selection:bg-[#6320EE]/20 selection:text-[#6320EE]">
+      <div className="min-h-screen bg-[#FDFDFE] flex flex-col font-['Inter',sans-serif] text-slate-800 antialiased selection:bg-[#6320EE]/20 selection:text-[#6320EE] overflow-x-clip">
         {/* ─── APP SIDEBAR (Canonical Component) ─── */}
         <AppSidebar
           isOpen={isMobileNavOpen}
@@ -452,113 +453,16 @@ export default function Reports() {
         <div className="flex-1 flex flex-col lg:pl-[230px] w-full min-w-0 transition-all">
 
           {/* ========================================================================= */}
-          {/* TOP HEADER (74px height, exact Figma specifications) */}
+          {/* TOP HEADER (Exact Figma CSS specifications, Fixed/Sticky on Scroll) */}
           {/* ========================================================================= */}
-          <header className="sticky top-0 z-30 h-[74px] max-h-[74px] px-4 sm:px-8 bg-white/80 backdrop-blur-md border-b border-[#EEF0F6] flex items-center justify-between gap-4">
-
-            {/* Left: Mobile Drawer Hamburger Button */}
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setIsMobileNavOpen(true)}
-                className="lg:hidden p-2 rounded-xl border border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
-                aria-label="Open navigation menu"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Center: Global Search Input Container (580px max-width, pill) */}
-            <div className="hidden sm:flex flex-1 max-w-[580px] mx-auto items-center">
-              <div className="relative w-full">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] pointer-events-none" />
-                <input
-                  type="text"
-                  value={headerSearch}
-                  onChange={(e) => setHeaderSearch(e.target.value)}
-                  placeholder="Search quizzes, topics, or participants..."
-                  className="w-full h-[46px] pl-11 pr-10 rounded-full bg-[#FAF9FD] border border-[#E9EAF2] text-[13.5px] font-bold text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:border-[#6320EE] focus:ring-2 focus:ring-[#6320EE]/15 transition-all"
-                />
-                {headerSearch && (
-                  <button
-                    type="button"
-                    onClick={() => setHeaderSearch('')}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#1E293B] p-1 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Right: Top Right Controls: User Profile Pill ONLY */}
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              {/* User Profile Pill */}
-              <div className="relative" ref={profileDropdownRef}>
-                <button
-                  type="button"
-                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                  className="h-[42px] pl-1 pr-3 py-1 rounded-full bg-white border border-[#E7E9F2] shadow-2xs hover:bg-[#FAF9FD] transition-colors flex items-center gap-2 cursor-pointer select-none"
-                  aria-label="User Profile"
-                >
-                  {/* Purple Circle Avatar (32px x 32px) */}
-                  <div className="w-8 h-8 rounded-full bg-[#6C38FF] text-white font-semibold text-[13px] flex items-center justify-center shrink-0 shadow-2xs">
-                    {userInitial}
-                  </div>
-                  <span className="text-[13.5px] font-semibold text-[#1E293B] max-w-[80px] truncate hidden sm:inline">
-                    {userName}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] hidden sm:inline" />
-                </button>
-
-                {/* Profile Dropdown */}
-                {isProfileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white border border-[#EEF0F6] shadow-xl p-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150">
-                    <div className="px-3 py-2 border-b border-[#F1F5F9]">
-                      <p className="text-xs font-bold text-[#0F172A] truncate">{userName}</p>
-                      <p className="text-[11px] text-[#64748B] truncate">{user?.email || 'host@gubbi.io'}</p>
-                    </div>
-                    <div className="py-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsProfileDropdownOpen(false);
-                          setActiveModal('profile');
-                        }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors cursor-pointer"
-                      >
-                        <Settings className="w-4 h-4 text-[#94A3B8]" />
-                        <span>Account Settings</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsProfileDropdownOpen(false);
-                          setActiveModal('upgrade');
-                        }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#6C38FF] hover:bg-[#FAF5FF] transition-colors cursor-pointer"
-                      >
-                        <Crown className="w-4 h-4 text-[#F59E0B]" />
-                        <span>Upgrade to Pro</span>
-                      </button>
-                      <div className="my-1 border-t border-[#F1F5F9]" />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsProfileDropdownOpen(false);
-                          handleLogout();
-                        }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
-                      >
-                        <LogOut className="w-4 h-4 text-[#EF4444]" />
-                        <span>Log Out</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </header>
+          <TopHeader
+            searchQuery={headerSearch}
+            onSearchChange={setHeaderSearch}
+            onOpenMobileNav={() => setIsMobileNavOpen(true)}
+            onOpenProfile={() => setActiveModal('profile')}
+            onOpenUpgrade={() => setActiveModal('upgrade')}
+            user={user}
+          />
 
           {/* ========================================================================= */}
           {/* MAIN BODY CONTENT (Exact Figma spacing, max-width: 1340px) */}

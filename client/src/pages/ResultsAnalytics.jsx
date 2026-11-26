@@ -10,6 +10,7 @@ import {
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
 import AppSidebar from '../components/AppSidebar';
+import TopHeader from '../components/TopHeader';
 import HostProfileModal from '../components/HostProfileModal';
 import PlanComparisonTable from '../components/PlanComparisonTable';
 import { getResultBySession } from '../services/resultService';
@@ -898,7 +899,7 @@ export default function ResultsAnalytics() {
 
   return (
     <AnimatedPage>
-      <div className={`min-h-screen flex flex-col font-['Inter',sans-serif] antialiased selection:bg-[#6320EE]/20 selection:text-[#6320EE] ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-[#FDFDFE] text-slate-800'}`}>
+      <div className={`min-h-screen flex flex-col font-['Inter',sans-serif] antialiased selection:bg-[#6320EE]/20 selection:text-[#6320EE] overflow-x-clip ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-[#FDFDFE] text-slate-800'}`}>
         {/* ─── APP SIDEBAR (Canonical Component) ─── */}
         <AppSidebar
           isOpen={isMobileNavOpen}
@@ -911,110 +912,15 @@ export default function ResultsAnalytics() {
         {/* ─── MAIN CONTENT WRAPPER (Shifted by 230px on desktop) ─── */}
         <div className="flex-1 flex flex-col lg:pl-[230px] w-full min-w-0 transition-all">
 
-          {/* TOP HEADER (74px height, exact Figma specifications matching /reports) */}
-          <header className={`sticky top-0 z-30 h-[74px] max-h-[74px] px-4 sm:px-8 backdrop-blur-md border-b flex items-center justify-between gap-4 ${isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white/80 border-[#EEF0F6]'}`}>
-
-            {/* Left: Mobile Drawer Hamburger Button */}
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setIsMobileNavOpen(true)}
-                className={`lg:hidden p-2 rounded-xl border transition-colors cursor-pointer ${isDark ? 'border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800' : 'border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC]'}`}
-                aria-label="Open navigation menu"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Center: Global Search Input Container (580px max-width, pill) */}
-            <div className="hidden sm:flex flex-1 max-w-[580px] mx-auto items-center">
-              <div className="relative w-full">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] pointer-events-none" />
-                <input
-                  type="text"
-                  value={headerSearch}
-                  onChange={(e) => setHeaderSearch(e.target.value)}
-                  placeholder="Search quizzes, topics, or participants..."
-                  className={`w-full h-[46px] pl-11 pr-10 rounded-full border text-[13.5px] font-bold placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6320EE]/15 transition-all ${isDark ? 'bg-slate-800/60 border-slate-700 text-white focus:border-[#7C3AED]' : 'bg-[#FAF9FD] border-[#E9EAF2] text-[#1E293B] focus:border-[#6320EE]'}`}
-                />
-                {headerSearch && (
-                  <button
-                    type="button"
-                    onClick={() => setHeaderSearch('')}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#1E293B] p-1 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Right: User Profile Pill */}
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              <div className="relative" ref={profileDropdownRef}>
-                <button
-                  type="button"
-                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                  className={`h-[42px] pl-1 pr-3 py-1 rounded-full border shadow-2xs transition-colors flex items-center gap-2 cursor-pointer select-none ${isDark ? 'bg-slate-900 border-slate-800 hover:bg-slate-800' : 'bg-white border-[#E7E9F2] hover:bg-[#FAF9FD]'}`}
-                  aria-label="User Profile"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#6C38FF] text-white font-semibold text-[13px] flex items-center justify-center shrink-0 shadow-2xs">
-                    {userInitial}
-                  </div>
-                  <span className={`text-[13.5px] font-semibold max-w-[100px] truncate hidden sm:inline ${isDark ? 'text-slate-200' : 'text-[#1E293B]'}`}>
-                    {userName}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] hidden sm:inline" />
-                </button>
-
-                {/* Profile Dropdown */}
-                {isProfileDropdownOpen && (
-                  <div className={`absolute right-0 mt-2 w-52 rounded-2xl border shadow-xl p-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-[#EEF0F6]'}`}>
-                    <div className={`px-3 py-2 border-b ${isDark ? 'border-slate-800' : 'border-[#F1F5F9]'}`}>
-                      <p className={`text-xs font-bold truncate ${isDark ? 'text-white' : 'text-[#0F172A]'}`}>{userName}</p>
-                      <p className="text-[11px] text-[#64748B] truncate">{user?.email || 'host@gubbi.io'}</p>
-                    </div>
-                    <div className="py-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsProfileDropdownOpen(false);
-                          setActiveModal('profile');
-                        }}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${isDark ? 'text-slate-300 hover:bg-slate-800 hover:text-white' : 'text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]'}`}
-                      >
-                        <Settings className="w-4 h-4 text-[#94A3B8]" />
-                        <span>Account Settings</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsProfileDropdownOpen(false);
-                          setActiveModal('upgrade');
-                        }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#6C38FF] hover:bg-[#FAF5FF] transition-colors cursor-pointer"
-                      >
-                        <Crown className="w-4 h-4 text-[#F59E0B]" />
-                        <span>Upgrade to Pro</span>
-                      </button>
-                      <div className={`my-1 border-t ${isDark ? 'border-slate-800' : 'border-[#F1F5F9]'}`} />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsProfileDropdownOpen(false);
-                          handleLogout();
-                        }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
-                      >
-                        <LogOut className="w-4 h-4 text-[#EF4444]" />
-                        <span>Log Out</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </header>
+          {/* TOP HEADER (Exact Figma CSS specifications, Fixed/Sticky on Scroll) */}
+          <TopHeader
+            searchQuery={headerSearch}
+            onSearchChange={setHeaderSearch}
+            onOpenMobileNav={() => setIsMobileNavOpen(true)}
+            onOpenProfile={() => setActiveModal('profile')}
+            onOpenUpgrade={() => setActiveModal('upgrade')}
+            user={user}
+          />
 
           {/* MAIN BODY CONTENT */}
           {isLoading ? (
