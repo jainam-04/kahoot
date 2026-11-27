@@ -382,25 +382,16 @@ export default function MyQuizzes() {
                 className="absolute bottom-0 left-0 right-0 w-full h-[55px] sm:h-[75px] md:h-[85px] object-fill pointer-events-none select-none z-0"
               />
 
-              {/* Left Side: Document Icon, Collection Count & Create Button (Figma 1:1) */}
+              {/* Left Side: Document Icon & Collection Count */}
               <div className="flex flex-wrap items-center gap-3 sm:gap-5 z-10 min-w-0">
                 <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-[#DFD6FB] shadow-[inset_0px_2px_4px_rgba(0,0,0,0.05)] flex items-center justify-center shrink-0">
                   <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-[#6222F5] stroke-[2]" />
                 </div>
                 <div className="min-w-0">
                   <span className="text-xs sm:text-[14px] font-medium text-[#6B7280] block truncate">Your quiz collection</span>
-                  <div className="flex items-center gap-3 sm:gap-4 flex-wrap mt-0.5">
-                    <span className="text-xl sm:text-[30px] font-extrabold text-[#161427] tracking-tight leading-tight block">
-                      {totalCount} {totalCount === 1 ? 'quiz' : 'quizzes'}
-                    </span>
-                    <Link
-                      to="/quiz/create"
-                      className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl bg-[#6222F5] hover:bg-[#5015E0] text-white font-bold text-xs sm:text-[13px] shadow-[0px_8px_16px_-3px_rgba(98,34,245,0.35)] flex items-center gap-1.5 transition-all hover:scale-[1.02] active:scale-95 whitespace-nowrap shrink-0"
-                    >
-                      <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                      <span>Create a Quiz</span>
-                    </Link>
-                  </div>
+                  <span className="text-xl sm:text-[30px] font-extrabold text-[#161427] tracking-tight leading-tight block mt-0.5">
+                    {totalCount} {totalCount === 1 ? 'quiz' : 'quizzes'}
+                  </span>
                 </div>
               </div>
 
