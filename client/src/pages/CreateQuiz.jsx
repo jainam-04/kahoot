@@ -281,8 +281,7 @@ export default function CreateQuiz() {
     }
   };
 
-  const handleExcelUpload = (e) => {
-    const file = e.target.files[0];
+  const processSpreadsheetFile = (file) => {
     if (!file) return;
     setShowImportModal(false);
 
@@ -332,6 +331,16 @@ export default function CreateQuiz() {
       reader.readAsArrayBuffer(file);
     } else {
       toast.error('Unsupported file format. Please upload CSV or Excel (.xlsx/.xls).');
+    }
+  };
+
+  const handleExcelUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processSpreadsheetFile(file);
+    }
+    if (excelInputRef.current) {
+      excelInputRef.current.value = '';
     }
   };
 
@@ -1813,30 +1822,31 @@ export default function CreateQuiz() {
 
         {/* 6. SPREADSHEET / CSV IMPORT MODAL WITH BASE TEMPLATE */}
         {showImportModal && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2.5 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="relative my-auto rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 bg-white text-slate-900 text-left">
-              <div className="shrink-0 flex items-center justify-between px-5 sm:px-7 py-4 border-b border-slate-100 bg-gradient-to-r from-purple-50 via-white to-purple-50">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-purple-100 text-[#7C3AED] rounded-2xl shadow-xs">
-                    <FileSpreadsheet className="h-5 w-5" />
+              <div className="shrink-0 flex items-center justify-between px-4 sm:px-7 py-3.5 sm:py-4 border-b border-slate-100 bg-gradient-to-r from-purple-50 via-white to-purple-50">
+                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 pr-2">
+                  <div className="p-2 sm:p-2.5 bg-purple-100 text-[#7C3AED] rounded-2xl shadow-xs shrink-0">
+                    <FileSpreadsheet className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
-                  <div>
-                    <h3 className="font-extrabold text-base sm:text-lg text-slate-900">Import Questions from Excel / CSV</h3>
-                    <p className="text-xs text-slate-500">Download the sample template, add your questions, and upload.</p>
+                  <div className="min-w-0">
+                    <h3 className="font-extrabold text-sm sm:text-base md:text-lg text-slate-900 truncate">Import Questions from Excel / CSV</h3>
+                    <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-1 sm:line-clamp-none">Download the sample template, add your questions, and upload.</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowImportModal(false)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+                  className="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
                   aria-label="Close"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-7 space-y-4">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-3.5 sm:p-7 space-y-4">
                 <UploadBaseTemplate
+                  onFileSelected={processSpreadsheetFile}
                   onTriggerUpload={() => {
                     excelInputRef.current?.click();
                   }}
