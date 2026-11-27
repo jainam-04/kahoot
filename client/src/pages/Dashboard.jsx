@@ -258,15 +258,61 @@ export default function Dashboard() {
   const userName = user?.name || user?.username || 'User';
   const userInitial = (userName.charAt(0) || 'U').toUpperCase();
 
-  // Helper for Category configuration in Ready Quizzes Grid
+// Exact Figma Category Icons for Curated Quizzes
+function ScienceCategoryIcon({ className = "w-4 h-4" }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} fill="none">
+      <path
+        d="M3.2 12.5h9.6M3.2 12.5v-2a4.8 4.8 0 0 1 9.6 0v2"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="8" cy="8.5" r="1.75" fill="currentColor" />
+    </svg>
+  );
+}
+
+function GeneralKnowledgeCategoryIcon({ className = "w-4 h-4" }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="6.5" />
+      <polygon points="10.8 5.2, 8.8 8.8, 5.2 10.8, 7.2 7.2" fill="currentColor" stroke="currentColor" strokeWidth="0.8" />
+    </svg>
+  );
+}
+
+function ProgrammingCategoryIcon({ className = "w-4 h-4" }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4.8 5.2L2.2 8l2.6 2.8M11.2 5.2l2.6 2.8-2.6 2.8M9.5 4l-3 8" />
+    </svg>
+  );
+}
+
+function MathematicsCategoryIcon({ className = "w-4 h-4" }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3.2" y="2" width="9.6" height="12" rx="2" />
+      <line x1="5.5" y1="5" x2="10.5" y2="5" strokeWidth="1.3" />
+      <line x1="5.5" y1="7.8" x2="7.5" y2="7.8" strokeWidth="1.3" />
+      <line x1="8.5" y1="7.8" x2="10.5" y2="7.8" strokeWidth="1.3" />
+      <line x1="5.5" y1="10.4" x2="7.5" y2="10.4" strokeWidth="1.3" />
+      <line x1="8.5" y1="10.4" x2="10.5" y2="10.4" strokeWidth="1.3" />
+    </svg>
+  );
+}
+
+  // Helper for Category configuration in Ready Quizzes Grid (Exact Figma Specifications)
   const getCategoryConfig = (category = '') => {
     const cat = category.toLowerCase();
     if (cat.includes('sci')) {
       return {
         name: 'SCIENCE',
-        icon: FlaskConical,
-        iconBg: 'bg-[#10B981]',
-        textColor: 'text-[#059669]',
+        icon: ScienceCategoryIcon,
+        iconBg: 'bg-[#059669]',
+        textColor: 'text-[#7E22CE]',
         defaultDifficulty: 'MEDIUM',
         diffBg: 'bg-[#FFFBEB]',
         diffBorder: 'border-[rgba(253,230,138,0.8)]',
@@ -276,9 +322,9 @@ export default function Dashboard() {
     if (cat.includes('general') || cat.includes('geo')) {
       return {
         name: 'GENERAL KNOWLEDGE',
-        icon: Compass,
-        iconBg: 'bg-[#0284C7]',
-        textColor: 'text-[#0284C7]',
+        icon: GeneralKnowledgeCategoryIcon,
+        iconBg: 'bg-[#2563EB]',
+        textColor: 'text-[#2563EB]',
         defaultDifficulty: 'EASY',
         diffBg: 'bg-[#ECFDF5]',
         diffBorder: 'border-[rgba(167,243,208,0.8)]',
@@ -288,9 +334,9 @@ export default function Dashboard() {
     if (cat.includes('prog')) {
       return {
         name: 'PROGRAMMING',
-        icon: Code,
-        iconBg: 'bg-[#F97316]',
-        textColor: 'text-[#EA580C]',
+        icon: ProgrammingCategoryIcon,
+        iconBg: 'bg-[#7C3AED]',
+        textColor: 'text-[#7E22CE]',
         defaultDifficulty: 'MEDIUM',
         diffBg: 'bg-[#FFFBEB]',
         diffBorder: 'border-[rgba(253,230,138,0.8)]',
@@ -299,9 +345,9 @@ export default function Dashboard() {
     }
     return {
       name: 'MATHEMATICS',
-      icon: Calculator,
-      iconBg: 'bg-[#F43F5E]',
-      textColor: 'text-[#E11D48]',
+      icon: MathematicsCategoryIcon,
+      iconBg: 'bg-[#EA580C]',
+      textColor: 'text-[#7E22CE]',
       defaultDifficulty: 'EASY',
       diffBg: 'bg-[#ECFDF5]',
       diffBorder: 'border-[rgba(167,243,208,0.8)]',
@@ -655,10 +701,10 @@ export default function Dashboard() {
                       `}
                     >
                       {cat === 'All' && <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />}
-                      {cat === 'Science' && <FlaskConical className="w-3.5 h-3.5 shrink-0" />}
-                      {cat === 'General Knowledge' && <Compass className="w-3.5 h-3.5 shrink-0" />}
-                      {cat === 'Programming' && <Code className="w-3.5 h-3.5 shrink-0" />}
-                      {cat === 'Mathematics' && <Calculator className="w-3.5 h-3.5 shrink-0" />}
+                      {cat === 'Science' && <ScienceCategoryIcon className="w-3.5 h-3.5 shrink-0" />}
+                      {cat === 'General Knowledge' && <GeneralKnowledgeCategoryIcon className="w-3.5 h-3.5 shrink-0" />}
+                      {cat === 'Programming' && <ProgrammingCategoryIcon className="w-3.5 h-3.5 shrink-0" />}
+                      {cat === 'Mathematics' && <MathematicsCategoryIcon className="w-3.5 h-3.5 shrink-0" />}
                       <span>{cat}</span>
                     </button>
                   );
@@ -666,7 +712,7 @@ export default function Dashboard() {
               </div>
 
               {/* 4 Ready-to-Use Quiz Cards Grid: 2 Columns on Mobile, 4 Columns on XL */}
-              <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-3 xl:gap-4 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 xl:gap-5 pt-1">
                 {displayPresets.map((quiz, idx) => {
                   const cfg = getCategoryConfig(quiz.category);
                   const IconComp = cfg.icon;
@@ -677,67 +723,74 @@ export default function Dashboard() {
                   return (
                     <div
                       key={quiz._id || idx}
-                      className="bg-white border border-[#ECEFF5] rounded-[18px] sm:rounded-[20px] p-2.5 sm:p-4 shadow-[0px_2px_12px_rgba(0,0,0,0.03)] flex flex-col justify-between transition-all hover:shadow-md hover:-translate-y-0.5"
+                      className="bg-white border border-[#ECEFF5] rounded-[16px] p-4 sm:p-5 shadow-[0px_2px_14px_rgba(0,0,0,0.03)] flex flex-col justify-between transition-all hover:shadow-md hover:-translate-y-0.5"
                     >
-                      <div className="space-y-1.5 sm:space-y-2.5">
-                        {/* Header Badges */}
-                        <div className="flex items-center justify-between gap-1">
-                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${cfg.iconBg} text-white flex items-center justify-center shrink-0 shadow-xs`}>
-                            <IconComp className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
+                      <div className="space-y-2">
+                        {/* Header Badges: Icon Box + Category Name + Difficulty Pill (Figma 1:1) */}
+                        <div className="flex items-center justify-between gap-2 min-h-[28px]">
+                          {/* Left: Icon Box + Category Label */}
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className={`w-7 h-7 rounded-[8px] ${cfg.iconBg} text-white flex items-center justify-center shrink-0 shadow-xs`}>
+                              <IconComp className="w-4 h-4 shrink-0 text-white" />
+                            </div>
+                            <span className={`${cfg.textColor} font-bold text-[10.5px] sm:text-[11.5px] leading-[13px] tracking-[0.4px] uppercase max-w-[85px]`}>
+                              {cfg.name}
+                            </span>
                           </div>
 
-                          <span className={`px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold tracking-wide border ${isEasy
-                            ? 'bg-[#ECFDF5] border-[rgba(167,243,208,0.8)] text-[#059669]'
-                            : 'bg-[#FFFBEB] border-[rgba(253,230,138,0.8)] text-[#D97706]'
-                            }`}>
+                          {/* Right: Difficulty Pill */}
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10.5px] font-bold border shrink-0 ${
+                              isEasy
+                                ? 'bg-[#ECFDF5] border-[rgba(167,243,208,0.8)] text-[#059669]'
+                                : 'bg-[#FFFBEB] border-[rgba(253,230,138,0.8)] text-[#D97706]'
+                            }`}
+                          >
                             {diff}
                           </span>
                         </div>
 
-                        {/* Title & Desc */}
-                        <div>
-                          <h3 className="font-extrabold text-[11.5px] sm:text-[14px] text-[#0F172A] leading-[1.28] line-clamp-2 min-h-[30px] sm:min-h-[36px] tracking-tight">
+                        {/* Title (Figma 1:1, font-bold 14.5px, no description) */}
+                        <div className="pt-1">
+                          <h3 className="font-bold text-[14px] sm:text-[14.5px] text-[#0F172A] leading-[20px] line-clamp-2 min-h-[40px]">
                             {quiz.title}
                           </h3>
-                          <p className="text-[10px] sm:text-[11.5px] text-[#64748B] line-clamp-2 leading-tight mt-1">
-                            {quiz.description}
-                          </p>
                         </div>
                       </div>
 
                       {/* Card Footer: Meta Info & Actions */}
-                      <div className="mt-2.5 sm:mt-3.5 pt-2 sm:pt-2.5 border-t border-[#F1F5F9] space-y-2 sm:space-y-2.5">
-                        <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[11.5px] font-medium text-[#64748B] whitespace-nowrap overflow-hidden">
+                      <div className="mt-3 pt-3 border-t border-[#F1F5F9] space-y-3">
+                        {/* Meta Info: 10 Qs and ~5 mins */}
+                        <div className="flex items-center gap-4 text-[12px] font-medium text-[#64748B]">
                           <span className="inline-flex items-center gap-1 shrink-0">
-                            <BookOpen className="w-3 h-3 text-[#94A3B8]" />
+                            <BookOpen className="w-3.5 h-3.5 text-[#64748B] stroke-[1.4]" />
                             <span>{quiz.questionsCount || 10} Qs</span>
                           </span>
-                          <span className="text-[#CBD5E1]">•</span>
                           <span className="inline-flex items-center gap-1 shrink-0">
-                            <Clock className="w-3 h-3 text-[#94A3B8]" />
-                            <span>5 mins</span>
+                            <Clock className="w-3.5 h-3.5 text-[#64748B] stroke-[1.4]" />
+                            <span>~5 mins</span>
                           </span>
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex items-center gap-1.5">
+                        {/* Action Buttons: Host Live + Copy */}
+                        <div className="flex items-center gap-2">
                           <button
                             type="button"
                             onClick={() => handleHostPreset(quiz)}
                             disabled={isHosting}
-                            className="flex-1 h-[30px] sm:h-[35px] px-1.5 sm:px-3 bg-[#6C38FF] hover:bg-[#5827e8] disabled:opacity-60 text-white font-extrabold text-[11px] sm:text-[12.5px] rounded-xl shadow-xs flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shrink-0"
+                            className="flex-1 h-[35px] sm:h-[36px] px-3 bg-[#6C38FF] hover:bg-[#5827e8] disabled:opacity-60 text-white font-semibold text-[12.5px] rounded-full shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0"
                           >
-                            <Play className="w-3 h-3 fill-white shrink-0" />
-                            <span>{isHosting ? '...' : 'Host'}</span>
+                            <Play className="w-3.5 h-3.5 fill-white text-white shrink-0" />
+                            <span>{isHosting ? 'Starting...' : 'Host Live'}</span>
                           </button>
 
                           <button
                             type="button"
                             onClick={() => handleCloneAndEditPreset(quiz)}
-                            className="w-7 h-[30px] sm:w-8 sm:h-[35px] rounded-xl border border-[#E2E8F0] hover:bg-slate-50 flex items-center justify-center text-[#64748B] hover:text-[#6C38FF] transition-colors cursor-pointer shrink-0"
+                            className="w-9 h-9 rounded-full border border-[#E2E8F0] hover:bg-slate-50 flex items-center justify-center text-[#64748B] hover:text-[#6C38FF] transition-colors cursor-pointer shrink-0"
                             title="Duplicate & customize quiz"
                           >
-                            <Copy className="w-3.5 h-3.5" />
+                            <Copy className="w-4 h-4 stroke-[1.4]" />
                           </button>
                         </div>
                       </div>
