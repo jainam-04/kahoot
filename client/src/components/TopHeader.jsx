@@ -83,7 +83,7 @@ export default function TopHeader({
   const userInitial = displayName.charAt(0).toUpperCase() || 'M';
 
   return (
-    <header className="sticky top-0 z-30 w-full h-[74px] max-h-[74px] bg-white/80 backdrop-blur-[12px] border-b border-[#EEF0F6] px-4 sm:px-8 flex items-center justify-between gap-3 sm:gap-4 shrink-0 transition-colors">
+    <header className="sticky top-0 z-40 w-full h-[74px] max-h-[74px] bg-white/80 backdrop-blur-[12px] border-b border-[#EEF0F6] px-4 sm:px-8 flex items-center justify-between gap-3 sm:gap-4 shrink-0 transition-colors shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
       {/* Left: Mobile Drawer Hamburger Button + Logo (< lg) */}
       <div className="flex items-center gap-2.5 sm:gap-3 lg:hidden shrink-0">
         <button

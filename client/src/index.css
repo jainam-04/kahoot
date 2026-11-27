@@ -1756,7 +1756,7 @@ html,
 body,
 #root {
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Touch-friendly target sizing and responsiveness fixes */
