@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import {
   Search,
   X,
-  Bell,
   ChevronDown,
   Settings,
   Crown,
@@ -20,7 +19,6 @@ import { getStoredUser, clearAuthSession } from '../utils/auth';
  * - Background: rgba(255, 255, 255, 0.8) with backdrop-filter: blur(12px)
  * - Border bottom: 1px solid #EEF0F6
  * - Search input: 580px max-width, 46px height, rounded-full pill, font Inter 700 13.5px
- * - Notification button: 42px x 40px/42px pill, bell icon, #EF4444 red notification dot
  * - User Profile Pill: 42px height, 32px #6C38FF avatar circle with white initial, name #1E293B, chevron #94A3B8
  * - Fixed/sticky top-0 so it never scrolls away when scrolling down the page
  */
@@ -36,10 +34,8 @@ export default function TopHeader({
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(() => initialUser || getStoredUser());
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const profileDropdownRef = useRef(null);
-  const notificationsRef = useRef(null);
 
   // Sync prop changes
   useEffect(() => {
@@ -70,9 +66,6 @@ export default function TopHeader({
     const handleClickOutside = (e) => {
       if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target)) {
         setIsProfileDropdownOpen(false);
-      }
-      if (notificationsRef.current && !notificationsRef.current.contains(e.target)) {
-        setIsNotificationsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -128,47 +121,8 @@ export default function TopHeader({
         </div>
       </div>
 
-      {/* Right: Top Right Controls (Notification & User Profile) */}
+      {/* Right: Top Right Controls (User Profile) */}
       <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-        {/* Button - Notifications (42px x 40px/42px rounded-full border border-[#E7E9F2]) */}
-        <div className="relative" ref={notificationsRef}>
-          <button
-            type="button"
-            onClick={() => {
-              setIsNotificationsOpen(prev => !prev);
-              setIsProfileDropdownOpen(false);
-            }}
-            className="w-[42px] h-[40px] sm:h-[42px] rounded-full border border-[#E7E9F2] bg-white hover:bg-[#F8FAFC] transition-colors flex items-center justify-center relative cursor-pointer shadow-2xs"
-            aria-label="Notifications"
-          >
-            <Bell className="w-4 h-4 text-[#475569]" />
-            {/* Background+Border Red notification dot */}
-            <span className="absolute top-[9px] right-[9px] w-2 h-2 rounded-full bg-[#EF4444] border-2 border-white" />
-          </button>
-
-          {/* Notifications Popover Dropdown */}
-          {isNotificationsOpen && (
-            <div className="absolute right-0 mt-2 w-72 sm:w-80 rounded-2xl bg-white border border-[#EEF0F6] shadow-xl p-3 z-50 text-left animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between pb-2 border-b border-[#F1F5F9]">
-                <span className="text-xs font-bold text-[#0F172A]">Notifications</span>
-                <span className="text-[10px] font-semibold text-[#6C38FF] bg-[#FAF5FF] px-2 py-0.5 rounded-full">1 New</span>
-              </div>
-              <div className="py-2.5 space-y-2">
-                <div className="flex items-start gap-2.5 p-2 rounded-xl bg-[#FAF9FD] border border-[#EEF0F6]">
-                  <div className="w-2 h-2 rounded-full bg-[#6C38FF] mt-1.5 shrink-0" />
-                  <div className="text-left">
-                    <p className="text-xs font-semibold text-[#1E293B]">Welcome to Gubbi!</p>
-                    <p className="text-[11px] text-[#64748B]">Create your first live interactive quiz and host a room in seconds.</p>
-                  </div>
-                </div>
-              </div>
-              <div className="pt-1.5 border-t border-[#F1F5F9] text-center">
-                <span className="text-[11px] font-medium text-[#94A3B8]">You&apos;re all caught up.</span>
-              </div>
-            </div>
-          )}
-        </div>
-
         {/* User Profile Pill (42px height, 32px avatar #6C38FF, name #1E293B, chevron #94A3B8) */}
         <div className="relative" ref={profileDropdownRef}>
           <button
