@@ -842,31 +842,7 @@ export default function EditQuiz() {
                   </button>
                 </div>
 
-                {/* Tab Buttons */}
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveBgTab('upload')}
-                    className={`py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl font-semibold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${activeBgTab === 'upload'
-                      ? 'bg-[#7C3AED] text-white shadow-xs'
-                      : 'bg-white border border-[#E9D5FF] text-[#334155] hover:bg-[#FAF5FF]'
-                      }`}
-                  >
-                    <Upload className="w-3.5 h-3.5 shrink-0" />
-                    <span className="truncate">Upload Image</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPexelsModal(true)}
-                    className="py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl font-semibold text-[11px] sm:text-xs bg-white border border-[#E9D5FF] text-[#334155] hover:bg-[#FAF5FF] flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-[#9333EA] shrink-0" />
-                    <span className="truncate">Pexels Library</span>
-                  </button>
-                </div>
-
-                {/* Drag and Drop Dropzone */}
+                {/* Drag and Drop Dropzone (Unified Option 2: All-in-one compartment with dual actions) */}
                 <input
                   type="file"
                   accept="image/*"
@@ -879,57 +855,81 @@ export default function EditQuiz() {
                   onDragOver={(e) => { e.preventDefault(); setBgDragActive(true); }}
                   onDragLeave={() => setBgDragActive(false)}
                   onDrop={handleDrop}
-                  className={`rounded-2xl border-2 border-dashed p-3 sm:p-4 flex flex-col items-center justify-center text-center transition-all min-h-[110px] sm:min-h-[130px] ${bgDragActive
-                    ? 'border-[#7C3AED] bg-[#FAF5FF]'
-                    : 'border-[#E9D5FF] bg-[#FCFBFE]'
+                  className={`rounded-2xl border-2 border-dashed p-4 sm:p-5 flex flex-col items-center justify-center text-center transition-all ${bgDragActive
+                    ? 'border-[#7C3AED] bg-[#FAF5FF] scale-[1.01]'
+                    : 'border-[#E9D5FF] bg-[#FCFBFE] hover:border-[#C084FC] hover:bg-[#FAF8FF]'
                     }`}
                 >
                   {bgSettings.url ? (
-                    <div className="w-full flex items-center justify-between gap-2.5">
-                      <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-full flex items-center justify-between gap-3 p-1">
+                      <div className="flex items-center gap-3 min-w-0">
                         <div
-                          className="w-12 h-10 sm:w-14 sm:h-12 rounded-xl bg-cover bg-center border border-[#E2E8F0] shadow-xs shrink-0"
+                          className="w-14 h-11 sm:w-16 sm:h-12 rounded-xl bg-cover bg-center border border-[#E2E8F0] shadow-xs shrink-0"
                           style={{ backgroundImage: `url(${bgSettings.url})` }}
                         />
                         <div className="text-left min-w-0">
-                          <span className="text-[11px] font-bold text-[#1E293B] block truncate">Custom Image Loaded</span>
-                          <span className="text-[10px] text-[#64748B] block truncate">Ready for live rooms</span>
+                          <span className="text-xs font-bold text-[#1E293B] block truncate">Custom Background Loaded</span>
+                          <span className="text-[10px] text-[#64748B] block truncate">Applied to question background</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="px-2 py-1 rounded-lg bg-[#FAF5FF] border border-[#E9D5FF] text-[#7C3AED] font-semibold text-[10.5px] hover:bg-[#F3E8FF] cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-lg bg-[#FAF5FF] border border-[#E9D5FF] text-[#7C3AED] font-bold text-[11px] hover:bg-[#F3E8FF] cursor-pointer transition-colors"
+                          title="Change image from device"
                         >
                           Change
                         </button>
                         <button
                           type="button"
+                          onClick={() => setShowPexelsModal(true)}
+                          className="p-1.5 rounded-lg bg-[#FAF5FF] border border-[#E9D5FF] text-[#7C3AED] hover:bg-[#F3E8FF] cursor-pointer transition-colors"
+                          title="Pick from Pexels Library"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-[#9333EA]" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => updateBgSettings({ url: '' })}
-                          className="p-1 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 cursor-pointer"
-                          title="Remove image"
+                          className="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 cursor-pointer transition-colors"
+                          title="Remove background"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-1">
-                      <div className="w-8 h-8 rounded-full bg-[#FAF5FF] flex items-center justify-center mx-auto text-[#7C3AED]">
-                        <Image className="w-4 h-4" />
+                    <div className="space-y-1.5 w-full flex flex-col items-center">
+                      <div className="w-10 h-10 rounded-2xl bg-[#FAF5FF] border border-[#E9D5FF] flex items-center justify-center mx-auto text-[#7C3AED] shadow-xs">
+                        <Image className="w-5 h-5 text-[#7C3AED]" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-[#1E293B]">Drag and drop your image</p>
-                        <p className="text-[10px] text-[#94A3B8]">Supports JPG, PNG, or WebP</p>
+                        <p className="text-xs sm:text-[13px] font-bold text-[#1E293B]">
+                          Drag &amp; drop your background image here
+                        </p>
+                        <p className="text-[10.5px] text-[#94A3B8]">
+                          Supports JPG, PNG, or WebP
+                        </p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="mt-1 px-3 py-1 rounded-lg bg-[#7C3AED] text-white font-semibold text-[10.5px] hover:bg-[#6D28D9] shadow-xs cursor-pointer transition-colors"
-                      >
-                        Choose File
-                      </button>
+                      <div className="mt-2.5 flex flex-wrap items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-bold text-[11px] sm:text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          <Upload className="w-3.5 h-3.5 shrink-0" />
+                          <span>Choose File</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowPexelsModal(true)}
+                          className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white border border-[#E9D5FF] hover:bg-[#FAF5FF] text-[#7C3AED] font-bold text-[11px] sm:text-xs shadow-2xs flex items-center gap-1.5 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-[#9333EA] shrink-0" />
+                          <span>Pexels Library</span>
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1129,10 +1129,10 @@ export default function EditQuiz() {
                           bgSettings.gradient === 'subtle'
                             ? 'linear-gradient(to bottom, rgba(15, 23, 42, 0.25) 0%, rgba(15, 23, 42, 0.65) 100%)'
                             : bgSettings.gradient === 'vibrant'
-                            ? 'linear-gradient(135deg, rgba(124, 58, 237, 0.45) 0%, rgba(6, 182, 212, 0.45) 100%)'
-                            : bgSettings.gradient === 'purple'
-                            ? 'radial-gradient(circle at center, rgba(147, 51, 234, 0.25) 0%, rgba(76, 29, 149, 0.75) 100%)'
-                            : 'none'
+                              ? 'linear-gradient(135deg, rgba(124, 58, 237, 0.45) 0%, rgba(6, 182, 212, 0.45) 100%)'
+                              : bgSettings.gradient === 'purple'
+                                ? 'radial-gradient(circle at center, rgba(147, 51, 234, 0.25) 0%, rgba(76, 29, 149, 0.75) 100%)'
+                                : 'none'
                       }}
                     />
                   )}
