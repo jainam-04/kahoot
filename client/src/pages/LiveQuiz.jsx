@@ -225,6 +225,7 @@ export default function LiveQuiz() {
   const [totalPlayers, setTotalPlayers] = useState(0);
   const [category, setCategory] = useState('general');
   const [bgImage, setBgImage] = useState(localStorage.getItem('last_bg_image') || '');
+  const [playerScore, setPlayerScore] = useState(() => Number(localStorage.getItem('last_score') || 0));
 
   // Ref to prevent auto-end from firing more than once per question
   const autoEndCalledRef = React.useRef(false);
@@ -278,6 +279,12 @@ export default function LiveQuiz() {
         if (response.success && response.game) {
           const game = response.game;
           setTotalPlayers(game.players?.length || 0);
+
+          const me = game.players?.find(p => p.name === localPlayer);
+          if (me && me.score !== undefined) {
+            setPlayerScore(me.score);
+            localStorage.setItem('last_score', String(me.score));
+          }
 
           if (game.status === 'active' && game.quiz?.questions) {
             const currentIdx = game.currentQuestion - 1;
@@ -573,6 +580,9 @@ export default function LiveQuiz() {
           localStorage.setItem('last_isCorrect', response.isCorrect ? 'true' : 'false');
           localStorage.setItem('last_pointsEarned', String(response.score || 0));
           localStorage.setItem('last_score', String(response.totalScore || 0));
+          if (response.totalScore !== undefined) {
+            setPlayerScore(response.totalScore);
+          }
           localStorage.setItem('last_timeTaken', String(response.timeTakenSeconds || '0.00'));
           if (response.correctAnswer !== undefined) {
             localStorage.setItem('last_correctAnswerIndex', String(response.correctAnswer));
@@ -711,11 +721,11 @@ export default function LiveQuiz() {
           </div>
         ) : (
           <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden will-change-transform transform-gpu">
-            {/* Soft Ambient Bubbles/Orbs matching Figma Screenshot */}
-            <div className="absolute top-[5%] left-[8%] w-[260px] sm:w-[380px] h-[260px] sm:h-[380px] rounded-full bg-[#E9D5FF]/30 blur-[60px] sm:blur-[90px]" />
-            <div className="absolute bottom-[10%] right-[10%] w-[280px] sm:w-[440px] h-[280px] sm:h-[440px] rounded-full bg-[#DDD6FE]/30 blur-[60px] sm:blur-[100px]" />
-            <div className="absolute top-[35%] right-[4%] w-[180px] sm:w-[260px] h-[180px] sm:h-[260px] rounded-full bg-[#EDE9FE]/40 blur-[50px] sm:blur-[80px]" />
-            <div className="absolute bottom-[2%] left-[2%] w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] rounded-full bg-[#F3E8FF]/30 blur-[50px] sm:blur-[80px]" />
+            {/* Figma Default Background Graphic from Asset */}
+            <div
+              className="absolute inset-0 w-full h-full bg-cover bg-bottom sm:bg-center bg-no-repeat opacity-95"
+              style={{ backgroundImage: 'url(/quiz-play-bg.jpg)' }}
+            />
           </div>
         )}
 
@@ -767,58 +777,47 @@ export default function LiveQuiz() {
         <main className="relative z-20 flex-1 w-full max-w-[1351px] mx-auto px-4 sm:px-8 py-5 sm:py-6 lg:py-8 flex flex-col items-center justify-start gap-5 sm:gap-6">
 
           {/* ----------------------------------------------------------------------- */}
-          {/* FLOATING PROGRESS AND TIMER BAR (Figma 1:1)                             */}
+          {/* TOP STATUS BAR (Figma 1:1 matching screenshot)                           */}
           {/* ----------------------------------------------------------------------- */}
-          <div
-            className="w-full max-w-[1097px] rounded-[16px] px-4 py-3 flex items-center justify-between gap-4 transition-all"
-            style={{
-              background: 'rgba(255, 255, 255, 0.8)',
-              border: '1px solid rgba(255, 255, 255, 0.6)',
-              boxShadow: '0px 1px 20px rgba(0, 0, 0, 0.19)',
-              backdropFilter: 'blur(12px)',
-            }}
-          >
-            {/* Left: Book Icon + Counter + Progress Bar Track */}
-            <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
-              <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                <svg className="w-5 h-5 text-[#7C3AED]" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                </svg>
+          <div className="w-full max-w-[1097px] flex items-center justify-between gap-3 flex-wrap px-1">
+            {/* Left: PIN Pill + Question Index */}
+            <div className="flex items-center gap-3">
+              <div className="px-3.5 py-1.5 rounded-full bg-[#E0F2FE] border border-[#BAE6FD] text-[#0284C7] font-bold text-xs tracking-wider shadow-2xs">
+                PIN: {pin}
               </div>
-
-              <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                <span className="font-['Inter'] font-bold text-[12px] leading-4 tracking-[0.3px] text-[#1E293B]">
-                  Question {questionNumber} of {totalQuestions}
-                </span>
-                <div className="w-full h-[6px] bg-[rgba(226,232,240,0.9)] rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500 ease-out"
-                    style={{
-                      width: `${Math.max(4, (questionNumber / Math.max(1, totalQuestions)) * 100)}%`,
-                      background: 'linear-gradient(90deg, #7C3AED 0%, #4F46E5 100%)',
-                    }}
-                  />
-                </div>
-              </div>
+              <span className="text-[#64748B] font-bold text-xs sm:text-sm">
+                Q{questionNumber}/{totalQuestions}
+              </span>
             </div>
 
-            {/* Right: Countdown Timer */}
-            <div
-              className={`h-[30px] px-3 rounded-[12px] flex items-center gap-1.5 shrink-0 transition-all ${timeLeft <= 5 ? 'animate-pulse ring-2 ring-red-400' : ''
+            {/* Right: Timer Pill + Score Pill + Reload Button */}
+            <div className="flex items-center gap-2.5">
+              <div
+                className={`px-3 py-1.5 rounded-full bg-[#E0F2FE] border border-[#BAE6FD] text-[#0284C7] font-bold text-xs flex items-center gap-1.5 shadow-2xs transition-all ${
+                  timeLeft <= 5 ? '!bg-[#FFF1F2] !border-[#FECDD3] !text-[#EF4444] animate-pulse ring-2 ring-red-300' : ''
                 }`}
-              style={{
-                background: '#FFF1F2',
-                border: '1px solid rgba(254, 205, 211, 0.8)',
-              }}
-            >
-              <svg className="w-4 h-4 text-[#F43F5E] shrink-0" viewBox="0 0 24 24" fill="none" stroke="#F43F5E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-              <span className="font-['Inter'] font-extrabold text-[12px] leading-4 tracking-[0.6px] text-[#0F172A] tabular-nums">
-                {formatTime(timeLeft).replace(':', ' : ')}
-              </span>
+              >
+                <Clock className="w-3.5 h-3.5 shrink-0" />
+                <span className="tabular-nums font-bold">{timeLeft}s</span>
+              </div>
+
+              {!isHost && (
+                <div className="px-3 py-1.5 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[#B45309] font-bold text-xs flex items-center gap-1.5 shadow-2xs">
+                  <span>🏆</span>
+                  <span>{playerScore} pts</span>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="w-8 h-8 rounded-full bg-white border border-[#E2E8F0] shadow-2xs flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:border-slate-300 active:scale-95 transition-all cursor-pointer"
+                title="Refresh board"
+              >
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -897,6 +896,14 @@ export default function LiveQuiz() {
             ) : (
               /* INNER QUESTION CARD (Figma 1:1) */
               <div className="w-full rounded-[18px] sm:rounded-[24px] bg-white border border-[#F1F5F9] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-5 sm:p-8 lg:p-10 flex flex-col justify-center">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <span className="px-2.5 py-1 rounded-md bg-[#F3E8FF] text-[#7E22CE] text-[11px] font-bold uppercase tracking-wider">
+                    {category || 'GENERAL KNOWLEDGE'}
+                  </span>
+                  <span className="text-[#64748B] font-medium text-xs sm:text-sm">
+                    Question {questionNumber} of {totalQuestions}
+                  </span>
+                </div>
                 <h2 className="font-['Inter'] font-extrabold text-xl sm:text-2xl lg:text-[30px] lg:leading-[36px] tracking-[-0.75px] text-[#0F172A] leading-snug break-words">
                   {renderQuestionText(question.questionText)}
                 </h2>
@@ -945,22 +952,20 @@ export default function LiveQuiz() {
                       </span>
                     </div>
 
-                    {/* Right: Radio Selection Target Bullseye (Only for players who can answer) */}
-                    {!isHost && (
-                      <div className="shrink-0 pl-1">
-                        {isSelected ? (
-                          <div
-                            className={`w-7 h-7 rounded-full bg-white border-2 ${style.selectedBullseyeBorder} flex items-center justify-center shrink-0 shadow-xs`}
-                          >
-                            <div className={`w-3.5 h-3.5 rounded-full ${style.selectedBullseyeDot} animate-scale-in`} />
-                          </div>
-                        ) : (
-                          <div
-                            className={`w-6 h-6 rounded-full bg-white/60 border-2 ${style.radioBorder} flex items-center justify-center transition-all`}
-                          />
-                        )}
-                      </div>
-                    )}
+                    {/* Right: Radio Selection Target Bullseye */}
+                    <div className="shrink-0 pl-1">
+                      {isSelected ? (
+                        <div
+                          className={`w-7 h-7 rounded-full bg-white border-2 ${style.selectedBullseyeBorder} flex items-center justify-center shrink-0 shadow-xs`}
+                        >
+                          <div className={`w-3.5 h-3.5 rounded-full ${style.selectedBullseyeDot} animate-scale-in`} />
+                        </div>
+                      ) : (
+                        <div
+                          className={`w-6 h-6 rounded-full bg-white/60 border-2 ${style.radioBorder} flex items-center justify-center transition-all`}
+                        />
+                      )}
+                    </div>
                   </button>
                 );
               })}

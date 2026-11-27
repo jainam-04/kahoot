@@ -1103,20 +1103,13 @@ export default function EditQuiz() {
                       inset: '-20px',
                       backgroundImage: bgSettings.url
                         ? `url(${bgSettings.url})`
-                        : 'radial-gradient(circle at 20% 20%, #EDE9FE 0%, #E0E7FF 45%, #F5F3FF 100%)',
+                        : 'url(/quiz-play-bg.jpg)',
                       backgroundSize: bgSettings.url ? bgSettings.fit : 'cover',
                       backgroundPosition: bgSettings.url ? bgSettings.position : 'center',
                       backgroundRepeat: 'no-repeat',
                       filter: `blur(${bgSettings.blur}px) brightness(${bgSettings.brightness}%)`,
                     }}
                   >
-                    {!bgSettings.url && (
-                      <>
-                        <div className="absolute top-[12%] left-[10%] w-36 h-36 bg-[#DDD6FE]/70 rounded-full blur-xl" />
-                        <div className="absolute bottom-[10%] right-[10%] w-44 h-44 bg-[#BAE6FD]/60 rounded-full blur-xl" />
-                        <div className="absolute top-[40%] right-[15%] w-28 h-28 bg-[#FBCFE8]/50 rounded-full blur-lg" />
-                      </>
-                    )}
                   </div>
 
                   {/* Gradient Tint Layer */}

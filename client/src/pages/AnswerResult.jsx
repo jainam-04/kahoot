@@ -1191,11 +1191,12 @@ export default function AnswerResult() {
             )}
           </div>
         ) : (
-          <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-[5%] left-[8%] w-[380px] h-[380px] rounded-full bg-[#E9D5FF]/40 blur-[90px]" />
-            <div className="absolute bottom-[10%] right-[10%] w-[440px] h-[440px] rounded-full bg-[#DDD6FE]/40 blur-[100px]" />
-            <div className="absolute top-[35%] right-[4%] w-[260px] h-[260px] rounded-full bg-[#EDE9FE]/50 blur-[80px]" />
-            <div className="absolute bottom-[2%] left-[2%] w-[300px] h-[300px] rounded-full bg-[#F3E8FF]/40 blur-[80px]" />
+          <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden will-change-transform transform-gpu">
+            {/* Figma Default Background Graphic from Asset */}
+            <div
+              className="absolute inset-0 w-full h-full bg-cover bg-bottom sm:bg-center bg-no-repeat opacity-95"
+              style={{ backgroundImage: 'url(/quiz-play-bg.jpg)' }}
+            />
           </div>
         )}
 
