@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   BarChart3, ArrowLeft, Loader2, Download, Trophy,
   CheckCircle, XCircle, AlertCircle, FileSpreadsheet, FileText, Crown, Medal,
-  Menu, Search, Settings, LogOut, ChevronDown, Check, X, Pencil
+  Menu, Search, Settings, LogOut, ChevronDown, Check, X, Pencil, Plus
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -1183,19 +1183,19 @@ export default function ResultsAnalytics() {
                                 </button>
                               </div>
                             ) : player.mobileNumber ? (
-                              <p className="text-[10px] text-slate-400 font-mono flex items-center gap-1">
+                              <p className="text-[10.5px] text-[#0F172A] dark:text-slate-300 font-mono flex items-center gap-1.5 font-bold">
                                 <span>{player.mobileNumber}</span>
                                 <button
                                   type="button"
                                   onClick={() => startEditPhone(player)}
-                                  className="text-slate-400 hover:text-[#6320EE] p-0.5"
+                                  className="text-slate-400 hover:text-[#7C3AED] p-0.5 cursor-pointer"
                                   title="Edit phone"
                                 >
                                   <Pencil className="w-2.5 h-2.5" />
                                 </button>
                               </p>
                             ) : (
-                              <div className="flex items-center gap-1 mt-0.5">
+                              <div className="flex items-center gap-1.5 mt-1">
                                 {player.nickname && player.nickname !== player.fullName ? (
                                   <span className="text-[10px] text-slate-400 truncate">
                                     aka {player.nickname}
@@ -1206,10 +1206,10 @@ export default function ResultsAnalytics() {
                                 <button
                                   type="button"
                                   onClick={() => startEditPhone(player)}
-                                  className="text-[10px] font-bold text-[#6320EE] dark:text-purple-400 hover:underline flex items-center gap-0.5 ml-1"
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold text-[#7C3AED] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200/80 dark:border-purple-800/50 shadow-2xs transition-all cursor-pointer active:scale-95"
                                 >
-                                  <Pencil className="w-2.5 h-2.5" />
-                                  <span>Add</span>
+                                  <Plus className="w-2.5 h-2.5" />
+                                  <span>Add Phone</span>
                                 </button>
                               </div>
                             )}
@@ -1308,18 +1308,30 @@ export default function ResultsAnalytics() {
                             ) : (
                               <div className="inline-flex items-center gap-1.5 group/phone">
                                 {player.mobileNumber ? (
-                                  <span className="font-mono text-xs font-medium tracking-wide">{player.mobileNumber}</span>
+                                  <>
+                                    <span className="font-mono text-xs font-semibold tracking-wide text-[#0F172A] dark:text-slate-200">
+                                      {player.mobileNumber}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => startEditPhone(player)}
+                                      className="p-1 text-slate-400 hover:text-[#7C3AED] rounded cursor-pointer transition-colors"
+                                      title="Edit Phone Number"
+                                    >
+                                      <Pencil className="w-3 h-3" />
+                                    </button>
+                                  </>
                                 ) : (
-                                  <span className={`text-xs italic ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>Not provided</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => startEditPhone(player)}
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold text-[#7C3AED] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200/80 dark:border-purple-800/50 shadow-2xs transition-all cursor-pointer active:scale-95"
+                                    title="Click to enter phone number"
+                                  >
+                                    <Plus className="w-3 h-3" />
+                                    <span>Add Number</span>
+                                  </button>
                                 )}
-                                <button
-                                  type="button"
-                                  onClick={() => startEditPhone(player)}
-                                  className="opacity-0 group-hover/phone:opacity-100 transition-opacity p-1 text-slate-400 hover:text-[#6320EE] rounded cursor-pointer"
-                                  title={player.mobileNumber ? "Edit Phone Number" : "Add Phone Number"}
-                                >
-                                  <Pencil className="w-3 h-3" />
-                                </button>
                               </div>
                             )}
                           </td>
