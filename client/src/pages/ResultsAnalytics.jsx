@@ -173,7 +173,11 @@ export default function ResultsAnalytics() {
     ? Math.round((playerSummaries.reduce((sum, p) => sum + (p.correct || 0), 0) / (totalPlayers * totalQuestions)) * 100)
     : 0;
 
-  const completionPercentage = totalQuestions ? Math.round(((totalQuestions - playerSummaries.reduce((sum, player) => sum + player.unanswered, 0)) / totalQuestions) * 100) : 0;
+  const totalPossibleAnswers = totalQuestions * Math.max(totalPlayers, 1);
+  const totalAnswered = playerSummaries.reduce((sum, p) => sum + (p.correct || 0) + (p.wrong || 0), 0);
+  const completionPercentage = totalPossibleAnswers
+    ? Math.min(100, Math.max(0, Math.round((totalAnswered / totalPossibleAnswers) * 100)))
+    : 0;
 
   // Calculate fastest solver / highlights for each question
   const questionHighlights = [];
@@ -1004,7 +1008,7 @@ export default function ResultsAnalytics() {
                       <h1 className={`font-outfit text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight break-words ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>{result.quizTitle || 'Quiz Match'}</h1>
                       <div className={`flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-[#64748B]'}`}>
                         <span className={`rounded-lg px-2.5 py-1 ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-[#FAF5FF] text-[#6320EE] border border-[#EDE9FE]'}`}>Category: <span className="font-bold">{result.quizCategory || result.quiz?.category || 'General'}</span></span>
-                        <span className={`rounded-lg px-2.5 py-1 ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-[#F5F3FF] text-[#7C3AED] border border-[#EDE9FE]'}`}>Player: <span className="font-bold">{winnerName}</span></span>
+                        <span className={`rounded-lg px-2.5 py-1 ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-[#F5F3FF] text-[#7C3AED] border border-[#EDE9FE]'}`}>{totalPlayers > 1 ? 'Top Performer: ' : 'Player: '}<span className="font-bold">{winnerName}</span></span>
                         <span className={`rounded-lg px-2.5 py-1 ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600 border border-slate-200/60'}`}>Date: <span className="font-bold">{result.playedAt ? new Date(result.playedAt).toLocaleDateString() : 'N/A'}</span></span>
                       </div>
                     </div>
@@ -1051,18 +1055,18 @@ export default function ResultsAnalytics() {
                           <span className={`font-bold ${isDark ? 'text-slate-200' : 'text-[#1E1B4B]'}`}>{completionPercentage}%</span>
                         </div>
                         <div className={`h-2.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-[#EDE9FE]'}`}>
-                          <div className="h-2.5 rounded-full bg-gradient-to-r from-[#6320EE] via-[#7C3AED] to-[#A855F7]" style={{ width: `${completionPercentage}%` }} />
+                          <div className="h-2.5 rounded-full bg-gradient-to-r from-[#6320EE] via-[#7C3AED] to-[#A855F7]" style={{ width: `${Math.min(100, Math.max(0, completionPercentage))}%` }} />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                         <div className={`rounded-lg sm:rounded-xl border p-3 sm:p-3.5 shadow-2xs ${isDark ? 'border-slate-800 bg-slate-900' : 'border-[#F3E8FF] bg-white'}`}>
-                          <p className={`text-[10px] uppercase font-bold tracking-[0.25em] ${isDark ? 'text-purple-400' : 'text-[#7C3AED]'}`}>Final Score</p>
+                          <p className={`text-[10px] uppercase font-bold tracking-[0.25em] ${isDark ? 'text-purple-400' : 'text-[#7C3AED]'}`}>{totalPlayers > 1 ? 'Top Score' : 'Final Score'}</p>
                           <p className={`mt-1 text-lg sm:text-xl font-black ${isDark ? 'text-purple-300' : 'text-[#6320EE]'}`}>{playerSummaries[0]?.totalScore || 0} pts</p>
                         </div>
                         <div className={`rounded-lg sm:rounded-xl border p-3.5 shadow-2xs ${isDark ? 'border-slate-800 bg-slate-900' : 'border-[#F1F5F9] bg-white'}`}>
-                          <p className={`text-[10px] uppercase font-bold tracking-[0.25em] ${isDark ? 'text-slate-500' : 'text-[#64748B]'}`}>Rank</p>
-                          <p className={`mt-1 text-lg sm:text-xl font-black ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>#{playerSummaries[0]?.rank || 0}</p>
+                          <p className={`text-[10px] uppercase font-bold tracking-[0.25em] ${isDark ? 'text-slate-500' : 'text-[#64748B]'}`}>{totalPlayers > 1 ? 'Top Rank' : 'Rank'}</p>
+                          <p className={`mt-1 text-lg sm:text-xl font-black ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>#{playerSummaries[0]?.rank || 1}</p>
                         </div>
                       </div>
                     </div>
