@@ -106,7 +106,7 @@ export default function TopHeader({
             value={searchQuery}
             onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
             placeholder={searchPlaceholder}
-            className="w-full h-[46px] pl-11 pr-10 rounded-full bg-[#FAF9FD] border border-[#E9EAF2] text-[13.5px] font-bold text-[#1E293B] placeholder-[#94A3B8] placeholder:font-bold focus:outline-none focus:border-[#6C38FF] focus:ring-1 focus:ring-[#6C38FF]/20 transition-all"
+            className="w-full h-[46px] pl-11 pr-10 rounded-full bg-[#FAF9FD] border border-[#E9EAF2] font-['Inter'] text-[13.5px] leading-[16px] font-normal text-[#1E293B] placeholder-[#94A3B8] placeholder:font-['Inter'] placeholder:font-normal placeholder:text-[13.5px] placeholder:leading-[16px] focus:outline-none focus:border-[#6C38FF] focus:ring-1 focus:ring-[#6C38FF]/20 transition-all"
           />
           {searchQuery && (
             <button
