@@ -10,7 +10,7 @@ import {
   FileSpreadsheet, Save, Image, Upload, Sliders, HelpCircle,
   Building2, Grid, Monitor, Smartphone, Menu,
   Palette, User, ChevronLeft, ChevronRight,
-  FileText, LayoutGrid, Pencil, Landmark
+  FileText, LayoutGrid, Pencil, Landmark, SlidersHorizontal
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -639,9 +639,8 @@ export default function CreateQuiz() {
               <div className="lg:col-span-3 rounded-2xl bg-white border border-[#E2E8F0]/90 shadow-[0px_4px_20px_rgba(0,0,0,0.06),0px_1px_3px_rgba(0,0,0,0.04)] p-4 sm:p-5 text-left flex flex-col gap-4">
                 {/* Panel Header */}
                 <div className="flex items-center gap-2.5 pb-0.5">
-                  <div className="w-8 h-8 rounded-xl bg-[#F0F9FF] flex items-center justify-center shrink-0">
-                    <img src="/quiz-details-icon.png" alt="" className="w-5 h-5 object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'block'; }} />
-                    <Settings className="w-5 h-5 text-[#0284C7] hidden" />
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F0F9FF] flex items-center justify-center shrink-0">
+                    <SlidersHorizontal className="w-4 h-4 text-[#0284C7]" />
                   </div>
                   <h2 className="text-[15px] sm:text-[16px] font-bold text-[#0F172A] tracking-tight">Quiz Details</h2>
                 </div>
