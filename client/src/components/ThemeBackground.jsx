@@ -21,6 +21,16 @@ const ThemeBackground = ({ children }) => {
         }}
       />
 
+      {/* Cloudy subtle violet purple glow background from Figma across Home Page */}
+      {isLight && (
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-30 mix-blend-multiply overflow-hidden">
+          <div
+            className="w-full h-full bg-cover bg-top sm:bg-center bg-no-repeat"
+            style={{ backgroundImage: 'url(/quiz-play-bg.jpg)' }}
+          />
+        </div>
+      )}
+
       {/* Subtle Ambient Soft Lavender & Violet Glows */}
       <div 
         className={`absolute top-[-5%] left-[8%] w-[550px] h-[550px] rounded-full pointer-events-none filter blur-[130px] ${

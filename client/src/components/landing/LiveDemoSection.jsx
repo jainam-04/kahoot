@@ -266,61 +266,63 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
 
   const cardContent = (
     <div
-      className="w-full max-w-[975px] mx-auto rounded-[20px] sm:rounded-[32px] p-4 sm:p-8 lg:p-12 relative overflow-hidden transition-all text-left"
+      className="w-full max-w-[975px] mx-auto rounded-[20px] sm:rounded-[32px] p-4 sm:p-8 lg:p-10 relative overflow-hidden transition-all text-left shadow-[0px_4px_30px_rgba(85,27,245,0.08)] border border-[rgba(238,240,246,0.9)]"
       style={{
-        background: 'rgba(255, 255, 255, 0.9)',
-        border: '1px solid rgba(243, 232, 255, 0.9)',
-        boxShadow:
-          '0px -3px 60px rgba(85, 27, 245, 0.15), 0px 10px 25px -5px rgba(0, 0, 0, 0.08), 0px 0px 0px 1px rgba(0, 0, 0, 0.08)',
-        backdropFilter: 'blur(12px)',
+        backgroundImage: 'url(/quiz-play-bg.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center bottom',
       }}
     >
-      {/* Top Card Status / Info Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between pb-3 sm:pb-4 gap-3 sm:gap-4 border-b border-[#F1F5F9]/80 sm:border-none">
-        {/* Row 1 on Mobile: PIN Pill (Left) & Live Demo Badge (Right) */}
-        <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-4 w-full sm:w-auto">
+      {/* Top Card Status / Info Bar (Figma 1:1 matching screenshot) */}
+      <div className="flex items-center justify-between pb-4 sm:pb-6 gap-3 flex-wrap relative z-10">
+        {/* Left: PIN Pill + Question Number */}
+        <div className="flex items-center gap-3">
           <div
-            className="px-3.5 sm:px-4 py-1.5 rounded-full flex items-center justify-center shadow-[0px_1px_2px_rgba(0,0,0,0.05)]"
-            style={{
-              background: '#ECFEFF',
-              border: '1px solid rgba(165, 243, 252, 0.9)',
-            }}
+            className="px-3.5 sm:px-4 py-1.5 rounded-full flex items-center justify-center shadow-[0px_1px_2px_rgba(0,0,0,0.05)] bg-[#ECFEFF] border border-[rgba(165,243,252,0.9)]"
           >
             <span className="font-['Inter'] font-bold text-xs sm:text-sm tracking-[0.35px] text-[#0284C7]">
               PIN: 849-204
             </span>
           </div>
 
-          <span className="px-3 py-1 rounded-full bg-[#FAF5FF] border border-[#F3E8FF] font-['Inter'] font-extrabold text-[11px] sm:text-xs text-[#551BF5] uppercase tracking-wider">
-            Live Quiz Demo
+          <span className="text-[#64748B] font-bold text-xs sm:text-sm">
+            Q{currentQIndex + 1}/{sampleQuestions.length}
           </span>
         </div>
 
-        {/* Row 2 on Mobile: Score, Streak (Left) & Reset Button (Right) */}
-        <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 w-full sm:w-auto">
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Score Pill */}
-            <div
-              className="px-3 sm:px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]"
-              style={{
-                background: 'rgba(255, 251, 235, 0.8)',
-                border: '1px solid rgba(253, 230, 138, 0.9)',
-              }}
-            >
-              <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#F59E0B]" />
-              <span className="font-['Inter'] font-semibold text-xs sm:text-sm text-[#B45309]">
-                {score.toLocaleString()} pts
-              </span>
-            </div>
-
-            {/* Streak Indicator */}
-            {streak > 1 && (
-              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-600 font-['Inter'] font-bold text-xs animate-pulse">
-                <Flame className="w-3.5 h-3.5 fill-current text-orange-500" />
-                <span>{streak}x</span>
-              </div>
-            )}
+        {/* Right: Timer Pill + Score Pill + Reset Button */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* 30s Countdown Timer Pill */}
+          <div
+            className={`px-3 sm:px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all ${
+              timeLeft <= 5 && hasStarted
+                ? 'bg-[#FFF1F2] border border-[#FECDD3] text-[#EF4444] animate-pulse ring-2 ring-red-300'
+                : 'bg-[#ECFEFF] border border-[rgba(165,243,252,0.9)] text-[#0284C7]'
+            }`}
+          >
+            <Clock className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${timeLeft <= 5 && hasStarted ? 'text-[#EF4444]' : 'text-[#0284C7]'}`} />
+            <span className="font-['Inter'] font-bold text-xs sm:text-sm tabular-nums">
+              {timeLeft}s
+            </span>
           </div>
+
+          {/* Score Pill */}
+          <div
+            className="px-3 sm:px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] bg-[#FFFBEB]/90 border border-[rgba(253,230,138,0.9)]"
+          >
+            <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#F59E0B]" />
+            <span className="font-['Inter'] font-bold text-xs sm:text-sm text-[#B45309] tabular-nums">
+              {score.toLocaleString()} pts
+            </span>
+          </div>
+
+          {/* Streak Indicator (if > 1) */}
+          {streak > 1 && (
+            <div className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-600 font-['Inter'] font-bold text-xs animate-pulse shadow-sm">
+              <Flame className="w-3.5 h-3.5 fill-current text-orange-500" />
+              <span>{streak}x</span>
+            </div>
+          )}
 
           {/* Reset Button */}
           <button
@@ -333,60 +335,6 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
           </button>
         </div>
       </div>
-
-      {/* Floating Progress and Timer Bar (Figma 1:1) */}
-      {!isCompleted && !showIntermediateLeaderboard && (
-        <div
-          className="mb-5 sm:mb-6 rounded-[16px] px-4 py-3 flex items-center justify-between gap-4 transition-all"
-          style={{
-            background: 'rgba(255, 255, 255, 0.85)',
-            border: '1px solid rgba(255, 255, 255, 0.6)',
-            boxShadow: '0px 1px 20px rgba(0, 0, 0, 0.08)',
-            backdropFilter: 'blur(12px)',
-          }}
-        >
-          {/* Left: Book Icon + Counter + Progress Bar Track */}
-          <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
-            <div className="w-5 h-5 flex items-center justify-center shrink-0">
-              <svg className="w-5 h-5 text-[#7C3AED]" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-              </svg>
-            </div>
-
-            <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-              <span className="font-['Inter'] font-bold text-[12px] leading-4 tracking-[0.3px] text-[#1E293B]">
-                Question {currentQIndex + 1} of {sampleQuestions.length}
-              </span>
-              <div className="w-full h-[6px] bg-[rgba(226,232,240,0.9)] rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500 ease-out"
-                  style={{
-                    width: `${Math.max(5, ((currentQIndex + 1) / sampleQuestions.length) * 100)}%`,
-                    background: 'linear-gradient(90deg, #7C3AED 0%, #4F46E5 100%)',
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Countdown Timer */}
-          <div
-            className={`h-[30px] px-3 rounded-[12px] flex items-center gap-1.5 shrink-0 transition-all ${
-              timeLeft <= 5 && hasStarted ? 'animate-pulse ring-2 ring-red-400' : ''
-            }`}
-            style={{
-              background: '#FFF1F2',
-              border: '1px solid rgba(254, 205, 211, 0.8)',
-            }}
-          >
-            <Clock className="w-4 h-4 text-[#F43F5E] shrink-0" />
-            <span className="font-['Inter'] font-extrabold text-[12px] leading-4 tracking-[0.6px] text-[#0F172A] tabular-nums">
-              00 : {String(timeLeft).padStart(2, '0')}
-            </span>
-          </div>
-        </div>
-      )}
 
       {/* Main View: Question vs Intermediate Leaderboard vs Final Results */}
       {!isCompleted ? (
@@ -729,6 +677,14 @@ export default function LiveDemoSection({ isModal = false, onCloseModal = null }
       id="interactive-demo"
       className="relative w-full bg-[#FAF8FF] py-14 sm:py-20 overflow-hidden scroll-mt-20"
     >
+      {/* Cloudy subtle violet purple glow background from Figma */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div
+          className="w-full h-full bg-cover bg-bottom sm:bg-center bg-no-repeat opacity-80 select-none"
+          style={{ backgroundImage: 'url(/quiz-play-bg.jpg)' }}
+        />
+      </div>
+
       {/* Ambient soft gradient glowing backdrops directly from Figma CSS */}
       <div
         className="absolute h-[384px] left-[25%] right-[37.5%] -top-[48px] rounded-full pointer-events-none filter blur-[64px]"
