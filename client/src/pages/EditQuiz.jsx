@@ -19,6 +19,7 @@ import HostProfileModal from '../components/HostProfileModal';
 import PlanComparisonTable from '../components/PlanComparisonTable';
 import AIQuizAssistantModal from '../components/AIQuizAssistantModal';
 import BackgroundPicker from '../components/BackgroundPicker';
+import UploadBaseTemplate from '../components/UploadBaseTemplate';
 import AppSidebar from '../components/AppSidebar';
 import TopHeader from '../components/TopHeader';
 import { getQuizById, updateQuiz } from '../services/quizService';
@@ -45,23 +46,25 @@ export default function EditQuiz() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
   const [showPexelsModal, setShowPexelsModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [bgModalTarget, setBgModalTarget] = useState(null);
 
   // Lock background scroll when modals are active
-  useScrollLock(Boolean(activeModal || showPexelsModal || bgModalTarget !== null));
+  useScrollLock(Boolean(activeModal || showPexelsModal || showImportModal || bgModalTarget !== null));
 
-  // ESC key handler for Pexels Modal and Background Customizer
+  // ESC key handler for Pexels Modal, Import Modal and Background Customizer
   useEffect(() => {
-    if (!showPexelsModal && bgModalTarget === null) return;
+    if (!showPexelsModal && !showImportModal && bgModalTarget === null) return;
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         if (showPexelsModal) setShowPexelsModal(false);
+        if (showImportModal) setShowImportModal(false);
         if (bgModalTarget !== null) setBgModalTarget(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showPexelsModal, bgModalTarget]);
+  }, [showPexelsModal, showImportModal, bgModalTarget]);
 
   // Active question index in question editor
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
@@ -331,6 +334,7 @@ export default function EditQuiz() {
   const handleExcelUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    setShowImportModal(false);
 
     const reader = new FileReader();
     const fileExtension = file.name.split('.').pop().toLowerCase();
@@ -682,8 +686,9 @@ export default function EditQuiz() {
                 />
                 <button
                   type="button"
-                  onClick={() => excelInputRef.current?.click()}
+                  onClick={() => setShowImportModal(true)}
                   className="w-full xl:w-[157px] h-[40px] sm:h-[42px] px-3 sm:px-4 rounded-[16px] bg-[#F8F9FE] border border-[rgba(233,213,255,0.8)] text-[#6C28FE] font-bold text-[12px] leading-4 hover:bg-[#F1F3FE] flex items-center justify-center gap-2 cursor-pointer transition-colors font-['Plus_Jakarta_Sans',sans-serif] shrink-0"
+                  title="Import from Excel or CSV with sample template"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5 text-[#7C3AED] shrink-0" />
                   <span className="truncate">Import CSV</span>
@@ -1883,6 +1888,41 @@ export default function EditQuiz() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 6. SPREADSHEET / CSV IMPORT MODAL WITH BASE TEMPLATE */}
+        {showImportModal && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="relative my-auto rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 bg-white text-slate-900 text-left">
+              <div className="shrink-0 flex items-center justify-between px-5 sm:px-7 py-4 border-b border-slate-100 bg-gradient-to-r from-purple-50 via-white to-purple-50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-purple-100 text-[#7C3AED] rounded-2xl shadow-xs">
+                    <FileSpreadsheet className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-base sm:text-lg text-slate-900">Import Questions from Excel / CSV</h3>
+                    <p className="text-xs text-slate-500">Download the sample template, add your questions, and upload.</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowImportModal(false)}
+                  className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-7 space-y-4">
+                <UploadBaseTemplate
+                  onTriggerUpload={() => {
+                    excelInputRef.current?.click();
+                  }}
+                />
               </div>
             </div>
           </div>

@@ -77,7 +77,7 @@ export default function UploadBaseTemplate({ onTriggerUpload }) {
   };
 
   // Copy CSV format string to clipboard
-  const handleCopyCsvTemplate = () => {
+  const handleCopyCsvTemplate = async () => {
     try {
       const csvString = `Question Text,Option 1,Option 2,Option 3,Option 4,Correct Option Index (1-4),Time Limit in Seconds
 What is the capital of France?,London,Paris,Berlin,Madrid,2,20
@@ -92,6 +92,27 @@ What is 15 multiplied by 4?,45,50,60,75,3,15`;
       }
     } catch (err) {
       toast.error('Failed to copy to clipboard');
+    }
+  };
+
+  // Download real .csv template file
+  const handleDownloadCsvTemplate = () => {
+    try {
+      const csvString = `\uFEFFQuestion Text,Option 1,Option 2,Option 3,Option 4,Correct Option Index (1-4),Time Limit in Seconds\r\nWhat is the capital of France?,London,Paris,Berlin,Madrid,2,20\r\nWhich element has chemical symbol 'O'?,Gold,Oxygen,Osmium,Hydrogen,2,30\r\nWhat is 15 multiplied by 4?,45,50,60,75,3,15\r\n`;
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Gubbi_Question_Upload_Template.csv';
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      toast.success('Downloaded CSV Base Template (.csv)!');
+    } catch (err) {
+      toast.error('Failed to download CSV template');
     }
   };
 
@@ -131,37 +152,51 @@ What is 15 multiplied by 4?,45,50,60,75,3,15`;
         </div>
 
         {/* Action Buttons Side-by-Side */}
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0 w-full sm:w-auto mt-2 lg:mt-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0 w-full lg:w-auto mt-2 lg:mt-0">
           <button
             type="button"
             onClick={handleDownloadExcelTemplate}
-            className="btn-premium px-3 py-2 text-xs font-extrabold text-white rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap"
+            className="px-3.5 py-2 text-xs font-extrabold text-white rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap"
           >
             <Download className="h-3.5 w-3.5" />
-            <span>Download Template (.xlsx)</span>
+            <span>Download Excel (.xlsx)</span>
           </button>
 
           <button
             type="button"
-            onClick={handleCopyCsvTemplate}
+            onClick={handleDownloadCsvTemplate}
             className={`px-3 py-2 text-xs font-extrabold rounded-xl border transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
               isLight
                 ? 'bg-purple-50 border-purple-300 text-purple-900 hover:bg-purple-100 shadow-xs'
                 : 'bg-slate-800 border-slate-700 text-slate-100 hover:bg-slate-700'
             }`}
           >
-            <Copy className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
-            <span>Copy CSV</span>
+            <Download className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+            <span>Download CSV (.csv)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleCopyCsvTemplate}
+            className={`px-2.5 py-2 text-xs font-semibold rounded-xl border transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
+              isLight
+                ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+            }`}
+            title="Copy sample CSV text"
+          >
+            <Copy className="h-3.5 w-3.5 text-slate-500" />
+            <span>Copy Text</span>
           </button>
 
           {onTriggerUpload && (
             <button
               type="button"
               onClick={onTriggerUpload}
-              className="btn-premium px-3 py-2 text-xs font-extrabold text-white rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:brightness-110 shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap"
+              className="px-3.5 py-2 text-xs font-extrabold text-white rounded-xl bg-gradient-to-r from-[#6C28FE] to-[#4F46E5] hover:brightness-110 shadow-md shadow-purple-600/25 flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap"
             >
               <UploadCloud className="h-3.5 w-3.5" />
-              <span>Upload File</span>
+              <span>Upload Your File</span>
             </button>
           )}
         </div>
