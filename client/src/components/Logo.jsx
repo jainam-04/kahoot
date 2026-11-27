@@ -10,24 +10,24 @@ export default function Logo({
 }) {
   const sizeMap = {
     xs: {
-      icon: 'h-8 w-8',
-      full: 'h-9 sm:h-10 max-w-[130px]',
+      icon: 'h-6 w-6',
+      full: 'h-7 max-h-[30px] max-w-[90px]',
     },
     sm: {
-      icon: 'h-10 w-10',
-      full: 'h-11 sm:h-13 max-w-[160px]',
+      icon: 'h-8 w-8',
+      full: 'h-9 sm:h-10 max-h-[40px] max-w-[120px]',
     },
     md: {
-      icon: 'h-12 w-12',
-      full: 'h-14 sm:h-16 max-w-[200px]',
+      icon: 'h-10 w-10',
+      full: 'h-10 sm:h-12 max-h-[48px] max-w-[150px]',
     },
     lg: {
-      icon: 'h-16 w-16',
-      full: 'h-18 sm:h-22 max-w-[260px]',
+      icon: 'h-12 w-12',
+      full: 'h-11 sm:h-12 max-h-[50px] max-w-[160px]',
     },
     xl: {
-      icon: 'h-24 w-24',
-      full: 'h-24 sm:h-30 max-w-[360px]',
+      icon: 'h-16 w-16',
+      full: 'h-16 sm:h-20 max-h-[80px] max-w-[220px]',
     },
   };
 
