@@ -20,8 +20,8 @@ export const startQuestion = async (pin) => {
   return response.data;
 };
 
-export const submitAnswer = async (pin, playerName, answerIndex) => {
-  const response = await API.post('/game/answer', { pin, playerName, answerIndex });
+export const submitAnswer = async (pin, playerName, answerIndex, mobileNumber, fullName, nickname) => {
+  const response = await API.post('/game/answer', { pin, playerName, answerIndex, mobileNumber, fullName, nickname });
   return response.data;
 };
 

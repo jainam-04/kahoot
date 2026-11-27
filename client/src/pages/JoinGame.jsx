@@ -139,6 +139,12 @@ export default function JoinGame() {
         if (cleanMobile) {
           localStorage.setItem('guest_mobileNumber', cleanMobile);
         }
+        if (cleanFullName) {
+          localStorage.setItem('guest_fullName', cleanFullName);
+        }
+        if (cleanNickname) {
+          localStorage.setItem('guest_nickname', cleanNickname);
+        }
         localStorage.removeItem('current_hosted_pin');
 
         toast.success(`Welcome to the lobby, ${displayPlayerName}!`);

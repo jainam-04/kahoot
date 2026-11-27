@@ -215,7 +215,23 @@ const joinGame = async (req, res) => {
             });
 
             if (existingPlayer) {
-                updatedGame = checkGame;
+                // Persist/update mobileNumber, fullName, nickname, avatar so reconnects or updates never lose data
+                const updateFields = {};
+                if (cleanMobile) updateFields['players.$.mobileNumber'] = cleanMobile;
+                if (cleanFullName) updateFields['players.$.fullName'] = cleanFullName;
+                if (cleanNickname) updateFields['players.$.nickname'] = cleanNickname;
+                if (cleanAvatar) updateFields['players.$.avatar'] = cleanAvatar;
+
+                if (Object.keys(updateFields).length > 0) {
+                    const refreshedDoc = await GameSession.findOneAndUpdate(
+                        { pin: cleanPin, 'players._id': existingPlayer._id },
+                        { $set: updateFields },
+                        { new: true }
+                    );
+                    updatedGame = refreshedDoc || checkGame;
+                } else {
+                    updatedGame = checkGame;
+                }
             } else if (checkGame.status === 'active') {
                 // Allow late players to join the active battle so they are NOT left out of the game!
                 const newPlayer = {
@@ -370,10 +386,7 @@ const startQuestion = async (req, res) => {
                     currentQuestionIndex: nextIndex,
                     questionStartTime: questionStartTime,
                     status: 'active'
-                },
-                ...(nextIndex > 0 ? {
-                    $pull: { players: { totalScore: 0, answers: { $size: 0 } } }
-                } : {})
+                }
             }
         );
 
@@ -455,10 +468,13 @@ const startQuestion = async (req, res) => {
 
 const submitAnswer = async (req, res) => {
     try {
-        const { pin, playerName, answerIndex } = req.body;
+        const { pin, playerName, answerIndex, mobileNumber, fullName, nickname } = req.body;
 
         const cleanPin = pin ? pin.toString().trim() : '';
         const cleanName = playerName ? playerName.toString().trim() : '';
+        const cleanMobile = (mobileNumber && mobileNumber.toString().trim()) || '';
+        const cleanFullName = (fullName && fullName.toString().replace(/[^a-zA-Z\s]/g, '').trim()) || cleanName;
+        const cleanNickname = (nickname && nickname.toString().trim()) || cleanName;
         const parsedAnswerIndex = Number(answerIndex);
 
         if (!cleanPin || !cleanName || isNaN(parsedAnswerIndex)) {
@@ -519,13 +535,24 @@ const submitAnswer = async (req, res) => {
 
         const isDbConnected = Boolean(mongoose.connection && mongoose.connection.readyState === 1);
 
+        // If player exists but is missing mobileNumber, backfill it if provided in submission
+        if (player && cleanMobile && (!player.mobileNumber || player.mobileNumber.trim() === '')) {
+            player.mobileNumber = cleanMobile;
+            if (isDbConnected && player._id) {
+                GameSession.updateOne(
+                    { pin: cleanPin, 'players._id': player._id },
+                    { $set: { 'players.$.mobileNumber': cleanMobile } }
+                ).catch(() => {});
+            }
+        }
+
         // Auto-recover/auto-register player if missing so they are NEVER left out with 'player not found'
         if (!player) {
             const newPlayerData = {
                 name: cleanName,
-                fullName: cleanName,
-                nickname: cleanName,
-                mobileNumber: '',
+                fullName: cleanFullName,
+                nickname: cleanNickname,
+                mobileNumber: cleanMobile,
                 avatar: '👤',
                 totalScore: 0,
                 answers: []

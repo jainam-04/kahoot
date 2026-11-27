@@ -571,7 +571,10 @@ export default function LiveQuiz() {
     setSelectedIdx(index);
 
     try {
-      const response = await submitAnswer(pin, player, index);
+      const mobileNumber = localStorage.getItem('guest_mobileNumber') || '';
+      const fullName = localStorage.getItem('guest_fullName') || '';
+      const nickname = localStorage.getItem('guest_nickname') || '';
+      const response = await submitAnswer(pin, player, index, mobileNumber, fullName, nickname);
 
       if (response.success) {
         localStorage.setItem('last_hasAnswered', 'true');

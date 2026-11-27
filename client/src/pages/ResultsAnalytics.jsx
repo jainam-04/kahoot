@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   BarChart3, ArrowLeft, Loader2, Download, Trophy,
   CheckCircle, XCircle, AlertCircle, FileSpreadsheet, FileText, Crown, Medal,
-  Menu, Search, Settings, LogOut, ChevronDown, Check, X
+  Menu, Search, Settings, LogOut, ChevronDown, Check, X, Pencil
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AnimatedPage from '../components/AnimatedPage';
@@ -13,7 +13,7 @@ import AppSidebar from '../components/AppSidebar';
 import TopHeader from '../components/TopHeader';
 import HostProfileModal from '../components/HostProfileModal';
 import PlanComparisonTable from '../components/PlanComparisonTable';
-import { getResultBySession } from '../services/resultService';
+import { getResultBySession, updatePlayerMobile } from '../services/resultService';
 import { clearAuthSession, getStoredUser } from '../utils/auth';
 import { useScrollLock } from '../utils/scrollLock';
 
@@ -78,6 +78,45 @@ export default function ResultsAnalytics() {
     navigate('/login');
   };
 
+  const queryClient = useQueryClient();
+  const [editingPlayerName, setEditingPlayerName] = useState(null);
+  const [phoneInput, setPhoneInput] = useState('');
+  const [isSavingPhone, setIsSavingPhone] = useState(false);
+
+  const startEditPhone = (player) => {
+    setEditingPlayerName(player.name || player.fullName);
+    setPhoneInput(player.mobileNumber || player.phone || player.phoneNumber || '');
+  };
+
+  const handleSavePhone = async (player) => {
+    const cleanNum = phoneInput.trim();
+    if (cleanNum && !/^[0-9]{10}$/.test(cleanNum)) {
+      toast.error('Mobile number must be a 10-digit number');
+      return;
+    }
+    setIsSavingPhone(true);
+    try {
+      const pName = player.name || player.fullName;
+      const res = await updatePlayerMobile(id, pName, cleanNum);
+      if (res.success) {
+        queryClient.setQueryData(['result-details', id], (old) => {
+          if (!old?.result) return old;
+          const updatedPlayers = (old.result.players || []).map(p => {
+            const matches = (p.name === pName || p.fullName === pName);
+            return matches ? { ...p, mobileNumber: cleanNum } : p;
+          });
+          return { ...old, result: { ...old.result, players: updatedPlayers } };
+        });
+        toast.success(`Updated phone number for ${player.fullName || pName}!`);
+        setEditingPlayerName(null);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Could not update phone number');
+    } finally {
+      setIsSavingPhone(false);
+    }
+  };
+
   const userInitial = (user?.name || user?.fullName || 'U').charAt(0).toUpperCase();
   const userName = user?.name || user?.fullName || 'User';
 
@@ -105,7 +144,7 @@ export default function ResultsAnalytics() {
     const percentage = result?.totalQuestions ? Math.round((correct / result.totalQuestions) * 100) : 0;
     const fullName = player.fullName || player.name || player.username || `Player ${index + 1}`;
     const nickname = player.nickname || player.name || fullName;
-    const mobileNumber = player.mobileNumber || '';
+    const mobileNumber = player.mobileNumber || player.phone || player.phoneNumber || player.mobile || player.contactNumber || '';
 
     return {
       ...player,
@@ -1111,16 +1150,68 @@ export default function ResultsAnalytics() {
                             <p className={`font-bold text-xs sm:text-sm truncate ${isDark ? 'text-white' : 'text-[#1E1B4B]'}`}>
                               {player.fullName}
                             </p>
-                            {player.mobileNumber ? (
-                              <p className="text-[10px] text-slate-400 font-mono">
-                                {player.mobileNumber}
+                            {editingPlayerName === (player.name || player.fullName) ? (
+                              <div className="flex items-center gap-1 mt-1">
+                                <input
+                                  type="tel"
+                                  maxLength={10}
+                                  value={phoneInput}
+                                  onChange={(e) => setPhoneInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}
+                                  placeholder="10-digit phone"
+                                  className="w-28 px-1.5 py-0.5 text-[11px] font-mono rounded border border-purple-300 dark:border-purple-600 bg-white dark:bg-slate-800 focus:outline-none"
+                                  autoFocus
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleSavePhone(player);
+                                    if (e.key === 'Escape') setEditingPlayerName(null);
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleSavePhone(player)}
+                                  disabled={isSavingPhone}
+                                  className="p-1 text-emerald-600 hover:text-emerald-700 disabled:opacity-50"
+                                >
+                                  <Check className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingPlayerName(null)}
+                                  disabled={isSavingPhone}
+                                  className="p-1 text-slate-400"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ) : player.mobileNumber ? (
+                              <p className="text-[10px] text-slate-400 font-mono flex items-center gap-1">
+                                <span>{player.mobileNumber}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => startEditPhone(player)}
+                                  className="text-slate-400 hover:text-[#6320EE] p-0.5"
+                                  title="Edit phone"
+                                >
+                                  <Pencil className="w-2.5 h-2.5" />
+                                </button>
                               </p>
                             ) : (
-                              player.nickname && player.nickname !== player.fullName && (
-                                <p className="text-[10px] text-slate-400 truncate">
-                                  aka {player.nickname}
-                                </p>
-                              )
+                              <div className="flex items-center gap-1 mt-0.5">
+                                {player.nickname && player.nickname !== player.fullName ? (
+                                  <span className="text-[10px] text-slate-400 truncate">
+                                    aka {player.nickname}
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] italic text-slate-400">No phone</span>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => startEditPhone(player)}
+                                  className="text-[10px] font-bold text-[#6320EE] dark:text-purple-400 hover:underline flex items-center gap-0.5 ml-1"
+                                >
+                                  <Pencil className="w-2.5 h-2.5" />
+                                  <span>Add</span>
+                                </button>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -1180,10 +1271,56 @@ export default function ResultsAnalytics() {
                             </div>
                           </td>
                           <td className={`px-3.5 py-3.5 ${isDark ? 'text-slate-300' : 'text-[#475569]'}`}>
-                            {player.mobileNumber ? (
-                              <span className="font-mono text-xs font-medium tracking-wide">{player.mobileNumber}</span>
+                            {editingPlayerName === (player.name || player.fullName) ? (
+                              <div className="flex items-center gap-1.5">
+                                <input
+                                  type="tel"
+                                  maxLength={10}
+                                  value={phoneInput}
+                                  onChange={(e) => setPhoneInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}
+                                  placeholder="10-digit number"
+                                  className="w-28 px-2 py-1 text-xs font-mono rounded border border-purple-300 dark:border-purple-600 bg-white dark:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-[#6320EE]"
+                                  autoFocus
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleSavePhone(player);
+                                    if (e.key === 'Escape') setEditingPlayerName(null);
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleSavePhone(player)}
+                                  disabled={isSavingPhone}
+                                  className="p-1 text-emerald-600 hover:text-emerald-700 disabled:opacity-50 cursor-pointer"
+                                  title="Save phone number"
+                                >
+                                  <Check className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingPlayerName(null)}
+                                  disabled={isSavingPhone}
+                                  className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
+                                  title="Cancel"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
                             ) : (
-                              <span className={`text-xs italic ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>Not provided</span>
+                              <div className="inline-flex items-center gap-1.5 group/phone">
+                                {player.mobileNumber ? (
+                                  <span className="font-mono text-xs font-medium tracking-wide">{player.mobileNumber}</span>
+                                ) : (
+                                  <span className={`text-xs italic ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>Not provided</span>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => startEditPhone(player)}
+                                  className="opacity-0 group-hover/phone:opacity-100 transition-opacity p-1 text-slate-400 hover:text-[#6320EE] rounded cursor-pointer"
+                                  title={player.mobileNumber ? "Edit Phone Number" : "Add Phone Number"}
+                                >
+                                  <Pencil className="w-3 h-3" />
+                                </button>
+                              </div>
                             )}
                           </td>
                           <td className="px-3.5 py-3.5 text-center font-bold text-emerald-600 dark:text-emerald-400">{player.correct}</td>

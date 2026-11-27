@@ -19,3 +19,8 @@ export const getResultBySession = async (sessionId) => {
   const response = await API.get(`/result/${sessionId}`);
   return response.data;
 };
+
+export const updatePlayerMobile = async (sessionId, playerName, mobileNumber) => {
+  const response = await API.patch(`/result/${sessionId}/player-mobile`, { playerName, mobileNumber });
+  return response.data;
+};
