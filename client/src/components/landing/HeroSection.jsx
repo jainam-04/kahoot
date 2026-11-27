@@ -65,7 +65,7 @@ export default function HeroSection() {
       id="hero" 
       className="relative pt-4 sm:pt-6 lg:pt-8 pb-8 sm:pb-12 lg:pb-16 overflow-hidden px-4 sm:px-8 min-h-0 lg:min-h-[680px] flex flex-col justify-between"
       style={{
-        background: 'linear-gradient(180deg, #FAF7FE 0%, #FAF8FF 100%)'
+        background: 'linear-gradient(180deg, #F3EEFD 0%, #FAF8FF 100%)'
       }}
     >
       {/* Background device showcase graphic integrated directly into desktop hero background */}
@@ -76,6 +76,10 @@ export default function HeroSection() {
           src="/hero-background-2x.png" 
           alt="Platform Interface Showcase" 
           className="absolute right-0 bottom-0 h-full w-auto max-w-none object-contain object-right-bottom" 
+          style={{
+            maskImage: 'linear-gradient(to right, transparent 0%, transparent 10%, black 45%, black 100%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, transparent 10%, black 45%, black 100%)'
+          }}
         />
       </div>
 
