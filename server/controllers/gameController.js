@@ -199,7 +199,7 @@ const joinGame = async (req, res) => {
         let updatedGame = await GameSession.findOneAndUpdate(
             {
                 pin: cleanPin,
-                status: { $in: ['waiting', 'active'] },
+                status: 'waiting',
                 'players.name': { $not: new RegExp('^' + escName + '$', 'i') }
             },
             { $push: { players: { name: cleanName, avatar: cleanAvatar, fullName: cleanFullName, mobileNumber: cleanMobile, nickname: cleanNickname, totalScore: 0, answers: [] } } },
@@ -242,43 +242,10 @@ const joinGame = async (req, res) => {
                     updatedGame = checkGame;
                 }
             } else if (checkGame.status === 'active') {
-                // Allow late players to join the active battle so they are NOT left out of the game!
-                const newPlayer = {
-                    name: cleanName,
-                    avatar: cleanAvatar,
-                    fullName: cleanFullName,
-                    mobileNumber: cleanMobile,
-                    nickname: cleanNickname,
-                    totalScore: 0,
-                    answers: []
-                };
-                const joinedGame = await GameSession.findOneAndUpdate(
-                    {
-                        pin: cleanPin,
-                        status: 'active',
-                        'players.name': { $not: new RegExp('^' + escName + '$', 'i') }
-                    },
-                    { $push: { players: newPlayer } },
-                    { new: true }
-                );
-                if (joinedGame) {
-                    updatedGame = joinedGame;
-                } else {
-                    const refreshed = await GameSession.findOne({ pin: cleanPin });
-                    const alreadyIn = refreshed?.players?.find(p => nameRegex.test((p.name || '').trim()));
-                    if (alreadyIn) {
-                        updatedGame = refreshed;
-                    } else if (isDbConnected) {
-                        updatedGame = await GameSession.findOneAndUpdate(
-                            { pin: cleanPin },
-                            { $push: { players: newPlayer } },
-                            { new: true }
-                        ) || refreshed || checkGame;
-                    } else {
-                        checkGame.players.push(newPlayer);
-                        updatedGame = checkGame;
-                    }
-                }
+                return res.status(400).json({
+                    success: false,
+                    message: 'This quiz has already started! Joining is closed.'
+                });
             } else if (checkGame.status === 'finished') {
                 return res.status(400).json({
                     success: false,
@@ -327,7 +294,8 @@ const joinGame = async (req, res) => {
             game: {
                 pin: updatedGame.pin,
                 playerName: cleanName,
-                totalPlayers: updatedGame.players.length
+                totalPlayers: updatedGame.players.length,
+                status: updatedGame.status
             }
         });
 

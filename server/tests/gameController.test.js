@@ -242,3 +242,68 @@ test('submitAnswer uses atomic findOneAndUpdate when connected', async () => {
   }
 });
 
+test('joinGame rejects new players when game is active, but allows existing player to reconnect', async () => {
+  const originalFindOne = GameSession.findOne;
+  const originalFindOneAndUpdate = GameSession.findOneAndUpdate;
+
+  try {
+    const mockActiveSession = {
+      pin: '778899',
+      status: 'active',
+      players: [
+        {
+          _id: new mongoose.Types.ObjectId(),
+          name: 'Alice',
+          nickname: 'Alice',
+          fullName: 'Alice Walker',
+          answers: [],
+          totalScore: 0
+        }
+      ]
+    };
+
+    GameSession.findOne = async () => mockActiveSession;
+    GameSession.findOneAndUpdate = async (query) => {
+      // Atomic join requires status: 'waiting'
+      if (query.status === 'waiting') return null;
+      return mockActiveSession;
+    };
+
+    // 1. Try to join as brand new player 'Bob'
+    const resNew = {
+      statusCode: 200,
+      data: null,
+      status(code) { this.statusCode = code; return this; },
+      json(payload) { this.data = payload; return this; }
+    };
+
+    await gameController.joinGame({
+      body: { pin: '778899', playerName: 'Bob' },
+      app: { get: () => null }
+    }, resNew);
+
+    assert.equal(resNew.statusCode, 400);
+    assert.equal(resNew.data.success, false);
+    assert.match(resNew.data.message, /already started/i);
+
+    // 2. Reconnect as existing player 'Alice'
+    const resReconnect = {
+      statusCode: 200,
+      data: null,
+      status(code) { this.statusCode = code; return this; },
+      json(payload) { this.data = payload; return this; }
+    };
+
+    await gameController.joinGame({
+      body: { pin: '778899', playerName: 'Alice' },
+      app: { get: () => null }
+    }, resReconnect);
+
+    assert.equal(resReconnect.statusCode, 200);
+    assert.equal(resReconnect.data.success, true);
+  } finally {
+    GameSession.findOne = originalFindOne;
+    GameSession.findOneAndUpdate = originalFindOneAndUpdate;
+  }
+});
+

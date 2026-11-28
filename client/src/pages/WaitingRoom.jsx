@@ -84,6 +84,10 @@ export default function WaitingRoom() {
       }
 
       const currentGame = response.game;
+      if (currentGame?.status === 'active') {
+        navigate(`/live/${pin}`);
+        return;
+      }
       const background = currentGame?.backgroundImage || currentGame?.quiz?.backgroundImage || '';
       localStorage.setItem('quiz_global_bg_image', background);
       localStorage.setItem('last_bg_image', background);

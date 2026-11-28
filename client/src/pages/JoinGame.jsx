@@ -147,10 +147,14 @@ export default function JoinGame() {
         }
         localStorage.removeItem('current_hosted_pin');
 
-        toast.success(`Welcome to the lobby, ${displayPlayerName}!`);
+        toast.success(`Welcome back, ${displayPlayerName}!`);
         
         setTimeout(() => {
-          navigate(`/waiting/${cleanPin}`);
+          if (response.game?.status === 'active') {
+            navigate(`/live/${cleanPin}`);
+          } else {
+            navigate(`/waiting/${cleanPin}`);
+          }
         }, 800);
       } else {
         toast.error(response.message || 'Lobby join failed. Check the PIN.');
