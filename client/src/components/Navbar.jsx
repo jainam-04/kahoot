@@ -180,7 +180,7 @@ export default function Navbar() {
 
           {/* Brand Logo */}
           <Link to={token ? "/dashboard" : "/"} className="flex items-center transition-transform active:scale-95 shrink-0" onClick={closeMobile}>
-            <Logo className="shrink-0" size="md" variant="badge" />
+            <Logo className="shrink-0" size="md" imgClassName="h-10 sm:h-12 max-h-[46px] w-auto object-contain" />
           </Link>
         </div>
 
@@ -432,14 +432,14 @@ export default function Navbar() {
                 )}
               </div>
 
-              {/* Mobile Quick Action Buttons (Login + Sign Up / Join Lobby) */}
-              <div className="flex md:hidden items-center gap-1 sm:gap-2">
+              {/* Mobile Quick Action Buttons (Login + Sign Up) */}
+              <div className="flex md:hidden items-center gap-2 shrink-0">
                 <Link
                   to="/login"
-                  className={`px-2 sm:px-3 py-1.5 rounded-full text-xs sm:text-[13px] font-['Inter'] font-bold transition-colors whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-['Inter'] font-bold border transition-all active:scale-95 whitespace-nowrap shadow-2xs ${
                     isLight
-                      ? 'text-[#334155] hover:text-[#551BF5] active:bg-purple-50'
-                      : 'text-gray-200 hover:text-white active:bg-white/10'
+                      ? 'border-purple-200 bg-purple-50/70 text-[#551BF5] hover:bg-purple-100 hover:border-purple-300'
+                      : 'border-purple-500/30 bg-purple-950/40 text-purple-200 hover:bg-purple-900/50'
                   }`}
                 >
                   Login
@@ -448,28 +448,28 @@ export default function Navbar() {
                 {location.pathname === '/join' ? (
                   <Link
                     to="/join"
-                    className="btn-get-started px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-['Inter'] font-extrabold !text-white rounded-full shadow-sm flex items-center gap-1 shrink-0 whitespace-nowrap"
+                    className="btn-get-started px-3.5 py-1.5 text-xs font-['Inter'] font-extrabold !text-white rounded-full shadow-sm flex items-center gap-1 shrink-0 whitespace-nowrap"
                     style={{
                       background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
                       color: '#ffffff'
                     }}
                   >
                     <span className="!text-white font-extrabold" style={{ color: '#ffffff' }}>Join Lobby</span>
-                    <ArrowRight className="h-3.5 w-3.5 !text-white" style={{ color: '#ffffff' }} />
+                    <ArrowRight className="h-3 w-3 !text-white" style={{ color: '#ffffff' }} />
                   </Link>
                 ) : (
                   <Link
                     to="/register"
-                    className="btn-get-started px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-[13px] font-['Inter'] font-bold !text-white rounded-full shadow-sm flex items-center gap-1 shrink-0 whitespace-nowrap"
+                    className="btn-get-started px-3 sm:px-3.5 py-1.5 text-xs font-['Inter'] font-bold !text-white rounded-full shadow-sm flex items-center gap-1 shrink-0 whitespace-nowrap"
                     style={{
                       background: 'linear-gradient(106.05deg, #6C38FF 0%, #551BF5 100%)',
                       color: '#ffffff'
                     }}
                   >
                     <span className="!text-white font-bold" style={{ color: '#ffffff' }}>
-                      Sign Up<span className="hidden min-[380px]:inline"> as Host</span>
+                      Sign Up<span className="hidden min-[400px]:inline"> as Host</span>
                     </span>
-                    <ArrowRight className="h-3.5 w-3.5 !text-white" style={{ color: '#ffffff' }} />
+                    <ArrowRight className="h-3 w-3 !text-white" style={{ color: '#ffffff' }} />
                   </Link>
                 )}
               </div>
