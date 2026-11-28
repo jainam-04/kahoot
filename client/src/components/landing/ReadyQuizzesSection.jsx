@@ -493,18 +493,19 @@ export default function ReadyQuizzesSection() {
                 <ChevronLeft className="w-5 h-5" />
               </button>
 
-              {/* Pagination Dots */}
-              <div className="flex items-center gap-2">
+              {/* Modern Pagination Capsule Dock */}
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-50/80 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/40 shadow-[inset_0_1px_2px_rgba(85,27,245,0.04)]">
                 {filteredQuizzes.map((_, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => scrollToIndex(idx)}
                     aria-label={`Slide ${idx + 1}`}
-                    className={`transition-all duration-300 rounded-full cursor-pointer ${activeIndex === idx
-                      ? 'w-6 h-2 bg-[#551BF5]'
-                      : 'w-2 h-2 bg-purple-200 dark:bg-purple-900/60 hover:bg-purple-300'
+                    className={`h-2 rounded-full transition-all duration-300 p-0 m-0 border-0 outline-none appearance-none shrink-0 cursor-pointer ${activeIndex === idx
+                      ? 'w-7 bg-gradient-to-r from-[#6C38FF] to-[#551BF5] shadow-[0_1px_4px_rgba(85,27,245,0.35)]'
+                      : 'w-2 bg-purple-200/90 dark:bg-purple-800/60 hover:bg-purple-300'
                       }`}
+                    style={{ minHeight: '8px', maxHeight: '8px' }}
                   />
                 ))}
               </div>
