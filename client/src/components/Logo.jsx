@@ -6,6 +6,7 @@ export default function Logo({
   iconOnly = false,
   showText = true,
   size = 'md',
+  dropShadow = false,
   ...props
 }) {
   const sizeMap = {
@@ -15,15 +16,15 @@ export default function Logo({
     },
     sm: {
       icon: 'h-8 w-8',
-      full: 'h-9 sm:h-10 max-h-[40px] max-w-[120px]',
+      full: 'h-9 sm:h-10 max-h-[42px] max-w-[125px]',
     },
     md: {
       icon: 'h-10 w-10',
-      full: 'h-10 sm:h-12 max-h-[48px] max-w-[150px]',
+      full: 'h-[46px] sm:h-[50px] md:h-[52px] max-h-[54px] max-w-[165px]',
     },
     lg: {
       icon: 'h-12 w-12',
-      full: 'h-11 sm:h-12 max-h-[50px] max-w-[160px]',
+      full: 'h-12 sm:h-14 max-h-[58px] max-w-[185px]',
     },
     xl: {
       icon: 'h-16 w-16',
@@ -39,7 +40,10 @@ export default function Logo({
         <img
           src="/gubbi-bird.png"
           alt="Gubbi Icon"
-          className={`${imgClassName || currentSize.icon} aspect-square object-contain transition-transform duration-200 hover:scale-105 filter drop-shadow-sm`}
+          className={`${imgClassName || currentSize.icon} aspect-square object-contain transition-transform duration-200 hover:scale-105 filter drop-shadow-xs`}
+          style={{
+            imageRendering: '-webkit-optimize-contrast',
+          }}
           onError={(e) => {
             e.currentTarget.src = '/gubbi-logo.png';
           }}
@@ -53,7 +57,12 @@ export default function Logo({
       <img
         src="/gubbi-logo-transparent.png"
         alt="Gubbi - Learn. Play. Shine."
-        className={`${imgClassName || currentSize.full} w-auto object-contain transition-transform duration-200 hover:scale-105 filter drop-shadow-[0_2px_10px_rgba(0,0,0,0.15)]`}
+        className={`${imgClassName || currentSize.full} w-auto object-contain transition-transform duration-200 hover:scale-105 ${
+          dropShadow ? 'filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.12)]' : 'filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.04)]'
+        }`}
+        style={{
+          imageRendering: '-webkit-optimize-contrast',
+        }}
         onError={(e) => {
           e.currentTarget.src = '/gubbi-logo.png';
         }}
