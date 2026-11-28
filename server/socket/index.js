@@ -36,7 +36,7 @@ module.exports = (io) => {
                     const escName = username.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
                     const nameRegex = new RegExp('^' + escName + '$', 'i');
                     const updatedGame = await GameSession.findOneAndUpdate(
-                        { pin: roomPin, status: 'waiting' },
+                        { pin: roomPin, status: { $in: ['waiting', 'active'] } },
                         { 
                             $pull: { 
                                 players: { 
@@ -51,19 +51,40 @@ module.exports = (io) => {
                         { new: true }
                     );
                     if (updatedGame) {
+                        const totalPlayers = updatedGame.players.length;
+                        const currentQIndex = updatedGame.currentQuestionIndex || 0;
+                        const answeredCount = updatedGame.players.filter(p =>
+                            p.answers && p.answers.some(a => a.questionIndex === currentQIndex)
+                        ).length;
+
                         const payload = {
                             pin: updatedGame.pin,
                             players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
-                            roomStatus: updatedGame.status
+                            roomStatus: updatedGame.status,
+                            totalPlayers,
+                            answeredCount
                         };
                         io.to(`room_${roomPin}`).emit('player_list', payload);
                         io.to(roomPin).emit('player_list', payload);
                         io.to(`room_${roomPin}`).emit('player-joined', { playerName: `__LEAVE__:${username}` });
                         io.to(roomPin).emit('player-joined', { playerName: `__LEAVE__:${username}` });
-                        io.to(`room_${roomPin}`).emit('player_left', { username });
-                        io.to(roomPin).emit('player_left', { username });
+                        io.to(`room_${roomPin}`).emit('player_left', { username, totalPlayers, answeredCount });
+                        io.to(roomPin).emit('player_left', { username, totalPlayers, answeredCount });
                         io.to(`room_${roomPin}`).emit('player_disconnected', { username });
                         io.to(roomPin).emit('player_disconnected', { username });
+
+                        if (updatedGame.status === 'active') {
+                            const answeredPayload = {
+                                username,
+                                playerName: username,
+                                answeredCount,
+                                totalPlayers
+                            };
+                            io.to(`room_${roomPin}`).emit('player_answered', answeredPayload);
+                            io.to(roomPin).emit('player_answered', answeredPayload);
+                            io.to(`room_${roomPin}`).emit('player-answered', answeredPayload);
+                            io.to(roomPin).emit('player-answered', answeredPayload);
+                        }
                     }
                 } catch (err) {
                     console.error('Error removing player on leave:', err.message);
@@ -92,7 +113,7 @@ module.exports = (io) => {
                 const escName = username.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
                 const nameRegex = new RegExp('^' + escName + '$', 'i');
                 const updatedGame = await GameSession.findOneAndUpdate(
-                    { pin: roomPin, status: 'waiting' },
+                    { pin: roomPin, status: { $in: ['waiting', 'active'] } },
                     { 
                         $pull: { 
                             players: { 
@@ -107,19 +128,40 @@ module.exports = (io) => {
                     { new: true }
                 );
                 if (updatedGame) {
+                    const totalPlayers = updatedGame.players.length;
+                    const currentQIndex = updatedGame.currentQuestionIndex || 0;
+                    const answeredCount = updatedGame.players.filter(p =>
+                        p.answers && p.answers.some(a => a.questionIndex === currentQIndex)
+                    ).length;
+
                     const payload = {
                         pin: updatedGame.pin,
                         players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
-                        roomStatus: updatedGame.status
+                        roomStatus: updatedGame.status,
+                        totalPlayers,
+                        answeredCount
                     };
                     io.to(`room_${roomPin}`).emit('player_list', payload);
                     io.to(roomPin).emit('player_list', payload);
                     io.to(`room_${roomPin}`).emit('player-joined', { playerName: `__LEAVE__:${username}` });
                     io.to(roomPin).emit('player-joined', { playerName: `__LEAVE__:${username}` });
-                    io.to(`room_${roomPin}`).emit('player_left', { username });
-                    io.to(roomPin).emit('player_left', { username });
+                    io.to(`room_${roomPin}`).emit('player_left', { username, totalPlayers, answeredCount });
+                    io.to(roomPin).emit('player_left', { username, totalPlayers, answeredCount });
                     io.to(`room_${roomPin}`).emit('player_disconnected', { username });
                     io.to(roomPin).emit('player_disconnected', { username });
+
+                    if (updatedGame.status === 'active') {
+                        const answeredPayload = {
+                            username,
+                            playerName: username,
+                            answeredCount,
+                            totalPlayers
+                        };
+                        io.to(`room_${roomPin}`).emit('player_answered', answeredPayload);
+                        io.to(roomPin).emit('player_answered', answeredPayload);
+                        io.to(`room_${roomPin}`).emit('player-answered', answeredPayload);
+                        io.to(roomPin).emit('player-answered', answeredPayload);
+                    }
                 }
             } catch (err) {
                 console.error('Error on player-leave socket:', err.message);

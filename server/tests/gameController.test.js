@@ -307,3 +307,42 @@ test('joinGame rejects new players when game is active, but allows existing play
   }
 });
 
+test('leaveGame successfully removes player when game status is active', async () => {
+  const originalFindOneAndUpdate = GameSession.findOneAndUpdate;
+  try {
+    let capturedQuery = null;
+    let capturedUpdate = null;
+
+    GameSession.findOneAndUpdate = async (query, update) => {
+      capturedQuery = query;
+      capturedUpdate = update;
+      return {
+        pin: '556677',
+        status: 'active',
+        players: [],
+        currentQuestionIndex: 0
+      };
+    };
+
+    const res = {
+      statusCode: 200,
+      data: null,
+      status(code) { this.statusCode = code; return this; },
+      json(payload) { this.data = payload; return this; }
+    };
+
+    await gameController.leaveGame({
+      body: { pin: '556677', playerName: 'Alice' },
+      app: { get: () => null }
+    }, res);
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.data.success, true);
+    assert.equal(capturedQuery.pin, '556677');
+    assert.ok(capturedQuery.status.$in.includes('active'), 'leaveGame query should match active status');
+    assert.ok(capturedUpdate.$pull.players, 'leaveGame should pull player from players array');
+  } finally {
+    GameSession.findOneAndUpdate = originalFindOneAndUpdate;
+  }
+});
+

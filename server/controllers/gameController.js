@@ -170,13 +170,13 @@ const joinGame = async (req, res) => {
         }
 
         // If the player previously joined with a different name on this session/device,
-        // remove the old player from the waiting room so they don't see duplicate/ghost entries
+        // remove the old player from the waiting room/active game so they don't see duplicate/ghost entries
         let removedPrevious = false;
         if (cleanPrevName && cleanPrevName.toLowerCase() !== cleanName.toLowerCase()) {
             const escPrev = cleanPrevName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
             const prevRegex = new RegExp('^' + escPrev + '$', 'i');
             const removedDoc = await GameSession.findOneAndUpdate(
-                { pin: cleanPin, status: 'waiting' },
+                { pin: cleanPin, status: { $in: ['waiting', 'active'] } },
                 {
                     $pull: {
                         players: {
@@ -1018,7 +1018,7 @@ const leaveGame = async (req, res) => {
         const nameRegex = new RegExp('^' + escName + '$', 'i');
 
         const updatedGame = await GameSession.findOneAndUpdate(
-            { pin: cleanPin, status: 'waiting' },
+            { pin: cleanPin, status: { $in: ['waiting', 'active'] } },
             {
                 $pull: {
                     players: {
@@ -1036,19 +1036,40 @@ const leaveGame = async (req, res) => {
         if (updatedGame) {
             const io = req.app.get('io');
             if (io) {
+                const totalPlayers = updatedGame.players.length;
+                const currentQIndex = updatedGame.currentQuestionIndex || 0;
+                const answeredCount = updatedGame.players.filter(p =>
+                    p.answers && p.answers.some(a => a.questionIndex === currentQIndex)
+                ).length;
+
                 const playerListPayload = {
                     pin: updatedGame.pin,
                     players: updatedGame.players.map(p => ({ username: p.name, avatar: p.avatar, score: p.totalScore })),
-                    roomStatus: updatedGame.status
+                    roomStatus: updatedGame.status,
+                    totalPlayers,
+                    answeredCount
                 };
                 io.to(`room_${cleanPin}`).emit('player_list', playerListPayload);
                 io.to(cleanPin).emit('player_list', playerListPayload);
                 io.to(`room_${cleanPin}`).emit('player-joined', { playerName: `__LEAVE__:${cleanName}` });
                 io.to(cleanPin).emit('player-joined', { playerName: `__LEAVE__:${cleanName}` });
-                io.to(`room_${cleanPin}`).emit('player_left', { username: cleanName });
-                io.to(cleanPin).emit('player_left', { username: cleanName });
+                io.to(`room_${cleanPin}`).emit('player_left', { username: cleanName, totalPlayers, answeredCount });
+                io.to(cleanPin).emit('player_left', { username: cleanName, totalPlayers, answeredCount });
                 io.to(`room_${cleanPin}`).emit('player_disconnected', { username: cleanName });
                 io.to(cleanPin).emit('player_disconnected', { username: cleanName });
+
+                if (updatedGame.status === 'active') {
+                    const answeredPayload = {
+                        username: cleanName,
+                        playerName: cleanName,
+                        answeredCount,
+                        totalPlayers
+                    };
+                    io.to(`room_${cleanPin}`).emit('player_answered', answeredPayload);
+                    io.to(cleanPin).emit('player_answered', answeredPayload);
+                    io.to(`room_${cleanPin}`).emit('player-answered', answeredPayload);
+                    io.to(cleanPin).emit('player-answered', answeredPayload);
+                }
             }
         }
 

@@ -395,6 +395,17 @@ export default function LiveQuiz() {
       setTotalPlayers(total);
     });
 
+    socket.on('player_left', (data) => {
+      if (data && typeof data.totalPlayers === 'number') {
+        setTotalPlayers(data.totalPlayers);
+        if (typeof data.answeredCount === 'number') {
+          setAnsweredCount(data.answeredCount);
+        }
+      } else {
+        setTotalPlayers(prev => Math.max(0, prev - 1));
+      }
+    });
+
     socket.on('question_started', (data) => {
       toast.dismiss();
       const q = data.question;
@@ -506,6 +517,7 @@ export default function LiveQuiz() {
       socket.off('connect', joinRoom);
       socket.off('timer_update');
       socket.off('player_answered');
+      socket.off('player_left');
       socket.off('question_started');
       socket.off('question_ended');
       socket.off('quiz_ended', handleQuizEnded);
