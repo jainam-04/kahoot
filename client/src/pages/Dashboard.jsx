@@ -324,7 +324,7 @@ function MathematicsCategoryIcon({ className = "w-4 h-4" }) {
         name: 'GENERAL KNOWLEDGE',
         icon: GeneralKnowledgeCategoryIcon,
         iconBg: 'bg-[#2563EB]',
-        textColor: 'text-[#2563EB]',
+        textColor: 'text-[#7E22CE]',
         defaultDifficulty: 'EASY',
         diffBg: 'bg-[#ECFDF5]',
         diffBorder: 'border-[rgba(167,243,208,0.8)]',
