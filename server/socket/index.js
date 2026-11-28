@@ -185,17 +185,13 @@ module.exports = (io) => {
                 const game = await GameSession.findOne({ pin });
                 if (!game) return;
 
-                const hasAnswers = (game.players || []).some(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0));
-                const effectivePlayers = (hasAnswers && (game.currentQuestionIndex > 0 || game.status !== 'waiting'))
-                    ? game.players.filter(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0))
-                    : (game.players || []);
-
-                const totalPlayers = effectivePlayers.length;
+                const allPlayers = game.players || [];
+                const totalPlayers = allPlayers.length;
                 const currentQIndex = game.currentQuestionIndex;
 
                 // Count how many answered this question
-                const answeredCount = effectivePlayers.filter(player =>
-                    player.answers.some(a => a.questionIndex === currentQIndex)
+                const answeredCount = allPlayers.filter(player =>
+                    player.answers && player.answers.some(a => a.questionIndex === currentQIndex)
                 ).length;
 
                 // Tell everyone someone answered
@@ -207,16 +203,16 @@ module.exports = (io) => {
                 });
 
                 // If ALL players answered → show leaderboard immediately
-                if (answeredCount === totalPlayers) {
-                    const rankedPlayers = [...game.players]
+                if (totalPlayers > 0 && answeredCount >= totalPlayers) {
+                    const rankedPlayers = [...allPlayers]
                         .sort((a, b) => b.totalScore - a.totalScore)
                         .map((player, index) => ({
                             rank: index + 1,
                             name: player.name,
                             totalScore: player.totalScore,
-                            correctAnswers: player.answers
+                            correctAnswers: (player.answers || [])
                                 .filter(a => a.isCorrect).length,
-                            totalAnswers: player.answers.length
+                            totalAnswers: (player.answers || []).length
                         }));
 
                     io.to(roomName).emit('show-leaderboard', {

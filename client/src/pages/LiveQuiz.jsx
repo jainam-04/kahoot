@@ -447,14 +447,25 @@ export default function LiveQuiz() {
         const target = (localPlayer || '').trim().toLowerCase();
         const myData = data.leaderboard?.find(p => {
           const pName = (p.username || p.name || '').trim().toLowerCase();
-          return pName === target;
-        }) || (data.leaderboard?.length === 1 ? data.leaderboard[0] : null);
+          const pNick = (p.nickname || '').trim().toLowerCase();
+          const pFull = (p.fullName || '').trim().toLowerCase();
+          return pName === target || (pNick && pNick === target) || (pFull && pFull === target);
+        });
+        const hasSubmitted = localStorage.getItem('last_answerSubmitted') === 'true';
         if (myData) {
-          localStorage.setItem('last_isCorrect', myData.lastAnswerCorrect ? 'true' : 'false');
-          localStorage.setItem('last_pointsEarned', String(myData.pointsEarned ?? 0));
+          if (hasSubmitted) {
+            localStorage.setItem('last_isCorrect', myData.lastAnswerCorrect ? 'true' : 'false');
+            localStorage.setItem('last_pointsEarned', String(myData.pointsEarned ?? 0));
+          } else {
+            localStorage.setItem('last_isCorrect', 'false');
+            localStorage.setItem('last_pointsEarned', '0');
+          }
           localStorage.setItem('last_score', String(myData.score ?? myData.totalScore ?? 0));
           localStorage.setItem('last_timeTaken', String(myData.lastTimeTaken || '0.00'));
           localStorage.setItem('last_myRank', String(myData.rank || 1));
+        } else if (!hasSubmitted) {
+          localStorage.setItem('last_isCorrect', 'false');
+          localStorage.setItem('last_pointsEarned', '0');
         }
       }
 

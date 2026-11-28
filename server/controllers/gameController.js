@@ -29,21 +29,26 @@ const calculateScore = (isCorrect, timeTaken, timeLimit) => {
     return baseScore + timeBonus;
 };
 
-const sortAndRankPlayers = (players, currentQuestionIndex) => {
+const sortAndRankPlayers = (players = [], currentQuestionIndex = 0) => {
     const sorted = [...players].sort((a, b) => {
-        if (b.totalScore !== a.totalScore) {
-            return b.totalScore - a.totalScore;
+        const aScore = a.totalScore || 0;
+        const bScore = b.totalScore || 0;
+        if (bScore !== aScore) {
+            return bScore - aScore;
         }
 
-        const aCorrect = a.answers.filter(ans => ans.isCorrect).length;
-        const bCorrect = b.answers.filter(ans => ans.isCorrect).length;
+        const aAnswers = a.answers || [];
+        const bAnswers = b.answers || [];
+
+        const aCorrect = aAnswers.filter(ans => ans.isCorrect).length;
+        const bCorrect = bAnswers.filter(ans => ans.isCorrect).length;
 
         if (aCorrect !== bCorrect) {
             return bCorrect - aCorrect;
         }
 
-        const aTime = a.answers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0);
-        const bTime = b.answers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0);
+        const aTime = aAnswers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0);
+        const bTime = bAnswers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0);
 
         if (aTime !== bTime) {
             return aTime - bTime;
@@ -53,23 +58,27 @@ const sortAndRankPlayers = (players, currentQuestionIndex) => {
     });
 
     return sorted.map((p, idx) => {
-        const totalCorrect = p.answers.filter(a => a.isCorrect).length;
-        const totalTimeCorrect = p.answers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0);
-        const lastAnswer = p.answers.find(a => a.questionIndex === currentQuestionIndex);
+        const pAnswers = p.answers || [];
+        const totalCorrect = pAnswers.filter(a => a.isCorrect).length;
+        const totalTimeCorrect = pAnswers.reduce((acc, ans) => acc + (ans.isCorrect ? ans.timeTaken : 0), 0);
+        const lastAnswer = pAnswers.find(a => a.questionIndex === currentQuestionIndex);
 
         return {
             name: p.name,
             username: p.name,
             avatar: p.avatar,
-            score: p.totalScore,
-            totalScore: p.totalScore,
+            score: p.totalScore || 0,
+            totalScore: p.totalScore || 0,
             rank: idx + 1,
             correctAnswers: totalCorrect,
-            totalAnswers: p.answers.length,
+            totalAnswers: pAnswers.length,
             timeCorrect: (totalTimeCorrect / 1000).toFixed(2),
             lastAnswerCorrect: lastAnswer ? lastAnswer.isCorrect : false,
-            pointsEarned: lastAnswer ? lastAnswer.score : 0,
-            lastTimeTaken: lastAnswer ? (lastAnswer.timeTaken / 1000).toFixed(2) : '0.00'
+            pointsEarned: lastAnswer ? (lastAnswer.score || 0) : 0,
+            lastTimeTaken: lastAnswer ? (lastAnswer.timeTaken / 1000).toFixed(2) : '0.00',
+            nickname: p.nickname || p.name,
+            fullName: p.fullName || p.name,
+            mobileNumber: p.mobileNumber || ''
         };
     });
 };
@@ -718,20 +727,18 @@ const submitAnswer = async (req, res) => {
         const io = req.app.get('io');
         if (io) {
             const currentGame = updatedGame || game;
-            const hasAnswers = (currentGame.players || []).some(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0));
-            const effectivePlayers = (hasAnswers && (game.currentQuestionIndex > 0 || game.status !== 'waiting'))
-                ? currentGame.players.filter(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0))
-                : (currentGame.players || []);
+            const allPlayers = currentGame.players || [];
+            const totalPlayers = allPlayers.length;
 
-            const answeredCount = effectivePlayers.filter(p =>
-                p.answers.some(a => a.questionIndex === game.currentQuestionIndex)
+            const answeredCount = allPlayers.filter(p =>
+                p.answers && p.answers.some(a => a.questionIndex === game.currentQuestionIndex)
             ).length;
 
             const payload = {
                 username: player.name,
                 playerName: player.name,
                 answeredCount,
-                totalPlayers: effectivePlayers.length
+                totalPlayers
             };
 
             io.to(`room_${cleanPin}`).emit('player_answered', payload);
@@ -777,17 +784,13 @@ const getLeaderboard = async (req, res) => {
             });
         }
 
-        const hasAnswersLogged = (game.players || []).some(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0));
-        const activePlayers = hasAnswersLogged
-            ? game.players.filter(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0))
-            : (game.players || []);
-
-        const rankedPlayers = sortAndRankPlayers(activePlayers.length > 0 ? activePlayers : (game.players || []), game.currentQuestionIndex);
+        const allPlayers = game.players || [];
+        const rankedPlayers = sortAndRankPlayers(allPlayers, game.currentQuestionIndex);
 
         res.status(200).json({
             success: true,
             currentQuestion: game.currentQuestionIndex + 1,
-            totalPlayers: (activePlayers.length > 0 ? activePlayers : game.players).length,
+            totalPlayers: allPlayers.length,
             leaderboard: rankedPlayers
         });
 
@@ -820,14 +823,11 @@ const endGame = async (req, res) => {
             });
         }
 
-        const hasAnswersLogged = (game.players || []).some(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0));
-        const activePlayers = hasAnswersLogged
-            ? game.players.filter(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0))
-            : (game.players || []);
-        const formattedRanked = sortAndRankPlayers(activePlayers.length > 0 ? activePlayers : (game.players || []), game.currentQuestionIndex);
+        const allPlayers = game.players || [];
+        const formattedRanked = sortAndRankPlayers(allPlayers, game.currentQuestionIndex);
         const winner = formattedRanked[0]?.name || '';
 
-        formattedRanked.forEach((player, index) => {
+        formattedRanked.forEach((player) => {
             const playerIndex = game.players.findIndex(
                 p => p.name === player.name
             );
@@ -900,11 +900,6 @@ const getGame = async (req, res) => {
         const joinUrl = `http://${localIP}:5173/join?pin=${game.pin}`;
         const hostnameUrl = `http://${hostname}.local:5173/join?pin=${game.pin}`;
 
-        const hasAnswers = (game.players || []).some(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0));
-        const effectivePlayers = (hasAnswers && (game.currentQuestionIndex > 0 || game.status !== 'waiting'))
-            ? game.players.filter(p => (p.answers && p.answers.length > 0) || (p.totalScore > 0))
-            : (game.players || []);
-
         res.status(200).json({
             success: true,
             serverTime: Date.now(),
@@ -915,7 +910,7 @@ const getGame = async (req, res) => {
                 joinUrl: joinUrl,
                 hostnameUrl: hostnameUrl,
                 status: game.status,
-                players: effectivePlayers,
+                players: game.players || [],
                 currentQuestion: game.currentQuestionIndex + 1,
                 questionStartTime: game.questionStartTime,
                 quiz: game.quizId,
@@ -959,8 +954,7 @@ const endQuestion = async (req, res) => {
         const isLastQuestion = game.currentQuestionIndex === game.quizId.questions.length - 1;
 
         // Calculate ranked players
-        const activePlayers = (game.players || []).filter(p => (p.answers && p.answers.length > 0) || (p.totalScore && p.totalScore > 0));
-        const rankedPlayers = sortAndRankPlayers(activePlayers.length > 0 ? activePlayers : (game.players || []), game.currentQuestionIndex);
+        const rankedPlayers = sortAndRankPlayers(game.players || [], game.currentQuestionIndex);
 
         // Coerce both sides to Number
         const answerStats = currentQuestion.options.map((_, optIdx) =>

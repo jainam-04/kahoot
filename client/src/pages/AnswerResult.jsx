@@ -622,7 +622,7 @@ export default function AnswerResult() {
       const pName = p.username || p.name || `Player ${idx + 1}`;
       const isMe = localPlayer
         ? ((pName || '').trim().toLowerCase() === localPlayer.trim().toLowerCase() || !!p.isMe)
-        : (leaderboard.length === 1 && !isHost);
+        : false;
       return {
         ...p,
         rank: p.rank || idx + 1,
